@@ -39,6 +39,8 @@
     </ol>
     <div>* <span data-bind="text: correspondence"></span></div>
     <p data-bind="text: abstract"></p>
+    <div data-bind="if: acknowledgements"><h3>Acknowledgements</h3><p data-bind='text: acknowledgements'></p></div>
+    <div data-bind="if: refs"><h3>References</h3><p data-bind='text: refs'></p></div>
   </div>
 
 
