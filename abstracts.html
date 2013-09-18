@@ -68,12 +68,14 @@
       self.selectedAbstract(abstract);
       self.abstractList(null);
       self.displayHeader(false);
+      document.title = abstract.title;
     };
 
     this.showAbstractList = function() {
       self.displayHeader(true);
       self.selectedAbstract(null);
       self.abstractList(abstracts);
+      document.title = 'Bernstein Conference 2013 - Abstracts';
     }
 
     this.showAbstractByDOI = function(doi) {
