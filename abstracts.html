@@ -15,7 +15,7 @@
   <table class="abstract-list">
     <tbody data-bind="foreach: abstractList">
      <tr data-bind="click: $root.selectAbstract">
-            <td data-bind="text: identifier()"></td>
+            <td data-bind="html: identifier()"></td>
             <td>
               <span data-bind="text: title"></span>
               <br/>
@@ -90,7 +90,7 @@
       abstracts[i].identifier = function() { 
         var aid = this.id & 0xFFFF;
         var gid = (this.id & 0xFFFF0000) >> 16;
-        return groupMap[gid] + ' ' + aid; 
+        return groupMap[gid] + '&nbsp;' + aid; 
       }
     }
 
