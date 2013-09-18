@@ -1,0 +1,38 @@
+body { 
+  font-family: Helvetica, Arial;
+}
+
+.abstract-list {
+  width: 100%;
+  border-spacing: 0px;
+}
+
+.abstract-list tbody tr:hover { 
+  cursor: pointer; 
+  background-color: #68c !important; 
+  color: White; 
+}
+
+.abstract-author-list {
+   margin: 0px;
+   padding: 0px;
+   list-style: none;
+   white-space: nowrap;
+   display: inline;
+}
+
+.abstract-author-list li {
+   display: inline-block;
+}
+
+.abstract-author-list li:after {
+  content: ",";
+}
+
+.abstract-author-list li:last-child:before {
+  content: " and ";
+}
+
+.abstract-author-list li:last-child:after {
+  content: "";
+}

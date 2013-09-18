@@ -1,0 +1,117 @@
+<html>
+<head>
+<title>Bernstein Conference 2013 - Abstracts</title>
+<link rel="Stylesheet" href="Abstracts.css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js'></script>
+<script type="text/javascript" src='http://cdnjs.cloudflare.com/ajax/libs/sammy.js/0.7.4/sammy.min.js'></script>
+<script type="text/javascript" src='abstracts.js'></script>
+</head>
+<body>
+  <div data-bind="if: displayHeader"><h1 >Bernstein Conference 2013 - Abstracts</h1></div>
+
+  <!-- Abstract List -->
+  <div>
+  <table class="abstract-list">
+    <tbody data-bind="foreach: abstractList">
+     <tr data-bind="click: $root.selectAbstract">
+            <td data-bind="text: identifier()"></td>
+            <td>
+              <span data-bind="text: title"></span>
+              <br/>
+              <ul class='abstract-author-list' data-bind="foreach: authors">
+                <li data-bind="text: name"></li>
+              </ul>
+            </td>
+    </tr>
+  </tbody>
+  </table>
+  </div>
+
+  <!-- Abstract View -->
+  <div class="abstract" data-bind="with: selectedAbstract">
+    <h2 data-bind="text: title"></h2>
+    <ul class='abstract-author-list' data-bind="foreach: authors">
+      <li><span data-bind="text: name"></span><sup data-bind="text: epithet"></sup></li>
+    </ul>
+    <ol data-bind="foreach: affiliations">
+      <li data-bind="text: address">
+    </ol>
+    <div>* <span data-bind="text: correspondence"></span></div>
+    <p data-bind="text: abstract"></p>
+  </div>
+
+
+<script type="text/javascript">
+    // utils
+    var groupMap = {
+      0 : 'I',
+      1 : 'C',
+      2 : 'W',
+      3 : 'T'
+    };
+
+  function AbstractsViewModel() {
+
+    // data
+    var self = this;
+    this.selectedAbstract = ko.observable();
+    this.abstractList = ko.observable();
+    this.displayHeader = ko.observable(true);
+
+    this.selectAbstract = function(abstract) {
+      var doi = abstract.doi;
+      location.hash = '/doi/' + doi.substring(9, doi.length);
+    }
+
+    this.showAbstract = function(abstract) {
+      self.selectedAbstract(abstract);
+      self.abstractList(null);
+      self.displayHeader(false);
+    };
+
+    this.showAbstractList = function() {
+      self.displayHeader(true);
+      self.selectedAbstract(null);
+      self.abstractList(abstracts);
+    }
+
+    this.showAbstractByDOI = function(doi) {
+      abstract = self.doiMap[doi];
+      self.showAbstract(abstract);
+    }
+    
+    this.doiMap = {};
+
+    for (var i = 0; i < abstracts.length; i++) {
+      this.doiMap[abstracts[i]['doi']] = abstracts[i];
+      abstracts[i].identifier = function() { 
+        var aid = this.id & 0xFFFF;
+        var gid = (this.id & 0xFFFF0000) >> 16;
+        return groupMap[gid] + ' ' + aid; 
+      }
+    }
+
+    // client-side routes    
+     Sammy(function() {
+
+      this.get('#/doi/:doi', function() {
+        var doi = '10.12751/' + this.params['doi'];
+        self.showAbstractByDOI(doi);
+      });
+
+      this.get('', function() { 
+        self.showAbstractList();
+      });
+
+    }).run();
+  }
+
+
+  absmv = new AbstractsViewModel();
+  ko.applyBindings(absmv);
+
+</script>
+
+</body>
+</html>
