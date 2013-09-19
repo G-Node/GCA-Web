@@ -226,6 +226,11 @@
       abstracts[i].hasFigure = abstracts[i].caption.length > 0;
       if (abstracts[i].hasFigure) {
         abstracts[i].figure = 'figures/' + paddy(abstracts[i].figid, 3) + '.png';
+
+        if (! abstracts[i].caption.startsWith('Figure')) {
+          abstracts[i].caption = 'Figure 1: ' + abstracts[i].caption;
+        }
+
       }
 
     }
