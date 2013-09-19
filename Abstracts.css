@@ -21,14 +21,12 @@ body {
    margin: 0px;
    padding: 0px;
    list-style: none;
-   white-space: nowrap;
-   display: inline;
-   overflow: auto;
+   display: inline-block;
+   font-size: large;
 }
 
 .abstract-author-list li {
-   display: inline;
-   overflow: auto;
+   display: inline-block;
 }
 
 .abstract-author-list li:after {
@@ -38,3 +36,53 @@ body {
 .abstract-author-list li:last-child:after {
   content: "";
 }
+
+.affiliations {
+  margin-top: 0.5em;
+  color: rgb(100, 100, 100);
+  font-size: x-small;
+  vertical-align: super;
+}
+
+.affiliations span {
+  font-size: small;
+  font-style: italic;
+  vertical-align: middle;
+}
+
+.abstract-text {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 16px;
+  text-align: justify;
+  margin-top: 3ex;
+}
+
+.foot-seperator {
+  border: none;
+  height: 1px;
+  color: #333; /* old IE */
+  background-color: #333;
+}
+
+.modal-dialog {
+    width: 90%; /* desired relative width */
+    left: 5%; /* (100%-width)/2 */
+    /* place center */
+    margin-left:auto;
+    margin-right:auto;
+    margin-bottom: 5em;
+}
+
+.model-dialog {
+  width: 800px !important;
+}
+
+.foot-info p {
+  margin: 0.2ex;
+  font-size: small;
+}
+
+.foot-info {
+  margin-bottom: 5ex;
+}
+
