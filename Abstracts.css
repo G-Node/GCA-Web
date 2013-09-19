@@ -2,15 +2,19 @@ body {
   font-family: Helvetica, Arial;
 }
 
-.abstract-list {
-  width: 100%;
-  border-spacing: 0px;
+.abstract-list-item:hover { 
+  cursor: pointer; 
+  background-color: #0C4396 !important; 
+  color: White; 
 }
 
-.abstract-list tbody tr:hover { 
-  cursor: pointer; 
-  background-color: #68c !important; 
-  color: White; 
+.al-id {
+  float: left;
+  width: 7ex;
+}
+
+.al-text {
+  margin-left: 7ex;
 }
 
 .abstract-author-list {
@@ -19,18 +23,16 @@ body {
    list-style: none;
    white-space: nowrap;
    display: inline;
+   overflow: auto;
 }
 
 .abstract-author-list li {
-   display: inline-block;
+   display: inline;
+   overflow: auto;
 }
 
 .abstract-author-list li:after {
   content: ",";
-}
-
-.abstract-author-list li:last-child:before {
-  content: " and ";
 }
 
 .abstract-author-list li:last-child:after {

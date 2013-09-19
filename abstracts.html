@@ -3,46 +3,80 @@
 <title>Bernstein Conference 2013 - Abstracts</title>
 <link rel="Stylesheet" href="Abstracts.css">
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js'></script>
-<script type="text/javascript" src='http://cdnjs.cloudflare.com/ajax/libs/sammy.js/0.7.4/sammy.min.js'></script>
-<script type="text/javascript" src='abstracts.js'></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/sammy.js/0.7.4/sammy.min.js"></script>
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+<script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="abstracts.js"></script>
 </head>
 <body>
-  <div data-bind="if: displayHeader"><h1 >Bernstein Conference 2013 - Abstracts</h1></div>
 
-  <!-- Abstract List -->
-  <div>
-  <table class="abstract-list">
-    <tbody data-bind="foreach: abstractList">
-     <tr data-bind="click: $root.selectAbstract">
-            <td data-bind="html: identifier()"></td>
-            <td>
-              <span data-bind="text: title"></span>
-              <br/>
-              <ul class='abstract-author-list' data-bind="foreach: authors">
-                <li data-bind="text: name"></li>
-              </ul>
-            </td>
-    </tr>
-  </tbody>
-  </table>
+<div class="container">
+
+  <nav class="navbar navbar-default" role="navigation">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="#">All</a>
   </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav">
+      <li><a href="#/groups/I">Invited Talks</a></li>
+      <li><a href="#/groups/C">Contributed Talks</a></li>
+      <li><a href="#/groups/W">Poster Wednesday</a></li>
+      <li><a href="#/groups/T">Poster Thursday</a></li>
+    </ul>
+    <form class="navbar-form navbar-right" role="search" >
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search" id="searchInput">
+      </div>
+      <button type="button" class="btn btn-default" data-bind="click: searchAbstracts">Search</button>
+    </form>
+  </div><!-- /.navbar-collapse -->
+</nav>
+
+
+ <div data-bind="if: displayHeader"><h1 >Bernstein Conference 2013 - Abstracts</h1></div>
+
+ <!-- Abstract List --> 
+<div class="list-group" data-bind="foreach: abstractList">
+  <div class="list-group-item abstract-list-item" data-bind="click: $root.selectAbstract">
+    <div class="al-id" data-bind="html: identifier()"></div>
+    <div class="al-text">
+      <h4 class="list-group-item-heading" data-bind="text: title"></h4>
+      <div class="list-group-item-text">
+        <ul class="abstract-author-list" data-bind="foreach: authors">
+          <li data-bind="text: name"></li>
+        </ul>                
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Abstract View -->
   <div class="abstract" data-bind="with: selectedAbstract">
     <h2 data-bind="text: title"></h2>
-    <ul class='abstract-author-list' data-bind="foreach: authors">
+    <ul class="abstract-author-list" data-bind="foreach: authors">
       <li><span data-bind="text: name"></span><sup data-bind="text: epithet"></sup></li>
     </ul>
     <ol data-bind="foreach: affiliations">
-      <li data-bind="text: address">
+      <li data-bind="text: address"></li>
     </ol>
     <div>* <span data-bind="text: correspondence"></span></div>
     <p data-bind="text: abstract"></p>
     <div data-bind="if: acknowledgements"><h3>Acknowledgements</h3><p data-bind='text: acknowledgements'></p></div>
-    <div data-bind="if: refs"><h3>References</h3><p data-bind='text: refs'></p></div>
+    <div data-bind="if: refs"><h3>References</h3><ul style="list-style: none; margin: 0; padding: 0;" data-bind='foreach: references'><li  data-bind="text: $data"></li></ul></div>
   </div>
 
+</div>
 
 <script type="text/javascript">
     // utils
@@ -73,10 +107,10 @@
       document.title = abstract.title;
     };
 
-    this.showAbstractList = function() {
+    this.showAbstractList = function(theList) {
       self.displayHeader(true);
       self.selectedAbstract(null);
-      self.abstractList(abstracts);
+      self.abstractList(theList);
       document.title = 'Bernstein Conference 2013 - Abstracts';
     }
 
@@ -85,6 +119,14 @@
       self.showAbstract(abstract);
     }
     
+    this.searchAbstracts = function(forElement) {
+      var filtered = abstracts.filter(function (abstract) {
+          return abstract.title.indexOf($('#searchInput').val()) != -1;
+      });
+      self.showAbstractList(filtered);
+      return false;
+    }
+
     this.doiMap = {};
 
     for (var i = 0; i < abstracts.length; i++) {
@@ -94,6 +136,8 @@
         var gid = (this.id & 0xFFFF0000) >> 16;
         return groupMap[gid] + '&nbsp;' + aid; 
       }
+
+      abstracts[i].references = abstracts[i].refs.split('\n');
     }
 
     // client-side routes    
@@ -104,8 +148,17 @@
         self.showAbstractByDOI(doi);
       });
 
+      this.get('#/groups/:group', function() {
+        var group = this.params['group'];
+        var filtered = abstracts.filter(function (abstract) {
+          var gid = (abstract.id & 0xFFFF0000) >> 16;
+          return groupMap[gid] === group.substring(0, 1);
+        });
+        self.showAbstractList(filtered);
+      });
+
       this.get('', function() { 
-        self.showAbstractList();
+        self.showAbstractList(abstracts);
       });
 
     }).run();
