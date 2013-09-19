@@ -131,12 +131,6 @@
     return this.substring(0, prefix.length) === prefix;
   };
 
-  function paddy(n, p, c) {
-    var pad_char = typeof c !== 'undefined' ? c : '0';
-    var pad = new Array(1 + p).join(pad_char);
-    return (pad + n).slice(-pad.length);
-  }
-
   function AbstractsViewModel() {
 
     // data
@@ -238,7 +232,7 @@
       abstracts[i].text = abstracts[i].abstract.split('\n\n');
       abstracts[i].hasFigure = abstracts[i].caption.length > 0;
       if (abstracts[i].hasFigure) {
-        abstracts[i].figure = 'figures/' + paddy(abstracts[i].figid, 3) + '.png';
+        abstracts[i].figure = 'figures/' + abstracts[i].figpath;
 
         if (! abstracts[i].caption.startsWith('Figure')) {
           abstracts[i].caption = 'Figure 1: ' + abstracts[i].caption;
