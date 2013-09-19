@@ -127,6 +127,10 @@
     return this.indexOf(suffix, this.length - suffix.length) !== -1;
   };
 
+  String.prototype.startsWith = function(prefix) {
+    return this.substring(0, prefix.length) === prefix;
+  };
+
   function paddy(n, p, c) {
     var pad_char = typeof c !== 'undefined' ? c : '0';
     var pad = new Array(1 + p).join(pad_char);
@@ -168,8 +172,17 @@
     }
 
     this.searchAbstracts = function(forElement) {
+      var needle = $('#searchInput').val().toLowerCase();
       var filtered = abstracts.filter(function (abstract) {
-        return abstract.title.indexOf($('#searchInput').val()) != -1;
+
+
+        for (var i = 0; i < abstract.authors.length; i++) {
+          if (abstract.authors[i].name.toLowerCase().indexOf(needle) != -1) {
+            return true;
+          }
+        }
+
+        return abstract.title.toLowerCase().indexOf(needle) != -1;
       });
       self.showAbstractList(filtered);
       return false;
