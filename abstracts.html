@@ -165,6 +165,14 @@
       self.showAbstract(abstract);
     }
 
+    this.listAbstractsByGroup = function(group) {
+      var filtered = abstracts.filter(function (abstract) {
+        var gid = (abstract.id & 0xFFFF0000) >> 16;
+        return groupMap[gid] === group.substring(0, 1);
+      });
+      self.showAbstractList(filtered);
+    }
+
     this.searchAbstracts = function(forElement) {
       var needle = $('#searchInput').val().toLowerCase();
       var filtered = abstracts.filter(function (abstract) {
@@ -252,11 +260,7 @@
 
       this.get('#/groups/:group', function() {
         var group = this.params['group'];
-        var filtered = abstracts.filter(function (abstract) {
-          var gid = (abstract.id & 0xFFFF0000) >> 16;
-          return groupMap[gid] === group.substring(0, 1);
-        });
-        self.showAbstractList(filtered);
+        self.listAbstractsByGroup(group);
       });
 
       this.get('', function() {
