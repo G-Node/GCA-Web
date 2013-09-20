@@ -92,3 +92,11 @@ body {
   margin-bottom: 5ex;
 }
 
+.epost span {
+    unicode-bidi:bidi-override;
+    direction: rtl;
+}
+
+.epost-hidden {
+    display:none;
+}
