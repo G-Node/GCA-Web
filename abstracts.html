@@ -38,6 +38,7 @@
         <li><a href="#/groups/C">Contributed Talks</a></li>
         <li><a href="#/groups/W">Poster Wednesday</a></li>
         <li><a href="#/groups/T">Poster Thursday</a></li>
+        <li><a href="#/groups/S">Workshop</a></li>
       </ul>
       <form class="navbar-form navbar-right" role="form" >
         <div class="form-group">
@@ -148,7 +149,8 @@
     0 : 'I',
     1 : 'C',
     2 : 'W',
-    3 : 'T'
+    3 : 'T',
+    4 : 'S'
   };
 
   String.prototype.endsWith = function(suffix) {
@@ -278,7 +280,8 @@
             0 : 'Invited Talk',
             1 : 'Contributed Talk',
             2 : 'Poster',
-            3 : 'Poster'
+            3 : 'Poster',
+            4 : 'Workshop'
           };
 
           var gid = (this.id & 0xFFFF0000) >> 16;
@@ -287,7 +290,7 @@
 
         abstracts[i].references = abstracts[i].refs.split('\n');
         abstracts[i].text = abstracts[i].abstract.split('\n\n');
-        abstracts[i].hasFigure = abstracts[i].caption.length > 0;
+        abstracts[i].hasFigure = 'caption' in abstracts[i] && abstracts[i].caption.length > 0;
         if (abstracts[i].hasFigure) {
           abstracts[i].figure = 'figures/' + abstracts[i].figpath;
 
