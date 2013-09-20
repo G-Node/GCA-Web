@@ -158,9 +158,6 @@
       <p><b>Conference:</b> Bernstein Conference 2013, T&uuml;bingen, Germany, September 24 - 27</p>
       <p><b>Citation:</b> <span data-bind="html: formatCitation()"></span></p>
       <p><b>Type:</b> <span data-bind="text: abstractType()"></span></p>
-      <p class="epost" data-bind="if: emaddr"><b>Correspondence:</b>
-        <span data-bind="text: emhost"></span><span class="epost-hidden">.bc13.</span><span>@</span><span data-bind="text: emaddr"></span>
-      </p>
     </div>
 
     <!-- Modal Figure -->
@@ -201,10 +198,6 @@
 
   String.prototype.startsWith = function(prefix) {
     return this.substring(0, prefix.length) === prefix;
-  };
-
-  String.prototype.reverse = function() {
-    return this.split("").reverse().join("");
   };
 
   makeDoiURL = function(doi) {
@@ -354,14 +347,6 @@
         //prev & next support
         abstracts[i].prev = i != 0 ? '#' + makeDoiURL(abstracts[i-1.].doi) : null;
         abstracts[i].next = i+1 != abstracts.length ? '#' + makeDoiURL(abstracts[i+1].doi) : null;
-
-        if ('correspondence' in abstracts[i]) {
-          var cs = abstracts[i].correspondence[0].split('@');
-          if (cs.length == 2) {
-            abstracts[i].emaddr = cs[0].reverse();
-            abstracts[i].emhost = cs[1].reverse();
-          }
-        }
 
       }
     }
