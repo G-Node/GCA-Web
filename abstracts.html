@@ -125,9 +125,9 @@
       <p class="col-md-offset-1 col-md-10" data-bind="text: caption"></p>
     </div>
     <div data-bind="if: acknowledgements"><h4>Acknowledgements</h4><p data-bind='text: acknowledgements'></p></div>
-    <div data-bind="if: refs">
+    <div class="references" data-bind="if: refs">
       <h4>References</h4>
-      <ul style="list-style: none; margin: 0; padding: 0;" data-bind='foreach: references'>
+      <ul data-bind='foreach: references'>
         <li  data-bind="text: $data"></li>
       </ul>
     </div>
