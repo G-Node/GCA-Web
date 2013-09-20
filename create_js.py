@@ -33,13 +33,15 @@ def check_figure(abstract, imglist):
 
 def main():
     parser = argparse.ArgumentParser(description='Convert abstracts (json) to js')
-    parser.add_argument('input', type=str, default=sys.stdin)
+    parser.add_argument('json', nargs='+')
 
     args = parser.parse_args()
-    fd = codecs.open(args.input, encoding='utf-8')
-    data = fd.read()
+    abstracts = []
 
-    abstracts = json.loads(data)
+    for path in args.json:
+        fd = codecs.open(path, encoding='utf-8')
+        data = json.load(fd)
+        abstracts += data
 
     toRemoveList = ['dummy', 'state', 'frontid', 'frontsubid', 'submitter', 'session', 'nfigures']
     imglist = os.listdir('figures')
@@ -53,7 +55,7 @@ def main():
             abstract['figpath'] = img
 
 
-    js = u'abstracts = ' + json.dumps(abstracts) + ';'
+    js = json.dumps(abstracts)
     sys.stdout.write(js.encode('utf-8'))
 
 if __name__ == '__main__':
