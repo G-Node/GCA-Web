@@ -92,10 +92,6 @@ body {
   margin-bottom: 5ex;
 }
 
-.correspondence {
-    display: inline;
-}
-
 .epost span {
     unicode-bidi:bidi-override;
     direction: rtl;
@@ -103,24 +99,4 @@ body {
 
 .epost-hidden {
     display:none;
-}
-
-.epost {
-    margin: 0px;
-    padding: 0px;
-    list-style: none;
-    display: inline-block;
-    font-size: small;
-}
-
-.epost li {
-    display: inline-block;
-}
-
-.epost li:after {
-    content: ",";
-}
-
-.epost li:last-child:after {
-    content: "";
 }
