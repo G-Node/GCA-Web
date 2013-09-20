@@ -212,6 +212,7 @@
       self.selectedAbstract(abstract);
       self.abstractList(null);
       document.title = abstract.title;
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
     };
 
     this.showAbstractList = function(theList) {
@@ -386,5 +387,6 @@
   ko.applyBindings(absmv);
 
 </script>
+
 </body>
 </html>
