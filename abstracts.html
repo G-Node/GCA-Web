@@ -158,8 +158,10 @@
       <p><b>Conference:</b> Bernstein Conference 2013, T&uuml;bingen, Germany, September 24 - 27</p>
       <p><b>Citation:</b> <span data-bind="html: formatCitation()"></span></p>
       <p><b>Type:</b> <span data-bind="text: abstractType()"></span></p>
-      <p class="epost" data-bind="if: emaddr"><b>Correspondence:</b>
-        <span data-bind="text: emhost"></span><span class="epost-hidden">.bc13.</span><span>@</span><span data-bind="text: emaddr"></span>
+      <p class="correspondence" data-bind="if: correspondence"><b>Correspondence:</b> <ul class="epost" data-bind="foreach: correspondence">
+         <li><span data-bind="text: emhost"></span><span class="epost-hidden">.bc13.</span><span>@</span><span data-bind="text: emaddr"></span></li>
+       </ul>
+
       </p>
     </div>
 
@@ -356,15 +358,24 @@
         abstracts[i].next = i+1 != abstracts.length ? '#' + makeDoiURL(abstracts[i+1].doi) : null;
 
         if ('correspondence' in abstracts[i]) {
-          var cs = abstracts[i].correspondence[0].split('@');
-          if (cs.length == 2) {
-            abstracts[i].emaddr = cs[0].reverse();
-            abstracts[i].emhost = cs[1].reverse();
-          }
-        }
+          var correspondence = abstracts[i].correspondence[0].split(',');
+          var newcorr = new Array(correspondence.length);
+          for (var j = 0; j < correspondence.length; j++) {
+            var cs = correspondence[j].split('@');
 
+            var pos = correspondence.length - (j+1);
+
+            if (cs.length == 2) {
+              newcorr[pos] = {emaddr :cs[0].reverse(), emhost : cs[1].reverse() };
+            } else {
+              newcorr[pos] = {emaddr :null, emhost : null };
+            }
+          }
+          abstracts[i].correspondence = newcorr;
+        }
       }
     }
+
 
     // data IO
     self.loadData = function(doAfter) {
