@@ -8,6 +8,19 @@
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.js"></script>
   <script type="text/javascript" src="parse-names.js"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+  <script type="text/javascript"  src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js"></script>
   <link rel="Stylesheet" href="Abstracts.css">
 </head>
 <body>
@@ -62,7 +75,7 @@
   <!-- Error message box -->
 
   <div data-bind="if: curWarning()">
-  <div class="alert alert-warning fade in alert-dismissable">
+  <div class="alert alert-warning fade in alert-dismissable" data-bind="css: errorLevel">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
     <strong data-bind="html: curWarning()"></strong>
   </div>
@@ -144,6 +157,8 @@
 </div>
 
 <script type="text/javascript">
+
+
   // utils
   var groupMap = {
     0 : 'I',
@@ -174,7 +189,12 @@
     this.abstractList = ko.observable(null);
     this.curWarning = ko.observable(null);
     this.isLoading = ko.observable(false);
+    this.errorLevel = ko.observable('warning');
 
+    this.setError = function(level, text) {
+      this.curWarning(text);
+      this.errorLevel('alert-' + level);
+    }
 
     //functions
     this.selectAbstract = function(abstract) {
@@ -195,12 +215,12 @@
       self.selectedAbstract(null);
       self.abstractList(theList);
       document.title = 'Bernstein Conference 2013 - Abstracts';
-      self.curWarning(null);
+      self.setError(null, null);
     }
 
     this.showAbstractByDOI = function(doi) {
       if (!(doi in self.doiMap)) {
-        self.curWarning('Abstract not found');
+        self.setError('warning', 'Abstract not found');
         self.selectedAbstract(null);
         self.abstractList(null);
         return;
@@ -233,7 +253,7 @@
       self.showAbstractList(filtered);
 
       if (filtered == null || filtered.length == 0) {
-        self.curWarning('No results!')
+        self.setError('warning', 'No results!')
       }
 
       return false;
@@ -328,7 +348,7 @@
         var err = textStatus + ", " + error;
         console.log( "Request Failed: " + err );
         self.isLoading(false);
-        self.curWarning('Error getting data!');
+        self.setError('danger', 'Error getting data!');
       });
     }
 
