@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
   <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.js"></script>
   <script type="text/javascript" src="parse-names.js"></script>
-  <script type="text/javascript" src="abstracts.js"></script>
   <link rel="Stylesheet" href="Abstracts.css">
 </head>
 <body>
@@ -49,6 +48,16 @@
     </div><!-- /.navbar-collapse -->
   </nav>
 
+
+  <!-- Loading box -->
+
+  <div data-bind="if: isLoading()">
+    <div class="alert alert-info fade in out">
+      <h4>Loading abstracts!</h4>
+      <p>Please wait...</p>
+    </div>
+  </div>
+
   <!-- Error message box -->
 
   <div data-bind="if: curWarning()">
@@ -57,7 +66,6 @@
     <strong data-bind="html: curWarning()"></strong>
   </div>
   </div>
-
 
   <!-- Abstract List -->
   <div class="list-group" data-bind="foreach: abstractList">
@@ -145,9 +153,11 @@
 
     // data
     var self = this;
-    this.selectedAbstract = ko.observable();
-    this.abstractList = ko.observable();
+    self.abstracts = null;
+    this.selectedAbstract = ko.observable(null);
+    this.abstractList = ko.observable(null);
     this.curWarning = ko.observable(null);
+    this.isLoading = ko.observable(false);
 
 
     //functions
@@ -159,7 +169,6 @@
     this.showFigure = function(abstract) {
       $('#modalFigure').modal('show');
     }
-
 
     this.showAbstract = function(abstract) {
       self.selectedAbstract(abstract);
@@ -187,7 +196,7 @@
     }
 
     this.listAbstractsByGroup = function(group) {
-      var filtered = abstracts.filter(function (abstract) {
+      var filtered = self.abstracts.filter(function (abstract) {
         var gid = (abstract.id & 0xFFFF0000) >> 16;
         return groupMap[gid] === group.substring(0, 1);
       });
@@ -196,8 +205,7 @@
 
     this.searchAbstracts = function(forElement) {
       var needle = $('#searchInput').val().toLowerCase();
-      var filtered = abstracts.filter(function (abstract) {
-
+      var filtered = self.abstracts.filter(function (abstract) {
 
         for (var i = 0; i < abstract.authors.length; i++) {
           if (abstract.authors[i].name.toLowerCase().indexOf(needle) != -1) {
@@ -216,64 +224,91 @@
       return false;
     }
 
-    this.doiMap = {};
+    this.processAbstracts = function(abstracts) {
 
-    for (var i = 0; i < abstracts.length; i++) {
-      this.doiMap[abstracts[i]['doi']] = abstracts[i];
-      abstracts[i].identifier = function() {
-        var aid = this.id & 0xFFFF;
-        var gid = (this.id & 0xFFFF0000) >> 16;
-        return groupMap[gid] + '&nbsp;' + aid;
-      }
+      self.doiMap = {};
 
-      abstracts[i].formatCitation = function() {
-        var nameParser = new NameParse();
-        var authorLine = "";
-        for (var i = 0; i < this.authors.length; i++) {
-          var author = nameParser.parse(this.authors[i].name);
+      for (var i = 0; i < abstracts.length; i++) {
+        this.doiMap[abstracts[i]['doi']] = abstracts[i];
+        abstracts[i].identifier = function() {
+          var aid = this.id & 0xFFFF;
+          var gid = (this.id & 0xFFFF0000) >> 16;
+          return groupMap[gid] + '&nbsp;' + aid;
+        }
 
-          if (i != 0) {
-            if (i + 1 == this.authors.length) {
-              authorLine += ' and ';
-            } else {
-              authorLine += ', ';
+        abstracts[i].formatCitation = function() {
+          var nameParser = new NameParse();
+          var authorLine = "";
+          for (var i = 0; i < this.authors.length; i++) {
+            var author = nameParser.parse(this.authors[i].name);
+
+            if (i != 0) {
+              if (i + 1 == this.authors.length) {
+                authorLine += ' and ';
+              } else {
+                authorLine += ', ';
+              }
             }
+
+            authorLine += author.lastName + ' ' + author.firstName.substring(0, 1);
           }
 
-          authorLine += author.lastName + ' ' + author.firstName.substring(0, 1);
+          var titleStr = this.title.trim();
+          var citeLine = authorLine + ' (2013) ' + titleStr;
+          citeLine += (titleStr.endsWith('.') || titleStr.endsWith('?') || titleStr.endsWith('!')) ? ' ' : '. ';
+          citeLine += "<i>Bernstein Conference 2013</i>" + '. doi: ' + this.doi;
+          return citeLine;
         }
 
-        var titleStr = this.title.trim();
-        citeLine  = authorLine + ' (2013) ' + titleStr;
-        citeLine += (titleStr.endsWith('.') || titleStr.endsWith('?') || titleStr.endsWith('!')) ? ' ' : '. ';
-        citeLine += "<i>Bernstein Conference 2013</i>" + '. doi: ' + this.doi;
-        return citeLine;
-      }
+        abstracts[i].abstractType = function() {
+          var groupNameMap = {
+            0 : 'Invited Talk',
+            1 : 'Contributed Talk',
+            2 : 'Poster',
+            3 : 'Poster'
+          };
 
-      abstracts[i].abstractType = function() {
-        var groupNameMap = {
-          0 : 'Invited Talk',
-          1 : 'Contributed Talk',
-          2 : 'Poster',
-          3 : 'Poster'
-        };
-
-        var gid = (this.id & 0xFFFF0000) >> 16;
-        return groupNameMap[gid];
-      }
-
-      abstracts[i].references = abstracts[i].refs.split('\n');
-      abstracts[i].text = abstracts[i].abstract.split('\n\n');
-      abstracts[i].hasFigure = abstracts[i].caption.length > 0;
-      if (abstracts[i].hasFigure) {
-        abstracts[i].figure = 'figures/' + abstracts[i].figpath;
-
-        if (! abstracts[i].caption.startsWith('Figure')) {
-          abstracts[i].caption = 'Figure 1: ' + abstracts[i].caption;
+          var gid = (this.id & 0xFFFF0000) >> 16;
+          return groupNameMap[gid];
         }
 
+        abstracts[i].references = abstracts[i].refs.split('\n');
+        abstracts[i].text = abstracts[i].abstract.split('\n\n');
+        abstracts[i].hasFigure = abstracts[i].caption.length > 0;
+        if (abstracts[i].hasFigure) {
+          abstracts[i].figure = 'figures/' + abstracts[i].figpath;
+
+          if (! abstracts[i].caption.startsWith('Figure')) {
+            abstracts[i].caption = 'Figure 1: ' + abstracts[i].caption;
+          }
+        }
+      }
+    }
+
+    // data IO
+    self.loadData = function(doAfter) {
+
+      if (self.abstracts != null) {
+        doAfter();
+        return;
       }
 
+      self.isLoading(true);
+
+      var jqxhr = $.getJSON("bc13data.js", function(allData) {
+          self.abstracts = allData;
+          self.processAbstracts(self.abstracts);
+          self.isLoading(false);
+          doAfter();
+
+      });
+
+      jqxhr.fail(function(jqxhr, textStatus, error) {
+        var err = textStatus + ", " + error;
+        console.log( "Request Failed: " + err );
+        self.isLoading(false);
+        self.curWarning('Error getting data!');
+      });
     }
 
     // client-side routes
@@ -281,16 +316,22 @@
 
       this.get('#/doi/:doi', function() {
         var doi = '10.12751/' + this.params['doi'];
-        self.showAbstractByDOI(doi);
+        self.loadData(function () {
+          self.showAbstractByDOI(doi);
+        });
       });
 
       this.get('#/groups/:group', function() {
         var group = this.params['group'];
-        self.listAbstractsByGroup(group);
+        self.loadData(function () {
+          self.listAbstractsByGroup(group);
+        });
       });
 
       this.get('', function() {
-        self.showAbstractList(abstracts);
+        self.loadData(function () {
+          self.showAbstractList(self.abstracts);
+        });
       });
 
     }).run();
