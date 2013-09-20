@@ -84,6 +84,16 @@
 
   <!-- Abstract View -->
   <div class="abstract" data-bind="with: selectedAbstract">
+
+    <ul class="pager">
+      <li class="previous" data-bind="css: { disabled: prev == null }">
+        <a data-bind="attr: {href : prev}">&larr; Previous</a>
+      </li>
+      <li class="next" data-bind="css: { disabled: next == null }">
+        <a data-bind="attr: {href : next}">Next &rarr;</a>
+      </li>
+    </ul>
+
     <h2 data-bind="text: title"></h2>
     <ul class="abstract-author-list" data-bind="foreach: authors">
       <li><span data-bind="text: name"></span><sup data-bind="text: epithet"></sup></li>
@@ -149,6 +159,10 @@
     return this.substring(0, prefix.length) === prefix;
   };
 
+  makeDoiURL = function(doi) {
+    return '/doi/' + doi.substring(9, doi.length);
+  }
+
   function AbstractsViewModel() {
 
     // data
@@ -162,8 +176,7 @@
 
     //functions
     this.selectAbstract = function(abstract) {
-      var doi = abstract.doi;
-      location.hash = '/doi/' + doi.substring(9, doi.length);
+      location.hash = makeDoiURL(abstract.doi);
     }
 
     this.showFigure = function(abstract) {
@@ -282,6 +295,11 @@
             abstracts[i].caption = 'Figure 1: ' + abstracts[i].caption;
           }
         }
+
+        //prev & next support
+        abstracts[i].prev = i != 0 ? '#' + makeDoiURL(abstracts[i-1.].doi) : null;
+        abstracts[i].next = i+1 != abstracts.length ? '#' + makeDoiURL(abstracts[i+1].doi) : null;
+
       }
     }
 
