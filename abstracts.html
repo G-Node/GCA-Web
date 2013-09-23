@@ -316,7 +316,9 @@
           var titleStr = this.title.trim();
           var citeLine = authorLine + ' (2013) ' + titleStr;
           citeLine += (titleStr.endsWith('.') || titleStr.endsWith('?') || titleStr.endsWith('!')) ? ' ' : '. ';
-          citeLine += "<i>Bernstein Conference 2013</i>" + '. doi: ' + this.doi;
+          citeLine += "<i>Bernstein Conference 2013</i>";
+          citeLine += '. doi: <a class=\"doilink\" href=\"https://portal.g-node.org/abstracts/bc13/#' + makeDoiURL(this.doi) + '\" >' 
+          citeLine += this.doi + '</a>';
           return citeLine;
         }
 
