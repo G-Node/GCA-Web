@@ -50,6 +50,10 @@ body {
   vertical-align: middle;
 }
 
+.nonumlist {
+  list-style: none;
+}
+
 .abstract-text {
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 16px;

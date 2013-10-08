@@ -134,9 +134,9 @@
 
     <h2 data-bind="text: title"></h2>
     <ul class="abstract-author-list" data-bind="foreach: authors">
-      <li><span data-bind="text: name"></span><sup data-bind="text: epithet"></sup></li>
+      <li><span data-bind="text: name"></span><sup data-bind="text: epithet, css: {hidden: $parent.affiliations.length == 1}"></sup></li>
     </ul>
-    <ol class="affiliations" data-bind="foreach: affiliations">
+    <ol class="affiliations" data-bind="foreach: affiliations, css: { nonumlist: affiliations.length == 1 }">
       <li> <span data-bind="text: address"></span></li>
     </ol>
     <div class="abstract-text" data-bind="foreach: text"><p data-bind="text: $data"></p></div>
