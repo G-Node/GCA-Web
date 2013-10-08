@@ -204,6 +204,22 @@
     return '/doi/' + doi.substring(9, doi.length);
   }
 
+  formatInitials = function(initials) {
+    var res = "";
+    var names = initials.split(' ');
+
+    for (var i = 0; i < names.length; i++) {
+      var name = names[i].trim();
+      if (!name.length) {
+        continue;
+      }
+
+      res += name.substr(0, 1);
+    }
+
+    return res;
+  }
+
   function AbstractsViewModel() {
 
     // data
@@ -306,7 +322,7 @@
               authorLine += ', ';
             }
 
-            authorLine += author.lastName + ' ' + author.firstName.substring(0, 1);
+            authorLine += author.lastName + ' ' + author.firstName.substring(0, 1) + formatInitials(author.initials);
           }
 
           var titleStr = this.title.trim();
