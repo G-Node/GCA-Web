@@ -303,11 +303,7 @@
             var author = nameParser.parse(this.authors[i].name);
 
             if (i != 0) {
-              if (i + 1 == this.authors.length) {
-                authorLine += ' and ';
-              } else {
-                authorLine += ', ';
-              }
+              authorLine += ', ';
             }
 
             authorLine += author.lastName + ' ' + author.firstName.substring(0, 1);
