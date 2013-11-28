@@ -1,12 +1,12 @@
 config = {
-    "title"   : "Bernstein Conference 2013 - Abstracts",
-    "short"   : "BC13",
-    "long"    : "Bernstein Conference 2013",
-    "cite"    : "Bernstein Conference 2013, T&uuml;bingen, Germany, September 24 - 27",
-    "logo"    : "bc13logo.png",
-    "data"    : "bc13data.js",
-    "home"    : "http://bernstein-conference.de",
-    "doiLink" : "https://portal.g-node.org/abstracts/bc13/#",
+    "title"   : "G-Node - Abstracts",
+    "short"   : "GNXX",
+    "long"    : "G-Node Conference 20XX",
+    "cite"    : "G-Node Conference 20XX, M&uumlnchen, Germany, June 20 - 27",
+    "logo"    : "logo.png",
+    "data"    : "data.js",
+    "home"    : "http://www.g-node.org",
+    "doiLink" : "http://localhost:8000/#",
     "doiPref" : "10.12751",
 
     "groups" : [

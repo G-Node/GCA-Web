@@ -7,4 +7,4 @@ Start a local http server using python:
 
 Create js data suitable for the web as:
 
-   ./create_js.py ../abs_new.json ../workshop.json > bc13data.js
+   ./create_js.py abstracts.json > data.js
