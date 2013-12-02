@@ -202,11 +202,11 @@
     return this.substring(0, prefix.length) === prefix;
   };
 
-  makeDoiURL = function(doi) {
+  function makeDoiURL(doi) {
     return '/doi/' + doi.substring(config.doiPref.length + 1, doi.length);
   }
 
-  formatInitials = function(initials) {
+  function formatInitials(initials) {
     var res = "";
     var names = initials.split(' ');
 
