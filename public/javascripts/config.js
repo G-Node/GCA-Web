@@ -4,7 +4,7 @@ config = {
     "long"    : "G-Node Conference 20XX",
     "cite"    : "G-Node Conference 20XX, M&uumlnchen, Germany, June 20 - 27",
     "logo"    : "logo.png",
-    "data"    : "data.js",
+    "data"    : "assets/javascripts/data.js",
     "home"    : "http://www.g-node.org",
     "doiLink" : "http://localhost:8000/#",
     "doiPref" : "10.12751",

@@ -1,0 +1,135 @@
+@(message: String)
+
+@main("G-Node Abstracts") {
+    <div class="container">
+
+        <div data-bind="with: config">
+            <a data-bind="attr: { href: home } " target="_new">
+                <img data-bind="attr: {alt: long, src: logo}" class="img-responsive" />
+            </a>
+        </div>
+
+        <nav class="navbar navbar-default" role="navigation">
+                <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">All</a>
+            </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+
+                <ul data-bind="foreach: config.groups" class="nav navbar-nav">
+                    <li><a data-bind="attr: { href: makeGroupLink(short) }, text: long">Group</a></li>
+                </ul>
+                <form action="#" class="navbar-form navbar-right" role="form"  data-bind="submit: searchAbstracts">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search" id="searchInput">
+                    </div>
+                    <button type="button" class="btn btn-default" data-bind="click: searchAbstracts">Search</button>
+                </form>
+            </div><!-- /.navbar-collapse -->
+        </nav>
+
+
+            <!-- Loading box -->
+
+        <div data-bind="if: isLoading()">
+            <div class="alert alert-info fade in out">
+                <h4>Loading abstracts!</h4>
+                <p>Please wait...</p>
+            </div>
+        </div>
+
+            <!-- Error message box -->
+
+        <div data-bind="if: curWarning()">
+            <div class="alert alert-warning fade in alert-dismissable" data-bind="css: errorLevel">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <strong data-bind="html: curWarning()"></strong>
+            </div>
+        </div>
+
+            <!-- Abstract List -->
+        <div class="list-group" data-bind="foreach: abstractList">
+            <div class="list-group-item abstract-list-item" data-bind="click: $root.selectAbstract">
+                <div class="al-id" data-bind="html: identifier()"></div>
+                <div class="al-text">
+                    <h4 class="list-group-item-heading" data-bind="text: title"></h4>
+                    <div class="list-group-item-text">
+                        <ul class="abstract-author-list" data-bind="foreach: authors">
+                            <li data-bind="text: name"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Abstract View -->
+        <div class="abstract" data-bind="with: selectedAbstract">
+
+            <ul class="pager">
+                <li class="previous" data-bind="css: { disabled: prev == null }">
+                    <a data-bind="attr: {href : prev}">&larr; Previous</a>
+                </li>
+                <li class="next" data-bind="css: { disabled: next == null }">
+                    <a data-bind="attr: {href : next}">Next &rarr;</a>
+                </li>
+            </ul>
+
+            <h2 data-bind="text: title"></h2>
+            <ul class="abstract-author-list" data-bind="foreach: authors">
+                <li><span data-bind="text: name"></span><sup data-bind="text: epithet, css: {hidden: $parent.affiliations.length == 1}"></sup></li>
+            </ul>
+            <ol class="affiliations" data-bind="foreach: affiliations, css: { nonumlist: affiliations.length == 1 }">
+                <li> <span data-bind="text: address"></span></li>
+            </ol>
+            <div class="abstract-text" data-bind="foreach: text"><p data-bind="text: $data"></p></div>
+
+            <div class="figure row" data-bind="if: hasFigure">
+                <img class="col-md-offset-3 col-md-6 img-thumbnail" data-bind="attr: {src: figure}, click: $root.showFigure" />
+                <p class="col-md-offset-1 col-md-10" data-bind="text: caption"></p>
+            </div>
+            <div data-bind="if: acknowledgements"><h4>Acknowledgements</h4><p data-bind='text: acknowledgements'></p></div>
+            <div class="references" data-bind="if: refs">
+                <h4>References</h4>
+                <ul data-bind='foreach: references'>
+                    <li  data-bind="text: $data"></li>
+                </ul>
+            </div>
+            <hr class="foot-seperator" />
+            <div class="foot-info">
+                <p><b>Identifier:</b> <span data-bind="html: identifier()"></span></p>
+                <p><b>Conference:</b> <span data-bind="html: config.cite"></span></p>
+                <p><b>Citation:</b> <span data-bind="html: formatCitation()"></span></p>
+                <p><b>Type:</b> <span data-bind="text: abstractType()"></span></p>
+            </div>
+
+                <!-- Modal Figure -->
+            <div data-bind="if: hasFigure" class="modal fade" id="modalFigure" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Figure 1</h4>
+                        </div>
+                        <div class="modal-body" >
+                            <img class="img-responsive" data-bind="attr: {src: figure}" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+        </div>
+    </div>
+
+    <script src="@routes.Assets.at("javascripts/abstracts.js")"></script>
+
+}
