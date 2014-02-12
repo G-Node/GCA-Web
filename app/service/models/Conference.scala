@@ -12,11 +12,15 @@ package service.models
 import java.util.{List => JList}
 
 /**
- * Model class for accounts.
+ * A model for that represents a conference.
+ *
+ * Comment: there could be allot more information about a conference, but
+ * maybe we should keep it simple for now.
  */
-class Account extends Model {
+class Conference extends Model {
 
-  var mail: String = _
+  var name: String = _
+
   var abstracts: JList[Abstract] = _
 
 }

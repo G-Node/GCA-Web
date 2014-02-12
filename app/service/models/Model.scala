@@ -9,14 +9,26 @@
 
 package service.models
 
-import java.util.{List => JList}
+import java.util.UUID
 
 /**
- * Model class for accounts.
+ * Trait that defines stuff that is common for all models.
+ * This trait may be extended with some other properties like timestamps
+ * etc. when needed.
  */
-class Account extends Model {
+trait Model {
 
-  var mail: String = _
-  var abstracts: JList[Abstract] = _
+  /**
+   * The primary key of the model.
+   */
+  var uuid: String = Model.makeUUID()
+
+}
+
+object Model {
+
+  def makeUUID() : String = {
+    UUID.randomUUID().toString
+  }
 
 }

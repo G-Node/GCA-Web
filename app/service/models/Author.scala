@@ -12,11 +12,15 @@ package service.models
 import java.util.{List => JList}
 
 /**
- * Model class for accounts.
+ * Model class for abstract authors
  */
-class Account extends Model {
+class Author extends Model {
 
   var mail: String = _
-  var abstracts: JList[Abstract] = _
+  var first_name: String = _
+  var middle_name: String = _
+  var last_name: String = _
+
+  var affiliations: JList[Affiliation] = _
 
 }

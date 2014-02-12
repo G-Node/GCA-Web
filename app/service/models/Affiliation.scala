@@ -9,14 +9,15 @@
 
 package service.models
 
-import java.util.{List => JList}
-
 /**
- * Model class for accounts.
+ * Model for affiliation
  */
-class Account extends Model {
+class Affiliation extends Model {
 
-  var mail: String = _
-  var abstracts: JList[Abstract] = _
+  var address: String = _
+  var country: String = _
+  var department: String = _
+  var name: String = _
+  var section: String = _
 
 }

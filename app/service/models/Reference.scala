@@ -9,14 +9,14 @@
 
 package service.models
 
-import java.util.{List => JList}
-
 /**
- * Model class for accounts.
+ * Very simple model for referenced literature.
  */
-class Account extends Model {
+class Reference extends Model {
 
-  var mail: String = _
-  var abstracts: JList[Abstract] = _
+  var authors: String = _
+  var year: Int = _
+  var title: String = _
+  var doi: String = _
 
 }
