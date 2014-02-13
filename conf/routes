@@ -7,26 +7,26 @@ GET     /                             controllers.Application.index
 GET     /assets/*file                 controllers.Assets.at(path="/public", file)
 
 # Conference interface (no update)
-POST    /conferences                  controllers.Conference.create()
-GET     /conferences                  controllers.Conference.list()
-GET     /conferences/:id              controllers.Conference.get(id: String)
-PUT     /conferences/:id              controllers.Conference.update(id: String)
-DELETE  /conferences/:id              controllers.Conference.delete(id: String)
-POST    /conferences/:id/abstracts    controllers.Abstract.create(id: String)
-GET     /conferences/:id/abstracts    controllers.Abstract.list_by_event(id: String)
+POST    /conferences                  controllers.Conferences.create() 
+GET     /conferences                  controllers.Conferences.list()
+GET     /conferences/:id              controllers.Conferences.get(id: String)
+PUT     /conferences/:id              controllers.Conferences.update(id: String)
+DELETE  /conferences/:id              controllers.Conferences.delete(id: String)
+POST    /conferences/:id/abstracts    controllers.Abstracts.create(id: String)
+GET     /conferences/:id/abstracts    controllers.Abstracts.list_by_event(id: String)
 
 # Account interface (TBD with the securesocial.ws - update below)
-GET     /account                      controllers.Account.list()
-GET     /account/:id                  controllers.Account.get(id: String)
-GET     /account/:id/abstracts        controllers.Abstract.list_by_user(id: String)
+GET     /account                      controllers.Accounts.list()
+GET     /account/:id                  controllers.Accounts.get(id: String)
+GET     /account/:id/abstracts        controllers.Abstracts.list_by_user(id: String)
 # [...]
 
 # Abstract interface
-GET     /abstracts/:id                controllers.Abstract.get(id: String)
-PUT     /abstracts/:id                controllers.Abstract.update(id: String)
-DELETE  /abstracts/:id                controllers.Abstract.delete(id: String)
-POST    /abstracts/:id/files          controllers.File.upload(id: String)
-GET     /abstracts/:id/files/:f_id    controllers.File.download(f_id: String)
-DELETE  /abstracts/:id/files/:f_id    controllers.File.delete(f_id: String)
+GET     /abstracts/:id                controllers.Abstracts.get(id: String)
+PUT     /abstracts/:id                controllers.Abstracts.update(id: String)
+DELETE  /abstracts/:id                controllers.Abstracts.delete(id: String)
+POST    /abstracts/:id/files          controllers.Files.upload(id: String)
+GET     /abstracts/:id/files/:f_id    controllers.Files.download(id: String, f_id: String)
+DELETE  /abstracts/:id/files/:f_id    controllers.Files.delete(id: String, f_id: String)
 
 # [...] maybe add more aliases
