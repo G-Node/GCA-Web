@@ -24,3 +24,18 @@ class Conference extends Model {
   var abstracts: JList[Abstract] = _
 
 }
+
+object Conference {
+
+  def apply() : Conference = new Conference()
+
+  def apply(name: String, abstracts: JList[Abstract] = null) : Conference = {
+    val conference = new Conference()
+
+    conference.name = name
+    conference.abstracts = abstracts
+
+    conference
+  }
+
+}

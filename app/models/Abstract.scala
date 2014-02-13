@@ -34,3 +34,45 @@ class Abstract extends Model{
   var references: JList[Reference] = _
 
 }
+
+
+object Abstract {
+
+  def apply() : Abstract = new Abstract()
+
+
+  def apply(title: String,
+            topic: String,
+            text: String,
+            doi: String,
+            conflictOfInterest: String,
+            acknowledgements: String,
+            approved: Boolean,
+            published: Boolean,
+            conference: Conference = null,
+            figure: Figure = null,
+            owners:  JList[Account] = null,
+            authors: JList[Author] = null,
+            affiliations: JList[Affiliation] = null,
+            references: JList[Reference] = null) : Abstract = {
+
+    val abstr = new Abstract()
+
+    abstr.title = title
+    abstr.topic = topic
+    abstr.text = text
+    abstr.doi = doi
+    abstr.conflictOfInterest = conflictOfInterest
+    abstr.acknowledgements = acknowledgements
+    abstr.approved = approved
+    abstr.published = published
+    abstr.conference = conference
+    abstr.owners = owners
+    abstr.authors = authors
+    abstr.affiliations = affiliations
+    abstr.references = references
+
+    abstr
+  }
+
+}
