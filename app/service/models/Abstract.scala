@@ -23,6 +23,10 @@ class Abstract extends Model{
   var conflictOfInterest: String = _
   var acknowledgements: String = _
 
+  var approved: Boolean = false
+  var published: Boolean = false
+
+  var conference : Conference = _
   var figure: Figure = _
   var owners:  JList[Account] = _
   var authors: JList[Author] = _
