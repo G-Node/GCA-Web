@@ -7,7 +7,7 @@
 // modification, are permitted under the terms of the BSD License. See
 // LICENSE file in the root of the Project.
 
-package service.models
+package models
 
 import java.util.{List => JList}
 
@@ -23,6 +23,10 @@ class Abstract extends Model{
   var conflictOfInterest: String = _
   var acknowledgements: String = _
 
+  var approved: Boolean = false
+  var published: Boolean = false
+
+  var conference : Conference = _
   var figure: Figure = _
   var owners:  JList[Account] = _
   var authors: JList[Author] = _

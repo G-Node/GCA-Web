@@ -7,17 +7,16 @@
 // modification, are permitted under the terms of the BSD License. See
 // LICENSE file in the root of the Project.
 
-package service.models
+package models
+
+import java.util.{List => JList}
 
 /**
- * Model for affiliation
+ * Model class for accounts.
  */
-class Affiliation extends Model {
+class Account extends Model {
 
-  var address: String = _
-  var country: String = _
-  var department: String = _
-  var name: String = _
-  var section: String = _
+  var mail: String = _
+  var abstracts: JList[Abstract] = _
 
 }

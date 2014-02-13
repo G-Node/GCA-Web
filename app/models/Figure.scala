@@ -7,16 +7,14 @@
 // modification, are permitted under the terms of the BSD License. See
 // LICENSE file in the root of the Project.
 
-package service.models
-
-import java.util.{List => JList}
+package models
 
 /**
- * Model class for accounts.
+ * A model for figures.
  */
-class Account extends Model {
+class Figure extends Model {
 
-  var mail: String = _
-  var abstracts: JList[Abstract] = _
+  var name: String = _
+  var caption: String = _
 
 }

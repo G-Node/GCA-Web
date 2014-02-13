@@ -7,20 +7,16 @@
 // modification, are permitted under the terms of the BSD License. See
 // LICENSE file in the root of the Project.
 
-package service.models
-
-import java.util.{List => JList}
+package models
 
 /**
- * A model for that represents a conference.
- *
- * Comment: there could be allot more information about a conference, but
- * maybe we should keep it simple for now.
+ * Very simple model for referenced literature.
  */
-class Conference extends Model {
+class Reference extends Model {
 
-  var name: String = _
-
-  var abstracts: JList[Abstract] = _
+  var authors: String = _
+  var year: Int = _
+  var title: String = _
+  var doi: String = _
 
 }
