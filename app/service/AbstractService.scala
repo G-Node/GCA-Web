@@ -9,7 +9,7 @@
 
 package service
 
-import service.models._
+import models._
 
 /**
  * Service class that provides data access logic for abstracts and nested

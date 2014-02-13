@@ -7,7 +7,7 @@
 // modification, are permitted under the terms of the BSD License. See
 // LICENSE file in the root of the Project.
 
-package service.models
+package models
 
 import java.util.{List => JList}
 

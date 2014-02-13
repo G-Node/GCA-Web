@@ -7,16 +7,17 @@
 // modification, are permitted under the terms of the BSD License. See
 // LICENSE file in the root of the Project.
 
-package service.models
+package models
 
 /**
- * Very simple model for referenced literature.
+ * Model for affiliation
  */
-class Reference extends Model {
+class Affiliation extends Model {
 
-  var authors: String = _
-  var year: Int = _
-  var title: String = _
-  var doi: String = _
+  var address: String = _
+  var country: String = _
+  var department: String = _
+  var name: String = _
+  var section: String = _
 
 }
