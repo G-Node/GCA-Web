@@ -23,14 +23,14 @@ object Abstracts extends Controller {
    *
    * @return All abstracts publicly available.
    */
-  def list_by_event(id: String): Action[AnyContent] = TODO
+  def listByConference(id: String): Action[AnyContent] = TODO
 
   /**
    * List all abstracts for a given user.
    *
    * @return All (accessible) abstracts for a given user.
    */
-  def list_by_user(id: String): Action[AnyContent] = TODO
+  def listByAccount(id: String): Action[AnyContent] = TODO
 
   /**
    * An abstract info by id.

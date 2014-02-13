@@ -15,7 +15,7 @@ GET         /conferences/:id               controllers.Conferences.get(id: Strin
 PUT         /conferences/:id               controllers.Conferences.update(id: String)
 DELETE      /conferences/:id               controllers.Conferences.delete(id: String)
 POST        /conferences/:id/abstracts     controllers.Abstracts.create(id: String)
-GET         /conferences/:id/abstracts     controllers.Abstracts.list_by_event(id: String)
+GET         /conferences/:id/abstracts     controllers.Abstracts.listByConference(id: String)
 
 
 # Abstract interface
@@ -31,7 +31,7 @@ DELETE      /abstracts/:id/files/:f_id     controllers.Files.delete(id: String, 
 
 # Account interface
 GET         /user                          controllers.Application.showUserInfo
-GET         /user/:id/abstracts            controllers.Abstracts.list_by_user(id: String)
+GET         /user/:id/abstracts            controllers.Abstracts.listByAccount(id: String)
 GET         /secret                        controllers.Application.showSecret
 
 # ------ auth routes -----------------------------------------------------------
