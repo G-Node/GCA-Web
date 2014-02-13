@@ -43,14 +43,14 @@ object Conferences extends Controller {
   /**
    * Update an existing conference info.
    *
-   * @param id   The Abstract to update.
+   * @param id   The conference id to update.
    *
    * @return conference in JSON / conference page
    */
   def update(id: String) : Action[AnyContent] = TODO
 
   /**
-   * Update an existing conference info.
+   * Delete an existing conference.
    *
    * @param id   Conference id to delete.
    *
