@@ -20,3 +20,18 @@ class Account extends Model {
   var abstracts: JList[Abstract] = _
 
 }
+
+object Account {
+
+  def apply() : Account = new Account()
+
+  def apply(mail: String, abstracts: JList[Abstract] = null) : Account = {
+    val account = new Account()
+
+    account.mail = mail
+    account.abstracts = abstracts
+
+    account
+  }
+
+}

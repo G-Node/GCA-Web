@@ -18,3 +18,18 @@ class Figure extends Model {
   var caption: String = _
 
 }
+
+object Figure {
+
+  def apply() : Figure = new Figure()
+
+  def apply(name: String, caption: String) : Figure = {
+    val figure = new Figure()
+
+    figure.name = name
+    figure.caption = caption
+
+    figure
+  }
+
+}
