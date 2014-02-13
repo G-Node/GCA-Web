@@ -1,5 +1,6 @@
 # Routes
 
+
 # Home page
 GET         /                              controllers.Application.index
 
@@ -7,7 +8,30 @@ GET         /                              controllers.Application.index
 GET         /assets/*file                  controllers.Assets.at(path="/public", file)
 
 
+# Conference interface (no update)
+POST        /conferences                   controllers.Conferences.create()
+GET         /conferences                   controllers.Conferences.list()
+GET         /conferences/:id               controllers.Conferences.get(id: String)
+PUT         /conferences/:id               controllers.Conferences.update(id: String)
+DELETE      /conferences/:id               controllers.Conferences.delete(id: String)
+POST        /conferences/:id/abstracts     controllers.Abstracts.create(id: String)
+GET         /conferences/:id/abstracts     controllers.Abstracts.listByConference(id: String)
+
+
+# Abstract interface
+GET         /abstracts/:id                 controllers.Abstracts.get(id: String)
+PUT         /abstracts/:id                 controllers.Abstracts.update(id: String)
+DELETE      /abstracts/:id                 controllers.Abstracts.delete(id: String)
+POST        /abstracts/:id/files           controllers.Files.upload(id: String)
+GET         /abstracts/:id/files/:f_id     controllers.Files.download(id: String, f_id: String)
+DELETE      /abstracts/:id/files/:f_id     controllers.Files.delete(id: String, f_id: String)
+
+# [...] maybe add more aliases
+
+
+# Account interface
 GET         /user                          controllers.Application.showUserInfo
+GET         /user/:id/abstracts            controllers.Abstracts.listByAccount(id: String)
 GET         /secret                        controllers.Application.showSecret
 
 # ------ auth routes -----------------------------------------------------------
