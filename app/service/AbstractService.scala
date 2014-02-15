@@ -73,12 +73,12 @@ class AbstractService {
    *
    *
    * @param abstr   The Abstract to create.
-   * @param confId  The the id of the conference.
+   * @param conference  The the id of the conference.
    * @param account The account who wants to perform the creation.
    *
    * @return The created and persisted abstract.
    */
-  def create(abstr : Abstract, confId: String, account: Account) : Abstract = {
+  def create(abstr : Abstract, conference: Conference, account: Account) : Abstract = {
     throw new NotImplementedError()
   }
 
