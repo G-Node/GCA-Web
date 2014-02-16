@@ -1,0 +1,14 @@
+language: scala
+scala:
+  - 2.10.0
+jdk:
+  - oraclejdk7
+env:
+  - PLAY_VERSION=2.2.0
+before_script:
+  - wget http://downloads.typesafe.com/play/${PLAY_VERSION}/play-${PLAY_VERSION}.zip
+  - unzip -q play-${PLAY_VERSION}.zip
+script: play-${PLAY_VERSION}/play test
+notifications:
+  email: false
+  irc: "chat.freenode.net#gnode"
