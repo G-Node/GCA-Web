@@ -9,6 +9,8 @@
 
 package models
 
+import java.util.{List => JList, LinkedList => JLinkedList}
+
 /**
  * Model for affiliation
  */
@@ -19,5 +21,40 @@ class Affiliation extends Model {
   var department: String = _
   var name: String = _
   var section: String = _
+
+  var abstr: Abstract = _
+  var authors: JList[Author] = new JLinkedList[Author]()
+
+}
+
+
+object Affiliation {
+
+  def apply() : Affiliation = new Affiliation()
+
+  def apply(uuid: String,
+            address: String,
+            country: String,
+            department: String,
+            name: String,
+            section: String,
+            abstr: Abstract,
+            authors: JList[Author] = null) : Affiliation = {
+
+    val affiliation = new Affiliation()
+
+    affiliation.uuid = uuid
+    affiliation.address = address
+    affiliation.country = country
+    affiliation.department = department
+    affiliation.name = name
+    affiliation.section = section
+    affiliation.abstr = abstr
+
+    if (authors != null)
+      affiliation.authors = authors
+
+    affiliation
+  }
 
 }
