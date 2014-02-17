@@ -24,11 +24,11 @@ object Conferences extends Controller {
    *
    * @return All conferences publicly available.
    */
-  def list: Action[AnyContent] = Action { request =>
-    Ok(views.html.index("Your new application is ready."))
-    //render {
-    //  case "text/html" => Ok(views.html.index("Your new application is ready."))
-    //  case "application/json" => Ok(Json.toJson("Your new application is ready.").toString())
+  def list: Action[AnyContent] = Action { implicit request =>
+    render {
+      case Accepts.Html() => Ok(views.html.index("Your new application is ready."))
+      case Accepts.Json() => Ok(Json.toJson("Your new application is ready.").toString())
+    }
   }
 
   /**
