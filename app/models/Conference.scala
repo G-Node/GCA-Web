@@ -23,7 +23,7 @@ class Conference extends Model {
 
   var name: String = _
 
-  @OneToMany(mappedBy = "conferences")
+  @OneToMany(mappedBy = "conference")
   var abstracts: JList[Abstract] = new JLinkedList[Abstract]()
 
 }
