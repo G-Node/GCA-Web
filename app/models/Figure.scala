@@ -9,13 +9,19 @@
 
 package models
 
+import javax.persistence.{OneToOne, Entity}
+
 /**
  * A model for figures.
  */
+@Entity
 class Figure extends Model {
 
   var name: String = _
   var caption: String = _
+
+  @OneToOne
+  var abstr: Abstract = _
 
 }
 
@@ -23,11 +29,17 @@ object Figure {
 
   def apply() : Figure = new Figure()
 
-  def apply(name: String, caption: String) : Figure = {
+  def apply(uuid: String,
+            name: String,
+            caption: String,
+            abstr: Abstract = null) : Figure = {
+
     val figure = new Figure()
 
+    figure.uuid = uuid
     figure.name = name
     figure.caption = caption
+    figure.abstr = abstr
 
     figure
   }

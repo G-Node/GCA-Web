@@ -9,15 +9,19 @@
 
 package models
 
-import java.util.{List => JList}
+import java.util.{List => JList, LinkedList => JLinkedList}
+import javax.persistence.{ManyToMany, Entity}
 
 /**
  * Model class for accounts.
  */
+@Entity
 class Account extends Model {
 
   var mail: String = _
-  var abstracts: JList[Abstract] = _
+
+  @ManyToMany(mappedBy = "owners")
+  var abstracts: JList[Abstract] = new JLinkedList[Abstract]()
 
 }
 
@@ -25,11 +29,17 @@ object Account {
 
   def apply() : Account = new Account()
 
-  def apply(mail: String, abstracts: JList[Abstract] = null) : Account = {
+  def apply(uuid: String,
+            mail: String,
+            abstracts: JList[Abstract] = null) : Account = {
+
     val account = new Account()
 
+    account.uuid = uuid
     account.mail = mail
-    account.abstracts = abstracts
+
+    if (abstracts != null)
+      account.abstracts = abstracts
 
     account
   }

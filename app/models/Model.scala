@@ -10,18 +10,21 @@
 package models
 
 import java.util.UUID
+import javax.persistence.{Id, MappedSuperclass}
 
 /**
  * Trait that defines stuff that is common for all models.
  * This trait may be extended with some other properties like timestamps
  * etc. when needed.
  */
-trait Model {
+@MappedSuperclass
+class Model {
 
   /**
    * The primary key of the model.
    */
-  var uuid: String = Model.makeUUID()
+  @Id
+  var uuid: String = _
 
 }
 

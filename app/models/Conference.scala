@@ -9,7 +9,8 @@
 
 package models
 
-import java.util.{List => JList}
+import java.util.{List => JList, LinkedList => JLinkedList}
+import javax.persistence.{OneToMany, Entity}
 
 /**
  * A model for that represents a conference.
@@ -17,11 +18,13 @@ import java.util.{List => JList}
  * Comment: there could be allot more information about a conference, but
  * maybe we should keep it simple for now.
  */
+@Entity
 class Conference extends Model {
 
   var name: String = _
 
-  var abstracts: JList[Abstract] = _
+  @OneToMany(mappedBy = "conference")
+  var abstracts: JList[Abstract] = new JLinkedList[Abstract]()
 
 }
 
@@ -29,11 +32,17 @@ object Conference {
 
   def apply() : Conference = new Conference()
 
-  def apply(name: String, abstracts: JList[Abstract] = null) : Conference = {
+  def apply(uuid: String,
+            name: String,
+            abstracts: JList[Abstract] = null) : Conference = {
+
     val conference = new Conference()
 
+    conference.uuid = uuid
     conference.name = name
-    conference.abstracts = abstracts
+
+    if (abstracts != null)
+      conference.abstracts = abstracts
 
     conference
   }
