@@ -9,9 +9,12 @@
 
 package models
 
+import javax.persistence.{ManyToOne, Entity}
+
 /**
  * Very simple model for referenced literature.
  */
+@Entity
 class Reference extends Model {
 
   var authors: String = _
@@ -19,6 +22,7 @@ class Reference extends Model {
   var year: Int = _
   var doi: String = _
 
+  @ManyToOne
   var abstr: Abstract = _
 
 }

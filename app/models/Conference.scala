@@ -10,6 +10,7 @@
 package models
 
 import java.util.{List => JList, LinkedList => JLinkedList}
+import javax.persistence.{OneToMany, Entity}
 
 /**
  * A model for that represents a conference.
@@ -17,10 +18,12 @@ import java.util.{List => JList, LinkedList => JLinkedList}
  * Comment: there could be allot more information about a conference, but
  * maybe we should keep it simple for now.
  */
+@Entity
 class Conference extends Model {
 
   var name: String = _
 
+  @OneToMany(mappedBy = "conferences")
   var abstracts: JList[Abstract] = new JLinkedList[Abstract]()
 
 }

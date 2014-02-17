@@ -9,14 +9,18 @@
 
 package models
 
+import javax.persistence.{OneToOne, Entity}
+
 /**
  * A model for figures.
  */
+@Entity
 class Figure extends Model {
 
   var name: String = _
   var caption: String = _
 
+  @OneToOne
   var abstr: Abstract = _
 
 }

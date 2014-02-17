@@ -10,10 +10,12 @@
 package models
 
 import java.util.{List => JList, LinkedList => JLinkedList}
+import javax.persistence._
 
 /**
  * A model class for abstracts
  */
+@Entity
 class Abstract extends Model {
 
   var title: String = _
@@ -26,12 +28,19 @@ class Abstract extends Model {
   var approved: Boolean = false
   var published: Boolean = false
 
+  @ManyToOne
   var conference : Conference = _
+  @OneToOne(mappedBy = "abstr", optional = true)
   var figure: Figure = _
 
+  @ManyToMany
+  @JoinTable(name = "abstract_owners")
   var owners:  JList[Account] = new JLinkedList[Account]()
+  @OneToMany(mappedBy = "abstr")
   var authors: JList[Author] = new JLinkedList[Author]()
+  @OneToMany(mappedBy = "abstr")
   var affiliations: JList[Affiliation] = new JLinkedList[Affiliation]()
+  @OneToMany(mappedBy = "abstr")
   var references: JList[Reference] = new JLinkedList[Reference]()
 
 }

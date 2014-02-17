@@ -10,13 +10,17 @@
 package models
 
 import java.util.{List => JList, LinkedList => JLinkedList}
+import javax.persistence.{ManyToMany, Entity}
 
 /**
  * Model class for accounts.
  */
+@Entity
 class Account extends Model {
 
   var mail: String = _
+
+  @ManyToMany(mappedBy = "owners")
   var abstracts: JList[Abstract] = new JLinkedList[Abstract]()
 
 }

@@ -10,10 +10,12 @@
 package models
 
 import java.util.{List => JList, LinkedList => JLinkedList}
+import javax.persistence.{ManyToOne, ManyToMany, Entity}
 
 /**
  * Model for affiliation
  */
+@Entity
 class Affiliation extends Model {
 
   var address: String = _
@@ -22,7 +24,9 @@ class Affiliation extends Model {
   var name: String = _
   var section: String = _
 
+  @ManyToOne
   var abstr: Abstract = _
+  @ManyToMany(mappedBy = "affiliations")
   var authors: JList[Author] = new JLinkedList[Author]()
 
 }
