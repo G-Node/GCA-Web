@@ -9,14 +9,43 @@
 
 package models
 
+import javax.persistence.{ManyToOne, Entity}
+
 /**
  * Very simple model for referenced literature.
  */
+@Entity
 class Reference extends Model {
 
   var authors: String = _
-  var year: Int = _
   var title: String = _
+  var year: Int = _
   var doi: String = _
+
+  @ManyToOne
+  var abstr: Abstract = _
+
+}
+
+
+object Reference {
+
+  def apply() : Reference = new Reference()
+
+  def apply(uuid: String, authors: String, title: String, year: Int,
+            doi: String, abstr: Abstract) : Reference = {
+
+    val ref = new Reference()
+
+    ref.uuid = uuid
+    ref.authors = authors
+    ref.title = title
+    ref.year = year
+    ref.doi = doi
+
+    ref.abstr = abstr
+
+    ref
+  }
 
 }

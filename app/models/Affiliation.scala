@@ -9,9 +9,13 @@
 
 package models
 
+import java.util.{List => JList, LinkedList => JLinkedList}
+import javax.persistence.{ManyToOne, ManyToMany, Entity}
+
 /**
  * Model for affiliation
  */
+@Entity
 class Affiliation extends Model {
 
   var address: String = _
@@ -19,5 +23,42 @@ class Affiliation extends Model {
   var department: String = _
   var name: String = _
   var section: String = _
+
+  @ManyToOne
+  var abstr: Abstract = _
+  @ManyToMany(mappedBy = "affiliations")
+  var authors: JList[Author] = new JLinkedList[Author]()
+
+}
+
+
+object Affiliation {
+
+  def apply() : Affiliation = new Affiliation()
+
+  def apply(uuid: String,
+            address: String,
+            country: String,
+            department: String,
+            name: String,
+            section: String,
+            abstr: Abstract,
+            authors: JList[Author] = null) : Affiliation = {
+
+    val affiliation = new Affiliation()
+
+    affiliation.uuid = uuid
+    affiliation.address = address
+    affiliation.country = country
+    affiliation.department = department
+    affiliation.name = name
+    affiliation.section = section
+    affiliation.abstr = abstr
+
+    if (authors != null)
+      affiliation.authors = authors
+
+    affiliation
+  }
 
 }

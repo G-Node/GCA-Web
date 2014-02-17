@@ -4,8 +4,6 @@ import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
 
-import java.util.{LinkedList => JLinkedList}
-
 import service._
 import models._
 
@@ -17,10 +15,9 @@ import models._
 class FigureServiceSpec extends Specification {
 
   var srv = new FigureService("/tmp/figures")
-  var account = Account("foo@foo")
-  var abstr = Abstract("title", "topic", "text", "doi", "coi", "ack",
-                        approved=true, published=true)
-  abstr.owners = new JLinkedList[Account]()
+  var account = Account(Model.makeUUID(), "foo@foo")
+  var abstr = Abstract(Model.makeUUID(), "title", "topic", "text", "doi", "coi", "ack",
+                       approved=true, published=true, conference=Conference())
   abstr.owners.add(account)
 
   var fig = Figure(Model.makeUUID(), "foo_fig", "caption", abstr)

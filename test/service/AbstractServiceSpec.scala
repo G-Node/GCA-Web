@@ -4,8 +4,6 @@ import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
 
-import java.util.{LinkedList => JLinkedList}
-
 import service._
 import models._
 
@@ -16,10 +14,10 @@ import models._
 class AbstractServiceSpec extends Specification {
 
   var srv = new AbstractService()
-  var conf = Conference("foo", new JLinkedList[Abstract]())
-  var abstr = Abstract("title", "topic", "text", "doi", "coi", "ack", approved=true, published=true, conference=conf)
+  var conf = Conference(Model.makeUUID(), "foo")
+  var abstr = Abstract(Model.makeUUID(), "title", "topic", "text", "doi", "coi", "ack", approved=true, published=true, conference=conf)
   conf.abstracts.add(abstr)
-  var account = Account("foo@foo", new JLinkedList[Abstract](conf.abstracts))
+  var account = Account(Model.makeUUID(), "foo@foo")
 
   "service.AbstractService" should {
 
