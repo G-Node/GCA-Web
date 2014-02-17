@@ -1,12 +1,8 @@
 package test.service
 
-import service.ConferenceService
-
 import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
-
-import java.util.{LinkedList => JLinkedList}
 
 import service._
 import models._
@@ -18,8 +14,8 @@ import models._
 class ConferenceServiceSpec extends Specification {
 
   var srv = new ConferenceService()
-  var account = Account("foo@foo")
-  var conf = Conference("foo", new JLinkedList[Abstract]())
+  var account = Account(Model.makeUUID(), "foo@foo")
+  var conf = Conference(Model.makeUUID(), "foo")
 
   "service.ConferenceService" should {
 
