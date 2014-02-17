@@ -9,7 +9,7 @@
 
 package models
 
-import java.util.{List => JList}
+import java.util.{List => JList, LinkedList => JLinkedList}
 
 /**
  * Model class for accounts.
@@ -17,7 +17,7 @@ import java.util.{List => JList}
 class Account extends Model {
 
   var mail: String = _
-  var abstracts: JList[Abstract] = _
+  var abstracts: JList[Abstract] = new JLinkedList[Abstract]()
 
 }
 
@@ -25,11 +25,17 @@ object Account {
 
   def apply() : Account = new Account()
 
-  def apply(mail: String, abstracts: JList[Abstract] = null) : Account = {
+  def apply(uuid: String,
+            mail: String,
+            abstracts: JList[Abstract] = null) : Account = {
+
     val account = new Account()
 
+    account.uuid = uuid
     account.mail = mail
-    account.abstracts = abstracts
+
+    if (abstracts != null)
+      account.abstracts = abstracts
 
     account
   }
