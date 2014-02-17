@@ -16,12 +16,12 @@ import java.util.UUID
  * This trait may be extended with some other properties like timestamps
  * etc. when needed.
  */
-trait Model {
+class Model {
 
   /**
    * The primary key of the model.
    */
-  var uuid: String = Model.makeUUID()
+  var uuid: String = _
 
 }
 
