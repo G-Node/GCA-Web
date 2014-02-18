@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc._
 import play.api.libs.json._
 import service.AbstractService
-import models.Abstract
+import models.{Conference, Abstract}
 
 /**
  * Abstracts controller.
