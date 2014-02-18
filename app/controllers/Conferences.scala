@@ -2,8 +2,12 @@ package controllers
 
 import play.api.mvc._
 import play.api.libs.json._
-//import service.ConferenceService
+
+import java.util.{List => JList, LinkedList => JLinkedList}
+
+import service.ConferenceService
 import models.Conference
+import models.{Abstract => Abstr}
 
 /**
  * Conferences controller.
@@ -17,7 +21,17 @@ object Conferences extends Controller {
    *
    * @return new conference in JSON / Redirect to the conference page
    */
-  def create : Action[AnyContent] = TODO
+  def create = Action(parse.json) { request =>
+    val confService = new ConferenceService()
+    val json = request.body
+    confReads.reads(json).fold(
+      valid = name => {
+        val resp = confService.create(Conference(null, name), request.user)
+        Created(confWrites.writes(resp))
+      },
+      invalid = e => BadRequest(e.toString)
+    )
+  }
 
   /**
    * List all available conferences.
@@ -58,4 +72,16 @@ object Conferences extends Controller {
    */
   def delete(id: String) : Action[AnyContent] = TODO
 
+  val confReads = (__ \ "name").read[String]
+
+  val confWrites = new Writes[Conference] {
+    def writes(c: Conference): JsValue = {
+      Json.obj(
+        "name" -> c.name,
+        "uuid" -> c.uuid,
+        "abstracts" -> "todo"
+      )
+    }
+  }
 }
+
