@@ -52,14 +52,12 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
   @Test
   def testList() : Unit = {
-    println("testList")
     val list = service.list()
     assert(list.size == 2)
   }
 
   @Test
   def testListOwn() : Unit = {
-    println("testListOwn")
     val list = service.listOwn(account)
 
     assert(list.size == 1)
@@ -102,14 +100,12 @@ object ConferenceServiceTest {
 
   @BeforeClass
   def beforeClass() = {
-    println("BEFORE CLASS")
     app = new FakeApplication()
     Play.start(app)
   }
 
   @AfterClass
   def afterClass() = {
-    println("AFTER CLASS")
     Play.stop()
   }
 
