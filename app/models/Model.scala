@@ -10,7 +10,7 @@
 package models
 
 import java.util.UUID
-import javax.persistence.{Id, MappedSuperclass}
+import javax.persistence.{PrePersist, Id, MappedSuperclass}
 
 /**
  * Trait that defines stuff that is common for all models.
@@ -26,6 +26,12 @@ class Model {
   @Id
   var uuid: String = _
 
+
+  @PrePersist
+  def beforePersist() : Unit = {
+    if (uuid == null)
+      uuid = Model.makeUUID()
+  }
 }
 
 object Model {

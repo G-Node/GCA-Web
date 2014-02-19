@@ -22,6 +22,8 @@ class Account extends Model {
 
   @ManyToMany(mappedBy = "owners")
   var abstracts: JList[Abstract] = new JLinkedList[Abstract]()
+  @ManyToMany(mappedBy = "owners")
+  var conferences: JList[Conference] = new JLinkedList[Conference]()
 
 }
 
@@ -31,12 +33,16 @@ object Account {
 
   def apply(uuid: String,
             mail: String,
-            abstracts: JList[Abstract] = null) : Account = {
+            abstracts: JList[Abstract] = null,
+            conferences: JList[Conference] = null) : Account = {
 
     val account = new Account()
 
     account.uuid = uuid
     account.mail = mail
+
+    if (conferences != null)
+      account.conferences = conferences
 
     if (abstracts != null)
       account.abstracts = abstracts
