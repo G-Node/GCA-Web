@@ -13,7 +13,7 @@ import collection.JavaConversions._
 
 import models._
 import javax.persistence._
-import play.db.jpa.Transactional
+import service.util.DBUtil
 
 /**
  * Service class for that implements data access logic for conferences.
@@ -21,7 +21,7 @@ import play.db.jpa.Transactional
  * TODO prefetch stuff
  * TODO write test
  */
-class ConferenceService(emf: EntityManagerFactory) {
+class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
 
   /**
    * List all available conferences.
@@ -29,7 +29,7 @@ class ConferenceService(emf: EntityManagerFactory) {
    * @return All conferences.
    */
   def list() : Seq[Conference] = {
-    transactional { (em, tx) =>
+    dbQuery { em =>
       val queryStr = "SELECT c FROM Conference c"
 
       val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
@@ -45,7 +45,7 @@ class ConferenceService(emf: EntityManagerFactory) {
    * @return All conferences that belong tho the account.
    */
   def listOwn(account: Account) : Seq[Conference] = {
-    transactional { (em, tx) =>
+    dbQuery { em =>
       val queryStr = "SELECT c FROM Conference c INNER JOIN FETCH c.owners o WHERE o.uuid = :uuid"
 
       val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
@@ -104,38 +104,6 @@ class ConferenceService(emf: EntityManagerFactory) {
    */
   def delete(id: String, account: Account) : Boolean = {
     throw new NotImplementedError()
-  }
-
-  def transactional[T](f : (EntityManager, EntityTransaction) => T) : T = {
-
-    synchronized {
-
-      var em : EntityManager = null
-      var tx : EntityTransaction = null
-
-      try {
-
-        em = emf.createEntityManager()
-        tx = em.getTransaction
-        tx.begin()
-
-        f(em, tx)
-
-      } catch {
-
-        case ex : Exception =>
-          if (tx != null && tx.isActive) tx.rollback()
-          throw ex
-
-      } finally {
-
-        if (tx != null && tx.isActive) tx.commit()
-        if (em != null && em.isOpen) em.close()
-
-      }
-
-    }
-
   }
 
 }
