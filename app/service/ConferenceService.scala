@@ -9,12 +9,19 @@
 
 package service
 
+import collection.JavaConversions._
+
 import models._
+import javax.persistence._
+import play.db.jpa.Transactional
 
 /**
  * Service class for that implements data access logic for conferences.
+ *
+ * TODO prefetch stuff
+ * TODO write test
  */
-class ConferenceService {
+class ConferenceService(emf: EntityManagerFactory) {
 
   /**
    * List all available conferences.
@@ -22,7 +29,12 @@ class ConferenceService {
    * @return All conferences.
    */
   def list() : Seq[Conference] = {
-    throw new NotImplementedError()
+    transactional { (em, tx) =>
+      val queryStr = "SELECT c FROM Conference c"
+
+      val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
+      asScalaBuffer(query.getResultList)
+    }
   }
 
   /**
@@ -33,7 +45,14 @@ class ConferenceService {
    * @return All conferences that belong tho the account.
    */
   def listOwn(account: Account) : Seq[Conference] = {
-    throw new NotImplementedError()
+    transactional { (em, tx) =>
+      val queryStr = "SELECT c FROM Conference c INNER JOIN FETCH c.owners o WHERE o.uuid = :uuid"
+
+      val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
+      query.setParameter("uuid", account.uuid)
+
+      asScalaBuffer(query.getResultList)
+    }
   }
 
   /**
@@ -85,6 +104,49 @@ class ConferenceService {
    */
   def delete(id: String, account: Account) : Boolean = {
     throw new NotImplementedError()
+  }
+
+  def transactional[T](f : (EntityManager, EntityTransaction) => T) : T = {
+
+    synchronized {
+
+      var em : EntityManager = null
+      var tx : EntityTransaction = null
+
+      try {
+
+        em = emf.createEntityManager()
+        tx = em.getTransaction
+        tx.begin()
+
+        f(em, tx)
+
+      } catch {
+
+        case ex : Exception =>
+          if (tx != null && tx.isActive) tx.rollback()
+          throw ex
+
+      } finally {
+
+        if (tx != null && tx.isActive) tx.commit()
+        if (em != null && em.isOpen) em.close()
+
+      }
+
+    }
+
+  }
+
+}
+
+
+object ConferenceService {
+
+  def apply() : ConferenceService = {
+    new ConferenceService(
+      Persistence.createEntityManagerFactory("defaultPersistenceUnit")
+    )
   }
 
 }
