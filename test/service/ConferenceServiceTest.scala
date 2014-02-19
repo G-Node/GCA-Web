@@ -63,12 +63,16 @@ class ConferenceServiceTest extends JUnitSuite {
   def testList() : Unit = {
     println("testList")
     val list = service.list()
+    assert(list.size == 2)
   }
 
   @Test
   def testListOwn() : Unit = {
     println("testListOwn")
-    val list = service.listOwn(Account(uuid = "uuid", mail = "mail"))
+    val list = service.listOwn(account)
+
+    assert(list.size == 1)
+    assert(list.head.name == "conf1")
   }
 
   @Test
