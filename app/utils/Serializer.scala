@@ -35,21 +35,17 @@ class ConferenceFormat(baseUrl: String, abstractsUrlTemplate: String) extends Fo
   }
 
   /**
-   * A Reader for the Conference type.
+   * this function basically specifies how to
+   * build an object from parsed JSON
    */
-  implicit def R: Reads[Conference] = {
-    // this function basically specifies how to
-    // build an object from parsed JSON
-    def build(uuid: Option[String], name: String): Conference = {
-      Conference(uuid.toString, name)
-    }
-    (
-      (__ \ "uuid").readNullable[String] and
-      (__ \ "name").read[String]
-    )(build _)
+  private def buildObj(uuid: Option[String], name: String): Conference = {
+    Conference(uuid.toString, name)
   }
 
-  override def reads(json: JsValue): JsResult[Conference] = R.reads(json)
+  override def reads(json: JsValue): JsResult[Conference] = (
+    (__ \ "uuid").readNullable[String] and
+    (__ \ "name").read[String]
+  )(buildObj _).reads(json)
 
   override def writes(c: Conference): JsValue = {
     Json.obj(
@@ -82,21 +78,17 @@ class AccountFormat(baseUrl: String, abstractsUrlTemplate: String) extends Forma
   }
 
   /**
-   * A Reader for the Account type.
+   * this function basically specifies how to
+   * build an object from parsed JSON
    */
-  implicit def R: Reads[Account] = {
-    // this function basically specifies how to
-    // build an object from parsed JSON
-    def build(uuid: Option[String], mail: String): Account = {
-      Account(uuid.toString, mail)
-    }
-    (
-      (__ \ "uuid").readNullable[String] and
-      (__ \ "mail").read[String]
-    )(build _)
+  private def buildObj(uuid: Option[String], mail: String): Account = {
+    Account(uuid.toString, mail)
   }
 
-  override def reads(json: JsValue): JsResult[Account] = R.reads(json)
+  override def reads(json: JsValue): JsResult[Account] = (
+    (__ \ "uuid").readNullable[String] and
+    (__ \ "mail").read[String]
+  )(buildObj _).reads(json)
 
   override def writes(account: Account): JsValue = {
     Json.obj(
@@ -113,28 +105,24 @@ class AccountFormat(baseUrl: String, abstractsUrlTemplate: String) extends Forma
 class AuthorFormat extends Format[Author] {
 
   /**
-   * A Reader for the Author type.
+   * this function basically specifies how to
+   * build an object from parsed JSON
    */
-  implicit def R: Reads[Author] = {
-    // this function basically specifies how to
-    // build an object from parsed JSON
-    def build(uuid: Option[String],
-              mail: String,
-              firstName: String,
-              middleName: String,
-              lastName: String): Author = {
-      Author(uuid.toString, mail, firstName, middleName, lastName, new Abstract())
-    }
-    (
-      (__ \ "uuid").readNullable[String] and
-      (__ \ "mail").read[String] and
-      (__ \ "firstName").read[String] and
-      (__ \ "middleName").read[String] and
-      (__ \ "lastName").read[String]
-    )(build _)
+  private def buildObj(uuid: Option[String],
+                      mail: String,
+                      firstName: String,
+                      middleName: String,
+                      lastName: String): Author = {
+    Author(uuid.toString, mail, firstName, middleName, lastName, new Abstract())
   }
 
-  override def reads(json: JsValue): JsResult[Author] = R.reads(json)
+  override def reads(json: JsValue): JsResult[Author] = (
+    (__ \ "uuid").readNullable[String] and
+    (__ \ "mail").read[String] and
+    (__ \ "firstName").read[String] and
+    (__ \ "middleName").read[String] and
+    (__ \ "lastName").read[String]
+  )(buildObj _).reads(json)
 
   override def writes(a: Author): JsValue = {
     Json.obj(
@@ -153,30 +141,26 @@ class AuthorFormat extends Format[Author] {
 class AffiliationFormat extends Format[Affiliation] {
 
   /**
-   * A Reader for the Affiliation type.
+   * this function basically specifies how to
+   * build an object from parsed JSON
    */
-  implicit def R: Reads[Affiliation] = {
-    // this function basically specifies how to
-    // build an object from parsed JSON
-    def build(uuid: Option[String],
-              address: String,
-              country: String,
-              department: String,
-              name: String,
-              section: String): Affiliation = {
-      Affiliation(uuid.toString, address, country, department, name, section, new Abstract())
-    }
-    (
-      (__ \ "uuid").readNullable[String] and
-      (__ \ "address").read[String] and
-      (__ \ "country").read[String] and
-      (__ \ "department").read[String] and
-      (__ \ "name").read[String] and
-      (__ \ "section").read[String]
-    )(build _)
+  private def buildObj(uuid: Option[String],
+                    address: String,
+                    country: String,
+                    department: String,
+                    name: String,
+                    section: String): Affiliation = {
+    Affiliation(uuid.toString, address, country, department, name, section, new Abstract())
   }
 
-  override def reads(json: JsValue): JsResult[Affiliation] = R.reads(json)
+  override def reads(json: JsValue): JsResult[Affiliation] = (
+    (__ \ "uuid").readNullable[String] and
+    (__ \ "address").read[String] and
+    (__ \ "country").read[String] and
+    (__ \ "department").read[String] and
+    (__ \ "name").read[String] and
+    (__ \ "section").read[String]
+  )(buildObj _).reads(json)
 
   override def writes(a: Affiliation): JsValue = {
     Json.obj(
@@ -197,28 +181,24 @@ class AffiliationFormat extends Format[Affiliation] {
 class ReferenceFormat extends Format[Reference] {
 
   /**
-   * A Reader for the Reference type.
+   * this function basically specifies how to
+   * build an object from parsed JSON
    */
-  implicit def R: Reads[Reference] = {
-    // this function basically specifies how to
-    // build an object from parsed JSON
-    def build(uuid: Option[String],
-              authors: String,
-              title: String,
-              year: Int,
-              doi: String): Reference = {
-      Reference(uuid.toString, authors, title, year, doi, new Abstract())
-    }
-    (
-      (__ \ "uuid").readNullable[String] and
-      (__ \ "authors").read[String] and
-      (__ \ "title").read[String] and
-      (__ \ "year").read[Int] and
-      (__ \ "doi").read[String]
-    )(build _)
+  private def buildObj(uuid: Option[String],
+                        authors: String,
+                        title: String,
+                        year: Int,
+                        doi: String): Reference = {
+    Reference(uuid.toString, authors, title, year, doi, new Abstract())
   }
 
-  override def reads(json: JsValue): JsResult[Reference] = R.reads(json)
+  override def reads(json: JsValue): JsResult[Reference] = (
+    (__ \ "uuid").readNullable[String] and
+    (__ \ "authors").read[String] and
+    (__ \ "title").read[String] and
+    (__ \ "year").read[Int] and
+    (__ \ "doi").read[String]
+  )(buildObj _).reads(json)
 
   override def writes(a: Reference): JsValue = {
     Json.obj(
@@ -257,44 +237,40 @@ class AbstractFormat(baseUrl: String, ownersUrlTemplate: String) extends Format[
   }
 
   /**
-   * A Reader for the Conference type.
+   * this function basically specifies how to
+   * build an object from parsed JSON
    */
-  implicit def R: Reads[Abstract] = {
-    // this function basically specifies how to
-    // build an object from parsed JSON
-    def build(uuid: Option[String],
-              title: String,
-              topic: String,
-              text: String,
-              doi: String,
-              conflictOfInterest: String,
-              acknowledgements: String,
-              approved: Boolean,
-              published: Boolean,
-              authors: List[Author],
-              affiliations: List[Affiliation],
-              references: List[Reference]): Abstract = {
-      Abstract(uuid.toString, title, topic, text, doi, conflictOfInterest, acknowledgements,
-        approved, published, new Conference(), null, null, new JLinkedList(asJavaCollection(authors)),
-        new JLinkedList(asJavaCollection(affiliations)), new JLinkedList(asJavaCollection(references)))
-    }
-    (
-      (__ \ "uuid").readNullable[String] and
-      (__ \ "title").read[String] and
-      (__ \ "topic").read[String] and
-      (__ \ "text").read[String] and
-      (__ \ "doi").read[String] and
-      (__ \ "conflictOfInterest").read[String] and
-      (__ \ "acknowledgements").read[String] and
-      (__ \ "approved").read[Boolean] and
-      (__ \ "published").read[Boolean] and
-      (__ \ "authors").lazyRead( list[Author](authorF.R) ) and
-      (__ \ "affiliations").lazyRead( list[Affiliation](affiliationF.R) ) and
-      (__ \ "references").lazyRead( list[Reference](referenceF.R) )
-    )(build _)
+  private def buildObj(uuid: Option[String],
+                        title: String,
+                        topic: String,
+                        text: String,
+                        doi: String,
+                        conflictOfInterest: String,
+                        acknowledgements: String,
+                        approved: Boolean,
+                        published: Boolean,
+                        authors: List[Author],
+                        affiliations: List[Affiliation],
+                        references: List[Reference]): Abstract = {
+    Abstract(uuid.toString, title, topic, text, doi, conflictOfInterest, acknowledgements,
+      approved, published, new Conference(), null, null, new JLinkedList(asJavaCollection(authors)),
+      new JLinkedList(asJavaCollection(affiliations)), new JLinkedList(asJavaCollection(references)))
   }
 
-  override def reads(json: JsValue): JsResult[Abstract] = R.reads(json)
+  override def reads(json: JsValue): JsResult[Abstract] = (
+    (__ \ "uuid").readNullable[String] and
+    (__ \ "title").read[String] and
+    (__ \ "topic").read[String] and
+    (__ \ "text").read[String] and
+    (__ \ "doi").read[String] and
+    (__ \ "conflictOfInterest").read[String] and
+    (__ \ "acknowledgements").read[String] and
+    (__ \ "approved").read[Boolean] and
+    (__ \ "published").read[Boolean] and
+    (__ \ "authors").lazyRead( list[Author](authorF) ) and
+    (__ \ "affiliations").lazyRead( list[Affiliation](affiliationF) ) and
+    (__ \ "references").lazyRead( list[Reference](referenceF) )
+  )(buildObj _).reads(json)
 
   override def writes(a: Abstract): JsValue = {
     val authors: Seq[Author] = a.authors
