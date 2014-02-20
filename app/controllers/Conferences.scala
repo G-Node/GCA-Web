@@ -19,33 +19,12 @@ object Conferences extends Controller with securesocial.core.SecureSocial {
    */
   def create : Action[AnyContent] = TODO
 
-  /*
-  // prototype
-
-  def create = Action(parse.json) { request =>
-    val confService = new ConferenceService()
-    val formatter = new ConferenceFormat(request.host, "/conferences/<id>/abstracts")
-    formatter.reads(request.body).fold(
-      invalid = e => BadRequest(e.toString),
-      valid = conference => {
-        val resp = confService.create(conference, request.user)
-        Created(formatter.writes(resp))
-      }
-    )
-  }
-  */
-
   /**
    * List all available conferences.
    *
    * @return All conferences publicly available.
    */
-  def list: Action[AnyContent] = Action { implicit request =>
-    render {
-      case Accepts.Html() => Ok(views.html.index("Your new application is ready."))
-      case Accepts.Json() => Ok(Json.toJson("Your new application is ready.").toString())
-    }
-  }
+  def list: Action[AnyContent] = TODO
 
   /**
    * A conference info by id.
