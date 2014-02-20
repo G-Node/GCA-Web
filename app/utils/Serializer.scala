@@ -13,14 +13,13 @@ import play.api.libs.functional.syntax._
 
 import models._
 
-package object serializer {
+package object Serializer {
   /**
    * Conference serializer.
    *
    * @param baseUrl base URL from the configuration, like "http://hostname:port"
-   * @param abstractsUrlTemplate URL template for abstracts, like "/conferences/<id>/abstracts"
    */
-  class ConferenceFormat(baseUrl: String, abstractsUrlTemplate: String) extends Format[Conference] {
+  class ConferenceFormat(baseUrl: String) extends Format[Conference] {
 
     /**
      * Builds an URL to the related abstracts from a given object ID.
@@ -32,7 +31,7 @@ package object serializer {
     private def abstractsUrl(id: String) = {
       // builds java.net.URL to somehow verify it's an URL
       // maybe add more validation here
-      new URL(baseUrl + abstractsUrlTemplate.replace("<id>", id)).toString
+      new URL(baseUrl + "/conferences/<id>/abstracts".replace("<id>", id)).toString
     }
 
     /**
@@ -61,21 +60,20 @@ package object serializer {
    * Account serializer.
    *
    * @param baseUrl base URL from the configuration, like "http://hostname:port"
-   * @param abstractsUrlTemplate URL template for abstracts, like "/conferences/<id>/abstracts"
    */
-  class AccountFormat(baseUrl: String, abstractsUrlTemplate: String) extends Format[Account] {
+  class AccountFormat(baseUrl: String) extends Format[Account] {
 
     /**
      * Builds an URL to the related abstracts from a given object ID.
      *
      * @param id an ID of an Account object to insert into the URL
      *
-     * @return URL for related abstracts, like "/conferences/HNOPSADMHV/abstracts"
+     * @return URL for related abstracts, like "/account/HNOPSADMHV/abstracts"
      */
     private def abstractsUrl(id: String) = {
       // builds java.net.URL to somehow verify it's an URL
       // maybe add more validation here
-      new URL(baseUrl + abstractsUrlTemplate.replace("<id>", id)).toString
+      new URL(baseUrl + "/account/<id>/abstracts".replace("<id>", id)).toString
     }
 
     /**
@@ -216,9 +214,8 @@ package object serializer {
    * Abstract serializer.
    *
    * @param baseUrl base URL from the configuration, like "http://hostname:port"
-   * @param ownersUrlTemplate URL template for owners, like "/abstracts/<id>/owners"
    */
-  class AbstractFormat(baseUrl: String, ownersUrlTemplate: String) extends Format[Abstract] with ConstraintReads {
+  class AbstractFormat(baseUrl: String) extends Format[Abstract] with ConstraintReads {
 
     val authorF = new AuthorFormat()
     val affiliationF = new AffiliationFormat()
@@ -234,7 +231,7 @@ package object serializer {
     private def ownersUrl(id: String) = {
       // builds java.net.URL to somehow verify it's an URL
       // maybe add more validation here
-      new URL(baseUrl + ownersUrlTemplate.replace("<id>", id)).toString
+      new URL(baseUrl + "/abstracts/<id>/owners".replace("<id>", id)).toString
     }
 
     /**
