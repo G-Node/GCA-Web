@@ -16,11 +16,12 @@ import service.ConferenceService
 import play.api.Play
 import javax.persistence.{EntityManagerFactory, Persistence}
 import models.{Conference, Account}
+import service.util.DBUtil
 
 /**
  * Test
  */
-class ConferenceServiceTest extends JUnitSuite {
+class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
   var service : ConferenceService = null
   var account : Account = null
@@ -28,47 +29,35 @@ class ConferenceServiceTest extends JUnitSuite {
 
   @Before
   def before() : Unit = {
-    println("BEFORE")
     emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
+    dbTransaction { (em, tx) =>
+      val conf = em.merge(Conference(null, "conf1"))
+      em.merge(Conference(null, "conf2"))
 
-    val em = emf.createEntityManager()
-    em.getTransaction.begin()
+      account = em.merge(Account(null, "mail"))
 
-    val conf = em.merge(Conference(null, "conf1"))
-    em.merge(Conference(null, "conf2"))
-
-    account = em.merge(Account(null, "mail"))
-
-    conf.owners.add(account)
-    em.merge(conf)
-
-    em.getTransaction.commit()
-    em.close()
+      conf.owners.add(account)
+      em.merge(conf)
+    }
     service = new ConferenceService(emf)
   }
 
   @After
   def after() : Unit = {
-    val em = emf.createEntityManager()
-    em.getTransaction.begin()
-
-    em.createQuery("DELETE FROM Conference").executeUpdate()
-    em.createQuery("DELETE FROM Account").executeUpdate()
-
-    em.getTransaction.commit()
-    em.close()
+    dbTransaction { (em, tx) =>
+      em.createQuery("DELETE FROM Conference").executeUpdate()
+      em.createQuery("DELETE FROM Account").executeUpdate()
+    }
   }
 
   @Test
   def testList() : Unit = {
-    println("testList")
     val list = service.list()
     assert(list.size == 2)
   }
 
   @Test
   def testListOwn() : Unit = {
-    println("testListOwn")
     val list = service.listOwn(account)
 
     assert(list.size == 1)
@@ -111,14 +100,12 @@ object ConferenceServiceTest {
 
   @BeforeClass
   def beforeClass() = {
-    println("BEFORE CLASS")
     app = new FakeApplication()
     Play.start(app)
   }
 
   @AfterClass
   def afterClass() = {
-    println("AFTER CLASS")
     Play.stop()
   }
 
