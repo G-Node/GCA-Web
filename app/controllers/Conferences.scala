@@ -4,7 +4,7 @@ import play.api.mvc._
 import play.api.libs.json._
 
 import service.ConferenceService
-import utils.ConferenceFormat
+import utils.serializer.ConferenceFormat
 
 /**
  * Conferences controller.
