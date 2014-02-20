@@ -9,7 +9,7 @@
 
 package models
 
-import java.util.{List => JList, LinkedList => JLinkedList}
+import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence.{JoinTable, OneToMany, Entity}
 
 /**
@@ -25,9 +25,9 @@ class Conference extends Model {
 
   @OneToMany
   @JoinTable(name = "conference_owners")
-  var owners: JList[Account] = new JLinkedList[Account]()
+  var owners: JSet[Account] = new JTreeSet[Account]()
   @OneToMany(mappedBy = "conference")
-  var abstracts: JList[Abstract] = new JLinkedList[Abstract]()
+  var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
 
 }
 
@@ -37,8 +37,8 @@ object Conference {
 
   def apply(uuid: String,
             name: String,
-            owners: JList[Account] = null,
-            abstracts: JList[Abstract] = null) : Conference = {
+            owners: JSet[Account] = null,
+            abstracts: JSet[Abstract] = null) : Conference = {
 
     val conference = new Conference()
 

@@ -9,7 +9,7 @@
 
 package models
 
-import java.util.{List => JList, LinkedList => JLinkedList}
+import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence.{ManyToMany, Entity}
 
 /**
@@ -21,9 +21,9 @@ class Account extends Model {
   var mail: String = _
 
   @ManyToMany(mappedBy = "owners")
-  var abstracts: JList[Abstract] = new JLinkedList[Abstract]()
+  var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
   @ManyToMany(mappedBy = "owners")
-  var conferences: JList[Conference] = new JLinkedList[Conference]()
+  var conferences: JSet[Conference] = new JTreeSet[Conference]()
 
 }
 
@@ -33,8 +33,8 @@ object Account {
 
   def apply(uuid: String,
             mail: String,
-            abstracts: JList[Abstract] = null,
-            conferences: JList[Conference] = null) : Account = {
+            abstracts: JSet[Abstract] = null,
+            conferences: JSet[Conference] = null) : Account = {
 
     val account = new Account()
 
