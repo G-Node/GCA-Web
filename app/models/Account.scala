@@ -10,7 +10,7 @@
 package models
 
 import java.util.{Set => JSet, TreeSet => JTreeSet}
-import javax.persistence.{ManyToMany, Entity}
+import javax.persistence.{JoinTable, CascadeType, ManyToMany, Entity}
 
 /**
  * Model class for accounts.

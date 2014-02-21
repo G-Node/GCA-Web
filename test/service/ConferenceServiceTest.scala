@@ -14,7 +14,7 @@ import org.junit._
 import play.api.test.FakeApplication
 import service.ConferenceService
 import play.api.Play
-import javax.persistence.{EntityManagerFactory, Persistence}
+import javax.persistence.{EntityNotFoundException, NoResultException, EntityManagerFactory, Persistence}
 import models.{Conference, Account}
 import service.util.DBUtil
 
@@ -23,21 +23,22 @@ import service.util.DBUtil
  */
 class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
-  var service : ConferenceService = null
-  var account : Account = null
-  var emf : EntityManagerFactory = null
+  var service : ConferenceService = _
+  var account : Account = _
+  var conference : Conference = _
+  var emf : EntityManagerFactory = _
 
   @Before
   def before() : Unit = {
     emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
     dbTransaction { (em, tx) =>
-      val conf = em.merge(Conference(null, "conf1"))
+      conference = em.merge(Conference(null, "conf1"))
       em.merge(Conference(null, "conf2"))
 
       account = em.merge(Account(null, "mail"))
 
-      conf.owners.add(account)
-      em.merge(conf)
+      conference.owners.add(account)
+      conference = em.merge(conference)
     }
     service = new ConferenceService(emf)
   }
@@ -58,23 +59,44 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
   @Test
   def testListOwn() : Unit = {
-    val list = service.listOwn(account)
+    var list = service.listOwn(account)
 
     assert(list.size == 1)
-    assert(list.head.name == "conf1")
+    assert(list.head.name == conference.name)
+
+    list = service.listOwn(Account("uuid", "foo@bar.com"))
+
+    assert(list.size == 0)
   }
 
   @Test
   def testGet() : Unit = {
-    intercept[NotImplementedError] {
+    val c = service.get(conference.uuid)
+
+    assert(c.uuid == conference.uuid)
+
+    intercept[NoResultException] {
       service.get("uuid")
     }
   }
 
   @Test
   def testCreate() : Unit = {
-    intercept[NotImplementedError] {
-      service.create(Conference(), account)
+    dbTransaction { (em, tx) =>
+      em.createQuery("DELETE FROM Conference").executeUpdate()
+    }
+    val c = service.create(Conference(null, "fooconf"), account)
+
+    assert(c.uuid != null)
+    assert(c.name == "fooconf")
+    assert(c.owners.iterator.next.uuid == account.uuid)
+
+    intercept[IllegalArgumentException] {
+      service.create(Conference("uuid", "wrongconf"), account)
+    }
+
+    intercept[EntityNotFoundException] {
+      service.create(Conference(null, "fooconf two"), Account("uuid", "foo@bar.com"))
     }
   }
 
