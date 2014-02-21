@@ -9,8 +9,9 @@
 
 package models
 
+import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
-import javax.persistence.{JoinTable, CascadeType, ManyToMany, Entity}
+import javax.persistence.{ManyToMany, Entity}
 
 /**
  * Model class for accounts.
@@ -29,23 +30,18 @@ class Account extends Model {
 
 object Account {
 
-  def apply() : Account = new Account()
-
-  def apply(uuid: String,
-            mail: String,
-            abstracts: JSet[Abstract] = null,
-            conferences: JSet[Conference] = null) : Account = {
+  def apply(uuid: Option[String],
+            mail: Option[String],
+            abstracts: Seq[Abstract] = Nil,
+            conferences: Seq[Conference] = Nil) : Account = {
 
     val account = new Account()
 
-    account.uuid = uuid
-    account.mail = mail
+    account.uuid        = unwrapRef(uuid)
+    account.mail        = unwrapRef(mail)
 
-    if (conferences != null)
-      account.conferences = conferences
-
-    if (abstracts != null)
-      account.abstracts = abstracts
+    account.conferences = toJSet(conferences)
+    account.abstracts   = toJSet(abstracts)
 
     account
   }

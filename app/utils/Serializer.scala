@@ -14,8 +14,6 @@ import models._
 
 package object serializer {
 
-  def strOrNull(implicit r: Reads[Option[String]]): Reads[String] = r.map( _.orNull )
-
   /**
    * Conference serializer.
    *
@@ -36,18 +34,10 @@ package object serializer {
       new URL(baseUrl + "/conferences/<id>/abstracts".replace("<id>", id)).toString
     }
 
-    /**
-     * this function basically specifies how to
-     * build an object from parsed JSON
-     */
-    private def buildObj(uuid: String, name: String): Conference = {
-      Conference(uuid, name)
-    }
-
     override def reads(json: JsValue): JsResult[Conference] = (
-      (__ \ "uuid").read[String]( strOrNull ) and
-      (__ \ "name").read[String]
-    )(buildObj _).reads(json)
+      (__ \ "uuid").readNullable[String] and
+      (__ \ "name").readNullable[String]
+    )(Conference(_, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
       Json.obj(
@@ -78,18 +68,10 @@ package object serializer {
       new URL(baseUrl + "/account/<id>/abstracts".replace("<id>", id)).toString
     }
 
-    /**
-     * this function basically specifies how to
-     * build an object from parsed JSON
-     */
-    private def buildObj(uuid: String, mail: String): Account = {
-      Account(uuid, mail)
-    }
-
     override def reads(json: JsValue): JsResult[Account] = (
-      (__ \ "uuid").read[String]( strOrNull ) and
-      (__ \ "mail").read[String]
-    )(buildObj _).reads(json)
+      (__ \ "uuid").readNullable[String] and
+      (__ \ "mail").readNullable[String]
+    )(Account(_, _)).reads(json)
 
     override def writes(account: Account): JsValue = {
       Json.obj(
@@ -105,25 +87,13 @@ package object serializer {
    */
   class AuthorFormat extends Format[Author] {
 
-    /**
-     * this function basically specifies how to
-     * build an object from parsed JSON
-     */
-    private def buildObj(uuid: String,
-                         mail: String,
-                         firstName: String,
-                         middleName: String,
-                         lastName: String): Author = {
-      Author(uuid, mail, firstName, middleName, lastName, null)
-    }
-
     override def reads(json: JsValue): JsResult[Author] = (
-      (__ \ "uuid").read[String]( strOrNull ) and
-      (__ \ "mail").read[String]( strOrNull ) and
-      (__ \ "firstName").read[String]( strOrNull ) and
-      (__ \ "middleName").read[String]( strOrNull ) and
-      (__ \ "lastName").read[String]( strOrNull )
-    )(buildObj _).reads(json)
+      (__ \ "uuid").readNullable[String] and
+      (__ \ "mail").readNullable[String] and
+      (__ \ "firstName").readNullable[String] and
+      (__ \ "middleName").readNullable[String] and
+      (__ \ "lastName").readNullable[String]
+    )(Author(_, _, _, _, _)).reads(json)
 
     override def writes(a: Author): JsValue = {
       Json.obj(
@@ -141,27 +111,14 @@ package object serializer {
    */
   class AffiliationFormat extends Format[Affiliation] {
 
-    /**
-     * this function basically specifies how to
-     * build an object from parsed JSON
-     */
-    private def buildObj(uuid: String,
-                         address: String,
-                         country: String,
-                         department: String,
-                         name: String,
-                         section: String): Affiliation = {
-      Affiliation(uuid, address, country, department, name, section, null)
-    }
-
     override def reads(json: JsValue): JsResult[Affiliation] = (
-      (__ \ "uuid").read[String]( strOrNull ) and
-      (__ \ "address").read[String]( strOrNull ) and
-      (__ \ "country").read[String]( strOrNull ) and
-      (__ \ "department").read[String]( strOrNull ) and
-      (__ \ "name").read[String]( strOrNull ) and
-      (__ \ "section").read[String]( strOrNull )
-    )(buildObj _).reads(json)
+      (__ \ "uuid").readNullable[String] and
+      (__ \ "address").readNullable[String] and
+      (__ \ "country").readNullable[String] and
+      (__ \ "department").readNullable[String] and
+      (__ \ "name").readNullable[String] and
+      (__ \ "section").readNullable[String]
+    )(Affiliation(_, _, _, _, _, _)).reads(json)
 
     override def writes(a: Affiliation): JsValue = {
       Json.obj(
@@ -180,25 +137,13 @@ package object serializer {
    */
   class ReferenceFormat extends Format[Reference] {
 
-    /**
-     * this function basically specifies how to
-     * build an object from parsed JSON
-     */
-    private def buildObj(uuid: String,
-                         authors: String,
-                         title: String,
-                         year: Int,
-                         doi: String): Reference = {
-      Reference(uuid, authors, title, year, doi, null)
-    }
-
     override def reads(json: JsValue): JsResult[Reference] = (
-      (__ \ "uuid").read[String]( strOrNull ) and
-      (__ \ "authors").read[String]( strOrNull ) and
-      (__ \ "title").read[String]( strOrNull ) and
-      (__ \ "year").read[Int] and
-      (__ \ "doi").read[String]( strOrNull )
-    )(buildObj _).reads(json)
+      (__ \ "uuid").readNullable[String] and
+      (__ \ "authors").readNullable[String] and
+      (__ \ "title").readNullable[String] and
+      (__ \ "year").readNullable[Int] and
+      (__ \ "doi").readNullable[String]
+    )(Reference(_, _, _, _, _)).reads(json)
 
     override def writes(a: Reference): JsValue = {
       Json.obj(
@@ -235,41 +180,20 @@ package object serializer {
       new URL(baseUrl + "/abstracts/<id>/owners".replace("<id>", id)).toString
     }
 
-    /**
-     * this function basically specifies how to
-     * build an object from parsed JSON
-     */
-    private def buildObj(uuid: String,
-                         title: String,
-                         topic: String,
-                         text: String,
-                         doi: String,
-                         conflictOfInterest: String,
-                         acknowledgements: String,
-                         approved: Boolean,
-                         published: Boolean,
-                         authors: List[Author],
-                         affiliations: List[Affiliation],
-                         references: List[Reference]): Abstract = {
-      Abstract(uuid, title, topic, text, doi, conflictOfInterest, acknowledgements,
-        approved, published, new Conference(), null, null, new JTreeSet(asJavaCollection(authors)),
-        new JTreeSet(asJavaCollection(affiliations)), new JTreeSet(asJavaCollection(references)))
-    }
-
     override def reads(json: JsValue): JsResult[Abstract] = (
-      (__ \ "uuid").read[String]( strOrNull ) and
-      (__ \ "title").read[String] and
-      (__ \ "topic").read[String]( strOrNull ) and
-      (__ \ "text").read[String]( strOrNull ) and
-      (__ \ "doi").read[String]( strOrNull ) and
-      (__ \ "conflictOfInterest").read[String]( strOrNull ) and
-      (__ \ "acknowledgements").read[String]( strOrNull ) and
+      (__ \ "uuid").readNullable[String] and
+      (__ \ "title").readNullable[String] and
+      (__ \ "topic").readNullable[String] and
+      (__ \ "text").readNullable[String] and
+      (__ \ "doi").readNullable[String] and
+      (__ \ "conflictOfInterest").readNullable[String] and
+      (__ \ "acknowledgements").readNullable[String] and
       (__ \ "approved").read[Boolean] and
       (__ \ "published").read[Boolean] and
       (__ \ "authors").lazyRead( list[Author](authorF) ) and
       (__ \ "affiliations").lazyRead( list[Affiliation](affiliationF) ) and
       (__ \ "references").lazyRead( list[Reference](referenceF) )
-    )(buildObj _).reads(json)
+    )(Abstract(_, _, _, _, _, _, _, _, _, None, None, Nil, _, _, _)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
       val authors: Seq[Author] = asScalaSet(a.authors).toSeq
