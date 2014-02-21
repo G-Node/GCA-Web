@@ -13,7 +13,7 @@ import collection.JavaConversions._
 
 import models._
 import javax.persistence._
-import play.db.jpa.Transactional
+import service.util.DBUtil
 
 /**
  * Service class for that implements data access logic for conferences.
@@ -21,7 +21,7 @@ import play.db.jpa.Transactional
  * TODO prefetch stuff
  * TODO write test
  */
-class ConferenceService(emf: EntityManagerFactory) {
+class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
 
   /**
    * List all available conferences.
@@ -29,8 +29,12 @@ class ConferenceService(emf: EntityManagerFactory) {
    * @return All conferences.
    */
   def list() : Seq[Conference] = {
-    transactional { (em, tx) =>
-      val queryStr = "SELECT c FROM Conference c"
+    dbQuery { em =>
+      val queryStr =
+        """SELECT c FROM Conference c
+           LEFT JOIN FETCH c.owners
+           LEFT JOIN FETCH c.abstracts"""
+
 
       val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
       asScalaBuffer(query.getResultList)
@@ -45,8 +49,12 @@ class ConferenceService(emf: EntityManagerFactory) {
    * @return All conferences that belong tho the account.
    */
   def listOwn(account: Account) : Seq[Conference] = {
-    transactional { (em, tx) =>
-      val queryStr = "SELECT c FROM Conference c INNER JOIN FETCH c.owners o WHERE o.uuid = :uuid"
+    dbQuery { em =>
+      val queryStr =
+        """SELECT c FROM Conference c
+           INNER JOIN FETCH c.owners o
+           LEFT JOIN FETCH c.abstracts
+           WHERE o.uuid = :uuid"""
 
       val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
       query.setParameter("uuid", account.uuid)
@@ -61,9 +69,22 @@ class ConferenceService(emf: EntityManagerFactory) {
    * @param id The id of the conference.
    *
    * @return The specified conference.
+   *
+   * @throws NoResultException If the conference was not found
    */
   def get(id: String) : Conference = {
-    throw new NotImplementedError()
+    dbQuery { em =>
+      val queryStr =
+        """SELECT c FROM Conference c
+           LEFT JOIN FETCH c.owners
+           LEFT JOIN FETCH c.abstracts
+           WHERE c.uuid = :uuid"""
+
+      val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
+      query.setParameter("uuid", id)
+
+      query.getSingleResult
+    }
   }
 
   /**
@@ -77,7 +98,21 @@ class ConferenceService(emf: EntityManagerFactory) {
    * @return The created conference.
    */
   def create(conference: Conference, account: Account) : Conference = {
-    throw new NotImplementedError()
+
+    val conf = dbTransaction { (em, tx) =>
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      if (conference.uuid != null)
+        throw new IllegalArgumentException("Unable to create conference with not null uuid")
+
+      conference.owners.add(account)
+      em.merge(conference)
+    }
+
+    get(conf.uuid)
   }
 
   /**
@@ -104,38 +139,6 @@ class ConferenceService(emf: EntityManagerFactory) {
    */
   def delete(id: String, account: Account) : Boolean = {
     throw new NotImplementedError()
-  }
-
-  def transactional[T](f : (EntityManager, EntityTransaction) => T) : T = {
-
-    synchronized {
-
-      var em : EntityManager = null
-      var tx : EntityTransaction = null
-
-      try {
-
-        em = emf.createEntityManager()
-        tx = em.getTransaction
-        tx.begin()
-
-        f(em, tx)
-
-      } catch {
-
-        case ex : Exception =>
-          if (tx != null && tx.isActive) tx.rollback()
-          throw ex
-
-      } finally {
-
-        if (tx != null && tx.isActive) tx.commit()
-        if (em != null && em.isOpen) em.close()
-
-      }
-
-    }
-
   }
 
 }

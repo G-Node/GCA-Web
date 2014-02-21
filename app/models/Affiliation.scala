@@ -9,7 +9,7 @@
 
 package models
 
-import java.util.{List => JList, LinkedList => JLinkedList}
+import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence.{ManyToOne, ManyToMany, Entity}
 
 /**
@@ -27,7 +27,7 @@ class Affiliation extends Model {
   @ManyToOne
   var abstr: Abstract = _
   @ManyToMany(mappedBy = "affiliations")
-  var authors: JList[Author] = new JLinkedList[Author]()
+  var authors: JSet[Author] = new JTreeSet[Author]()
 
 }
 
@@ -43,7 +43,7 @@ object Affiliation {
             name: String,
             section: String,
             abstr: Abstract,
-            authors: JList[Author] = null) : Affiliation = {
+            authors: JSet[Author] = null) : Affiliation = {
 
     val affiliation = new Affiliation()
 

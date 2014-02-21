@@ -9,7 +9,7 @@
 
 package models
 
-import java.util.{List => JList, LinkedList => JLinkedList}
+import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
 
 /**
@@ -35,13 +35,13 @@ class Abstract extends Model {
 
   @ManyToMany
   @JoinTable(name = "abstract_owners")
-  var owners:  JList[Account] = new JLinkedList[Account]()
+  var owners:  JSet[Account] = new JTreeSet[Account]()
   @OneToMany(mappedBy = "abstr")
-  var authors: JList[Author] = new JLinkedList[Author]()
+  var authors: JSet[Author] = new JTreeSet[Author]()
   @OneToMany(mappedBy = "abstr")
-  var affiliations: JList[Affiliation] = new JLinkedList[Affiliation]()
+  var affiliations: JSet[Affiliation] = new JTreeSet[Affiliation]()
   @OneToMany(mappedBy = "abstr")
-  var references: JList[Reference] = new JLinkedList[Reference]()
+  var references: JSet[Reference] = new JTreeSet[Reference]()
 
 }
 
@@ -62,10 +62,10 @@ object Abstract {
             published: Boolean,
             conference: Conference,
             figure: Figure = null,
-            owners:  JList[Account] = null,
-            authors: JList[Author] = null,
-            affiliations: JList[Affiliation] = null,
-            references: JList[Reference] = null) : Abstract = {
+            owners:  JSet[Account] = null,
+            authors: JSet[Author] = null,
+            affiliations: JSet[Affiliation] = null,
+            references: JSet[Reference] = null) : Abstract = {
 
     val abstr = new Abstract()
 
