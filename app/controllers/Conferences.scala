@@ -2,15 +2,15 @@ package controllers
 
 import play.api.mvc._
 import play.api.libs.json._
-//import service.ConferenceService
-import models.Conference
+
+import service.ConferenceService
+import utils.serializer.ConferenceFormat
 
 /**
  * Conferences controller.
  * Manages HTTP request logic for conferences.
  */
-
-object Conferences extends Controller {
+object Conferences extends Controller with securesocial.core.SecureSocial {
 
   /**
    * Create a new conference.
@@ -24,12 +24,7 @@ object Conferences extends Controller {
    *
    * @return All conferences publicly available.
    */
-  def list: Action[AnyContent] = Action { request =>
-    Ok(views.html.index("Your new application is ready."))
-    //render {
-    //  case "text/html" => Ok(views.html.index("Your new application is ready."))
-    //  case "application/json" => Ok(Json.toJson("Your new application is ready.").toString())
-  }
+  def list: Action[AnyContent] = TODO
 
   /**
    * A conference info by id.
@@ -59,3 +54,4 @@ object Conferences extends Controller {
   def delete(id: String) : Action[AnyContent] = TODO
 
 }
+

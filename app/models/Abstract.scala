@@ -9,6 +9,7 @@
 
 package models
 
+import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
 
@@ -48,50 +49,40 @@ class Abstract extends Model {
 
 object Abstract {
 
-  def apply() : Abstract = new Abstract()
-
-
-  def apply(uuid: String,
-            title: String,
-            topic: String,
-            text: String,
-            doi: String,
-            conflictOfInterest: String,
-            acknowledgements: String,
+  def apply(uuid: Option[String],
+            title: Option[String],
+            topic: Option[String],
+            text: Option[String],
+            doi: Option[String],
+            conflictOfInterest: Option[String],
+            acknowledgements: Option[String],
             approved: Boolean,
             published: Boolean,
-            conference: Conference,
-            figure: Figure = null,
-            owners:  JSet[Account] = null,
-            authors: JSet[Author] = null,
-            affiliations: JSet[Affiliation] = null,
-            references: JSet[Reference] = null) : Abstract = {
+            conference: Option[Conference] = None,
+            figure: Option[Figure] = None,
+            owners:  Seq[Account] = Nil,
+            authors: Seq[Author] = Nil,
+            affiliations: Seq[Affiliation] = Nil,
+            references: Seq[Reference] = Nil) : Abstract = {
 
     val abstr = new Abstract()
 
-    abstr.uuid = uuid
-    abstr.title = title
-    abstr.topic = topic
-    abstr.text = text
-    abstr.doi = doi
-    abstr.conflictOfInterest = conflictOfInterest
-    abstr.acknowledgements = acknowledgements
-    abstr.approved = approved
-    abstr.published = published
-    abstr.conference = conference
-    abstr.figure = figure
+    abstr.uuid        = unwrapRef(uuid)
+    abstr.title       = unwrapRef(title)
+    abstr.topic       = unwrapRef(topic)
+    abstr.text        = unwrapRef(text)
+    abstr.doi         = unwrapRef(doi)
+    abstr.conflictOfInterest = unwrapRef(conflictOfInterest)
+    abstr.acknowledgements   = unwrapRef(acknowledgements)
+    abstr.approved    = approved
+    abstr.published   = published
 
-    if (owners != null)
-      abstr.owners = owners
-
-    if (authors != null)
-      abstr.authors = authors
-
-    if (affiliations != null)
-      abstr.affiliations = affiliations
-
-    if (affiliations != null)
-      abstr.references = references
+    abstr.conference  = unwrapRef(conference)
+    abstr.figure      = unwrapRef(figure)
+    abstr.owners      = toJSet(owners)
+    abstr.authors     = toJSet(authors)
+    abstr.affiliations = toJSet(affiliations)
+    abstr.references  = toJSet(references)
 
     abstr
   }

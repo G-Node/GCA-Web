@@ -14,10 +14,11 @@ import models._
 class AbstractServiceSpec extends Specification {
 
   var srv = new AbstractService()
-  var conf = Conference(Model.makeUUID(), "foo")
-  var abstr = Abstract(Model.makeUUID(), "title", "topic", "text", "doi", "coi", "ack", approved=true, published=true, conference=conf)
+  var conf = Conference(Some(Model.makeUUID()), Some("foo"))
+  var abstr = Abstract(Some(Model.makeUUID()), Some("title"), Some("topic"), Some("text"), Some("doi"),
+              Some("coi"), Some("ack"), approved=true, published=true, conference=Some(conf))
   conf.abstracts.add(abstr)
-  var account = Account(Model.makeUUID(), "foo@foo")
+  var account = Account(Some(Model.makeUUID()), Some("foo@foo"))
 
   "service.AbstractService" should {
 
