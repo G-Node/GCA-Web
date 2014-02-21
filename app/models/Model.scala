@@ -18,7 +18,7 @@ import javax.persistence.{PrePersist, Id, MappedSuperclass}
  * etc. when needed.
  */
 @MappedSuperclass
-class Model {
+class Model extends Ordered[Model] {
 
   /**
    * The primary key of the model.
@@ -31,6 +31,10 @@ class Model {
   def beforePersist() : Unit = {
     if (uuid == null)
       uuid = Model.makeUUID()
+  }
+
+  override def compare(that: Model): Int = {
+    uuid.compare(that.uuid)
   }
 }
 
