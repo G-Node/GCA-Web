@@ -4,7 +4,7 @@
 package utils
 
 import java.net.URL
-import java.util.{LinkedList => JLinkedList}
+import java.util.{TreeSet => JTreeSet}
 import collection.JavaConversions._
 
 import play.api.libs.json._
@@ -252,8 +252,8 @@ package object serializer {
                          affiliations: List[Affiliation],
                          references: List[Reference]): Abstract = {
       Abstract(uuid, title, topic, text, doi, conflictOfInterest, acknowledgements,
-        approved, published, new Conference(), null, null, new JLinkedList(asJavaCollection(authors)),
-        new JLinkedList(asJavaCollection(affiliations)), new JLinkedList(asJavaCollection(references)))
+        approved, published, new Conference(), null, null, new JTreeSet(asJavaCollection(authors)),
+        new JTreeSet(asJavaCollection(affiliations)), new JTreeSet(asJavaCollection(references)))
     }
 
     override def reads(json: JsValue): JsResult[Abstract] = (
@@ -272,9 +272,9 @@ package object serializer {
     )(buildObj _).reads(json)
 
     override def writes(a: Abstract): JsValue = {
-      val authors: Seq[Author] = a.authors
-      val affiliations: Seq[Affiliation] = a.affiliations
-      val references: Seq[Reference] = a.references
+      val authors: Seq[Author] = asScalaSet(a.authors).toSeq
+      val affiliations: Seq[Affiliation] = asScalaSet(a.affiliations).toSeq
+      val references: Seq[Reference] = asScalaSet(a.references).toSeq
       Json.obj(
         "uuid" -> a.uuid,
         "title" -> a.title,
