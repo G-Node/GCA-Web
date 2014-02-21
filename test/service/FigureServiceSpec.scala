@@ -15,12 +15,12 @@ import models._
 class FigureServiceSpec extends Specification {
 
   var srv = new FigureService("/tmp/figures")
-  var account = Account(Model.makeUUID(), "foo@foo")
-  var abstr = Abstract(Model.makeUUID(), "title", "topic", "text", "doi", "coi", "ack",
-                       approved=true, published=true, conference=Conference())
+  var account = Account(Some(Model.makeUUID()), Some("foo@foo"))
+  var abstr = Abstract(Some(Model.makeUUID()), Some("title"), Some("topic"), Some("text"), Some("doi"),
+                       Some("coi"), Some("ack"), approved=true, published=true)
   abstr.owners.add(account)
 
-  var fig = Figure(Model.makeUUID(), "foo_fig", "caption", abstr)
+  var fig = Figure(Some(Model.makeUUID()), Some("foo_fig"), Some("caption"), Some(abstr))
 
   "service.FigureService" should {
 

@@ -9,6 +9,7 @@
 
 package models
 
+import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence.{JoinTable, ManyToMany, ManyToOne, Entity}
 
@@ -34,27 +35,24 @@ class Author extends Model {
 
 object Author {
 
-  def apply() : Author = new Author()
-
-  def apply(uuid: String,
-            mail: String,
-            firstName: String,
-            middleName: String,
-            lastName: String,
-            abstr: Abstract,
-            affiliations: JSet[Affiliation] = null) : Author = {
+  def apply(uuid: Option[String],
+            mail: Option[String],
+            firstName: Option[String],
+            middleName: Option[String],
+            lastName: Option[String],
+            abstr: Option[Abstract] = None,
+            affiliations: Seq[Affiliation] = Nil) : Author = {
 
     val author = new Author()
 
-    author.uuid = uuid
-    author.mail = mail
-    author.firstName = firstName
-    author.middleName = middleName
-    author.lastName = lastName
-    author.abstr = abstr
+    author.uuid         = unwrapRef(uuid)
+    author.mail         = unwrapRef(mail)
+    author.firstName    = unwrapRef(firstName)
+    author.middleName   = unwrapRef(middleName)
+    author.lastName     = unwrapRef(lastName)
 
-    if (affiliations != null)
-      author.affiliations = affiliations
+    author.abstr        = unwrapRef(abstr)
+    author.affiliations = toJSet(affiliations)
 
     author
   }

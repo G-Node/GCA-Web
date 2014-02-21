@@ -9,6 +9,7 @@
 
 package models
 
+import models.Model._
 import javax.persistence.{OneToOne, Entity}
 
 /**
@@ -27,19 +28,18 @@ class Figure extends Model {
 
 object Figure {
 
-  def apply() : Figure = new Figure()
-
-  def apply(uuid: String,
-            name: String,
-            caption: String,
-            abstr: Abstract = null) : Figure = {
+  def apply(uuid: Option[String],
+            name: Option[String],
+            caption: Option[String],
+            abstr: Option[Abstract] = None) : Figure = {
 
     val figure = new Figure()
 
-    figure.uuid = uuid
-    figure.name = name
-    figure.caption = caption
-    figure.abstr = abstr
+    figure.uuid     = unwrapRef(uuid)
+    figure.name     = unwrapRef(name)
+    figure.caption  = unwrapRef(caption)
+
+    figure.abstr    = unwrapRef(abstr)
 
     figure
   }

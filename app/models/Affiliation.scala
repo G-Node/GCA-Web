@@ -9,6 +9,7 @@
 
 package models
 
+import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence.{ManyToOne, ManyToMany, Entity}
 
@@ -34,29 +35,26 @@ class Affiliation extends Model {
 
 object Affiliation {
 
-  def apply() : Affiliation = new Affiliation()
-
-  def apply(uuid: String,
-            address: String,
-            country: String,
-            department: String,
-            name: String,
-            section: String,
-            abstr: Abstract,
-            authors: JSet[Author] = null) : Affiliation = {
+  def apply(uuid: Option[String],
+            address: Option[String],
+            country: Option[String],
+            department: Option[String],
+            name: Option[String],
+            section: Option[String],
+            abstr: Option[Abstract] = None,
+            authors: List[Author] = Nil) : Affiliation = {
 
     val affiliation = new Affiliation()
 
-    affiliation.uuid = uuid
-    affiliation.address = address
-    affiliation.country = country
-    affiliation.department = department
-    affiliation.name = name
-    affiliation.section = section
-    affiliation.abstr = abstr
+    affiliation.uuid        = unwrapRef(uuid)
+    affiliation.address     = unwrapRef(address)
+    affiliation.country     = unwrapRef(country)
+    affiliation.department  = unwrapRef(department)
+    affiliation.name        = unwrapRef(name)
+    affiliation.section     = unwrapRef(section)
 
-    if (authors != null)
-      affiliation.authors = authors
+    affiliation.abstr       = unwrapRef(abstr)
+    affiliation.authors     = toJSet(authors)
 
     affiliation
   }
