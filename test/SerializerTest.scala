@@ -1,16 +1,9 @@
-/**
- * Created by sobolev on 2/21/14.
- */
-
 package test
 
-import org.scalatest.junit.JUnitSuite
 import org.junit._
+import org.scalatest.junit.JUnitSuite
 import play.api.test.FakeApplication
 import play.api.Play
-import play.api.data.validation.ValidationError
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
 import models._
 import utils.serializer._
@@ -20,24 +13,23 @@ import utils.serializer._
  */
 class SerializerTest extends JUnitSuite {
 
-  val baseUrl = "http://hostname:port"
+  val baseUrl = "http://hostname:8000"
 
   @Test
   def testConference(): Unit = {
     val jsFormat = new ConferenceFormat(baseUrl)
 
-    val c1 = JsObject(Seq("uuid" -> JsString("foo"), "name" -> JsString("bar")))
+    val original = Conference(Option("foo"), Option("bar"))
+    val json = jsFormat.writes(original)
 
-    //jsFormat.reads(c1).fold(
-    //  valid = { conf => println(conf) } //assert(conf.name == "foo")
-    //  invalid = { errors => errors.toString }
-    //)
-    //assert(list.size == 2)
+    jsFormat.reads(json).fold(
+      valid = { converted => {assert(converted.name == original.name)}},
+      invalid = { errors => throw new MatchError(errors.toString()) }
+    )
   }
-
 }
 
-object ConferenceServiceTest {
+object SerializerTest {
 
   var app: FakeApplication = null
 
