@@ -9,6 +9,7 @@
 
 package models
 
+import models.Model._
 import javax.persistence.{ManyToOne, Entity}
 
 /**
@@ -30,20 +31,22 @@ class Reference extends Model {
 
 object Reference {
 
-  def apply() : Reference = new Reference()
+  def apply(uuid: Option[String],
+            authors: Option[String],
+            title: Option[String],
+            year: Option[Int],
+            doi: Option[String],
+            abstr: Option[Abstract] = None) : Reference = {
 
-  def apply(uuid: String, authors: String, title: String, year: Int,
-            doi: String, abstr: Abstract) : Reference = {
+    val ref     = new Reference()
 
-    val ref = new Reference()
+    ref.uuid    = unwrapRef(uuid)
+    ref.authors = unwrapRef(authors)
+    ref.title   = unwrapRef(title)
+    ref.year    = unwrapVal(year)
+    ref.doi     = unwrapRef(doi)
 
-    ref.uuid = uuid
-    ref.authors = authors
-    ref.title = title
-    ref.year = year
-    ref.doi = doi
-
-    ref.abstr = abstr
+    ref.abstr   = unwrapRef(abstr)
 
     ref
   }

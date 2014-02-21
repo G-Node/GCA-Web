@@ -32,10 +32,10 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
   def before() : Unit = {
     emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
     dbTransaction { (em, tx) =>
-      conference = em.merge(Conference(null, "conf1"))
-      em.merge(Conference(null, "conf2"))
+      conference = em.merge(Conference(None, Some("conf1")))
+      em.merge(Conference(None, Some("conf2")))
 
-      account = em.merge(Account(null, "mail"))
+      account = em.merge(Account(None, Some("mail")))
 
       conference.owners.add(account)
       conference = em.merge(conference)
@@ -64,7 +64,7 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
     assert(list.size == 1)
     assert(list.head.name == conference.name)
 
-    list = service.listOwn(Account("uuid", "foo@bar.com"))
+    list = service.listOwn(Account(Some("uuid"), Some("foo@bar.com")))
 
     assert(list.size == 0)
   }
@@ -85,25 +85,25 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
     dbTransaction { (em, tx) =>
       em.createQuery("DELETE FROM Conference").executeUpdate()
     }
-    val c = service.create(Conference(null, "fooconf"), account)
+    val c = service.create(Conference(None, Some("fooconf")), account)
 
     assert(c.uuid != null)
     assert(c.name == "fooconf")
     assert(c.owners.iterator.next.uuid == account.uuid)
 
     intercept[IllegalArgumentException] {
-      service.create(Conference("uuid", "wrongconf"), account)
+      service.create(Conference(Some("uuid"), Some("wrongconf")), account)
     }
 
     intercept[EntityNotFoundException] {
-      service.create(Conference(null, "fooconf two"), Account("uuid", "foo@bar.com"))
+      service.create(Conference(None, Some("fooconf two")), Account(Some("uuid"), Some("foo@bar.com")))
     }
   }
 
   @Test
   def testUpdate() : Unit = {
     intercept[NotImplementedError] {
-      service.update(Conference(), account)
+      service.update(new Conference(), account)
     }
   }
 

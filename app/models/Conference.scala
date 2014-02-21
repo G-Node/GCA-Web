@@ -9,6 +9,7 @@
 
 package models
 
+import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence.{JoinTable, OneToMany, Entity}
 
@@ -33,23 +34,18 @@ class Conference extends Model {
 
 object Conference {
 
-  def apply() : Conference = new Conference()
-
-  def apply(uuid: String,
-            name: String,
-            owners: JSet[Account] = null,
-            abstracts: JSet[Abstract] = null) : Conference = {
+  def apply(uuid: Option[String],
+            name: Option[String],
+            owners: Seq[Account] = Nil,
+            abstracts: Seq[Abstract] = Nil) : Conference = {
 
     val conference = new Conference()
 
-    conference.uuid = uuid
-    conference.name = name
+    conference.uuid       = unwrapRef(uuid)
+    conference.name       = unwrapRef(name)
 
-    if (owners != null)
-      conference.owners = owners
-
-    if (abstracts != null)
-      conference.abstracts = abstracts
+    conference.owners     = toJSet(owners)
+    conference.abstracts  = toJSet(abstracts)
 
     conference
   }
