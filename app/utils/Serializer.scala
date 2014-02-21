@@ -5,7 +5,6 @@ package utils
 
 import java.net.URL
 import java.util.{LinkedList => JLinkedList}
-import collection.JavaConversions.asJavaCollection
 import collection.JavaConversions._
 
 import play.api.libs.json._
@@ -13,16 +12,9 @@ import play.api.libs.functional.syntax._
 
 import models._
 
-package object Serializer {
+package object serializer {
 
   def strOrNull(implicit r: Reads[Option[String]]): Reads[String] = r.map( _.orNull )
-
-  def intOrNull(implicit r: Reads[Option[Int]]): Reads[Int] = {
-    r.map( _ match {
-      case null => 0
-      case _ => 12
-    } )
-  }
 
   /**
    * Conference serializer.
