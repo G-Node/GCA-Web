@@ -25,6 +25,7 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
   var service : ConferenceService = _
   var account : Account = _
+  var evilAccount : Account = _
   var conference : Conference = _
   var emf : EntityManagerFactory = _
 
@@ -36,6 +37,7 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
       em.merge(Conference(None, Some("conf2")))
 
       account = em.merge(Account(None, Some("mail")))
+      evilAccount = em.merge(Account(None, Some("mail@eviltwin.ork")))
 
       conference.owners.add(account)
       conference = em.merge(conference)
@@ -102,15 +104,46 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
   @Test
   def testUpdate() : Unit = {
-    intercept[NotImplementedError] {
-      service.update(new Conference(), account)
+    conference.name = "changed conference name"
+    val c = service.update(conference, account)
+
+    assert(c.name == "changed conference name")
+
+    intercept[IllegalArgumentException] {
+      service.update(Conference(None, Some("wrongconf")), account)
+    }
+
+    intercept[EntityNotFoundException] {
+      service.update(Conference(Some("uuid"), Some("wrongconf")), account)
+    }
+
+    intercept[EntityNotFoundException] {
+      service.update(conference, Account(Some("uuid"), Some("foo@bar.com")))
+    }
+
+    intercept[IllegalAccessException] {
+      service.update(conference, evilAccount)
     }
   }
 
   @Test
   def testDelete() : Unit = {
-    intercept[NotImplementedError] {
+    intercept[EntityNotFoundException] {
       service.delete("uuid", account)
+    }
+
+    intercept[EntityNotFoundException] {
+      service.delete(conference.uuid, Account(Some("uuid"), Some("foo@bar.com")))
+    }
+
+    intercept[IllegalAccessException] {
+      service.delete(conference.uuid, evilAccount)
+    }
+
+    service.delete(conference.uuid, account)
+
+    intercept[EntityNotFoundException] {
+      service.delete(conference.uuid, account)
     }
   }
 

@@ -96,6 +96,9 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
    * @param account    The account that owns the conference.
    *
    * @return The created conference.
+   *
+   * @throws EntityNotFoundException If the account does not exist.
+   * @throws IllegalArgumentException If the conference has an uuid.
    */
   def create(conference: Conference, account: Account) : Conference = {
 
@@ -123,9 +126,32 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
    * @param account    The account who wants to update the conference.
 
    * @return The updated conference.
+   *
+   * @throws IllegalArgumentException If the conference has no uuid
+   * @throws EntityNotFoundException If the conference or the user does not exist
+   * @throws IllegalAccessException If account is not an owner.
    */
   def update(conference: Conference, account: Account) : Conference = {
-    throw new NotImplementedError()
+    val conf = dbTransaction { (em, tx) =>
+
+      if (conference.uuid == null)
+        throw new IllegalArgumentException("Unable to update a conference without uuid")
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val confChecked = em.find(classOf[Conference], conference.uuid)
+      if (confChecked == null)
+        throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
+
+      if (!confChecked.owners.contains(accountChecked))
+        throw new IllegalAccessException("No permissions for conference with uuid = " + conference.uuid)
+
+      em.merge(conference)
+    }
+
+    get(conf.uuid)
   }
 
   /**
@@ -135,10 +161,26 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
    * @param id      The id of the conference to delete.
    * @param account The account who wants to perform the delete.
    *
-   * @return True if the conference was deleted, false otherwise.
+   * @throws IllegalArgumentException If the conference has no uuid
+   * @throws EntityNotFoundException If the conference or the user does not exist
+   * @throws IllegalAccessException If account is not an owner.
    */
-  def delete(id: String, account: Account) : Boolean = {
-    throw new NotImplementedError()
+  def delete(id: String, account: Account) : Unit = {
+    dbTransaction { (em, tx) =>
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val confChecked = em.find(classOf[Conference], id)
+      if (confChecked == null)
+        throw new EntityNotFoundException("Unable to find conference with uuid = " + id)
+
+      if (!confChecked.owners.contains(accountChecked))
+        throw new IllegalAccessException("No permissions for conference with uuid = " + id)
+
+      em.remove(confChecked)
+    }
   }
 
 }
