@@ -1,10 +1,6 @@
-/**
- * Created by sobolev on 2/19/14.
- */
 package utils
 
 import java.net.URL
-import java.util.{TreeSet => JTreeSet}
 import collection.JavaConversions._
 
 import play.api.libs.json._
