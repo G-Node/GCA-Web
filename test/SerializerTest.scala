@@ -111,6 +111,22 @@ class SerializerTest extends JUnitSuite {
     )
   }
 
+  @Test
+  def testAbstract(): Unit = {
+    val jsFormat = new AbstractFormat(baseUrl)
+
+    val json = jsFormat.writes(sampleAbstract)
+
+    jsFormat.reads(json).fold(
+      valid = { converted => {
+        assert(converted.uuid == sampleAbstract.uuid)
+        assert(converted.authors.iterator().next().uuid == sampleAuthor.uuid)
+        assert(converted.affiliations.iterator().next().uuid == sampleAffiliation.uuid)
+        assert(converted.references.iterator().next().uuid == sampleReference.uuid)
+      }},
+      invalid = { errors => throw new MatchError(errors.toString()) }
+    )
+  }
 }
 
 object SerializerTest {
