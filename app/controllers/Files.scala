@@ -27,7 +27,7 @@ object Files extends Controller {
    *
    * @return abstract in JSON / abstract page
    */
-  def download(id: String, f_id: String) : Action[AnyContent] = TODO
+  def download(id: String) : Action[AnyContent] = TODO
 
   /**
    * Delete an existing abstract.
@@ -36,6 +36,6 @@ object Files extends Controller {
    *
    * @return OK or Failed / Redirect to the abstract list page
    */
-  def delete(id: String, f_id: String) : Action[AnyContent] = TODO
+  def delete(id: String) : Action[AnyContent] = TODO
 
 }

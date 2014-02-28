@@ -1,16 +1,12 @@
 package controllers
 
 import play.api.mvc._
-import play.api.libs.json._
-
-import service.ConferenceService
-import utils.serializer.ConferenceFormat
 
 /**
  * Conferences controller.
  * Manages HTTP request logic for conferences.
  */
-object Conferences extends Controller with securesocial.core.SecureSocial {
+object Conferences extends Controller with OwnerManager with securesocial.core.SecureSocial {
 
   /**
    * Create a new conference.
