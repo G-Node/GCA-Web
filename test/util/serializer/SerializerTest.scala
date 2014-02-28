@@ -1,10 +1,9 @@
-package test
+package util.serializer
 
 import org.junit._
 import org.scalatest.junit.JUnitSuite
 import play.api.test.FakeApplication
 import play.api.Play
-import play.api.libs.json._
 
 import models._
 import utils.serializer._

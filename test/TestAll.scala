@@ -9,6 +9,7 @@
 
 import org.scalatest.Suites
 import service.{ConferenceServiceTest, AbstractServiceTest}
+import util.serializer.SerializerTest
 
 
 /**
@@ -16,6 +17,7 @@ import service.{ConferenceServiceTest, AbstractServiceTest}
  */
 class TestAll extends Suites(
 
+  new SerializerTest,
   new AbstractServiceTest,
   new ConferenceServiceTest
 
