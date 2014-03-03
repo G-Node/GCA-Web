@@ -10,9 +10,10 @@
 package service
 
 import scala.{Option => ?}
+import collection.JavaConversions._
 import models._
 import service.util.DBUtil
-import javax.persistence.EntityManagerFactory
+import javax.persistence.{Persistence, EntityManagerFactory}
 
 
 object Assets extends DBUtil {
@@ -140,8 +141,8 @@ object Assets extends DBUtil {
     )
   }
 
-  def fill_db(e: EntityManagerFactory) : Unit = {
-    emf = e
+  def fillDB(e: Option[EntityManagerFactory]) : Unit = {
+    emf = e.getOrElse(Persistence.createEntityManagerFactory("defaultPersistenceUnit"))
     dbTransaction { (em, tx) =>
       // merge accounts
       val accs = accounts.map { acc =>
@@ -156,25 +157,24 @@ object Assets extends DBUtil {
 
       var abstrs = abstracts
 
-
       // add alice and bob to abstract owners and merge abstracts
       // add all abstracts to conference one
       abstrs = abstrs.map { abstr =>
         abstr.conference = confs(0)
 
-        for (a: Author <- abstr.authors.toArray) {
-          abstr.authors.remove(a)
-          abstr.authors.add(em.merge(a))
+        abstr.owners.add(accs(0))
+        abstr.owners.add(accs(1))
+
+        abstr.authors.foreach { author =>
+          author.abstr = abstr
         }
 
-        for (a: Affiliation <- abstr.affiliations.toArray) {
-          abstr.affiliations.remove(a)
-          abstr.affiliations.add(em.merge(a))
+        abstr.affiliations.foreach { affiliation =>
+          affiliation.abstr = abstr
         }
 
-        for (a: Reference <- abstr.references.toArray) {
-          abstr.references.remove(a)
-          abstr.references.add(em.merge(a))
+        abstr.references.foreach { reference =>
+          reference.abstr = abstr
         }
 
         em.merge(abstr)
@@ -182,8 +182,8 @@ object Assets extends DBUtil {
     }
   }
 
-  def kill_db(e: EntityManagerFactory) : Unit = {
-    emf = e
+  def killDB(e: Option[EntityManagerFactory]) : Unit = {
+    emf = e.getOrElse(Persistence.createEntityManagerFactory("defaultPersistenceUnit"))
     dbTransaction { (em, tx) =>
       em.createQuery("DELETE FROM Affiliation").executeUpdate()
       em.createQuery("DELETE FROM Author").executeUpdate()
