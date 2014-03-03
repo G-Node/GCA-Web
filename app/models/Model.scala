@@ -36,7 +36,10 @@ class Model extends Ordered[Model] {
 
   @Transient
   override def compare(that: Model): Int = {
-    uuid.compare(that.uuid)
+    if (uuid != null && that.uuid != null)
+      uuid.compare(that.uuid)
+    else
+      hashCode.compare(that.hashCode)
   }
 }
 
