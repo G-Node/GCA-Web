@@ -13,14 +13,12 @@ import scala.{Option => ?}
 import collection.JavaConversions._
 import models._
 import service.util.DBUtil
-import javax.persistence.{Persistence, EntityManagerFactory}
+import javax.persistence.EntityManagerFactory
 
 
-object Assets extends DBUtil {
+class Assets(val emf: EntityManagerFactory) extends DBUtil {
 
-  protected var emf : EntityManagerFactory = _
-
-  def abstracts : Array[Abstract] = Array(
+  var abstracts : Array[Abstract] = Array(
     Abstract(
       None,
       ?("Title of abstract one"),
@@ -55,7 +53,7 @@ object Assets extends DBUtil {
       ?("coi two"),
       ?("acc two"),
       approved = true,
-      published = true,
+      published = false,
       authors = Seq(
         Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name")),
         Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name")),
@@ -80,7 +78,7 @@ object Assets extends DBUtil {
       ?("coi three"),
       ?("acc three"),
       approved = true,
-      published = true,
+      published = false,
       authors = Seq(
         Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name")),
         Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name")),
@@ -104,8 +102,8 @@ object Assets extends DBUtil {
       ?("doi four"),
       ?("coi four"),
       ?("acc four"),
-      approved = true,
-      published = true,
+      approved = false,
+      published = false,
       authors = Seq(
         Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name")),
         Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name")),
@@ -123,47 +121,66 @@ object Assets extends DBUtil {
     )
   )
 
-  def alice : Account = Account(None, ?("alice@foo.net"))
+  def createAbstract() : Abstract = {
+    Abstract(
+      None,
+      ?("Title of new abstract"),
+      ?("Completely new topic"),
+      ?("Cool new text"),
+      ?("new doi"),
+      ?("No conflict at all"),
+      ?("Thanks for all the fish!"),
+      approved = false,
+      published = false,
+      authors = Seq(
+        Author(None, ?("new@mail.bar"), ?("New"), ?("Cool"), ?("Author")),
+        Author(None, ?("foo@mail.bar"), ?("Second"), None, ?("Author"))
+      ),
+      affiliations = Seq(
+        Affiliation(None, ?("New Street 5"), ?("New York"), ?("New Department"), None, None, None)
+      ),
+      references = Seq(
+        Reference(None, ?("E. Albert et al."), ?("New is always better"), ?(2000), None)
+      )
+    )
+  }
 
-  def bob: Account = Account(None, ?("bob@bar.net"))
+  var alice : Account = Account(None, ?("alice@foo.net"))
 
-  def eve: Account = Account(None, ?("dont@be-evil.com"))
+  var bob: Account = Account(None, ?("bob@bar.net"))
+
+  var eve: Account = Account(None, ?("dont@be-evil.com"))
 
   def accounts : Array[Account] = {
     Array(alice, bob, eve)
   }
 
-  def conferences : Array[Conference] = {
-    Array(
-      Conference(None, ?("The first conference")),
-      Conference(None, ?("The second conference")),
-      Conference(None, ?("The third conference"))
-    )
-  }
+  var conferences : Array[Conference] = Array(
+    Conference(None, ?("The first conference")),
+    Conference(None, ?("The second conference")),
+    Conference(None, ?("The third conference"))
+  )
 
-  def fillDB(e: Option[EntityManagerFactory]) : Unit = {
-    emf = e.getOrElse(Persistence.createEntityManagerFactory("defaultPersistenceUnit"))
+  def fillDB() : Unit = {
     dbTransaction { (em, tx) =>
       // merge accounts
-      val accs = accounts.map { acc =>
-        em.merge(acc)
-      }
+      alice = em.merge(alice)
+      bob = em.merge(bob)
+      eve = em.merge(eve)
 
       // add alice to conference owners and merge conferences
-      val confs = conferences.map { conf =>
-        conf.owners.add(accs(0))
+      conferences = conferences.map { conf =>
+        conf.owners.add(alice)
         em.merge(conf)
       }
 
-      var abstrs = abstracts
-
       // add alice and bob to abstract owners and merge abstracts
       // add all abstracts to conference one
-      abstrs = abstrs.map { abstr =>
-        abstr.conference = confs(0)
+      abstracts = abstracts.map { abstr =>
+        abstr.conference = conferences(0)
 
-        abstr.owners.add(accs(0))
-        abstr.owners.add(accs(1))
+        abstr.owners.add(alice)
+        abstr.owners.add(bob)
 
         abstr.authors.foreach { author =>
           author.abstr = abstr
@@ -179,11 +196,12 @@ object Assets extends DBUtil {
 
         em.merge(abstr)
       }
+
+
     }
   }
 
-  def killDB(e: Option[EntityManagerFactory]) : Unit = {
-    emf = e.getOrElse(Persistence.createEntityManagerFactory("defaultPersistenceUnit"))
+  def killDB() : Unit = {
     dbTransaction { (em, tx) =>
       em.createQuery("DELETE FROM Affiliation").executeUpdate()
       em.createQuery("DELETE FROM Author").executeUpdate()
