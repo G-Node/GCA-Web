@@ -10,12 +10,14 @@
 package service
 
 import models._
+import javax.persistence.{Persistence, EntityManagerFactory}
+import service.util.DBUtil
 
 /**
  * Service class that provides data access logic for abstracts and nested
  * authors and affiliations.
  */
-class AbstractService {
+class AbstractService(val emf: EntityManagerFactory) extends DBUtil {
 
   /**
    * List all published abstracts that belong to a conference.
@@ -106,6 +108,17 @@ class AbstractService {
    */
   def delete(id: String, account: Account) : Boolean = {
     throw new NotImplementedError()
+  }
+
+}
+
+
+object AbstractService {
+
+  def apply() : AbstractService = {
+    new AbstractService(
+      Persistence.createEntityManagerFactory("defaultPersistenceUnit")
+    )
   }
 
 }
