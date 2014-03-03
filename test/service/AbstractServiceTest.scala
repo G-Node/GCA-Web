@@ -13,8 +13,9 @@ import org.scalatest.junit.JUnitSuite
 import org.junit._
 import play.api.test.FakeApplication
 import play.api.Play
-import javax.persistence.{EntityManagerFactory, Persistence}
+import javax.persistence.{EntityNotFoundException, NoResultException, EntityManagerFactory, Persistence}
 import service.util.DBUtil
+import models.Account
 
 /**
  * Test for the abstracts service layer
@@ -22,67 +23,140 @@ import service.util.DBUtil
 class AbstractServiceTest extends JUnitSuite with DBUtil {
 
   var emf : EntityManagerFactory = _
-
   var srv : AbstractService = _
+  var assets: Assets = _
 
   @Before
   def before() : Unit = {
     emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-    Assets.fillDB(Some(emf))
-    srv = new AbstractService()
+    assets = new Assets(emf)
+    assets.fillDB()
+    srv = new AbstractService(emf)
   }
 
   @After
   def after() : Unit = {
-    Assets.killDB(Some(emf))
+    assets.killDB()
   }
 
   @Test
   def testList() : Unit = {
-      intercept[NotImplementedError] {
-        srv.list(null)
-      }
+    var abstracts = srv.list(assets.conferences(0))
+    assert(abstracts.size == assets.abstracts.size)
+
+    abstracts = srv.list(assets.conferences(1))
+    assert(abstracts.size == 0)
   }
 
   @Test
   def testListOwn() : Unit = {
-    intercept[NotImplementedError] {
-      srv.listOwn(null)
-    }
+    var abstracts = srv.listOwn(assets.alice)
+    assert(abstracts.size == assets.abstracts.size)
+
+    abstracts = srv.listOwn(assets.bob)
+    assert(abstracts.size == assets.abstracts.size)
+
+    abstracts = srv.listOwn(assets.eve)
+    assert(abstracts.size == 0)
   }
 
   @Test
   def testGet() : Unit = {
-    intercept[NotImplementedError] {
-      srv.get(null)
+    val abstr = srv.get(assets.abstracts(0).uuid)
+    assert(abstr.uuid == assets.abstracts(0).uuid)
+
+    intercept[NoResultException] {
+      srv.get(assets.abstracts(1).uuid)
     }
   }
 
   @Test
   def testGetOwn() : Unit = {
-    intercept[NotImplementedError] {
-      srv.getOwn(null, null)
+    val abstr = srv.getOwn(assets.abstracts(0).uuid, assets.alice)
+
+    intercept[EntityNotFoundException] {
+      srv.getOwn(
+        assets.abstracts(0).uuid,
+        Account(Some("uuid"), Some("not@valid.com"))
+      )
+    }
+
+    intercept[NoResultException] {
+      srv.getOwn(assets.abstracts(1).uuid, assets.eve)
     }
   }
 
   @Test
   def testCreate() : Unit = {
-    intercept[NotImplementedError] {
-      srv.create(null, null, null)
+    val original = assets.createAbstract()
+    val abstr = srv.create(original, assets.conferences(0), assets.alice)
+
+    assert(abstr.uuid != null)
+    assert(abstr.title == original.title)
+    assert(abstr.text == original.text)
+
+    intercept[EntityNotFoundException] {
+      srv.create(original, assets.conferences(0),
+                 Account(Some("uuid"), Some("foo@bar.com")))
+    }
+
+    original.uuid = "fooid"
+    intercept[IllegalArgumentException] {
+      srv.create(original, assets.conferences(0), assets.alice)
     }
   }
 
   @Test
   def testUpdate() : Unit = {
-    intercept[NotImplementedError] {
-      srv.update(null, null)
+    val original = assets.abstracts(0)
+
+    original.title = "new title"
+    original.affiliations.clear()
+
+    val abstr = srv.update(abstr, assets.alice)
+
+    assert(abstr.title == original.title)
+    assert(abstr.affiliations.size == 0)
+
+    val illegal = assets.createAbstract()
+    intercept[IllegalArgumentException] {
+      srv.update(illegal, assets.alice)
+    }
+
+    illegal.uuid = "wringid"
+    intercept[EntityNotFoundException] {
+      srv.update(illegal, assets.alice)
+    }
+
+    intercept[EntityNotFoundException] {
+      srv.update(original, Account(Some("uuid"), Some("foo@bar.com")))
+    }
+
+    intercept[IllegalAccessException] {
+      srv.update(original, assets.eve)
     }
   }
 
   @Test
   def testDelete() : Unit = {
-    intercept[NotImplementedError] {
-      srv.delete(null, null)
+    val original = assets.abstracts(0)
+
+    intercept[EntityNotFoundException] {
+      srv.delete("uuid", assets.alice)
+    }
+
+    intercept[EntityNotFoundException] {
+      srv.delete(original.uuid, Account(Some("uuid"), Some("foo@bar.com")))
+    }
+
+    intercept[IllegalAccessException] {
+      srv.delete(original.uuid, assets.eve)
+    }
+
+    srv.delete(original.uuid, assets.alice)
+
+    intercept[EntityNotFoundException] {
+      srv.delete(original.uuid, assets.alice)
     }
   }
 
