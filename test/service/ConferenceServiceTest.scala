@@ -11,6 +11,7 @@ package service
 
 import org.scalatest.junit.JUnitSuite
 import org.junit._
+import collection.JavaConversions._
 import play.api.test.FakeApplication
 import play.api.Play
 import javax.persistence._
@@ -22,14 +23,19 @@ import service.util.DBUtil
  */
 class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
-  var service : ConferenceService = _
-  var account : Account = _
-  var evilAccount : Account = _
-  var conference : Conference = _
   var emf : EntityManagerFactory = _
+  var srv : ConferenceService = _
+  var assets : Assets = _
 
   @Before
   def before() : Unit = {
+    emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
+    assets = new Assets(emf)
+    assets.killDB()
+    assets.fillDB()
+    srv = new ConferenceService(emf)
+    
+    /*
     emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
     dbTransaction { (em, tx) =>
       conference = em.merge(Conference(None, Some("conf1")))
@@ -42,107 +48,96 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
       conference = em.merge(conference)
     }
     service = new ConferenceService(emf)
-  }
-
-  @After
-  def after() : Unit = {
-    dbTransaction { (em, tx) =>
-      em.createQuery("DELETE FROM Conference").executeUpdate()
-      em.createQuery("DELETE FROM Account").executeUpdate()
-    }
+    */
   }
 
   @Test
   def testList() : Unit = {
-    val list = service.list()
-    assert(list.size == 2)
+    val list = srv.list()
+    assert(list.size == 3)
   }
 
   @Test
   def testListOwn() : Unit = {
-    var list = service.listOwn(account)
+    var list = srv.listOwn(assets.alice)
+    assert(list.size == 3)
 
-    assert(list.size == 1)
-    assert(list.head.name == conference.name)
-
-    list = service.listOwn(Account(Some("uuid"), Some("foo@bar.com")))
-
+    list = srv.listOwn(assets.eve)
     assert(list.size == 0)
   }
 
   @Test
   def testGet() : Unit = {
-    val c = service.get(conference.uuid)
+    val c = srv.get(assets.conferences(0).uuid)
 
-    assert(c.uuid == conference.uuid)
+    assert(c.uuid == assets.conferences(0).uuid)
 
     intercept[NoResultException] {
-      service.get("uuid")
+      srv.get("uuid")
     }
   }
 
   @Test
   def testCreate() : Unit = {
-    dbTransaction { (em, tx) =>
-      em.createQuery("DELETE FROM Conference").executeUpdate()
-    }
-    val c = service.create(Conference(None, Some("fooconf")), account)
+    val c = srv.create(Conference(None, Some("fooconf")), assets.alice)
 
     assert(c.uuid != null)
     assert(c.name == "fooconf")
-    assert(c.owners.iterator.next.uuid == account.uuid)
+    assert(c.owners.head.uuid == assets.alice.uuid)
 
     intercept[IllegalArgumentException] {
-      service.create(Conference(Some("uuid"), Some("wrongconf")), account)
+      srv.create(Conference(Some("uuid"), Some("wrongconf")), assets.alice)
     }
 
     intercept[EntityNotFoundException] {
-      service.create(Conference(None, Some("fooconf two")), Account(Some("uuid"), Some("foo@bar.com")))
+      srv.create(Conference(None, Some("fooconf two")), Account(Some("uuid"), Some("foo@bar.com")))
     }
   }
 
   @Test
   def testUpdate() : Unit = {
+    val conference = assets.conferences(1)
     conference.name = "changed conference name"
-    val c = service.update(conference, account)
+    val c = srv.update(conference, assets.alice)
 
     assert(c.name == "changed conference name")
 
     intercept[IllegalArgumentException] {
-      service.update(Conference(None, Some("wrongconf")), account)
+      srv.update(Conference(None, Some("wrongconf")), assets.alice)
     }
 
     intercept[EntityNotFoundException] {
-      service.update(Conference(Some("uuid"), Some("wrongconf")), account)
+      srv.update(Conference(Some("uuid"), Some("wrongconf")), assets.alice)
     }
 
     intercept[EntityNotFoundException] {
-      service.update(conference, Account(Some("uuid"), Some("foo@bar.com")))
+      srv.update(conference, Account(Some("uuid"), Some("foo@bar.com")))
     }
 
     intercept[IllegalAccessException] {
-      service.update(conference, evilAccount)
+      srv.update(conference, assets.eve)
     }
   }
 
   @Test
   def testDelete() : Unit = {
+    val conference = assets.conferences(2)
     intercept[EntityNotFoundException] {
-      service.delete("uuid", account)
+      srv.delete("uuid", assets.alice)
     }
 
     intercept[EntityNotFoundException] {
-      service.delete(conference.uuid, Account(Some("uuid"), Some("foo@bar.com")))
+      srv.delete(conference.uuid, Account(Some("uuid"), Some("foo@bar.com")))
     }
 
     intercept[IllegalAccessException] {
-      service.delete(conference.uuid, evilAccount)
+      srv.delete(conference.uuid, assets.eve)
     }
 
-    service.delete(conference.uuid, account)
+    srv.delete(conference.uuid, assets.alice)
 
     intercept[EntityNotFoundException] {
-      service.delete(conference.uuid, account)
+      srv.delete(conference.uuid, assets.alice)
     }
   }
 

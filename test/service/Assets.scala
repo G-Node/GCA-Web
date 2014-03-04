@@ -145,11 +145,29 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
     )
   }
 
-  var alice : Account = Account(None, ?("alice@foo.net"))
+  var alice : Account = createAccount("Alice", "Goodchild", "alice@foo.com")
 
-  var bob: Account = Account(None, ?("bob@bar.net"))
+  var bob: Account = createAccount("Bob", "Trusty", "bob@bar.com")
 
-  var eve: Account = Account(None, ?("dont@be-evil.com"))
+  var eve: Account = createAccount("Eve", "Sarevok", "eve@evil.com")
+
+  def createAccount(firstName: String, lastName: String, mail: String) = {
+    val account = new Account()
+
+    account.firstName = firstName
+    account.lastName = lastName
+    account.mail = mail
+    account.userid = mail
+    account.authenticationMethod = "userPassword"
+    account.provider = "userpass"
+    account.pwInfo = PwInfo(
+      "bcrypt",
+      "$2a$10$iMoFsVr468/5JJkq0YLRruEMpleTNXMo/rdkm5aOqnuq83t5DwUvW",
+      None
+    )
+
+    account
+  }
 
   def accounts : Array[Account] = {
     Array(alice, bob, eve)
