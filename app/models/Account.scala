@@ -42,14 +42,14 @@ object PwInfo {
 }
 
 @Embeddable
-class oA1Info {
+class OpenAuth1Info {
   var token: String = _
   var secret: String = _
 }
 
-object oA1Info {
-  def apply(t: String, s: String) : oA1Info = {
-    val info: oA1Info = new oA1Info()
+object OpenAuth1Info {
+  def apply(t: String, s: String) : OpenAuth1Info = {
+    val info: OpenAuth1Info = new OpenAuth1Info()
     info.token  = t
     info.secret = s
 
@@ -58,17 +58,17 @@ object oA1Info {
 }
 
 @Embeddable
-class oA2Info {
+class OpenAuth2Info {
   var accessToken: String = _
   var tokenType: String = _
   var expiresIn: Integer = _
   var refreshToken: String = _
 }
 
-object oA2Info {
+object OpenAuth2Info {
   def apply(accessToken: String, tokenType: Option[String],
-            expiresIn: Option[Int], refreshToken: Option[String]) : oA2Info = {
-    val info: oA2Info = new oA2Info()
+            expiresIn: Option[Int], refreshToken: Option[String]) : OpenAuth2Info = {
+    val info: OpenAuth2Info = new OpenAuth2Info()
     info.accessToken  = accessToken
     info.tokenType    = Model.unwrapRef(tokenType)
     info.expiresIn    = expiresIn match { case Some(i) => i; case _ => null }
@@ -103,10 +103,10 @@ class Account extends Model with Identity {
   var pwInfo: PwInfo = _
 
   @Embedded
-  var oa1Info: oA1Info = _
+  var oa1Info: OpenAuth1Info = _
 
   @Embedded
-  var oa2Info: oA2Info = _
+  var oa2Info: OpenAuth2Info = _
 
   @ManyToMany(mappedBy = "owners")
   var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
@@ -189,12 +189,12 @@ class Account extends Model with Identity {
     }
 
     this.oa1Info = id.oAuth1Info match {
-      case Some(i) => oA1Info(i.token, i.secret)
+      case Some(i) => OpenAuth1Info(i.token, i.secret)
       case _       => null
     }
 
     this.oa2Info = id.oAuth2Info match {
-      case Some(i) => oA2Info(i.accessToken, i.tokenType, i.expiresIn, i.refreshToken)
+      case Some(i) => OpenAuth2Info(i.accessToken, i.tokenType, i.expiresIn, i.refreshToken)
       case _       => null
     }
 
