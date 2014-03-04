@@ -1,6 +1,9 @@
 package controllers
 
 import play.api.mvc._
+import utils.serializer.ConferenceFormat
+import service.ConferenceService
+import play.api.libs.json.JsArray
 
 /**
  * Conferences controller.
@@ -20,7 +23,11 @@ object Conferences extends Controller with OwnerManager with securesocial.core.S
    *
    * @return All conferences publicly available.
    */
-  def list: Action[AnyContent] = TODO
+  def list = Action { request =>
+    val confService = ConferenceService() // may be migrated to the constructor
+    val formatter = new ConferenceFormat(request.host) // may be migrated to the constructor
+    Ok(JsArray(confService.list().map(formatter.writes(_))))
+  }
 
   /**
    * A conference info by id.
