@@ -72,7 +72,7 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
 
   @Test
   def testGetOwn() : Unit = {
-    val abstr = srv.getOwn(assets.abstracts(0).uuid, assets.alice)
+    srv.getOwn(assets.abstracts(0).uuid, assets.alice)
 
     intercept[EntityNotFoundException] {
       srv.getOwn(
@@ -113,7 +113,7 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
     original.title = "new title"
     original.affiliations.clear()
 
-    val abstr = srv.update(abstr, assets.alice)
+    val abstr = srv.update(original, assets.alice)
 
     assert(abstr.title == original.title)
     assert(abstr.affiliations.size == 0)

@@ -12,10 +12,9 @@ package service
 import org.scalatest.junit.JUnitSuite
 import org.junit._
 import play.api.test.FakeApplication
-import service.ConferenceService
 import play.api.Play
-import javax.persistence.{EntityNotFoundException, NoResultException, EntityManagerFactory, Persistence}
-import models.{Conference, Account}
+import javax.persistence._
+import models._
 import service.util.DBUtil
 
 /**

@@ -191,7 +191,7 @@ class AbstractService(val emf: EntityManagerFactory) extends DBUtil {
    * @return The updated and persisted abstract.
    */
   def update(abstr : Abstract, account: Account) : Abstract = {
-    val abstrCreated = dbTransaction { (em, tx) =>
+    val abstrUpdated = dbTransaction { (em, tx) =>
 
       if (abstr.uuid == null)
         throw new IllegalArgumentException("Unable to update an abstract with null uuid")
@@ -210,31 +210,36 @@ class AbstractService(val emf: EntityManagerFactory) extends DBUtil {
       abstr.authors.foreach { author =>
         author.abstr = abstr
       }
-      abstrChecked.authors.foreach { author =>
-        if (!abstr.authors.contains(author))
-          em.remove(author)
-      }
 
       abstr.affiliations.foreach { affiliation =>
         affiliation.abstr = abstr
-      }
-      abstrChecked.affiliations.foreach { affiliation =>
-        if (!abstr.affiliations.contains(affiliation))
-          em.remove(affiliation)
       }
 
       abstr.references.foreach { reference =>
         reference.abstr = abstr
       }
+
+      val merged = em.merge(abstr)
+
+      abstrChecked.authors.foreach { author =>
+        if (!abstr.authors.contains(author))
+          em.remove(author)
+      }
+
+      abstrChecked.affiliations.foreach { affiliation =>
+        if (!abstr.affiliations.contains(affiliation))
+          em.remove(affiliation)
+      }
+
       abstrChecked.references.foreach { reference =>
         if (!abstr.references.contains(reference))
           em.remove(reference)
       }
 
-      em.merge(abstr)
+      merged
     }
 
-    getOwn(abstrCreated.uuid, account)
+    getOwn(abstrUpdated.uuid, account)
   }
 
   /**
@@ -255,12 +260,16 @@ class AbstractService(val emf: EntityManagerFactory) extends DBUtil {
       if (accountChecked == null)
         throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
 
-      val abstrChecked = em.find(classOf[Conference], id)
+      val abstrChecked = em.find(classOf[Abstract], id)
       if (abstrChecked == null)
         throw new EntityNotFoundException("Unable to find abstract with uuid = " + id)
 
       if (!abstrChecked.owners.contains(accountChecked))
         throw new IllegalAccessException("No permissions for abstract with uuid = " + id)
+
+      abstrChecked.authors.foreach(em.remove(_))
+      abstrChecked.affiliations.foreach(em.remove(_))
+      abstrChecked.references.foreach(em.remove(_))
 
       em.remove(abstrChecked)
     }

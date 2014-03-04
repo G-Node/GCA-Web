@@ -11,7 +11,7 @@ package models
 
 import collection.JavaConversions.asJavaCollection
 import java.util.{Set => JSet, TreeSet => JTreeSet, UUID}
-import javax.persistence.{Transient, PrePersist, Id, MappedSuperclass}
+import javax.persistence.{PrePersist, Id, MappedSuperclass}
 
 /**
  * Trait that defines stuff that is common for all models.
@@ -34,13 +34,20 @@ class Model extends Ordered[Model] {
       uuid = Model.makeUUID()
   }
 
-  @Transient
   override def compare(that: Model): Int = {
     if (uuid != null && that.uuid != null)
-      uuid.compare(that.uuid)
+      uuid.compareTo(that.uuid)
     else
-      hashCode.compare(that.hashCode)
+      hashCode.compareTo(that.hashCode)
   }
+
+  override def equals(that: Any) : Boolean = {
+    that match {
+      case t: Model => this.compare(t) == 0
+      case _ => super.equals(that)
+    }
+  }
+
 }
 
 object Model {
