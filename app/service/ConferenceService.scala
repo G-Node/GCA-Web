@@ -31,7 +31,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
   def list() : Seq[Conference] = {
     dbQuery { em =>
       val queryStr =
-        """SELECT c FROM Conference c
+        """SELECT DISTINCT c FROM Conference c
            LEFT JOIN FETCH c.owners
            LEFT JOIN FETCH c.abstracts"""
 
@@ -51,7 +51,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
   def listOwn(account: Account) : Seq[Conference] = {
     dbQuery { em =>
       val queryStr =
-        """SELECT c FROM Conference c
+        """SELECT DISTINCT c FROM Conference c
            INNER JOIN FETCH c.owners o
            LEFT JOIN FETCH c.abstracts
            WHERE o.uuid = :uuid"""
@@ -75,7 +75,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
   def get(id: String) : Conference = {
     dbQuery { em =>
       val queryStr =
-        """SELECT c FROM Conference c
+        """SELECT DISTINCT c FROM Conference c
            LEFT JOIN FETCH c.owners
            LEFT JOIN FETCH c.abstracts
            WHERE c.uuid = :uuid"""

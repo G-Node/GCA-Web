@@ -30,13 +30,9 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
   def before() : Unit = {
     emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
     assets = new Assets(emf)
+    assets.killDB()
     assets.fillDB()
     srv = new AbstractService(emf)
-  }
-
-  @After
-  def after() : Unit = {
-    assets.killDB()
   }
 
   @Test
