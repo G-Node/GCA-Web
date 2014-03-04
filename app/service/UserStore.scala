@@ -1,107 +1,105 @@
 package service
 
+import java.util.{List => JList}
 import play.api.{Logger, Application}
 import securesocial.core._
 import securesocial.core.providers.Token
 import securesocial.core.IdentityId
-import securesocial.core.SocialUser
 import anorm._
 import anorm.SqlParser._
 import play.api.db.DB
 import play.api.Play.current
 import org.joda.time.DateTime
 import utils.AnormExtension._
+import service.util.DBUtil
+import javax.persistence.{TypedQuery, Persistence, EntityManagerFactory}
+import models.Account
 
-class UserStore(application: Application) extends UserServicePlugin(application) {
 
-  private val userParser :RowParser[SocialUser] = {
-    get[String]("authMethod") ~ get[String]("id") ~ get[String]("provider") ~ get[String]("firstName") ~
-      get[String]("lastName") ~ get[String]("fullName") ~ get[Option[String]]("email") ~
-      get[Option[String]]("avatar") ~  get[Option[String]]("oa1Token") ~
-      get[Option[String]]("oa1Secret") ~ get[Option[String]]("oa2Token") ~ get[Option[String]]("oa2Type") ~
-      get[Option[Int]]("oa2ExpiresIn") ~ get[Option[String]]("oa2RefreshToken") ~
-      get[Option[String]]("pwHasher") ~ get[Option[String]]("pwPassword") ~ get[Option[String]]("pwSalt") map {
-      case "userPassword" ~ i ~ p ~ f ~ l ~ fn ~ e ~ a ~ _ ~ _ ~ _ ~ _  ~ _ ~ _ ~ h ~ pw ~ s =>
-        new SocialUser(IdentityId(i, p), f, l, fn, e, a, AuthenticationMethod.UserPassword, None, None, Some(new PasswordInfo(h.get, pw.get, s)))
-      case "oauth2" ~ i ~ p ~ f ~ l ~ fn ~ e ~ a ~ _ ~ _ ~ to ~ ty  ~ ex ~ re ~ _ ~ _ ~ _ =>
-        new SocialUser(IdentityId(i, p), f, l, fn, e, a, AuthenticationMethod.OAuth2, None, Some(new OAuth2Info(to.get, ty, ex, re)), None)
-      case "oauth1" ~ i ~ p ~ f ~ l ~ fn ~ e ~ a ~ to  ~ ts ~ _ ~ _  ~ _ ~ _ ~ _ ~ _ ~ _ =>
-        new SocialUser(IdentityId(i, p), f, l, fn, e, a, AuthenticationMethod.OAuth1, Some(new OAuth1Info(to.get, ts.get)), None, None)
+class UserStore(application: Application) extends UserServicePlugin(application) with DBUtil {
+
+  lazy val myEmf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
+
+  def emf: EntityManagerFactory = {
+    myEmf
+  }
+
+  def resultToAccount(result: JList[Account]) : Option[Account] = {
+    result.size() match {
+      case 0 => None
+      case 1 => Some(result.get(0))
+      case _ => throw new RuntimeException("42. 31337. Should not happen!")
     }
+  }
+
+  def findAccount(id: IdentityId) : Option[Account] = {
+    val user: Option[Account] = dbTransaction { (em, tx) =>
+
+      //for the userpass provider we want case insensitive lookup
+      val queryStr = id.providerId match {
+        case "userpass" =>
+          """SELECT a from Account a WHERE
+             LOWER(a.userid) = LOWER(:uid) AND a.provider = :provider"""
+        case _ =>
+          """SELECT a from Account a
+             WHERE a.userid = :uid AND a.provider = :provider"""
+      }
+
+      val query : TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
+      query.setParameter("uid", id.userId)
+      query.setParameter("provider", id.providerId)
+      resultToAccount(query.getResultList)
+    }
+
+    user
   }
 
   def find(id: IdentityId): Option[Identity] = {
     Logger.debug("find")
-
-    DB.withConnection{ implicit c =>
-      SQL("SELECT * from Users u WHERE lower(u.id)=lower({id}) AND u.provider={provider}").onParams(id.userId,
-        id.providerId).as(userParser.singleOpt)
-    }
-
+    val account = findAccount(id)
+    Logger.debug("found:" + account.toString)
+    account
   }
 
   def findByEmailAndProvider(email: String, providerId: String): Option[Identity] = {
     Logger.debug("findByEmailAndProvider $email, $providerId")
 
-    DB.withConnection{ implicit c =>
-      SQL("SELECT * from Users u WHERE lower(u.email)=lower({mail}) AND u.provider={provider}").onParams(email,
-        providerId).as(userParser.singleOpt)
+    dbTransaction { (em, tx) =>
+      val queryStr =
+        """SELECT a from Account a
+           WHERE LOWER(a.mail) = LOWER(:mail) AND a.provider = :provider"""
+
+      val query : TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
+      query.setParameter("mail", email)
+      query.setParameter("provider", providerId)
+      resultToAccount(query.getResultList)
     }
   }
 
 
   def save(user: Identity): Identity = {
 
-    val newUser = this.find(user.identityId) match {
-      case Some(u) => false
-      case None => true
-    }
+    val dbUser: Option[Account] = findAccount(user.identityId)
 
-    if(!newUser) {
-      Logger.info("Have user already in the db!")
-    }
+    dbTransaction { (em, tx) =>
 
-    //FIXME: check if user is different and if not don't do anything
+      Logger.debug(dbUser.toString)
 
-    DB.withConnection { implicit c =>
+      dbUser match {
 
-      if (newUser) {
+        case Some(account) =>
+          Logger.debug("Have user already in the db!")
+          account.updateFromIdentity(user)
+          em.merge(account)
+          account
 
-        SQL("""INSERT INTO Users (id, provider, firstName, lastName, fullName, email, avatar, authMethod) VALUES
-              | ({id}, {provider}, {firstName}, {lastName}, {fullName}, {email}, {avatar}, {authMethod})
-            """.stripMargin).onParams(user.identityId.userId, user.identityId.providerId, user.firstName, user.lastName,
-            user.fullName, user.email, user.avatarUrl, user.authMethod.method).execute()
-
-      } else {
-
-        SQL("""UPDATE Users u SET firstName={firstName}, lastName={lastName},
-              | fullName={fullName}, email={email}, avatar={avatar}, authMethod={authMethod}
-              | WHERE u.id={id} AND u.provider={provider}
-            """.stripMargin).onParams(user.firstName, user.lastName, user.fullName, user.email,
-            user.avatarUrl, user.authMethod.method, user.identityId.userId, user.identityId.providerId).execute()
-      }
-
-      user.oAuth1Info.map { oa => SQL(
-        """UPDATE Users u SET oa1Token={token}, oa1Secret={secret}
-          | WHERE u.id={id} AND u.provider={provider}
-        """.stripMargin).onParams(oa.token, oa.secret, user.identityId.userId, user.identityId.providerId).execute()
-      }
-
-      user.oAuth2Info.map { oa => SQL(
-        """UPDATE Users u SET oa2Token={token}, oa2Type={type}, oa2ExpiresIn={expires}, oa2RefreshToken={refresh}
-          | WHERE u.id={id} AND u.provider={provider}
-        """.stripMargin).onParams(oa.accessToken, oa.tokenType, oa.expiresIn, oa.refreshToken,
-          user.identityId.userId, user.identityId.providerId).execute()
-      }
-
-      user.passwordInfo.map{ info => SQL(
-        """UPDATE Users u SET pwHasher={haser}, pwPassword={pw}, pwSalt={salt}
-          | WHERE u.id={id} AND u.provider={provider}""".stripMargin).onParams(
-          info.hasher, info.password, info.salt, user.identityId.userId, user.identityId.providerId).execute()
+        case None =>
+          val account = Account(user)
+          em.persist(account)
+          Logger.debug("New user " + account.toString)
+          account
       }
     }
-
-    user
   }
 
   private val tokenParser : anorm.RowParser[Token] = {
