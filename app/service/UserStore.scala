@@ -142,7 +142,7 @@ class UserStore(application: Application) extends UserServicePlugin(application)
 
   def deleteExpiredTokens() {
     DB.withConnection{ implicit c =>
-      SQL("delete from Tokens t where t.expirationTime > now()").execute()
+      SQL("delete from Tokens t where t.expirationTime < now()").execute()
     }
   }
 }
