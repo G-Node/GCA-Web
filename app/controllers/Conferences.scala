@@ -6,12 +6,16 @@ import service.ConferenceService
 import play.api.libs.json.JsArray
 import utils.URLHelper
 
+import play.api.Play.current
+
 
 /**
  * Conferences controller.
  * Manages HTTP request logic for conferences.
  */
 object Conferences extends Controller with OwnerManager with securesocial.core.SecureSocial {
+
+  val httpPrefix = current.configuration.getString("httpPrefix").get
 
   /**
    * Create a new conference.
@@ -27,7 +31,7 @@ object Conferences extends Controller with OwnerManager with securesocial.core.S
    */
   def list = Action { request =>
     val confService = ConferenceService() // may be migrated to the constructor
-    val formatter = new ConferenceFormat(URLHelper.getBaseUrl(request.uri)) // may be migrated to the constructor
+    val formatter = new ConferenceFormat(httpPrefix + request.host) // may be migrated to the constructor
     Ok(JsArray(confService.list().map(formatter.writes(_))))
   }
 
