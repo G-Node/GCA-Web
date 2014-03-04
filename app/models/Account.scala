@@ -90,6 +90,8 @@ class Account extends Model with Identity {
   var lastName: String = _
   var fullName: String = _
 
+  var avatar: String = _
+
   //IdendityId class
   var provider: String = _
   var userid: String = _
@@ -126,7 +128,12 @@ class Account extends Model with Identity {
     }
   }
 
-  override def avatarUrl: Option[String] = { None }
+  override def avatarUrl: Option[String] = {
+    avatar match {
+      case s: String => Some(s)
+      case _         => None
+    }
+  }
 
   override def authMethod: AuthenticationMethod = {
     new AuthenticationMethod(authenticationMethod)
@@ -174,6 +181,7 @@ class Account extends Model with Identity {
     this.lastName  = id.lastName
     this.fullName  = id.fullName
     this.mail      = unwrapRef(id.email)
+    this.avatar    = unwrapRef(id.avatarUrl)
 
     this.pwInfo    = id.passwordInfo match {
       case Some(i) => PwInfo(i.hasher, i.password, i.salt)
