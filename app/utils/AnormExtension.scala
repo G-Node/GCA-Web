@@ -4,6 +4,7 @@ package utils
 import org.joda.time._
 import org.joda.time.format._
 import anorm._
+import scala.reflect.internal.util.TableDef.Column
 
 //taken from http://stackoverflow.com/questions/11388301/joda-datetime-field-on-play-framework-2-0s-anorm
 object AnormExtension {
