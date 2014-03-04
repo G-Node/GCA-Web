@@ -79,9 +79,6 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
   @Test
   def testCreate() : Unit = {
-    dbTransaction { (em, tx) =>
-      em.createQuery("DELETE FROM Conference").executeUpdate()
-    }
     val c = srv.create(Conference(None, Some("fooconf")), assets.alice)
 
     assert(c.uuid != null)
