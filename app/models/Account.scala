@@ -13,10 +13,8 @@ import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence.{Embedded, Embeddable, ManyToMany, Entity}
 import securesocial.core._
-import securesocial.core.OAuth2Info
-import securesocial.core.OAuth1Info
-import securesocial.core.IdentityId
-import scala.beans.BeanProperty
+import securesocial.core.{IdentityId, OAuth2Info, OAuth1Info}
+
 
 @Embeddable
 class PwInfo {
@@ -43,6 +41,43 @@ object PwInfo {
   }
 }
 
+@Embeddable
+class oA1Info {
+  var token: String = _
+  var secret: String = _
+}
+
+object oA1Info {
+  def apply(t: String, s: String) : oA1Info = {
+    val info: oA1Info = new oA1Info()
+    info.token  = t
+    info.secret = s
+
+    info
+  }
+}
+
+@Embeddable
+class oA2Info {
+  var accessToken: String = _
+  var tokenType: String = _
+  var expiresIn: Integer = _
+  var refreshToken: String = _
+}
+
+object oA2Info {
+  def apply(accessToken: String, tokenType: Option[String],
+            expiresIn: Option[Int], refreshToken: Option[String]) : oA2Info = {
+    val info: oA2Info = new oA2Info()
+    info.accessToken  = accessToken
+    info.tokenType    = Model.unwrapRef(tokenType)
+    info.expiresIn    = expiresIn match { case Some(i) => i; case _ => null }
+    info.refreshToken = Model.unwrapRef(refreshToken)
+
+    info
+  }
+
+}
 
 /**
  * Model class for accounts.
@@ -65,13 +100,19 @@ class Account extends Model with Identity {
   @Embedded
   var pwInfo: PwInfo = _
 
+  @Embedded
+  var oa1Info: oA1Info = _
+
+  @Embedded
+  var oa2Info: oA2Info = _
+
   @ManyToMany(mappedBy = "owners")
   var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
   @ManyToMany(mappedBy = "owners")
   var conferences: JSet[Conference] = new JTreeSet[Conference]()
 
 
-  //Identity
+  //Identity specific getter
 
   override def identityId: IdentityId = {
     new IdentityId(userid, provider)
@@ -91,8 +132,27 @@ class Account extends Model with Identity {
     new AuthenticationMethod(authenticationMethod)
   }
 
-  override def oAuth1Info: Option[OAuth1Info]  = { null }
-  override def oAuth2Info: Option[OAuth2Info] = { null }
+  override def oAuth1Info: Option[OAuth1Info]  = {
+    if (oa1Info != null) {
+      Some(new OAuth1Info(oa1Info.token, oa1Info.secret))
+    } else {
+      None
+    }
+  }
+
+  override def oAuth2Info: Option[OAuth2Info] = {
+    if (oa2Info != null) {
+      val tokenType    = oa2Info.tokenType match { case s: String => Some(s); case _ => None }
+      val expiresIn    = oa2Info.expiresIn match { case i: Integer => Some(i.asInstanceOf[Int]); case _ => None }
+      val refreshToken = oa2Info.refreshToken match { case s: String => Some(s); case _ => None }
+
+      Some(new OAuth2Info(oa2Info.accessToken, tokenType, expiresIn, refreshToken))
+    } else {
+      None
+    }
+  }
+
+
   override def passwordInfo: Option[PasswordInfo] = {
     if (pwInfo != null) {
       val salt = pwInfo.salt match {
@@ -117,6 +177,16 @@ class Account extends Model with Identity {
 
     this.pwInfo    = id.passwordInfo match {
       case Some(i) => PwInfo(i.hasher, i.password, i.salt)
+      case _       => null
+    }
+
+    this.oa1Info = id.oAuth1Info match {
+      case Some(i) => oA1Info(i.token, i.secret)
+      case _       => null
+    }
+
+    this.oa2Info = id.oAuth2Info match {
+      case Some(i) => oA2Info(i.accessToken, i.tokenType, i.expiresIn, i.refreshToken)
       case _       => null
     }
 
