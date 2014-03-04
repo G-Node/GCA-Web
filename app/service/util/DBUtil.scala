@@ -7,7 +7,7 @@ import javax.persistence.{EntityTransaction, EntityManagerFactory, EntityManager
  */
 trait DBUtil {
 
-  def emf: EntityManagerFactory
+  protected def emf: EntityManagerFactory
 
   /**
    * Handles a function call inside a transaction and passes an entity manager to

@@ -1,10 +1,9 @@
-package test.service
+package service
 
 import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
 
-import service._
 import models._
 
 
