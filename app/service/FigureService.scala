@@ -25,7 +25,7 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
     dbQuery { em =>
       val queryStr =
         """SELECT DISTINCT f FROM Figure f
-           LEFT JOIN FETCH f.conference
+           LEFT JOIN FETCH f.abstr
            WHERE f.uuid = :uuid"""
 
       val query : TypedQuery[Figure] = em.createQuery(queryStr, classOf[Figure])
@@ -57,8 +57,8 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
       if (accountChecked == null)
         throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
 
-      if (abstr.uuid != null)
-        throw new IllegalArgumentException("Unable to create conference with not null uuid")
+      if (abstr.uuid == null)
+        throw new IllegalArgumentException("Unable to assign figure to abstract with null uuid")
 
       fig.abstr = abstr
       val figMerged = em.merge(fig)
@@ -148,7 +148,7 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
    * @return A file handler to the respective image file.
    */
   def openFile(fig: Figure) : File = {
-    if (fig.uuid != null)
+    if (fig.uuid == null)
       throw new IllegalArgumentException("Unable to open file for figure without uuid")
 
     val file = new File(figPath, fig.uuid)
