@@ -3,11 +3,9 @@ package controllers
 import play.api.mvc._
 import utils.serializer.ConferenceFormat
 import service.ConferenceService
-import play.api.libs.json.JsArray
-import utils.URLHelper
-
+import play.api.libs.json._
 import play.api.Play.current
-
+import javax.persistence.NoResultException
 
 /**
  * Conferences controller.
@@ -30,9 +28,8 @@ object Conferences extends Controller with OwnerManager with securesocial.core.S
    * @return All conferences publicly available.
    */
   def list = Action { request =>
-    val confService = ConferenceService() // may be migrated to the constructor
-    val formatter = new ConferenceFormat(httpPrefix + request.host) // may be migrated to the constructor
-    Ok(JsArray(confService.list().map(formatter.writes(_))))
+    val formatter = new ConferenceFormat(httpPrefix + request.host)
+    Ok(JsArray(ConferenceService().list().map(formatter.writes(_))))
   }
 
   /**
@@ -42,7 +39,19 @@ object Conferences extends Controller with OwnerManager with securesocial.core.S
    *
    * @return A conference as JSON / page with conference info.
    */
-  def get(id: String) : Action[AnyContent] = TODO
+  def get(id: String) = Action { request =>
+    val formatter = new ConferenceFormat(httpPrefix + request.host)
+    try {
+      Ok(formatter.writes(ConferenceService().get(id)))
+    } catch {
+      case e: NoResultException => NotFound(JsObject(Seq(
+        "error" -> JsBoolean(true),
+        "causes" -> JsObject(Seq(
+          "id" -> JsString("Conference not found")
+        )
+      ))))
+    }
+  }
 
   /**
    * Update an existing conference info.
