@@ -8,7 +8,7 @@
 // LICENSE file in the root of the Project.
 
 import org.scalatest.Suites
-import service.{UserStoreTest, ConferenceServiceTest, AbstractServiceTest}
+import service.{FigureServiceTest, UserStoreTest, ConferenceServiceTest, AbstractServiceTest}
 import util.serializer.SerializerTest
 
 
@@ -20,6 +20,7 @@ class TestAll extends Suites(
   new SerializerTest,
   new AbstractServiceTest,
   new ConferenceServiceTest,
+  new FigureServiceTest,
   new UserStoreTest
 
 )

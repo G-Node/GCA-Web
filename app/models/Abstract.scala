@@ -12,6 +12,7 @@ package models
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
+import org.eclipse.persistence.annotations.CascadeOnDelete
 
 /**
  * A model class for abstracts
@@ -31,7 +32,8 @@ class Abstract extends Model {
 
   @ManyToOne
   var conference : Conference = _
-  @OneToOne(mappedBy = "abstr", optional = true)
+  @OneToOne(orphanRemoval = true)
+  @CascadeOnDelete
   var figure: Figure = _
 
   @ManyToMany

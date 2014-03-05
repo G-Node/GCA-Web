@@ -34,21 +34,6 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
     assets.killDB()
     assets.fillDB()
     srv = new ConferenceService(emf)
-    
-    /*
-    emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-    dbTransaction { (em, tx) =>
-      conference = em.merge(Conference(None, Some("conf1")))
-      em.merge(Conference(None, Some("conf2")))
-
-      account = em.merge(Account(None, Some("mail")))
-      evilAccount = em.merge(Account(None, Some("mail@eviltwin.ork")))
-
-      conference.owners.add(account)
-      conference = em.merge(conference)
-    }
-    service = new ConferenceService(emf)
-    */
   }
 
   @Test
