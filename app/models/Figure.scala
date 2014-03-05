@@ -21,7 +21,7 @@ class Figure extends Model {
   var name: String = _
   var caption: String = _
 
-  @OneToOne
+  @OneToOne(mappedBy = "figure", optional = false)
   var abstr: Abstract = _
 
 }

@@ -13,12 +13,14 @@ import models._
 import javax.persistence.{EntityNotFoundException, TypedQuery, Persistence, EntityManagerFactory}
 import service.util.DBUtil
 import scala.collection.JavaConversions._
+import java.io.File
+import play.Play
 
 /**
  * Service class that provides data access logic for abstracts and nested
  * authors and affiliations.
  */
-class AbstractService(val emf: EntityManagerFactory) extends DBUtil {
+class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DBUtil {
 
   /**
    * List all published abstracts that belong to a conference.
@@ -267,6 +269,13 @@ class AbstractService(val emf: EntityManagerFactory) extends DBUtil {
       if (!abstrChecked.owners.contains(accountChecked))
         throw new IllegalAccessException("No permissions for abstract with uuid = " + id)
 
+      val fig = abstrChecked.figure
+      if (fig != null) {
+        val file = new File(figPath, fig.uuid)
+        if (file.exists())
+          file.delete()
+      }
+
       abstrChecked.authors.foreach(em.remove(_))
       abstrChecked.affiliations.foreach(em.remove(_))
       abstrChecked.references.foreach(em.remove(_))
@@ -282,7 +291,8 @@ object AbstractService {
 
   def apply() : AbstractService = {
     new AbstractService(
-      Persistence.createEntityManagerFactory("defaultPersistenceUnit")
+      Persistence.createEntityManagerFactory("defaultPersistenceUnit"),
+      Play.application().configuration().getString("file.fig_path", "./figures")
     )
   }
 

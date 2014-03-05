@@ -14,9 +14,13 @@ import collection.JavaConversions._
 import models._
 import service.util.DBUtil
 import javax.persistence.EntityManagerFactory
+import play.Play
+import java.io.File
 
 
 class Assets(val emf: EntityManagerFactory) extends DBUtil {
+
+  val figPath = Play.application().configuration().getString("file.fig_path", "./figures")
 
   var abstracts : Array[Abstract] = Array(
     Abstract(
@@ -145,6 +149,13 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
     )
   }
 
+  var figures : Array[Figure] = Array(
+    Figure(None, ?("fig1"), ?("This is the super nice figure one.")),
+    Figure(None, ?("fig2"), ?("This is the super nice figure two.")),
+    Figure(None, ?("fig3"), ?("This is the super nice figure three.")),
+    Figure(None, ?("fig4"), ?("This is the super nice figure four."))
+  )
+
   var alice : Account = createAccount("Alice", "Goodchild", "alice@foo.com")
 
   var bob: Account = createAccount("Bob", "Trusty", "bob@bar.com")
@@ -215,11 +226,29 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
         em.merge(abstr)
       }
 
+      for (i <- 0 until figures.length) {
+        var fig = figures(i)
+        fig.abstr = abstracts(i)
+        fig = em.merge(fig)
+
+        val file = new File(figPath, fig.uuid)
+        if (!file.getParentFile.exists())
+          file.getParentFile.mkdirs()
+
+        file.createNewFile()
+      }
 
     }
   }
 
   def killDB() : Unit = {
+    val dir = new File(figPath)
+    if (dir.exists() && dir.isDirectory) {
+      dir.listFiles().foreach {file =>
+        file.delete()
+      }
+    }
+
     dbTransaction { (em, tx) =>
       em.createQuery("DELETE FROM Affiliation").executeUpdate()
       em.createQuery("DELETE FROM Author").executeUpdate()
