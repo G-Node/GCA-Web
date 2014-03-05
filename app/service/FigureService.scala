@@ -1,14 +1,14 @@
 package service
 
 import models._
-import java.io.File
+import java.io.{FileNotFoundException, File}
 import play.api.libs.Files.TemporaryFile
 import play.Play
-import javax.persistence.{Persistence, EntityManagerFactory}
+import javax.persistence._
 import service.util.DBUtil
 
 /**
- * Service class for figures. It implements all
+ * Service class for figures.
  */
 class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUtil {
 
@@ -18,9 +18,21 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
    * @param id      The id of the figure.
    *
    * @return The requested figure.
+   *
+   * @throws NoResultException If the conference was not found
    */
   def get(id: String) : Figure = {
-    throw new NotImplementedError()
+    dbQuery { em =>
+      val queryStr =
+        """SELECT DISTINCT f FROM Figure f
+           LEFT JOIN FETCH f.conference
+           WHERE f.uuid = :uuid"""
+
+      val query : TypedQuery[Figure] = em.createQuery(queryStr, classOf[Figure])
+      query.setParameter("uuid", id)
+
+      query.getSingleResult
+    }
   }
 
   /**
@@ -34,9 +46,36 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
    * @param account The account uploading the figure.
    *
    * @return The created figure.
+   *
+   * @throws EntityNotFoundException If the account does not exist
+   * @throws IllegalArgumentException If the abstract has no uuid
    */
   def create(fig: Figure, data: TemporaryFile, abstr: Abstract, account: Account) : Figure = {
-    throw new NotImplementedError()
+    val figCreated = dbTransaction { (em, tx) =>
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      if (abstr.uuid != null)
+        throw new IllegalArgumentException("Unable to create conference with not null uuid")
+
+      fig.abstr = abstr
+      val figMerged = em.merge(fig)
+
+      val file = new File(figPath, figMerged.uuid)
+      val parent = file.getParentFile
+
+      if (!parent.exists()) {
+        parent.mkdirs()
+      }
+
+      data.moveTo(file, replace = false)
+
+      figMerged
+    }
+
+    get(figCreated.uuid)
   }
 
   /**
@@ -50,7 +89,23 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
    * @return The created figure.
    */
   def update(fig: Figure, account: Account) : Figure = {
-    throw new NotImplementedError()
+    val figUpdated = dbTransaction { (em, tx) =>
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val figChecked = em.find(classOf[Figure], fig.uuid)
+      if (figChecked == null)
+        throw new EntityNotFoundException("Unable to find figure with uuid = " + account.uuid)
+
+      if (!figChecked.abstr.owners.contains(accountChecked))
+        throw new IllegalAccessException("No permissions for figure with uuid = " + fig.uuid)
+
+      em.merge(fig)
+    }
+
+    get(figUpdated.uuid)
   }
 
   /**
@@ -63,8 +118,26 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
    *
    * @return True if the figure was deleted, false otherwise.
    */
-  def delete(id: String, account: Account) : Boolean = {
-    throw new NotImplementedError()
+  def delete(id: String, account: Account) : Unit = {
+    dbTransaction { (em, tx) =>
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val figChecked = em.find(classOf[Figure], id)
+      if (figChecked == null)
+        throw new EntityNotFoundException("Unable to find figure with uuid = " + account.uuid)
+
+      if (!figChecked.abstr.owners.contains(accountChecked))
+        throw new IllegalAccessException("No permissions for figure with uuid = " + id)
+
+      val file = new File(figPath, figChecked.uuid)
+      if (file.exists())
+        file.delete()
+
+      em.remove(figChecked)
+    }
   }
 
   /**
@@ -75,7 +148,15 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
    * @return A file handler to the respective image file.
    */
   def openFile(fig: Figure) : File = {
-    throw new NotImplementedError()
+    if (fig.uuid != null)
+      throw new IllegalArgumentException("Unable to open file for figure without uuid")
+
+    val file = new File(figPath, fig.uuid)
+
+    if (!file.exists || !file.canRead)
+      throw new FileNotFoundException("Unable to open the file for reading: " + file.toPath)
+
+    file
   }
 
 }
