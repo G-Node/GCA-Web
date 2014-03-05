@@ -15,6 +15,9 @@ import org.scalatest.junit.JUnitSuite
 import play.api.Play
 import play.api.test.FakeApplication
 import service.util.DBUtil
+import play.api.libs.Files.TemporaryFile
+import java.io.File
+import models.Figure
 
 
 class FigureServiceTest extends JUnitSuite with DBUtil {
@@ -29,41 +32,55 @@ class FigureServiceTest extends JUnitSuite with DBUtil {
     assets = new Assets(emf)
     assets.killDB()
     assets.fillDB()
-    srv = new FigureService(emf, "images")
+    srv = new FigureService(emf, "./figures")
   }
 
   @Test
   def testGet(): Unit = {
-    intercept[NotImplementedError] {
-      srv.get(null)
+    assets.figures.foreach { figOrig =>
+      val fig = srv.get(figOrig.uuid)
+      assert(fig == figOrig)
     }
   }
 
   @Test
   def testCreate(): Unit = {
-    intercept[NotImplementedError] {
-      srv.create(null, null, null, null)
-    }
+    val file = new File("tmp")
+    file.createNewFile()
+    val tmp = new TemporaryFile(file)
+    val figOrig = Figure(None, Some("name"), Some("caption"))
+    val fig = srv.create(figOrig, tmp, assets.abstracts(3), assets.alice)
+
+    assert(fig.uuid != null)
+    assert(fig.name == "name")
+    assert(fig.caption == "caption")
   }
 
   @Test
   def testUpdate(): Unit = {
-    intercept[NotImplementedError] {
-      srv.update(null, null)
-    }
+    val fig = assets.figures(0)
+    fig.caption = "foo caption"
+    fig.name = "foo name"
+    val figUpdated = srv.update(fig, assets.alice)
+    assert(figUpdated.caption == "foo caption")
+    assert(figUpdated.name == "foo name")
   }
 
   @Test
   def testDelete(): Unit = {
-    intercept[NotImplementedError] {
-      srv.delete(null, null)
+    val fig = assets.figures(1)
+    srv.delete(fig.uuid, assets.alice)
+
+    intercept[NoResultException] {
+      srv.get(fig.uuid)
     }
   }
 
   @Test
   def testOpenFile(): Unit = {
-    intercept[NotImplementedError] {
-      srv.openFile(null)
+    assets.figures.foreach { fig =>
+      val file = srv.openFile(assets.figures(1))
+      assert(file.exists())
     }
   }
 
