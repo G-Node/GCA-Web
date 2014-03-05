@@ -152,8 +152,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
   var figures : Array[Figure] = Array(
     Figure(None, ?("fig1"), ?("This is the super nice figure one.")),
     Figure(None, ?("fig2"), ?("This is the super nice figure two.")),
-    Figure(None, ?("fig3"), ?("This is the super nice figure three.")),
-    Figure(None, ?("fig4"), ?("This is the super nice figure four."))
+    Figure(None, ?("fig3"), ?("This is the super nice figure three."))
   )
 
   var alice : Account = createAccount("Alice", "Goodchild", "alice@foo.com")
@@ -226,7 +225,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
         em.merge(abstr)
       }
 
-      for (i <- 0 until figures.length) {
+      figures = 0.until(figures.length).toArray.map { i: Int =>
         var fig = figures(i)
         fig.abstr = abstracts(i)
         fig = em.merge(fig)
@@ -236,8 +235,9 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
           file.getParentFile.mkdirs()
 
         file.createNewFile()
-      }
 
+        fig
+      }
     }
   }
 
