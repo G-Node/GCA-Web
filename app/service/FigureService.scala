@@ -4,11 +4,13 @@ import models._
 import java.io.File
 import play.api.libs.Files.TemporaryFile
 import play.Play
+import javax.persistence.{Persistence, EntityManagerFactory}
+import service.util.DBUtil
 
 /**
  * Service class for figures. It implements all
  */
-class FigureService(figPath: String) {
+class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUtil {
 
   /**
    * Get a figure by id.
@@ -90,8 +92,10 @@ object FigureService {
    * @return A new figure service.
    */
   def apply() : FigureService = {
-    val figPath = Play.application().configuration().getString("file.fig_path", "./figures")
-    new FigureService(figPath)
+    new FigureService(
+      Persistence.createEntityManagerFactory("defaultPersistenceUnit"),
+      Play.application().configuration().getString("file.fig_path", "./figures")
+    )
   }
 
 }
