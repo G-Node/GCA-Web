@@ -1,14 +1,12 @@
 # Routes
 
-
 # Home page
 GET         /                              controllers.Application.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                  controllers.Assets.at(path="/public", file)
 
-
-# Conference interface (no update)
+# Conference interface
 POST        /conferences                   controllers.Conferences.create()
 GET         /conferences                   controllers.Conferences.list()
 GET         /conferences/:id               controllers.Conferences.get(id: String)
@@ -16,25 +14,26 @@ PUT         /conferences/:id               controllers.Conferences.update(id: St
 DELETE      /conferences/:id               controllers.Conferences.delete(id: String)
 POST        /conferences/:id/abstracts     controllers.Abstracts.create(id: String)
 GET         /conferences/:id/abstracts     controllers.Abstracts.listByConference(id: String)
-
+PUT         /conferences/:id/owners        controllers.Conferences.setPermissions(id: String)
+GET         /conferences/:id/owners        controllers.Conferences.getPermissions(id: String)
 
 # Abstract interface
 GET         /abstracts/:id                 controllers.Abstracts.get(id: String)
 PUT         /abstracts/:id                 controllers.Abstracts.update(id: String)
 DELETE      /abstracts/:id                 controllers.Abstracts.delete(id: String)
-POST        /abstracts/:id/files           controllers.Files.upload(id: String)
-GET         /abstracts/:id/files/:f_id     controllers.Files.download(id: String, f_id: String)
-DELETE      /abstracts/:id/files/:f_id     controllers.Files.delete(id: String, f_id: String)
+POST        /abstracts/:id/figure          controllers.Files.upload(id: String)
+GET         /abstracts/:id/figure          controllers.Files.download(id: String)
+DELETE      /abstracts/:id/figure          controllers.Files.delete(id: String)
+PUT         /abstracts/:id/owners          controllers.Abstracts.setPermissions(id: String)
+GET         /abstracts/:id/owners          controllers.Abstracts.getPermissions(id: String)
 
 # [...] maybe add more aliases
-
 
 # Account interface
 GET         /user                          controllers.Application.showUserInfo
 GET         /user/:id/abstracts            controllers.Abstracts.listByAccount(id: String)
 GET         /secret                        controllers.Application.showSecret
 
-# ------ auth routes -----------------------------------------------------------
 # Login page
 GET         /login                         securesocial.controllers.LoginPage.login
 GET         /logout                        securesocial.controllers.LoginPage.logout
