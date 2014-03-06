@@ -153,6 +153,27 @@ package object serializer {
   }
 
   /**
+   * Figure serializer.
+   */
+  class FigureFormat extends Format[Figure] {
+
+    override def reads(json: JsValue): JsResult[Figure] = (
+      (__ \ "uuid").readNullable[String] and
+      (__ \ "name").readNullable[String] and
+      (__ \ "caption").readNullable[String]
+    )(Figure(_, _, _)).reads(json)
+
+    override def writes(a: Figure): JsValue = {
+      Json.obj(
+        "uuid" -> a.uuid,
+        "name" -> a.name,
+        "caption" -> a.caption,
+        "URL" -> a.uuid  // TODO: build URL
+      )
+    }
+  }
+
+  /**
    * Abstract serializer.
    *
    * @param baseUrl base URL from the configuration, like "http://hostname:port"
@@ -162,6 +183,7 @@ package object serializer {
     val authorF = new AuthorFormat()
     val affiliationF = new AffiliationFormat()
     val referenceF = new ReferenceFormat()
+    val figureF = new FigureFormat()
 
     /**
      * Builds an URL to the related abstracts from a given object ID.
@@ -206,7 +228,7 @@ package object serializer {
         "approved" -> a.approved,
         "published" -> a.published,
         "conference" -> a.conference.uuid,
-        "figure" -> a.figure.uuid, // TODO: build URL
+        "figure" -> figureF.writes(a.figure),
         "owners" -> ownersUrl(a.uuid),
         "authors" -> JsArray( for (auth <- authors) yield authorF.writes(auth) ),
         "affiliations" -> JsArray( for (auth <- affiliations) yield affiliationF.writes(auth) ),
