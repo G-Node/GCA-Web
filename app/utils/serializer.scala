@@ -164,12 +164,16 @@ package object serializer {
     )(Figure(_, _, _)).reads(json)
 
     override def writes(a: Figure): JsValue = {
-      Json.obj(
-        "uuid" -> a.uuid,
-        "name" -> a.name,
-        "caption" -> a.caption,
-        "URL" -> a.uuid  // TODO: build URL
-      )
+      if (a == null) {
+        JsNull
+      } else {
+        Json.obj(
+          "uuid" -> a.uuid,
+          "name" -> a.name,
+          "caption" -> a.caption,
+          "URL" -> a.uuid  // TODO: build URL
+        )
+      }
     }
   }
 
