@@ -154,7 +154,7 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
     val file = new File(figPath, fig.uuid)
 
     if (!file.exists || !file.canRead)
-      throw new FileNotFoundException("Unable to open the file for reading: " + file.toPath)
+      throw new FileNotFoundException("Unable to open the file for reading: " + file.toString)
 
     file
   }
