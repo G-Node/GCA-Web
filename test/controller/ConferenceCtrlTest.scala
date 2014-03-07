@@ -88,22 +88,21 @@ class ConferenceCtrlTest extends JUnitSuite with DBUtil {
 
   @Test
   def testUpdate(): Unit = {
-    val conf = assets.conferences(0)
+    val conf = assets.conferences(1)
     val body = formatter.writes(conf).as[JsObject] - "abstracts" - "uuid"
 
     val aliceCookie = getCookie(assets.alice.mail, "testtest", assets.alice.provider)
-    val bobCookie = getCookie(assets.bob.mail, "testtest", assets.bob.provider)
-
-    val createAuth = FakeRequest(POST, "/conferences/" + conf.uuid).withHeaders(
+    val updateAuth = FakeRequest(PUT, "/conferences/" + conf.uuid).withHeaders(
       ("Content-Type", "application/json")
     ).withJsonBody(body).withCookies(aliceCookie)
-    val created = route(ConferenceCtrlTest.app, createAuth).get
-    assert(status(created) == OK)
+    val updated = route(ConferenceCtrlTest.app, updateAuth).get
+    assert(status(updated) == OK)
 
-    val createUnauth = FakeRequest(POST, "/conferences/" + conf.uuid).withHeaders(
+    val bobCookie = getCookie(assets.bob.mail, "testtest", assets.bob.provider)
+    val updateUnauth = FakeRequest(PUT, "/conferences/" + conf.uuid).withHeaders(
       ("Content-Type", "application/json")
     ).withJsonBody(body).withCookies(bobCookie)
-    val failed = route(ConferenceCtrlTest.app, createUnauth).get
+    val failed = route(ConferenceCtrlTest.app, updateUnauth).get
     assert(status(failed) == FORBIDDEN)
   }
 

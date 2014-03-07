@@ -31,7 +31,7 @@ object RESTResults extends Results {
       "id" -> JsString("Object not found")
     )))
 
-  val AccessForbidden = BadRequest(Json.obj(
+  val AccessForbidden = Forbidden(Json.obj(
     "error" -> JsBoolean(true),
     "causes" -> Json.obj(
       "id" -> JsString("Access to this object is forbidden")
