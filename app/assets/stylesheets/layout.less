@@ -1,0 +1,135 @@
+@import "base/_colors";
+@import "base/_font";
+@import "base/_classes";
+
+body {
+  font-family: @family-sans;
+  color: @color-fg;
+  background-color: @color-grey;
+}
+
+
+.main-content {
+  .bordered-round;
+  padding: 2em;
+  background-color: @color-bg;
+}
+
+
+.separator {
+  border: none;
+  height: 1px;
+  color: @color-grey-dark;
+  background-color: @color-grey-dark;
+}
+
+
+.header {
+  .std-gap;
+}
+
+
+.abstract {
+
+  .title {
+    .std-gap;
+
+  }
+
+  .authors {
+
+    .std-gap;
+
+    ul {
+      .no-gap;
+      list-style: none;
+      display: inline-block;
+      font-size: large;
+    }
+
+    li {
+      display: inline-block;
+
+      span:after {
+        content: " ";
+      }
+    }
+
+    li:after {
+      content: ", ";
+    }
+
+    li:last-child:after {
+      content: "" !important;
+    }
+
+  }
+
+  .affiliations {
+    .std-gap;
+
+    ol {
+      .no-gap;
+      padding-left: 1.8em;
+      color: @color-fg-light;
+      font-size: x-small;
+      vertical-align: super;
+
+      span {
+        font-size: small;
+        font-style: italic;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  .abstract-text {
+    .std-gap;
+    font-family: @family-serif;
+    font-size: 16px;
+    text-align: justify;
+    min-height: 10em;
+  }
+
+  .acknowledgements {
+    .std-gap
+  }
+
+  .references {
+    .std-gap;
+
+    ol {
+      .no-gap;
+      padding-left: 1.8em;
+    }
+    //list-style: none;
+  }
+
+  .foot-info {
+    .std-gap
+  }
+
+}
+
+.editor-box {
+
+  .no-gap;
+  .bordered-round(@color-bg);
+
+  .btn-group {
+    margin-right: @default-margin;
+    margin-top: @default-margin;
+    display: none !important;
+  }
+
+}
+
+.editor-box:hover {
+
+  .bordered-round;
+
+  .btn-group {
+    display: block !important;
+  }
+
+}
