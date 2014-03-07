@@ -40,6 +40,11 @@ trait GCAAuth extends securesocial.core.SecureSocial {
       isAjaxCall = isREST
       apply(BodyParsers.parse.anyContent)(block)
     }
+
+    final def apply[P](bodyParser: BodyParser[P], isREST: Boolean)(block: R[P] => Result): Action[P] = {
+      isAjaxCall = isREST
+      apply(bodyParser)(block)
+    }
   }
 
   object AccountAwareAction extends SafeActionBuilder[RequestWithAccount] {

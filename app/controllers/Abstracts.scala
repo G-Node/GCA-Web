@@ -6,6 +6,7 @@ import service._
 import utils.serializer.AbstractFormat
 import play.api.libs.json.Json
 import utils.GCAAuth
+import models.{Abstract, Account}
 
 
 /**
@@ -63,7 +64,24 @@ object Abstracts extends Controller with OwnerManager with  GCAAuth {
    *
    * @return abstract in JSON / abstract page
    */
-  def update(id: String) : Action[AnyContent] = TODO
+  def update(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
+    Logger.debug(s"Updating abstract with uuid: [$id]")
+
+    implicit val absFormat = new AbstractFormat("http")
+
+    val abstracts = AbstractService()
+
+    val abs = request.body.as[Abstract]
+
+    if (abs.uuid != id) {
+      //TODO: should that be allowed? I guess not - ck
+      throw new RuntimeException("Trying to change the id of an abstract!");
+    }
+
+    val newAbstract = abstracts.update(abs, request.user)
+
+    Ok(Json.toJson(newAbstract))
+  }
 
   /**
    * Delete an existing abstract.
