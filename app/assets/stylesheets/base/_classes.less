@@ -1,0 +1,30 @@
+@import "_colors";
+@import "_font";
+
+@default-margin: 0.5em;
+@default-padding: 0.5em;
+
+.no-gap {
+  padding: 0;
+  margin: 0;
+}
+
+.std-gap(@pad: @default-padding, @mar: @default-margin) {
+  padding: @pad;
+  margin: @mar;
+}
+
+.rounded(@rad: 5px) {
+  border-radius: @rad;
+  -webkit-border-radius: @rad;
+  -moz-border-radius: @rad;
+}
+
+.bordered(@col: @color-border) {
+  border: 1px solid @col;
+}
+
+.bordered-round(@col: @color-border) {
+  .rounded;
+  .bordered(@col);
+}

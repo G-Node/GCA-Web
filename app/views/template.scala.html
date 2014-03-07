@@ -1,0 +1,94 @@
+@(account: Option[Account], conference: Option[Conference], active: String)(content: Html)
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+           ____       _   _           _
+          / ___|     | \ | | ___   __| | ___
+         | |  _ _____|  \| |/ _ \ / _` |/ _ \
+         | |_| |_____| |\  | (_) | (_| |  __/
+          \____|     |_| \_|\___/ \__,_|\___|
+
+          Brought to you by the German Neuroinformatics Node (G-Node)
+          Copyright (c) 2013,2014 G-Node
+          License: Apache 2.0 (see http://www.apache.org/licenses/LICENSE-2.0.html)
+          Author: Christian Kellner <kellner@@bio.lmu.de>
+    -->
+    <title>@conference.map(_.name).getOrElse("G-Node Conference Application Suite")</title>
+
+    <!-- jquery .min.js for optimized version-->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+    <!-- bootstrap .min.js or min.css for optimized version -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap-theme.css" />
+    <!-- knockout s/-debug/-min/ for optimized version -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-debug.js"></script>
+
+    <!-- project stylesheet -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/layout.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Conference Abstracts">
+    <meta name="keywords" content="Abstracts">
+    <meta name="author" content="German Neuroinformatics Node (G-Node)">
+</head>
+<body>
+    <!-- navigation -->
+    <div class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <!-- toggle nav button for small screens -->
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- left hand side brand / icon -->
+                <a class="navbar-brand" href="#">@conference.map(_.name).getOrElse("GCA")</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    @if(active.toLowerCase == "abstracts") {
+                        <li class="active"><a href="#">Abstracts</a></li>
+                    } else {
+                        <li><a href="#">Abstracts</a></li>
+                    }
+                    @if(active.toLowerCase == "submission") {
+                        <li class="active"><a href="@routes.Application.submission">Submission</a></li>
+                    } else {
+                        <li><a href="@routes.Application.submission">Submission</a></li>
+                    }
+                    @if(account.isDefined) {
+                        @if(active.toLowerCase == "abstracts") {
+                            <li class="active"><a href="#">Your Abstracts</a></li>
+                        } else {
+                            <li><a href="#">Your Abstracts</a></li>
+                        }
+                    }
+                    @if(active.toLowerCase == "contact") {
+                        <li><a href="#">Contact</a></li>
+                    } else {
+                        <li><a href="#">Contact</a></li>
+                    }
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    @if(account.isDefined) {
+                        <li><a href="@securesocial.core.providers.utils.RoutesHelper.logout()">Hello @account.get.firstName Logout</a></li>
+                    } else {
+                        <li><a href="@securesocial.core.providers.utils.RoutesHelper.login()">Login</a></li>
+                    }
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </div>
+
+    <!-- main content -->
+    <div class="container main-content">
+    @content
+    </div>
+</body>
+</html>

@@ -2,8 +2,8 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-import models.Account
 import utils.GCAAuth
+import models.{Conference, Account, Abstract}
 
 object Application extends Controller with GCAAuth {
 
@@ -27,6 +27,15 @@ object Application extends Controller with GCAAuth {
     Logger.debug(request.user.toString)
 
     Ok("The answer is 42.")
+  }
+
+  def submission = UserAwareAction { implicit request => // TOTO should be a secure action
+    val user: Account = request.user match {
+      case Some(user: Account) => user
+      case _                   => null
+    }
+    val conf = Conference(None, Option("BCCN14"))
+    Ok(views.html.submission(user, conf, new Abstract))
   }
 
 }
