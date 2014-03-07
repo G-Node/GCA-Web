@@ -187,7 +187,7 @@ package object serializer {
     val authorF = new AuthorFormat()
     val affiliationF = new AffiliationFormat()
     val referenceF = new ReferenceFormat()
-    val figureF = new FigureFormat()
+    implicit val figureF = new FigureFormat()
 
     /**
      * Builds an URL to the related abstracts from a given object ID.
@@ -232,7 +232,7 @@ package object serializer {
         "approved" -> a.approved,
         "published" -> a.published,
         "conference" -> a.conference.uuid,
-        "figure" -> figureF.writes(a.figure),
+        "figure" -> a.figure,
         "owners" -> ownersUrl(a.uuid),
         "authors" -> JsArray( for (auth <- authors) yield authorF.writes(auth) ),
         "affiliations" -> JsArray( for (auth <- affiliations) yield affiliationF.writes(auth) ),
