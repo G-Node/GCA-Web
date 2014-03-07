@@ -1,12 +1,18 @@
 package controllers
 
+import play.api._
 import play.api.mvc._
+import service._
+import utils.serializer.AbstractFormat
+import play.api.libs.json.Json
+import utils.GCAAuth
+
 
 /**
  * Abstracts controller.
  * Manages HTTP request logic for abstracts.
  */
-object Abstracts extends Controller with OwnerManager {
+object Abstracts extends Controller with OwnerManager with  GCAAuth {
 
   /**
    * Create a new abstract.
@@ -36,7 +42,19 @@ object Abstracts extends Controller with OwnerManager {
    *
    * @return An abstract as JSON / abstract page.
    */
-  def get(id: String) : Action[AnyContent] = TODO
+  def get(id: String) = AccountAwareAction(isREST = true) { implicit request =>
+    Logger.debug(s"Getting abstract with uuid: [$id]")
+    implicit val absFormat = new AbstractFormat("http") // use routes for this
+
+    val abstracts = AbstractService()
+
+    val abs = request.user match {
+      case Some(user) => abstracts.getOwn(id, user)
+      case _          => abstracts.get(id)
+    }
+
+    Ok(Json.toJson(abs))
+  }
 
   /**
    * Update an existing conference info.
