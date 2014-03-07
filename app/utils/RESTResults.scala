@@ -19,13 +19,13 @@ object RESTResults extends Results {
     )
   }
 
-  val UserNotFound = BadRequest(Json.obj(
+  val UserNotFound = NotFound(Json.obj(
     "error" -> JsBoolean(true),
     "causes" -> Json.obj(
       "user" -> JsString("Account not found")
     )))
 
-  val ObjectNotFound = BadRequest(Json.obj(
+  val ObjectNotFound = NotFound(Json.obj(
     "error" -> JsBoolean(true),
     "causes" -> Json.obj(
       "id" -> JsString("Object not found")
