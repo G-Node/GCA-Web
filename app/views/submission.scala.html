@@ -1,0 +1,113 @@
+@(account: Account, conference: Conference, abstr: Abstract)
+
+@template(Option(account), Option(conference), "submission") {
+
+    <div class="header">
+        <h1>Abstract submission for @conference.name</h1>
+    </div>
+
+    <hr class="separator">
+
+    <div class="abstract">
+
+        <div class="editor-box">
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default btn-xs">
+                    Edit
+                </button>
+            </div>
+            <div  class="title">
+                <h2>Enter your abstract title here</h2>
+            </div>
+
+        </div>
+
+        <div class="editor-box">
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default btn-xs">
+                    Edit
+                </button>
+            </div>
+            <div class="authors">
+                <ul>
+                    <li><span>Add authors for the abstract</span><sup>1</sup></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="editor-box">
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default btn-xs">
+                    Edit
+                </button>
+                <button type="button" class="btn btn-default btn-xs">
+                    Add
+                </button>
+                <button type="button" class="btn btn-default btn-xs">
+                    Remove
+                </button>
+            </div>
+            <div class="affiliations">
+                <ol>
+                    <li><span>Add affiliations for the authors</span></li>
+                </ol>
+            </div>
+
+        </div>
+
+        <div class="editor-box">
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default btn-xs">
+                    Edit
+                </button>
+            </div>
+            <div class="abstract-text">
+                <p>Enter the abstract text</p>
+            </div>
+        </div>
+
+        <!--
+        <div class="editor-box">
+            <div class="figure">
+                <button class="btn">Add Figure</button>
+            </div>
+        </div>
+        -->
+
+        <div class="editor-box">
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default btn-xs">
+                    Edit
+                </button>
+            </div>
+            <div class="acknowledgements">
+                <h4>Acknowledgements</h4>
+                <p>Some acknowledgements</p>
+            </div>
+        </div>
+
+
+        <div class="editor-box">
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default btn-xs">
+                    Edit
+                </button>
+            </div>
+            <div class="references">
+                <ol>
+                    <li>Edit your references</li>
+                </ol>
+            </div>
+        </div>
+
+        <hr class="separator">
+
+        <div class="foot-info">
+            <p><b>Identifier:</b> <span data-bind="html: identifier()">T&nbsp;100</span></p>
+            <p><b>Conference:</b> <span data-bind="html: config.cite">G-Node Conference 20XX, München, Germany, June 20 - 27</span></p>
+            <p><b>Citation:</b> <span data-bind="html: formatCitation()">Greene G, Ehrhardt E, Gollisch T, Wachtler T (2013) Distinguishing local and global motion through non-linear retinal processing. <i>G-Node Conference 20XX</i>. doi: <a class="doilink" href="http://localhost:8000/#/doi/test.1">10.12751/test.1</a></span></p>
+            <p><b>Type:</b> <span data-bind="text: abstractType()">Poster</span></p>
+        </div>
+
+    </div>
+}
