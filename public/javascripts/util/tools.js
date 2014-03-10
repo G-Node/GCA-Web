@@ -13,7 +13,7 @@ define(function() {
      * @public
      */
     function isGlobal(obj) {
-        return Function('return this;')() === obj;
+        return new Function('return this;')() === obj;
     }
 
     /**
@@ -22,8 +22,8 @@ define(function() {
      *      https://gist.github.com/stoewer/9461273
      *
      * @param obj {object} The object that should inherit from superclass.
-     * @param superclass {Function}The superclass to inherit from. Pass further arguments for
-     *                   the superclass constructor after this parameter.
+     * @param superclass {Function}The superclass to inherit from. Pass further
+     *                   arguments for the superclass constructor after this parameter.
      * @returns {object} The augmented object.
      * @public
      */
@@ -54,6 +54,9 @@ define(function() {
      */
     function type(obj) {
 
+        var str,
+            typ;
+
         if (obj === null) {
             return 'null';
         }
@@ -62,10 +65,10 @@ define(function() {
             return 'element';
         }
 
-        var s = Object.prototype.toString.call(obj);
-        var type = s.match(/\[object (.*?)\]/)[1].toLowerCase();
+        str = Object.prototype.toString.call(obj);
+        typ = str.match(/\[object (.*?)\]/)[1].toLowerCase();
 
-        if (type === 'number') {
+        if (typ === 'number') {
             if (isNaN(obj)) {
                 return 'nan';
             }
@@ -74,15 +77,25 @@ define(function() {
             }
         }
 
-        return type;
+        return typ;
     }
 
     /**
-     * Match input names like "foo", "foo[]" or "foo[bar]"
-     * @type {RegExp}
-     * @private
+     * Convert from camel case to underscore.
+     *
+     * @param {string} str The string to translate.
+     *
+     * @returns {string} The modified string.
+     * @public
      */
-    var _namePattern = /^(\w+)($|\[\]|\[(\w+)\]$)/;
+    function toUnderscore(str){
+
+        function substitute(char) {
+            return "_" + char.toLowerCase();
+        }
+
+        return str.replace(/([A-Z])/g, substitute);
+    }
 
     /**
      * Read data from forms and map them to fields of an object, which is
@@ -117,9 +130,11 @@ define(function() {
      */
     function formParse(dom) {
 
-        var data = {};
+        var match,
+            pattern = /^(\w+)($|\[\]|\[(\w+)\]$)/,
+            data = {},
+            inputs = dom.find("input, textarea, select");
 
-        var inputs = dom.find("input, textarea, select");
         inputs.each(function() {
 
             var input = $(this),
@@ -129,9 +144,11 @@ define(function() {
 
             if (type !== "submit") {
 
-                var match = _namePattern.exec(name);
+                match = pattern.exec(name);
 
-                if (!match) throw "Unsupported input element name: " + name;
+                if (!match) {
+                    throw "Unsupported input element name: " + name;
+                }
 
                 if (match[2] === "") {
                     data[name] = val;
@@ -143,7 +160,7 @@ define(function() {
                     }
                 } else if (match[3] !== undefined) {
                     if (!data.hasOwnProperty(name)) {
-                        data[name] = {}
+                        data[name] = {};
                     }
                     data[name][match[3]] = val;
                 }
@@ -158,7 +175,8 @@ define(function() {
         isGlobal: isGlobal,
         inherit: inherit,
         type: type,
+        toUnderscore: toUnderscore,
         formParse: formParse
-    }
+    };
 
 });
