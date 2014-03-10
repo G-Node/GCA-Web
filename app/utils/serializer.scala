@@ -199,7 +199,12 @@ package object serializer {
     private def ownersUrl(id: String) = {
       // builds java.net.URL to somehow verify it's an URL
       // maybe add more validation here
-      new URL(baseUrl + "/abstracts/<id>/owners".replace("<id>", id)).toString
+
+      if (id != null) {
+        Json.toJson(new URL(baseUrl + "/abstracts/<id>/owners".replace("<id>", id)).toString)
+      } else {
+        JsNull
+      }
     }
 
     override def reads(json: JsValue): JsResult[Abstract] = (
