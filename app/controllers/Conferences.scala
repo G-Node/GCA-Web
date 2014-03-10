@@ -3,7 +3,7 @@ package controllers
 import play.api.Play.current
 import play.api.mvc._
 import play.api.libs.json._
-import models.Account
+import utils.GCAAuth
 import utils.serializer.ConferenceFormat
 import utils.RESTResults._
 import service.ConferenceService
@@ -14,7 +14,7 @@ import javax.persistence.{EntityNotFoundException, NoResultException}
  * Conferences controller.
  * Manages HTTP request logic for conferences.
  */
-object Conferences extends Controller with OwnerManager with securesocial.core.SecureSocial {
+object Conferences extends Controller with OwnerManager with GCAAuth {
 
   val httpPrefix = current.configuration.getString("httpPrefix").get
 
@@ -23,17 +23,13 @@ object Conferences extends Controller with OwnerManager with securesocial.core.S
    *
    * @return Created with conference in JSON / BadRequest
    */
-  def create = SecuredAction(parse.json) { request =>
-    val user: Account = request.user match {
-      case user: Account => user
-      case _             => throw new ClassCastException
-    }
+  def create = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
     val formatter = new ConferenceFormat(httpPrefix + request.host)
     formatter.reads(request.body).fold(
       invalid = e => JSONValidationError(e),
       valid = conference => {
         try {
-          val resp = ConferenceService().create(conference, user)
+          val resp = ConferenceService().create(conference, request.user)
           Created(formatter.writes(resp))
         } catch {
           case e1: EntityNotFoundException => UserNotFound
@@ -76,18 +72,14 @@ object Conferences extends Controller with OwnerManager with securesocial.core.S
    *
    * @return OK with conference in JSON / BadRequest / Forbidden
    */
-  def update(id: String) = SecuredAction(parse.json) { request =>
-    val user: Account = request.user match {
-      case user: Account => user
-      case _             => throw new ClassCastException
-    }
+  def update(id: String) = AuthenticatedAction(parse.json, isREST = true) { request =>
     val formatter = new ConferenceFormat(httpPrefix + request.host)
     formatter.reads(request.body).fold(
       invalid = e => JSONValidationError(e),
       valid = conference => {
         try {
           conference.uuid = id
-          val resp = ConferenceService().update(conference, user)
+          val resp = ConferenceService().update(conference, request.user)
           Ok(formatter.writes(resp))
         } catch {
           case e1: EntityNotFoundException => UserNotFound
@@ -105,13 +97,9 @@ object Conferences extends Controller with OwnerManager with securesocial.core.S
    *
    * @return OK | BadRequest | Forbidden
    */
-  def delete(id: String) = SecuredAction { request =>
-    val user: Account = request.user match {
-      case user: Account => user
-      case _             => throw new ClassCastException
-    }
+  def delete(id: String) = AuthenticatedAction(isREST = true) { request =>
     try{
-      ConferenceService().delete(id, user)
+      ConferenceService().delete(id, request.user)
       Deleted
     } catch {
       case e1: EntityNotFoundException => UserNotFound

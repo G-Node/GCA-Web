@@ -52,7 +52,7 @@ class ConferenceCtrlTest extends JUnitSuite with DBUtil {
       ("Content-Type", "application/json")
     ).withJsonBody(body)
     val failed = route(ConferenceCtrlTest.app, createUnauth).get
-    assert(status(failed) == SEE_OTHER)
+    assert(status(failed) == UNAUTHORIZED)
 
     val aliceCookie = getCookie(assets.alice.mail, "testtest", assets.alice.provider)
     val createAuth = FakeRequest(POST, "/conferences").withHeaders(
