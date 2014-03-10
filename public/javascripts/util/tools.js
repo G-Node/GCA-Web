@@ -1,6 +1,5 @@
 /**
  * Module for misc utility functions
- *
  * @module {util/tools}
  */
 define(function() {
@@ -15,6 +14,34 @@ define(function() {
      */
     function isGlobal(obj) {
         return Function('return this;')() === obj;
+    }
+
+    /**
+     * Implements inheritance via object augmentation.
+     * Here is an example for the use of this function:
+     *      https://gist.github.com/stoewer/9461273
+     *
+     * @param obj {object} The object that should inherit from superclass.
+     * @param superclass {Function}The superclass to inherit from. Pass further arguments for
+     *                   the superclass constructor after this parameter.
+     * @returns {object} The augmented object.
+     * @public
+     */
+    function inherit(obj, superclass) {
+
+        if (superclass instanceof Function) {
+
+            var param;
+            if (arguments.length > 2) {
+                param = Array.prototype.slice.call(arguments, 2);
+            } else {
+                param = [];
+            }
+
+            superclass.apply(obj, param);
+        }
+
+        return obj;
     }
 
     /**
@@ -60,6 +87,9 @@ define(function() {
     /**
      * Read data from forms and map them to fields of an object, which is
      * returned as result.
+     *
+     * Caution: before using this function you should try to solve the problem via
+     *          knockouts value binding.
      *
      * The following form:
      *
@@ -126,6 +156,7 @@ define(function() {
 
     return {
         isGlobal: isGlobal,
+        inherit: inherit,
         type: type,
         formParse: formParse
     }
