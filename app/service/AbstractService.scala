@@ -221,6 +221,9 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
         reference.abstr = abstr
       }
 
+      abstr.owners = abstrChecked.owners
+      abstr.conference = abstrChecked.conference
+
       val merged = em.merge(abstr)
 
       abstrChecked.authors.foreach { author =>
