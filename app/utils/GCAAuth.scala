@@ -95,12 +95,12 @@ trait GCAAuth extends securesocial.core.SecureSocial {
   }
 
   def exHandlerHTML() : PartialFunction[Throwable, SimpleResult] = {
-    case e: NoResultException => InternalServerError("No Result !\n" + e.getStackTraceString)
+    case e: NoResultException => NotFound("No Result !\n" + e.getStackTraceString)
     case e: Exception => InternalServerError("<html><h1>Uh oh!</h1><br/>\n" + e.getStackTraceString + "</html>")
   }
 
   def exHandlerJSON() : PartialFunction[Throwable, SimpleResult] = {
-    case e: NoResultException => InternalServerError("No Result !\n" + e.getStackTraceString)
-    case e: Exception => InternalServerError("Uh oh!\n" + e.getStackTraceString)
+    case e: NoResultException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
+    case e: Exception => InternalServerError(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
   }
 }
