@@ -58,9 +58,9 @@
                         <li><a href="#">Abstracts</a></li>
                     }
                     @if(active.toLowerCase == "submission") {
-                        <li class="active"><a href="@routes.Application.submission">Submission</a></li>
+                        <li class="active"><a href="@routes.Application.submission(conference.map(_.uuid).getOrElse(""))">Submission</a></li>
                     } else {
-                        <li><a href="@routes.Application.submission">Submission</a></li>
+                        <li><a href="@routes.Application.submission(conference.map(_.uuid).getOrElse(""))">Submission</a></li>
                     }
                     @if(account.isDefined) {
                         @if(active.toLowerCase == "abstracts") {

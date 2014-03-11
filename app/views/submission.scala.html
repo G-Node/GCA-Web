@@ -1,6 +1,19 @@
-@(account: Account, conference: Conference, abstr: Abstract)
+@(account: Account, conference: Conference, abstr: Option[Abstract])
 
 @template(Option(account), Option(conference), "submission") {
+
+    <script data-main="@routes.Assets.at("javascripts/editor")"
+            src="@routes.Assets.at("javascripts/require.js")"></script>
+
+    <script type="text/javascript">
+        require(["editor"], function(Editor) {
+            var confId = "@conference.uuid"
+            var abstrId = @abstr.map("\"" + _.uuid + "\"").getOrElse("undefined")
+
+            window.editor = Editor(confId, abstrId)
+            window.editor.run()
+        })
+    </script>
 
     <div class="header">
         <h1>Abstract submission for @conference.name</h1>
