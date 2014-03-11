@@ -22,9 +22,10 @@ GET           /conferences/:id/owners           controllers.Conferences.getPermi
 GET           /abstracts/:id                    controllers.Abstracts.get(id: String)
 PUT           /abstracts/:id                    controllers.Abstracts.update(id: String)
 DELETE        /abstracts/:id                    controllers.Abstracts.delete(id: String)
-POST          /abstracts/:id/figure             controllers.Files.upload(id: String)
-GET           /abstracts/:id/figure             controllers.Files.download(id: String)
-DELETE        /abstracts/:id/figure             controllers.Files.delete(id: String)
+POST          /abstracts/:id/figure             controllers.Figures.upload(id: String)
+GET           /abstracts/:id/figure             controllers.Figures.get(id: String)
+GET           /abstracts/:id/figure/image       controllers.Figures.download(id: String)
+DELETE        /abstracts/:id/figure             controllers.Figures.delete(id: String)
 PUT           /abstracts/:id/owners             controllers.Abstracts.setPermissions(id: String)
 GET           /abstracts/:id/owners             controllers.Abstracts.getPermissions(id: String)
 
