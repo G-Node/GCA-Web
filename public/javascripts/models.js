@@ -6,7 +6,8 @@ define(["util/tools"], function(tools) {
     "use strict";
 
     /**
-     * Get a property value from another object.
+     * Get a property value from another object. Tries to retrieve the underscore
+     * variant of name first.
      *
      * @param {string} name     The name of a property.
      * @param {object} source   The source object from where to read the
@@ -15,11 +16,13 @@ define(["util/tools"], function(tools) {
      * @private
      */
     function readProperty(name, source) {
-        var name_under = tools.toUnderscore(name),
-            value = source[name_under] || source[name] || null;
+        var value = null,
+            name_under = tools.toUnderscore(name);
 
-        if (tools.type(value) === "function") {
-            value = null;
+        if (source.hasOwnProperty(name_under)) {
+            value = source[name_under];
+        } else if (source.hasOwnProperty(name)) {
+            value = source[name];
         }
 
         return value;
@@ -58,9 +61,19 @@ define(["util/tools"], function(tools) {
             }
         };
 
-
-        self.toString = function() {
-            return JSON.stringify(self.toObject(), null, 4);
+        /**
+         * Turns the model object into a json string.
+         *
+         * @param {number|null} [indention] The indention level, null for no pretty
+         *                                  print.
+         *
+         * @returns {string} JSON string.
+         */
+        self.toString = function(indention) {
+            if (indention === undefined) {
+                indention = indention || 4;
+            }
+            return JSON.stringify(self.toObject(), null, indention);
         };
 
     }
@@ -79,7 +92,11 @@ define(["util/tools"], function(tools) {
 
         for (prop in target) {
             if (target.hasOwnProperty(prop)) {
-                target[prop] = readProperty(prop, source);
+                var value = readProperty(prop, source);
+
+                if (tools.type(value) !== "function") {
+                    target[prop] = readProperty(prop, source);
+                }
             }
         }
 
@@ -90,7 +107,8 @@ define(["util/tools"], function(tools) {
      * Create an array of model objects from an array of ordinary objects.
      *
      * @param {Array} array         The source array.
-     * @param {function} factory    A factory function that creates a model from an object.
+     * @param {function} factory    A factory function that creates a model from an
+     *                              object.
      *
      * @returns {Array} Array with created model objects.
      */
@@ -249,6 +267,42 @@ define(["util/tools"], function(tools) {
         return Model.fromArray(array, Figure.fromObject);
     };
 
+    /**
+     * Model for reference.
+     *
+     * @param {string} [uuid]
+     * @param {string} [authors]
+     * @param {string} [title]
+     * @param {string} [year]
+     * @param {string} [doi]
+     *
+     * @returns {Reference}
+     * @constructor
+     * @public
+     */
+    function Reference(uuid, authors, title, year, doi) {
+
+        if (tools.isGlobal(this)) {
+            return new Reference();
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.authors = authors || null;
+        self.title = title || null;
+        self.year = year || null;
+        self.doi = doi || null;
+
+    }
+
+    Reference.fromObject = function(obj) {
+        return Model.fromObject(obj, Reference);
+    };
+
+    Reference.fromArray = function(array) {
+        return Model.fromArray(array, Reference.fromObject);
+    };
+
 
     /**
      * Model for abstracts.
@@ -260,7 +314,7 @@ define(["util/tools"], function(tools) {
      * @param {string} [doi]
      * @param {string} [conflictOfInterest]
      * @param {string} [acknowledgements]
-     * @param {string} [owners]     URL to abstact owners.
+     * @param {string} [owners]     URL to abstract owners.
      * @param {boolean} [approved]
      * @param {boolean} [published]
      * @param {Figure} [figure]
@@ -273,7 +327,8 @@ define(["util/tools"], function(tools) {
      * @public
      */
     function Abstract(uuid, title, topic, text, doi, conflictOfInterest, acknowledgements,
-                      owners, approved, published, figure, authors, affiliations, references) {
+                      owners, approved, published, figure, authors, affiliations,
+                      references) {
 
         if (tools.isGlobal(this)) {
             return new Abstract(uuid, title, topic, text, doi, conflictOfInterest,
@@ -297,6 +352,52 @@ define(["util/tools"], function(tools) {
         self.affiliations = affiliations || [];
         self.references = references || [];
 
+
+        self.toObject = function() {
+            var prop,
+                obj = {};
+
+            for (prop in self) {
+                if (self.hasOwnProperty(prop)) {
+                    var value = self[prop];
+
+                    switch(prop) {
+                        case "figure":
+                            obj[prop] = self.figure.toObject();
+                            break;
+                        case "authors":
+                            obj.authors = [];
+                            self.authors.forEach(appendAuthor);
+                            break;
+                        case "affiliations":
+                            obj.affiliations = [];
+                            self.affiliations.forEach(appendAffiliation);
+                            break;
+                        case "references":
+                            obj.references = [];
+                            self.references.forEach(appendReference);
+                            break;
+                        default:
+                            if (tools.type(value) !== "function") {
+                                obj[prop] = value;
+                            }
+                    }
+                }
+            }
+
+            function appendAuthor(model) {
+                obj.authors.append(model.toObject());
+            }
+
+            function appendAffiliation(model) {
+                obj.affiliations.append(model.toObject());
+            }
+
+            function appendReference(model) {
+                obj.references.append(model.toObject());
+            }
+        };
+
     }
 
     Abstract.fromObject = function(obj) {
@@ -305,7 +406,7 @@ define(["util/tools"], function(tools) {
 
         for (prop in target) {
             if (target.hasOwnProperty(prop)) {
-                var value = obj[prop];
+                var value = readProperty(prop, obj);
 
                 switch(prop) {
                     case "figure":
@@ -318,11 +419,11 @@ define(["util/tools"], function(tools) {
                         target.affiliations = Affiliation.fromArray(value);
                         break;
                     case "references":
-                        /* TODO parse refenrences */
+                        target.references = Reference.fromArray(value);
                         break;
                     default:
                         if (tools.type(value) !== "function") {
-                            target[prop] = readProperty(value);
+                            target[prop] = value;
                         }
                 }
             }
@@ -342,6 +443,7 @@ define(["util/tools"], function(tools) {
         Author: Author,
         Affiliation: Affiliation,
         Figure: Figure,
+        Reference: Reference,
         Abstract: Abstract
     };
 });
