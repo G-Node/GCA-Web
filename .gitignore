@@ -16,3 +16,7 @@ dist
 *.db
 figures
 
+# provided via cdn but keeping a local copy
+# makes auto completion available
+bootstrap.css
+
