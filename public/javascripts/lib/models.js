@@ -2,7 +2,7 @@
  * Module for misc utility functions
  * @module {models}
  */
-define(["util/tools"], function(tools) {
+define(["lib/tools"], function(tools) {
     "use strict";
 
     /**
@@ -38,7 +38,7 @@ define(["util/tools"], function(tools) {
      */
     function Model(uuid) {
 
-        if (tools.isGlobal(this)) {
+        if (tools.isGlobalOrUndefined(this)) {
             return new Model(uuid);
         }
 
@@ -137,7 +137,7 @@ define(["util/tools"], function(tools) {
      */
     function Conference(uuid, name, owners, abstracts) {
 
-        if (tools.isGlobal(this)) {
+        if (tools.isGlobalOrUndefined(this)) {
             return new Conference(uuid, name, owners, abstracts);
         }
 
@@ -173,7 +173,7 @@ define(["util/tools"], function(tools) {
      */
     function Author(uuid, mail, firstName, middleName, lastName, affiliations) {
 
-        if (tools.isGlobal(this)) {
+        if (tools.isGlobalOrUndefined(this)) {
             return new Author(uuid, mail, firstName, middleName, lastName, affiliations);
         }
 
@@ -211,7 +211,7 @@ define(["util/tools"], function(tools) {
      */
     function Affiliation(uuid, address, country, department, name, section) {
 
-        if (tools.isGlobal(this)) {
+        if (tools.isGlobalOrUndefined(this)) {
             return new Affiliation(uuid, address, country, department, name, section);
         }
 
@@ -247,7 +247,7 @@ define(["util/tools"], function(tools) {
      */
     function Figure(uuid, name, caption, file) {
 
-        if (tools.isGlobal(this)) {
+        if (tools.isGlobalOrUndefined(this)) {
             return new Figure(uuid, name, caption, file);
         }
 
@@ -282,7 +282,7 @@ define(["util/tools"], function(tools) {
      */
     function Reference(uuid, authors, title, year, doi) {
 
-        if (tools.isGlobal(this)) {
+        if (tools.isGlobalOrUndefined(this)) {
             return new Reference();
         }
 
@@ -330,7 +330,7 @@ define(["util/tools"], function(tools) {
                       owners, approved, published, figure, authors, affiliations,
                       references) {
 
-        if (tools.isGlobal(this)) {
+        if (tools.isGlobalOrUndefined(this)) {
             return new Abstract(uuid, title, topic, text, doi, conflictOfInterest,
                                 acknowledgements, approved, published, owners, figure,
                                 authors, affiliations, references);
