@@ -1,6 +1,6 @@
 /**
  * Module for misc utility functions
- * @module {util/tools}
+ * @module {lib/tools}
  */
 define(function() {
     "use strict";
@@ -12,8 +12,14 @@ define(function() {
      * @returns {boolean}
      * @public
      */
-    function isGlobal(obj) {
-        return new Function('return this;')() === obj;
+    function isGlobalOrUndefined(obj) {
+        var result = true;
+
+        if (obj !== undefined) {
+            result = new Function('return this;')() === obj;
+        }
+
+        return result;
     }
 
     /**
@@ -172,7 +178,7 @@ define(function() {
     }
 
     return {
-        isGlobal: isGlobal,
+        isGlobalOrUndefined: isGlobalOrUndefined,
         inherit: inherit,
         type: type,
         toUnderscore: toUnderscore,
