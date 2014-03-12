@@ -28,7 +28,29 @@ body {
   .std-gap;
 }
 
+#abstract-list {
+  .abstract {
 
+    h4 {
+      font-weight: bold;
+    }
+
+    .authors {
+      .no-gap;
+      list-style: none;
+      display: inline-block;
+      font-size: large;
+
+      .enum-with-comma;
+    }
+  }
+}
+
+#abstract-list:hover {
+  cursor: pointer;
+  background-color: @color-blue-bccn !important;
+  color: White;
+}
 
 #abstract {
 
