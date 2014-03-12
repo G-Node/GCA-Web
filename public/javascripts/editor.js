@@ -1,6 +1,15 @@
-define(["lib/models", "lib/tools"], function(models, tools) {
+require(["lib/models", "lib/tools"], function(models, tools) {
     "use strict";
 
+    /**
+     * Editor view model.
+     *
+     *
+     * @param confId
+     * @param abstrId
+     * @returns {EditorViewModel}
+     * @constructor
+     */
     function EditorViewModel(confId, abstrId) {
 
 
@@ -14,9 +23,8 @@ define(["lib/models", "lib/tools"], function(models, tools) {
         self.abstract = ko.observable();
         self.conference = ko.observable();
 
-        self.run = function() {
-            console.log(confId);
-            console.log(abstrId);
+
+        self.init = function() {
 
             if (confId) {
                 self.getConference(confId);
@@ -28,8 +36,9 @@ define(["lib/models", "lib/tools"], function(models, tools) {
                 throw "Conference id or abstract id must be defined";
             }
 
-            ko.applyBindings(self);
+            ko.applyBindings(window.editor);
         };
+
 
         self.getConference = function(confId) {
 
@@ -85,5 +94,16 @@ define(["lib/models", "lib/tools"], function(models, tools) {
         };
     }
 
-    return EditorViewModel;
+    // start the editor
+    $(document).ready(function() {
+
+        var data = tools.hiddenData();
+
+        console.log(data.conferenceUuid);
+        console.log(data.abstractUuid);
+
+        window.editor = EditorViewModel(data.conferenceUuid, data.abstractUuid);
+        window.editor.init();
+    });
+
 });
