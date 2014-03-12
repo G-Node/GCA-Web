@@ -1,6 +1,6 @@
 /**
  * Module for misc utility functions
- * @module {util/tools}
+ * @module {lib/tools}
  */
 define(function() {
     "use strict";
@@ -12,8 +12,40 @@ define(function() {
      * @returns {boolean}
      * @public
      */
-    function isGlobal(obj) {
-        return new Function('return this;')() === obj;
+    function isGlobalOrUndefined(obj) {
+        var result = true;
+
+        if (obj !== undefined) {
+            result = new Function('return this;')() === obj;
+        }
+
+        return result;
+    }
+
+    /**
+     * Retrieve hidden data form the document as object. The id of hidden data
+     * elements is turned into a camel case key and the content into a string or
+     * null if empty.
+     *
+     * @returns {{}} Object with hidden data as key value pairs.
+     */
+    function hiddenData() {
+        var obj = {};
+
+        $(".hidden-data").each(function() {
+            $(this).children().each(function() {
+                var key = toCamelCase($(this).attr("id")),
+                    val = $(this).text().trim();
+
+                if (val !== "") {
+                    obj[key] = val;
+                } else {
+                    obj[key] = null;
+                }
+            });
+        });
+
+        return obj;
     }
 
     /**
@@ -98,6 +130,23 @@ define(function() {
     }
 
     /**
+     * Convert '_' or '-' to camel case.
+     *
+     * @param {string} str The string to translate.
+     *
+     * @returns {string} The modified string.
+     * @public
+     */
+    function toCamelCase(str) {
+
+        function substitute(char) {
+             return char.toUpperCase();
+        }
+
+        return str.toLowerCase().replace(/[\-_](.)/g, substitute).replace(/[\-_]/g, "");
+    }
+
+    /**
      * Read data from forms and map them to fields of an object, which is
      * returned as result.
      *
@@ -172,10 +221,12 @@ define(function() {
     }
 
     return {
-        isGlobal: isGlobal,
+        isGlobalOrUndefined: isGlobalOrUndefined,
+        hiddenData: hiddenData,
         inherit: inherit,
         type: type,
         toUnderscore: toUnderscore,
+        toCamelCase: toCamelCase,
         formParse: formParse
     };
 
