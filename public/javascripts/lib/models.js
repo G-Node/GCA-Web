@@ -38,7 +38,7 @@ define(["lib/tools"], function(tools) {
      */
     function Model(uuid) {
 
-        if (tools.isGlobalOrUndefined(this)) {
+        if (! (this instanceof Model)) {
             return new Model(uuid);
         }
 
@@ -59,6 +59,8 @@ define(["lib/tools"], function(tools) {
                    }
                }
             }
+
+            return obj;
         };
 
         /**
@@ -73,7 +75,8 @@ define(["lib/tools"], function(tools) {
             if (indention === undefined) {
                 indention = indention || 4;
             }
-            return JSON.stringify(self.toObject(), null, indention);
+            var obj = self.toObject();
+            return JSON.stringify(obj, null, indention);
         };
 
     }
@@ -137,7 +140,7 @@ define(["lib/tools"], function(tools) {
      */
     function Conference(uuid, name, owners, abstracts) {
 
-        if (tools.isGlobalOrUndefined(this)) {
+        if (! (this instanceof Conference)) {
             return new Conference(uuid, name, owners, abstracts);
         }
 
@@ -173,7 +176,7 @@ define(["lib/tools"], function(tools) {
      */
     function Author(uuid, mail, firstName, middleName, lastName, affiliations) {
 
-        if (tools.isGlobalOrUndefined(this)) {
+        if (! (this instanceof Author)) {
             return new Author(uuid, mail, firstName, middleName, lastName, affiliations);
         }
 
@@ -211,7 +214,7 @@ define(["lib/tools"], function(tools) {
      */
     function Affiliation(uuid, address, country, department, name, section) {
 
-        if (tools.isGlobalOrUndefined(this)) {
+        if (! (this instanceof  Affiliation)) {
             return new Affiliation(uuid, address, country, department, name, section);
         }
 
@@ -247,7 +250,7 @@ define(["lib/tools"], function(tools) {
      */
     function Figure(uuid, name, caption, file) {
 
-        if (tools.isGlobalOrUndefined(this)) {
+        if (! (this instanceof Figure)) {
             return new Figure(uuid, name, caption, file);
         }
 
@@ -282,7 +285,7 @@ define(["lib/tools"], function(tools) {
      */
     function Reference(uuid, authors, title, year, doi) {
 
-        if (tools.isGlobalOrUndefined(this)) {
+        if (! (this instanceof Reference)) {
             return new Reference();
         }
 
@@ -330,7 +333,7 @@ define(["lib/tools"], function(tools) {
                       owners, approved, published, figure, authors, affiliations,
                       references) {
 
-        if (tools.isGlobalOrUndefined(this)) {
+        if (! (this instanceof Abstract)) {
             return new Abstract(uuid, title, topic, text, doi, conflictOfInterest,
                                 acknowledgements, approved, published, owners, figure,
                                 authors, affiliations, references);
@@ -363,7 +366,11 @@ define(["lib/tools"], function(tools) {
 
                     switch(prop) {
                         case "figure":
-                            obj[prop] = self.figure.toObject();
+                            if (self.figure) {
+                                obj.figure = self.figure.toObject();
+                            } else {
+                                obj.figure = null;
+                            }
                             break;
                         case "authors":
                             obj.authors = [];
@@ -376,6 +383,8 @@ define(["lib/tools"], function(tools) {
                         case "references":
                             obj.references = [];
                             self.references.forEach(appendReference);
+                            break;
+                        case "owners":
                             break;
                         default:
                             if (tools.type(value) !== "function") {
@@ -396,6 +405,8 @@ define(["lib/tools"], function(tools) {
             function appendReference(model) {
                 obj.references.append(model.toObject());
             }
+
+            return obj;
         };
 
     }
