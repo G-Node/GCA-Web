@@ -48,14 +48,14 @@ class ConferenceCtrlTest extends JUnitSuite with DBUtil {
   def testCreate(): Unit = {
     val body = formatter.writes(assets.conferences(0)).as[JsObject] - "uuid" - "abstracts"
 
-    val createUnauth = FakeRequest(POST, "/conferences").withHeaders(
+    val createUnauth = FakeRequest(POST, "/api/conferences").withHeaders(
       ("Content-Type", "application/json")
     ).withJsonBody(body)
     val failed = route(ConferenceCtrlTest.app, createUnauth).get
     assert(status(failed) == UNAUTHORIZED)
 
     val aliceCookie = getCookie(assets.alice.mail, "testtest", assets.alice.provider)
-    val createAuth = FakeRequest(POST, "/conferences").withHeaders(
+    val createAuth = FakeRequest(POST, "/api/conferences").withHeaders(
         ("Content-Type", "application/json")
       ).withJsonBody(body).withCookies(aliceCookie)
 
@@ -65,7 +65,7 @@ class ConferenceCtrlTest extends JUnitSuite with DBUtil {
 
   @Test
   def testList(): Unit = {
-    val request = FakeRequest(GET, "/conferences")
+    val request = FakeRequest(GET, "/api/conferences")
     val confResult = route(ConferenceCtrlTest.app, request).get
     assert(status(confResult) == OK)
     assert(contentType(confResult) == Some("application/json"))
@@ -78,7 +78,7 @@ class ConferenceCtrlTest extends JUnitSuite with DBUtil {
   @Test
   def testGet(): Unit = {
     val uuid = assets.conferences(0).uuid
-    val request = FakeRequest(GET, "/conferences/" + uuid)
+    val request = FakeRequest(GET, "/api/conferences/" + uuid)
     val confResult = route(ConferenceCtrlTest.app, request).get
 
     assert(status(confResult) == OK)
@@ -92,14 +92,14 @@ class ConferenceCtrlTest extends JUnitSuite with DBUtil {
     val body = formatter.writes(conf).as[JsObject] - "abstracts" - "uuid"
 
     val aliceCookie = getCookie(assets.alice.mail, "testtest", assets.alice.provider)
-    val updateAuth = FakeRequest(PUT, "/conferences/" + conf.uuid).withHeaders(
+    val updateAuth = FakeRequest(PUT, "/api/conferences/" + conf.uuid).withHeaders(
       ("Content-Type", "application/json")
     ).withJsonBody(body).withCookies(aliceCookie)
     val updated = route(ConferenceCtrlTest.app, updateAuth).get
     assert(status(updated) == OK)
 
     val bobCookie = getCookie(assets.bob.mail, "testtest", assets.bob.provider)
-    val updateUnauth = FakeRequest(PUT, "/conferences/" + conf.uuid).withHeaders(
+    val updateUnauth = FakeRequest(PUT, "/api/conferences/" + conf.uuid).withHeaders(
       ("Content-Type", "application/json")
     ).withJsonBody(body).withCookies(bobCookie)
     val failed = route(ConferenceCtrlTest.app, updateUnauth).get
@@ -109,12 +109,12 @@ class ConferenceCtrlTest extends JUnitSuite with DBUtil {
   @Test
   def testDelete(): Unit = {
     val aliceCookie = getCookie(assets.alice.mail, "testtest", assets.alice.provider)
-    val good = FakeRequest(DELETE, "/conferences/" +
+    val good = FakeRequest(DELETE, "/api/conferences/" +
       assets.conferences(1).uuid).withCookies(aliceCookie)
     val deleted = route(ConferenceCtrlTest.app, good).get
     assert(status(deleted) == OK)
 
-    val bad = FakeRequest(DELETE, "/conferences/" +
+    val bad = FakeRequest(DELETE, "/api/conferences/" +
       "foo").withCookies(aliceCookie)
     val failed = route(ConferenceCtrlTest.app, bad).get
     assert(status(failed) == NOT_FOUND)

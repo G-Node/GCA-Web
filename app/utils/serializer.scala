@@ -22,12 +22,12 @@ package object serializer {
      *
      * @param id an ID of a Conference object to insert into the URL
      *
-     * @return URL for related abstracts, like "/conferences/HNOPSADMHV/abstracts"
+     * @return URL for related abstracts, like "/api/conferences/HNOPSADMHV/abstracts"
      */
     private def abstractsUrl(id: String) = {
       // builds java.net.URL to somehow verify it's an URL
       // maybe add more validation here
-      new URL(baseUrl + "/conferences/<id>/abstracts".replace("<id>", id)).toString
+      new URL(baseUrl + "/api/conferences/<id>/abstracts".replace("<id>", id)).toString
     }
 
     override def reads(json: JsValue): JsResult[Conference] = (
@@ -61,7 +61,7 @@ package object serializer {
     private def abstractsUrl(id: String) = {
       // builds java.net.URL to somehow verify it's an URL
       // maybe add more validation here
-      new URL(baseUrl + "/account/<id>/abstracts".replace("<id>", id)).toString
+      new URL(baseUrl + "/api/account/<id>/abstracts".replace("<id>", id)).toString
     }
 
     override def reads(json: JsValue): JsResult[Account] = (
@@ -201,7 +201,7 @@ package object serializer {
       // maybe add more validation here
 
       if (id != null) {
-        Json.toJson(new URL(baseUrl + "/abstracts/<id>/owners".replace("<id>", id)).toString)
+        Json.toJson(new URL(baseUrl + "/api/abstracts/<id>/owners".replace("<id>", id)).toString)
       } else {
         JsNull
       }
