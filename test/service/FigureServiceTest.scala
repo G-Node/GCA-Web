@@ -25,6 +25,7 @@ class FigureServiceTest extends JUnitSuite with DBUtil {
   var emf: EntityManagerFactory = _
   var srv: FigureService = _
   var assets: Assets = _
+  var abstrsrv: AbstractService = _
 
   @Before
   def before(): Unit = {
@@ -33,6 +34,7 @@ class FigureServiceTest extends JUnitSuite with DBUtil {
     assets.killDB()
     assets.fillDB()
     srv = new FigureService(emf, "./figures")
+    abstrsrv = new AbstractService(emf, assets.figPath)
   }
 
   @Test

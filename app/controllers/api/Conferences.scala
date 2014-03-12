@@ -43,7 +43,9 @@ object Conferences extends Controller with OwnerManager with GCAAuth {
    */
   def list = Action { request =>
     val formatter = new ConferenceFormat()
-    Ok(JsArray(ConferenceService().list().map(formatter.writes(_))))
+    Ok(JsArray(
+      for (conf <- ConferenceService().list()) yield formatter.writes(conf)
+    ))
   }
 
   /**

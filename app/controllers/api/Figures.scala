@@ -7,6 +7,8 @@ import utils.GCAAuth
 import utils.serializer.FigureFormat
 import play.api.libs.json._
 import utils.RESTResults._
+import scala.collection.JavaConversions._
+import play.api.libs.json.JsArray
 
 /**
  * Figures controller.
@@ -48,36 +50,37 @@ object Figures extends Controller with GCAAuth {
    *
    * @return  OK / Failed
    */
-  def get(id: String) = AccountAwareAction { request =>
-    Ok(figFormat.writes(
-      AbstractService().get(id).figure
+  def list(id: String) = AccountAwareAction { request =>
+    Ok(JsArray(
+      for (fig <- asScalaSet(
+          AbstractService().get(id).figures
+        ).toSeq
+      ) yield figFormat.writes(fig)
     ))
   }
 
   /**
-   * Download figure file from the specified abstract (id).
+   * Download figure file from the specified figure object (id).
    *
-   * @param id  The id of the abstract.
+   * @param id  The id of the figure.
    *
    * @return  OK / Failed
    */
   def download(id: String) = AccountAwareAction { request =>
     Ok.sendFile(FigureService().openFile(
-      AbstractService().get(id).figure
+      FigureService().get(id)
     ))
   }
 
   /**
-   * Delete an existing figure in the abstract (id).
+   * Delete an existing figure (id).
    *
-   * @param id   The id of the abstract.
+   * @param id   The id of the figure.
    *
    * @return  OK / Failed
    */
   def delete(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
-    FigureService().delete(
-      AbstractService().get(id).figure.uuid, request.user
-    )
+    FigureService().delete(id, request.user)
     Deleted
   }
 

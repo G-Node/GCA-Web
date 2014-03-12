@@ -22,14 +22,16 @@ GET           /api/conferences/:id/owners           controllers.api.Conferences.
 GET           /api/abstracts/:id                    controllers.api.Abstracts.get(id: String)
 PUT           /api/abstracts/:id                    controllers.api.Abstracts.update(id: String)
 DELETE        /api/abstracts/:id                    controllers.api.Abstracts.delete(id: String)
-POST          /api/abstracts/:id/figure             controllers.api.Figures.upload(id: String)
-GET           /api/abstracts/:id/figure             controllers.api.Figures.get(id: String)
-GET           /api/abstracts/:id/figure/image       controllers.api.Figures.download(id: String)
-DELETE        /api/abstracts/:id/figure             controllers.api.Figures.delete(id: String)
+POST          /api/abstracts/:id/figures            controllers.api.Figures.upload(id: String)
+GET           /api/abstracts/:id/figures            controllers.api.Figures.list(id: String)
 PUT           /api/abstracts/:id/owners             controllers.api.Abstracts.setPermissions(id: String)
 GET           /api/abstracts/:id/owners             controllers.api.Abstracts.getPermissions(id: String)
 
-# [...] maybe add more aliases
+# Figure interface
+GET           /api/figures/:id/image                controllers.api.Figures.download(id: String)
+DELETE        /api/figures/:id                      controllers.api.Figures.delete(id: String)
+
+# [...] maybe add more figure functions
 
 # Account interface
 GET           /user                                 controllers.Application.showUserInfo

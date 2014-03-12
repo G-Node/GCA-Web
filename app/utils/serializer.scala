@@ -171,8 +171,7 @@ package object serializer {
     val authorF = new AuthorFormat()
     val affiliationF = new AffiliationFormat()
     val referenceF = new ReferenceFormat()
-    implicit val figureF = new FigureFormat()
-
+    val figureF = new FigureFormat()
 
     override def reads(json: JsValue): JsResult[Abstract] = (
       (__ \ "uuid").readNullable[String] and
@@ -187,9 +186,10 @@ package object serializer {
       (__ \ "authors").lazyRead( list[Author](authorF) ) and
       (__ \ "affiliations").lazyRead( list[Affiliation](affiliationF) ) and
       (__ \ "references").lazyRead( list[Reference](referenceF) )
-    )(Abstract(_, _, _, _, _, _, _, _, _, None, None, Nil, _, _, _)).reads(json)
+    )(Abstract(_, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
+      val figures: Seq[Figure] = asScalaSet(a.figures).toSeq
       val authors: Seq[Author] = asScalaSet(a.authors).toSeq
       val affiliations: Seq[Affiliation] = asScalaSet(a.affiliations).toSeq
       val references: Seq[Reference] = asScalaSet(a.references).toSeq
@@ -204,7 +204,7 @@ package object serializer {
         "approved" -> a.approved,
         "published" -> a.published,
         "conference" -> a.conference.uuid,
-        "figure" -> a.figure,
+        "figures" -> JsArray( for (auth <- figures) yield figureF.writes(auth) ),
         "owners" -> routesResolver.ownersUrl(a.uuid),
         "authors" -> JsArray( for (auth <- authors) yield authorF.writes(auth) ),
         "affiliations" -> JsArray( for (auth <- affiliations) yield affiliationF.writes(auth) ),
