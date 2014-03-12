@@ -60,7 +60,10 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
       if (abstr.uuid == null)
         throw new IllegalArgumentException("Unable to assign figure to abstract with null uuid")
 
-      fig.abstr = abstr
+      val abstrMerged = em.merge(abstr)
+      em.refresh(abstrMerged)
+
+      fig.abstr = abstrMerged
       val figMerged = em.merge(fig)
 
       val file = new File(figPath, figMerged.uuid)
