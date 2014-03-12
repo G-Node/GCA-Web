@@ -5,18 +5,14 @@ import org.junit._
 import play.api.test._
 import play.api.Play
 import play.api.test.Helpers._
-import play.api.mvc.Cookie
-import play.api.libs.json._
-
 import javax.persistence._
-
 import service.util.DBUtil
 import service.Assets
 import utils.serializer.ConferenceFormat
 import scala.Some
 import play.api.test.FakeApplication
 import play.api.libs.json.JsObject
-
+import utils.DefaultRoutesResolver._
 
 /**
  * Test
@@ -26,7 +22,7 @@ class ConferenceCtrlTest extends JUnitSuite with DBUtil {
   var emf : EntityManagerFactory = _
   var assets : Assets = _
   val authenticate = securesocial.controllers.ProviderController.authenticateByPost _
-  val formatter = new ConferenceFormat("http://example.com")
+  val formatter = new ConferenceFormat()
   val getCookie = (username: String, password: String, provider: String) => {
     val authRequest = FakeRequest().withFormUrlEncodedBody(
       "username" -> username,

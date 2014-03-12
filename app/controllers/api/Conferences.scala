@@ -1,6 +1,5 @@
 package controllers.api
 
-import play.api.Play.current
 import play.api.mvc._
 import play.api.libs.json._
 import utils.GCAAuth
@@ -8,7 +7,7 @@ import utils.serializer.ConferenceFormat
 import utils.RESTResults._
 import service.ConferenceService
 import javax.persistence.{EntityNotFoundException, NoResultException}
-
+import utils.DefaultRoutesResolver._
 
 /**
  * Conferences controller.
@@ -16,15 +15,13 @@ import javax.persistence.{EntityNotFoundException, NoResultException}
  */
 object Conferences extends Controller with OwnerManager with GCAAuth {
 
-  val httpPrefix = current.configuration.getString("httpPrefix").get
-
   /**
    * Create a new conference.
    *
    * @return Created with conference in JSON / BadRequest
    */
   def create = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
-    val formatter = new ConferenceFormat(httpPrefix + request.host)
+    val formatter = new ConferenceFormat()
     formatter.reads(request.body).fold(
       invalid = e => JSONValidationError(e),
       valid = conference => {
@@ -45,7 +42,7 @@ object Conferences extends Controller with OwnerManager with GCAAuth {
    * @return Ok with all conferences publicly available.
    */
   def list = Action { request =>
-    val formatter = new ConferenceFormat(httpPrefix + request.host)
+    val formatter = new ConferenceFormat()
     Ok(JsArray(ConferenceService().list().map(formatter.writes(_))))
   }
 
@@ -57,7 +54,7 @@ object Conferences extends Controller with OwnerManager with GCAAuth {
    * @return OK with conference in JSON / NotFound
    */
   def get(id: String) = Action { request =>
-    val formatter = new ConferenceFormat(httpPrefix + request.host)
+    val formatter = new ConferenceFormat()
     try {
       Ok(formatter.writes(ConferenceService().get(id)))
     } catch {
@@ -73,7 +70,7 @@ object Conferences extends Controller with OwnerManager with GCAAuth {
    * @return OK with conference in JSON / BadRequest / Forbidden
    */
   def update(id: String) = AuthenticatedAction(parse.json, isREST = true) { request =>
-    val formatter = new ConferenceFormat(httpPrefix + request.host)
+    val formatter = new ConferenceFormat()
     formatter.reads(request.body).fold(
       invalid = e => JSONValidationError(e),
       valid = conference => {
