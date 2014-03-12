@@ -44,7 +44,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
             $.ajax({
                 async: false,
-                url: "/conferences/" + confId,
+                url: "/api/conferences/" + confId,
                 type: "GET",
                 success: success,
                 error: fail,
@@ -65,7 +65,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
             $.ajax({
                 async: false,
-                url: "/abstracts/" + confId,
+                url: "/api/abstracts/" + confId,
                 type: "GET",
                 success: success,
                 error: fail,
