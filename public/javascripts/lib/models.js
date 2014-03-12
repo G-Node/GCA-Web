@@ -101,7 +101,7 @@ define(["lib/tools"], function(tools) {
             if (target.hasOwnProperty(prop)) {
                 var value = readProperty(prop, source);
 
-                if (tools.type(value) !== "function") {
+                if (tools.type(target[prop]) !== "function" && value !== null) {
                     target[prop] = value;
                 }
             }
