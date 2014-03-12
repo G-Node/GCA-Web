@@ -10,6 +10,16 @@ import models._
 
 package object serializer {
 
+  implicit val urlWrites = new Writes[URL] {
+    def writes(url: URL) = {
+      if (url == null) {
+        JsNull
+      } else {
+        Json.toJson(url.toString)
+      }
+    }
+  }
+
   /**
    * Conference serializer.
    *
