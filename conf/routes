@@ -1,11 +1,11 @@
 # Routes
 
 # Home page
-GET           /                                controllers.Application.index
-GET           /submission                      controllers.Application.submission
+GET           /                                     controllers.Application.index
+GET           /submission                           controllers.Application.submission
 
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file                    controllers.Assets.at(path="/public", file)
+GET           /assets/*file                         controllers.Assets.at(path="/public", file)
 
 # Conference interface
 POST          /api/conferences                      controllers.api.Conferences.create()
@@ -19,39 +19,40 @@ PUT           /api/conferences/:id/owners           controllers.api.Conferences.
 GET           /api/conferences/:id/owners           controllers.api.Conferences.getPermissions(id: String)
 
 # Abstract interface
-GET           /api/abstracts/:id               controllers.api.Abstracts.get(id: String)
-PUT           /api/abstracts/:id               controllers.api.Abstracts.update(id: String)
-DELETE        /api/abstracts/:id               controllers.api.Abstracts.delete(id: String)
-POST          /api/abstracts/:id/figure        controllers.api.Files.upload(id: String)
-GET           /api/abstracts/:id/figure        controllers.api.Files.download(id: String)
-DELETE        /api/abstracts/:id/figure        controllers.api.Files.delete(id: String)
-PUT           /api/abstracts/:id/owners        controllers.api.Abstracts.setPermissions(id: String)
-GET           /api/abstracts/:id/owners        controllers.api.Abstracts.getPermissions(id: String)
+GET           /api/abstracts/:id                    controllers.api.Abstracts.get(id: String)
+PUT           /api/abstracts/:id                    controllers.api.Abstracts.update(id: String)
+DELETE        /api/abstracts/:id                    controllers.api.Abstracts.delete(id: String)
+POST          /api/abstracts/:id/figure             controllers.api.Figures.upload(id: String)
+GET           /api/abstracts/:id/figure             controllers.api.Figures.get(id: String)
+GET           /api/abstracts/:id/figure/image       controllers.api.Figures.download(id: String)
+DELETE        /api/abstracts/:id/figure             controllers.api.Figures.delete(id: String)
+PUT           /api/abstracts/:id/owners             controllers.api.Abstracts.setPermissions(id: String)
+GET           /api/abstracts/:id/owners             controllers.api.Abstracts.getPermissions(id: String)
 
 # [...] maybe add more aliases
 
 # Account interface
-GET           /user                            controllers.Application.showUserInfo
-GET           /api/user/:id/abstracts          controllers.api.Abstracts.listByAccount(id: String)
-GET           /secret                          controllers.Application.showSecret
+GET           /user                                 controllers.Application.showUserInfo
+GET           /api/user/:id/abstracts               controllers.api.Abstracts.listByAccount(id: String)
+GET           /secret                               controllers.Application.showSecret
 
 # Login page
-GET           /login                           securesocial.controllers.LoginPage.login
-GET           /logout                          securesocial.controllers.LoginPage.logout
+GET           /login                                securesocial.controllers.LoginPage.login
+GET           /logout                               securesocial.controllers.LoginPage.logout
 
 # User Registration and password handling
-GET           /signup                          securesocial.controllers.Registration.startSignUp
-POST          /signup                          securesocial.controllers.Registration.handleStartSignUp
-GET           /signup/:token                   securesocial.controllers.Registration.signUp(token)
-POST          /signup/:token                   securesocial.controllers.Registration.handleSignUp(token)
-GET           /reset                           securesocial.controllers.Registration.startResetPassword
-POST          /reset                           securesocial.controllers.Registration.handleStartResetPassword
-GET           /reset/:token                    securesocial.controllers.Registration.resetPassword(token)
-POST          /reset/:token                    securesocial.controllers.Registration.handleResetPassword(token)
-GET           /password                        securesocial.controllers.PasswordChange.page
-POST          /password                        securesocial.controllers.PasswordChange.handlePasswordChange
+GET           /signup                               securesocial.controllers.Registration.startSignUp
+POST          /signup                               securesocial.controllers.Registration.handleStartSignUp
+GET           /signup/:token                        securesocial.controllers.Registration.signUp(token)
+POST          /signup/:token                        securesocial.controllers.Registration.handleSignUp(token)
+GET           /reset                                securesocial.controllers.Registration.startResetPassword
+POST          /reset                                securesocial.controllers.Registration.handleStartResetPassword
+GET           /reset/:token                         securesocial.controllers.Registration.resetPassword(token)
+POST          /reset/:token                         securesocial.controllers.Registration.handleResetPassword(token)
+GET           /password                             securesocial.controllers.PasswordChange.page
+POST          /password                             securesocial.controllers.PasswordChange.handlePasswordChange
 
 # Providers entry points
-GET           /authenticate/:provider          securesocial.controllers.ProviderController.authenticate(provider)
-POST          /authenticate/:provider          securesocial.controllers.ProviderController.authenticateByPost(provider)
-GET           /not-authorized                  securesocial.controllers.ProviderController.notAuthorized
+GET           /authenticate/:provider               securesocial.controllers.ProviderController.authenticate(provider)
+POST          /authenticate/:provider               securesocial.controllers.ProviderController.authenticateByPost(provider)
+GET           /not-authorized                       securesocial.controllers.ProviderController.notAuthorized

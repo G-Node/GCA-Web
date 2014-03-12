@@ -1,57 +1,27 @@
 package controller
 
-import org.scalatest.junit.JUnitSuite
-import service.util.DBUtil
-import javax.persistence.{Persistence, EntityManagerFactory}
-import service.{Assets, UserStore}
 import play.api.test.{FakeRequest, FakeApplication}
 import org.junit.{Test, Before, AfterClass, BeforeClass}
 import play.api.Play
 import play.api.test.Helpers._
-import securesocial.controllers.ProviderController.authenticateByPost
 import utils.serializer.AbstractFormat
 import play.api.libs.json.Json
-import securesocial.core.IdentityId
 import models.Abstract
 import play.api.mvc.Cookie
 import utils.DefaultRoutesResolver._
 
-class AbstractsCtrlTest extends JUnitSuite with DBUtil {
+class AbstractsCtrlTest extends BaseCtrlTest {
 
   implicit val absFormat = new AbstractFormat()
-
-  var emf: EntityManagerFactory = _
-  var store: UserStore = _
-  var assets: Assets = _
-
   var cookie: Cookie = _
 
   @Before
-  def before() : Unit = {
-    emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-    assets = new Assets(emf)
-    assets.killDB()
-    assets.fillDB()
+  override def before() : Unit = {
+    super.before()
 
     //auth only once
     cookie = getCookie(assets.alice.identityId, "testtest")
   }
-
-
-  // utility function
-  def getCookie (id: IdentityId, password: String) = {
-    val authRequest = FakeRequest().withFormUrlEncodedBody(
-      "username" -> id.userId,
-      "password" -> password
-    )
-    val authResponse = authenticateByPost(id.providerId)(authRequest)
-    cookies(authResponse).get("id").getOrElse {
-      throw new RuntimeException("Could not authenticate successfully")
-    }
-  }
-
-  //test no auth
-
 
   @Test
   def testGet() {
