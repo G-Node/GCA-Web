@@ -10,25 +10,22 @@ import models._
 
 package object serializer {
 
+  implicit val urlWrites = new Writes[URL] {
+    def writes(url: URL) = {
+      if (url == null) {
+        JsNull
+      } else {
+        Json.toJson(url.toString)
+      }
+    }
+  }
+
   /**
    * Conference serializer.
    *
-   * @param baseUrl base URL from the configuration, like "http://hostname:port"
+   * @param routesResolver a RoutesResolver to resolve urls
    */
-  class ConferenceFormat(baseUrl: String) extends Format[Conference] {
-
-    /**
-     * Builds an URL to the related abstracts from a given object ID.
-     *
-     * @param id an ID of a Conference object to insert into the URL
-     *
-     * @return URL for related abstracts, like "/api/conferences/HNOPSADMHV/abstracts"
-     */
-    private def abstractsUrl(id: String) = {
-      // builds java.net.URL to somehow verify it's an URL
-      // maybe add more validation here
-      new URL(baseUrl + "/api/conferences/<id>/abstracts".replace("<id>", id)).toString
-    }
+  class ConferenceFormat(implicit routesResolver: RoutesResolver) extends Format[Conference] {
 
     override def reads(json: JsValue): JsResult[Conference] = (
       (__ \ "uuid").readNullable[String] and
@@ -39,7 +36,7 @@ package object serializer {
       Json.obj(
         "name" -> c.name,
         "uuid" -> c.uuid,
-        "abstracts" -> abstractsUrl(c.uuid)
+        "abstracts" -> routesResolver.abstractsUrl(c.uuid)
       )
     }
   }
@@ -47,22 +44,9 @@ package object serializer {
   /**
    * Account serializer.
    *
-   * @param baseUrl base URL from the configuration, like "http://hostname:port"
+   * @param routesResolver a RoutesResolver to resolve urls
    */
-  class AccountFormat(baseUrl: String) extends Format[Account] {
-
-    /**
-     * Builds an URL to the related abstracts from a given object ID.
-     *
-     * @param id an ID of an Account object to insert into the URL
-     *
-     * @return URL for related abstracts, like "/account/HNOPSADMHV/abstracts"
-     */
-    private def abstractsUrl(id: String) = {
-      // builds java.net.URL to somehow verify it's an URL
-      // maybe add more validation here
-      new URL(baseUrl + "/api/account/<id>/abstracts".replace("<id>", id)).toString
-    }
+  class AccountFormat(implicit routesResolver: RoutesResolver) extends Format[Account] {
 
     override def reads(json: JsValue): JsResult[Account] = (
       (__ \ "uuid").readNullable[String] and
@@ -73,7 +57,7 @@ package object serializer {
       Json.obj(
         "uuid" -> account.uuid,
         "email" -> account.mail,
-        "abstracts" -> abstractsUrl(account.uuid)
+        "abstracts" -> routesResolver.abstractsUrl(account.uuid)
       )
     }
   }
@@ -180,32 +164,15 @@ package object serializer {
   /**
    * Abstract serializer.
    *
-   * @param baseUrl base URL from the configuration, like "http://hostname:port"
+   * @param routesResolver a RoutesResolver to resolve urls
    */
-  class AbstractFormat(baseUrl: String) extends Format[Abstract] with ConstraintReads {
+  class AbstractFormat(implicit routesResolver: RoutesResolver) extends Format[Abstract] with ConstraintReads {
 
     val authorF = new AuthorFormat()
     val affiliationF = new AffiliationFormat()
     val referenceF = new ReferenceFormat()
     implicit val figureF = new FigureFormat()
 
-    /**
-     * Builds an URL to the related abstracts from a given object ID.
-     *
-     * @param id an ID of a Conference object to insert into the URL
-     *
-     * @return URL for related abstracts, like "/conferences/HNOPSADMHV/abstracts"
-     */
-    private def ownersUrl(id: String) = {
-      // builds java.net.URL to somehow verify it's an URL
-      // maybe add more validation here
-
-      if (id != null) {
-        Json.toJson(new URL(baseUrl + "/api/abstracts/<id>/owners".replace("<id>", id)).toString)
-      } else {
-        JsNull
-      }
-    }
 
     override def reads(json: JsValue): JsResult[Abstract] = (
       (__ \ "uuid").readNullable[String] and
@@ -238,7 +205,7 @@ package object serializer {
         "published" -> a.published,
         "conference" -> a.conference.uuid,
         "figure" -> a.figure,
-        "owners" -> ownersUrl(a.uuid),
+        "owners" -> routesResolver.ownersUrl(a.uuid),
         "authors" -> JsArray( for (auth <- authors) yield authorF.writes(auth) ),
         "affiliations" -> JsArray( for (auth <- affiliations) yield affiliationF.writes(auth) ),
         "references" -> JsArray( for (auth <- references) yield referenceF.writes(auth) )

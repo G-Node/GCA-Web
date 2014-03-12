@@ -14,10 +14,11 @@ import play.api.libs.json.Json
 import securesocial.core.IdentityId
 import models.Abstract
 import play.api.mvc.Cookie
+import utils.DefaultRoutesResolver._
 
 class AbstractsCtrlTest extends JUnitSuite with DBUtil {
 
-  implicit val absFormat = new AbstractFormat("http://localhost:9000")
+  implicit val absFormat = new AbstractFormat()
 
   var emf: EntityManagerFactory = _
   var store: UserStore = _

@@ -7,7 +7,7 @@ import utils.serializer.AbstractFormat
 import play.api.libs.json.Json
 import utils.GCAAuth
 import models.Abstract
-
+import utils.DefaultRoutesResolver._
 
 /**
  * Abstracts controller.
@@ -15,7 +15,7 @@ import models.Abstract
  */
 object Abstracts extends Controller with OwnerManager with  GCAAuth {
 
-  implicit val absFormat = new AbstractFormat("http://localhost:9000") //FIXME
+  implicit val absFormat = new AbstractFormat()
 
   /**
    * Create a new abstract.
