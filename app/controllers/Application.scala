@@ -4,6 +4,7 @@ import play.api._
 import play.api.mvc._
 import utils.GCAAuth
 import models.{Conference, Account, Abstract}
+import service.ConferenceService
 
 object Application extends Controller with GCAAuth {
 
@@ -29,13 +30,15 @@ object Application extends Controller with GCAAuth {
     Ok("The answer is 42.")
   }
 
-  def submission = UserAwareAction { implicit request => // TOTO should be a secure action
+  def submission(id: String) = UserAwareAction { implicit request => // TODO should be a secure action
     val user: Account = request.user match {
       case Some(user: Account) => user
       case _                   => null
     }
-    val conf = Conference(None, Option("BCCN14"))
-    Ok(views.html.submission(user, conf, new Abstract))
+
+    val srv = ConferenceService()
+    val conf = srv.get(id)
+    Ok(views.html.submission(user, conf, None))
   }
 
 }

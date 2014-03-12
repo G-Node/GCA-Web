@@ -2,7 +2,7 @@
  * Module for misc utility functions
  * @module {models}
  */
-define(["util/tools"], function(tools) {
+define(["lib/tools"], function(tools) {
     "use strict";
 
     /**
@@ -16,6 +16,10 @@ define(["util/tools"], function(tools) {
      * @private
      */
     function readProperty(name, source) {
+        if (source === null) {
+            return null;
+        }
+
         var value = null,
             name_under = tools.toUnderscore(name);
 
@@ -38,7 +42,7 @@ define(["util/tools"], function(tools) {
      */
     function Model(uuid) {
 
-        if (tools.isGlobal(this)) {
+        if (! (this instanceof Model)) {
             return new Model(uuid);
         }
 
@@ -59,6 +63,8 @@ define(["util/tools"], function(tools) {
                    }
                }
             }
+
+            return obj;
         };
 
         /**
@@ -73,7 +79,8 @@ define(["util/tools"], function(tools) {
             if (indention === undefined) {
                 indention = indention || 4;
             }
-            return JSON.stringify(self.toObject(), null, indention);
+            var obj = self.toObject();
+            return JSON.stringify(obj, null, indention);
         };
 
     }
@@ -94,8 +101,8 @@ define(["util/tools"], function(tools) {
             if (target.hasOwnProperty(prop)) {
                 var value = readProperty(prop, source);
 
-                if (tools.type(value) !== "function") {
-                    target[prop] = readProperty(prop, source);
+                if (tools.type(target[prop]) !== "function" && value !== null) {
+                    target[prop] = value;
                 }
             }
         }
@@ -117,7 +124,7 @@ define(["util/tools"], function(tools) {
         var created = [];
 
         array.forEach(function(obj) {
-           created.append(factory(obj));
+           created.push(factory(obj));
         });
 
         return created;
@@ -137,7 +144,7 @@ define(["util/tools"], function(tools) {
      */
     function Conference(uuid, name, owners, abstracts) {
 
-        if (tools.isGlobal(this)) {
+        if (! (this instanceof Conference)) {
             return new Conference(uuid, name, owners, abstracts);
         }
 
@@ -173,7 +180,7 @@ define(["util/tools"], function(tools) {
      */
     function Author(uuid, mail, firstName, middleName, lastName, affiliations) {
 
-        if (tools.isGlobal(this)) {
+        if (! (this instanceof Author)) {
             return new Author(uuid, mail, firstName, middleName, lastName, affiliations);
         }
 
@@ -211,7 +218,7 @@ define(["util/tools"], function(tools) {
      */
     function Affiliation(uuid, address, country, department, name, section) {
 
-        if (tools.isGlobal(this)) {
+        if (! (this instanceof  Affiliation)) {
             return new Affiliation(uuid, address, country, department, name, section);
         }
 
@@ -247,7 +254,7 @@ define(["util/tools"], function(tools) {
      */
     function Figure(uuid, name, caption, file) {
 
-        if (tools.isGlobal(this)) {
+        if (! (this instanceof Figure)) {
             return new Figure(uuid, name, caption, file);
         }
 
@@ -282,7 +289,7 @@ define(["util/tools"], function(tools) {
      */
     function Reference(uuid, authors, title, year, doi) {
 
-        if (tools.isGlobal(this)) {
+        if (! (this instanceof Reference)) {
             return new Reference();
         }
 
@@ -330,7 +337,7 @@ define(["util/tools"], function(tools) {
                       owners, approved, published, figure, authors, affiliations,
                       references) {
 
-        if (tools.isGlobal(this)) {
+        if (! (this instanceof Abstract)) {
             return new Abstract(uuid, title, topic, text, doi, conflictOfInterest,
                                 acknowledgements, approved, published, owners, figure,
                                 authors, affiliations, references);
@@ -363,7 +370,11 @@ define(["util/tools"], function(tools) {
 
                     switch(prop) {
                         case "figure":
-                            obj[prop] = self.figure.toObject();
+                            if (self.figure) {
+                                obj.figure = self.figure.toObject();
+                            } else {
+                                obj.figure = null;
+                            }
                             break;
                         case "authors":
                             obj.authors = [];
@@ -377,6 +388,8 @@ define(["util/tools"], function(tools) {
                             obj.references = [];
                             self.references.forEach(appendReference);
                             break;
+                        case "owners":
+                            break;
                         default:
                             if (tools.type(value) !== "function") {
                                 obj[prop] = value;
@@ -386,16 +399,18 @@ define(["util/tools"], function(tools) {
             }
 
             function appendAuthor(model) {
-                obj.authors.append(model.toObject());
+                obj.authors.push(model.toObject());
             }
 
             function appendAffiliation(model) {
-                obj.affiliations.append(model.toObject());
+                obj.affiliations.push(model.toObject());
             }
 
             function appendReference(model) {
-                obj.references.append(model.toObject());
+                obj.references.push(model.toObject());
             }
+
+            return obj;
         };
 
     }
