@@ -1,4 +1,4 @@
-package controllers
+package controllers.api
 
 import play.api._
 import play.api.mvc._
@@ -6,7 +6,7 @@ import service._
 import utils.serializer.AbstractFormat
 import play.api.libs.json.Json
 import utils.GCAAuth
-import models.{Abstract, Account}
+import models.Abstract
 
 
 /**

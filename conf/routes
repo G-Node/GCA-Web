@@ -8,31 +8,31 @@ GET           /submission                      controllers.Application.submissio
 GET           /assets/*file                    controllers.Assets.at(path="/public", file)
 
 # Conference interface
-POST          /api/conferences                      controllers.Conferences.create()
-GET           /api/conferences                      controllers.Conferences.list()
-GET           /api/conferences/:id                  controllers.Conferences.get(id: String)
-PUT           /api/conferences/:id                  controllers.Conferences.update(id: String)
-DELETE        /api/conferences/:id                  controllers.Conferences.delete(id: String)
-POST          /api/conferences/:id/abstracts        controllers.Abstracts.create(id: String)
-GET           /api/conferences/:id/abstracts        controllers.Abstracts.listByConference(id: String)
-PUT           /api/conferences/:id/owners           controllers.Conferences.setPermissions(id: String)
-GET           /api/conferences/:id/owners           controllers.Conferences.getPermissions(id: String)
+POST          /api/conferences                      controllers.api.Conferences.create()
+GET           /api/conferences                      controllers.api.Conferences.list()
+GET           /api/conferences/:id                  controllers.api.Conferences.get(id: String)
+PUT           /api/conferences/:id                  controllers.api.Conferences.update(id: String)
+DELETE        /api/conferences/:id                  controllers.api.Conferences.delete(id: String)
+POST          /api/conferences/:id/abstracts        controllers.api.Abstracts.create(id: String)
+GET           /api/conferences/:id/abstracts        controllers.api.Abstracts.listByConference(id: String)
+PUT           /api/conferences/:id/owners           controllers.api.Conferences.setPermissions(id: String)
+GET           /api/conferences/:id/owners           controllers.api.Conferences.getPermissions(id: String)
 
 # Abstract interface
-GET           /api/abstracts/:id               controllers.Abstracts.get(id: String)
-PUT           /api/abstracts/:id               controllers.Abstracts.update(id: String)
-DELETE        /api/abstracts/:id               controllers.Abstracts.delete(id: String)
-POST          /api/abstracts/:id/figure        controllers.Files.upload(id: String)
-GET           /api/abstracts/:id/figure        controllers.Files.download(id: String)
-DELETE        /api/abstracts/:id/figure        controllers.Files.delete(id: String)
-PUT           /api/abstracts/:id/owners        controllers.Abstracts.setPermissions(id: String)
-GET           /api/abstracts/:id/owners        controllers.Abstracts.getPermissions(id: String)
+GET           /api/abstracts/:id               controllers.api.Abstracts.get(id: String)
+PUT           /api/abstracts/:id               controllers.api.Abstracts.update(id: String)
+DELETE        /api/abstracts/:id               controllers.api.Abstracts.delete(id: String)
+POST          /api/abstracts/:id/figure        controllers.api.Files.upload(id: String)
+GET           /api/abstracts/:id/figure        controllers.api.Files.download(id: String)
+DELETE        /api/abstracts/:id/figure        controllers.api.Files.delete(id: String)
+PUT           /api/abstracts/:id/owners        controllers.api.Abstracts.setPermissions(id: String)
+GET           /api/abstracts/:id/owners        controllers.api.Abstracts.getPermissions(id: String)
 
 # [...] maybe add more aliases
 
 # Account interface
 GET           /user                            controllers.Application.showUserInfo
-GET           /api/user/:id/abstracts              controllers.Abstracts.listByAccount(id: String)
+GET           /api/user/:id/abstracts          controllers.api.Abstracts.listByAccount(id: String)
 GET           /secret                          controllers.Application.showSecret
 
 # Login page
