@@ -65,7 +65,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
             $.ajax({
                 async: false,
-                url: "/api/abstracts/" + confId,
+                url: "/api/abstracts/" + abstrId,
                 type: "GET",
                 success: success,
                 error: fail,
@@ -82,15 +82,59 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         };
 
+
+        self.saveAbstract = function() {
+
+            if (self.abstractSaved()) {
+
+                $.ajax({
+                    async: false,
+                    url: "/api/abstracts/" + abstrId,
+                    type: "PUT",
+                    success: success,
+                    error: fail,
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: self.abstract().toJSON()
+                });
+
+            } else if (confId) {
+
+                $.ajax({
+                    async: false,
+                    url: "/api/conferences/" + confId + "/abstracts",
+                    type: "POST",
+                    success: success,
+                    error: fail,
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: self.abstract().toJSON()
+                });
+
+            } else {
+                throw "Conference id or abstract id must be defined";
+            }
+
+            function success(obj, stat, xhr) {
+                self.abstract(models.Abstract.fromObject(obj));
+                self.abstractSaved(true);
+            }
+
+            function fail(xhr, stat, msg) {
+                console.log("Error while saving the abstract");
+            }
+        };
+
+
         self.refresh = function() {
-            var abstr = self.abstract();
 
             if (self.abstractSaved()) {
                 console.log("save abstract");
+                self.saveAbstract();
+            } else {
+                console.log("refresh abstract");
+                self.abstract(self.abstract());
             }
-
-            console.log("refresh abstract");
-            self.abstract(abstr);
         };
     }
 
