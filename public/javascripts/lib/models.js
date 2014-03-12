@@ -16,6 +16,10 @@ define(["lib/tools"], function(tools) {
      * @private
      */
     function readProperty(name, source) {
+        if (source === null) {
+            return null;
+        }
+
         var value = null,
             name_under = tools.toUnderscore(name);
 
@@ -97,8 +101,8 @@ define(["lib/tools"], function(tools) {
             if (target.hasOwnProperty(prop)) {
                 var value = readProperty(prop, source);
 
-                if (tools.type(value) !== "function") {
-                    target[prop] = readProperty(prop, source);
+                if (tools.type(target[prop]) !== "function" && value !== null) {
+                    target[prop] = value;
                 }
             }
         }
@@ -120,7 +124,7 @@ define(["lib/tools"], function(tools) {
         var created = [];
 
         array.forEach(function(obj) {
-           created.append(factory(obj));
+           created.push(factory(obj));
         });
 
         return created;
@@ -395,15 +399,15 @@ define(["lib/tools"], function(tools) {
             }
 
             function appendAuthor(model) {
-                obj.authors.append(model.toObject());
+                obj.authors.push(model.toObject());
             }
 
             function appendAffiliation(model) {
-                obj.affiliations.append(model.toObject());
+                obj.affiliations.push(model.toObject());
             }
 
             function appendReference(model) {
-                obj.references.append(model.toObject());
+                obj.references.push(model.toObject());
             }
 
             return obj;
