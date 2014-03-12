@@ -16,6 +16,10 @@ define(["lib/tools"], function(tools) {
      * @private
      */
     function readProperty(name, source) {
+        if (source === null) {
+            return null;
+        }
+
         var value = null,
             name_under = tools.toUnderscore(name);
 
@@ -98,7 +102,7 @@ define(["lib/tools"], function(tools) {
                 var value = readProperty(prop, source);
 
                 if (tools.type(value) !== "function") {
-                    target[prop] = readProperty(prop, source);
+                    target[prop] = value;
                 }
             }
         }
