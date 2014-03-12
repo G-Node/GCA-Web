@@ -42,7 +42,7 @@ define(["lib/tools"], function(tools) {
      */
     function Model(uuid) {
 
-        if (! (this instanceof Model)) {
+        if (tools.isGlobalOrUndefined(this)) {
             return new Model(uuid);
         }
 
@@ -75,7 +75,7 @@ define(["lib/tools"], function(tools) {
          *
          * @returns {string} JSON string.
          */
-        self.toString = function(indention) {
+        self.toJSON = function(indention) {
             if (indention === undefined) {
                 indention = indention || 4;
             }
