@@ -1,9 +1,7 @@
-package controllers
+package controllers.api
 
 import play.api.mvc._
-import play.api.libs.json._
-import service.AbstractService
-import models.{Conference, Abstract}
+import models.Abstract
 
 /**
  * Abstracts controller.
