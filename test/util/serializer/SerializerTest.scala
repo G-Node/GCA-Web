@@ -7,13 +7,11 @@ import play.api.Play
 
 import models._
 import utils.serializer._
-
+import utils.DefaultRoutesResolver._
 /**
  * Tests for Serializer
  */
 class SerializerTest extends JUnitSuite {
-
-  val baseUrl = "http://hostname:8000"
 
   val sampleConference: Conference = Conference(Option("someuuid"), Option("bar"))
   val sampleAccount: Account = Account(Option("someuuid"), Option("example@gnode.org"))
@@ -31,7 +29,7 @@ class SerializerTest extends JUnitSuite {
 
   @Test
   def testConference(): Unit = {
-    val jsFormat = new ConferenceFormat(baseUrl)
+    val jsFormat = new ConferenceFormat()
 
     val original = Conference(Option("someuuid"), Option("bar"))
     val json = jsFormat.writes(original)
@@ -44,7 +42,7 @@ class SerializerTest extends JUnitSuite {
 
   @Test
   def testAccount(): Unit = {
-    val jsFormat = new AccountFormat(baseUrl)
+    val jsFormat = new AccountFormat()
 
     val original = Account(Option("someuuid"), Option("example@gnode.org"))
     val json = jsFormat.writes(original)
@@ -112,7 +110,7 @@ class SerializerTest extends JUnitSuite {
 
   @Test
   def testAbstract(): Unit = {
-    val jsFormat = new AbstractFormat(baseUrl)
+    val jsFormat = new AbstractFormat()
 
     val json = jsFormat.writes(sampleAbstract)
 

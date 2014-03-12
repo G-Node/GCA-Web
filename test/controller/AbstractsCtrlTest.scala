@@ -8,10 +8,11 @@ import utils.serializer.AbstractFormat
 import play.api.libs.json.Json
 import models.Abstract
 import play.api.mvc.Cookie
+import utils.DefaultRoutesResolver._
 
 class AbstractsCtrlTest extends BaseCtrlTest {
 
-  implicit val absFormat = new AbstractFormat("http://localhost:9000")
+  implicit val absFormat = new AbstractFormat()
   var cookie: Cookie = _
 
   @Before
@@ -26,19 +27,19 @@ class AbstractsCtrlTest extends BaseCtrlTest {
   def testGet() {
 
     var id = "NOTEXISTANT"
-    var req = FakeRequest(GET, s"/abstracts/$id")
+    var req = FakeRequest(GET, s"/api/abstracts/$id")
 
     var result = route(AbstractsCtrlTest.app, req).get
     assert(status(result) == NOT_FOUND)
 
     id = assets.abstracts(0).uuid //is published
-    req = FakeRequest(GET, s"/abstracts/$id")
+    req = FakeRequest(GET, s"/api/abstracts/$id")
 
     result = route(AbstractsCtrlTest.app, req).get
     assert(status(result) == OK)
 
     id = assets.abstracts(2).uuid //approved == false, published == false
-    req = FakeRequest(GET, s"/abstracts/$id").withCookies(cookie) //but we auth as the owner
+    req = FakeRequest(GET, s"/api/abstracts/$id").withCookies(cookie) //but we auth as the owner
 
     result = route(AbstractsCtrlTest.app, req).get
     assert(status(result) == OK)
@@ -53,7 +54,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
 
     val body = Json.toJson(oldAbstract)
     val confId = assets.conferences(0).uuid
-    val reqNoAuth = FakeRequest(POST, s"/conferences/$confId/abstracts").withJsonBody(body)
+    val reqNoAuth = FakeRequest(POST, s"/api/conferences/$confId/abstracts").withJsonBody(body)
 
     val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
     assert(status(reqNoAuthResult) == UNAUTHORIZED)
@@ -78,7 +79,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     val absUUID = original.uuid
 
     val body = Json.toJson(original)
-    val reqNoAuth = FakeRequest(PUT, s"/abstracts/$absUUID").withJsonBody(body)
+    val reqNoAuth = FakeRequest(PUT, s"/api/abstracts/$absUUID").withJsonBody(body)
 
     val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
     assert(status(reqNoAuthResult) == UNAUTHORIZED)
@@ -96,7 +97,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
   def testListByAccount() {
 
     val uid = assets.alice.uuid
-    val reqNoAuth = FakeRequest(GET, s"/user/$uid/abstracts")
+    val reqNoAuth = FakeRequest(GET, s"/api/user/$uid/abstracts")
     val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
     assert(status(reqNoAuthResult) == UNAUTHORIZED)
 
@@ -114,7 +115,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
   def testListByConference() {
 
     val cid = assets.conferences(0).uuid
-    val reqNoAuth = FakeRequest(GET, s"/conferences/$cid/abstracts")
+    val reqNoAuth = FakeRequest(GET, s"/api/conferences/$cid/abstracts")
 
     val reqAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
     assert(status(reqAuthResult) == OK)
@@ -126,7 +127,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
   @Test
   def testDelete() {
     val absUUID = assets.abstracts(0).uuid
-    val reqNoAuth = FakeRequest(DELETE, s"/abstracts/$absUUID")
+    val reqNoAuth = FakeRequest(DELETE, s"/api/abstracts/$absUUID")
     val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
     assert(status(reqNoAuthResult) == UNAUTHORIZED)
 

@@ -1,10 +1,10 @@
-package controllers
+package controllers.api
 
 import play.api.mvc._
 import service.{FigureService, AbstractService}
-import models.{Figure}
+import models.Figure
 import utils.GCAAuth
-import utils.serializer.{FigureFormat}
+import utils.serializer.FigureFormat
 import play.api.libs.json._
 import utils.RESTResults._
 

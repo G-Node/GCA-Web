@@ -4,20 +4,20 @@ import org.junit._
 import play.api.test._
 import play.api.Play
 import play.api.test.Helpers._
+import play.api.mvc.Cookie
 
+import utils.serializer.ConferenceFormat
 import scala.Some
 import play.api.test.FakeApplication
 import play.api.libs.json.JsObject
-import utils.serializer.ConferenceFormat
-import play.api.mvc.Cookie
-
+import utils.DefaultRoutesResolver._
 
 /**
  * Test
  */
 class ConferenceCtrlTest extends BaseCtrlTest {
 
-  val formatter = new ConferenceFormat("http://example.com")
+  val formatter = new ConferenceFormat()
   var cookie : Cookie = _
 
   @Before
@@ -30,7 +30,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
   def testCreate(): Unit = {
     val body = formatter.writes(assets.conferences(0)).as[JsObject] - "uuid" - "abstracts"
 
-    val createUnauth = FakeRequest(POST, "/conferences").withHeaders(
+    val createUnauth = FakeRequest(POST, "/api/conferences").withHeaders(
       ("Content-Type", "application/json")
     ).withJsonBody(body)
     val failed = route(ConferenceCtrlTest.app, createUnauth).get
@@ -43,7 +43,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
 
   @Test
   def testList(): Unit = {
-    val request = FakeRequest(GET, "/conferences")
+    val request = FakeRequest(GET, "/api/conferences")
     val confResult = route(ConferenceCtrlTest.app, request).get
     assert(status(confResult) == OK)
     assert(contentType(confResult) == Some("application/json"))
@@ -56,7 +56,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
   @Test
   def testGet(): Unit = {
     val uuid = assets.conferences(0).uuid
-    val request = FakeRequest(GET, s"/conferences/$uuid")
+    val request = FakeRequest(GET, s"/api/conferences/$uuid")
     val confResult = route(ConferenceCtrlTest.app, request).get
 
     assert(status(confResult) == OK)
@@ -71,7 +71,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     val body = formatter.writes(conf).as[JsObject] - "abstracts" - "uuid"
 
     val aliceCookie = cookie
-    val updateAuth = FakeRequest(PUT, s"/conferences/$uuid").withHeaders(
+    val updateAuth = FakeRequest(PUT, s"/api/conferences/$uuid").withHeaders(
       ("Content-Type", "application/json")
     ).withJsonBody(body).withCookies(aliceCookie)
     val updated = route(ConferenceCtrlTest.app, updateAuth).get
@@ -85,12 +85,13 @@ class ConferenceCtrlTest extends BaseCtrlTest {
 
   @Test
   def testDelete(): Unit = {
-    val good = FakeRequest(DELETE, "/conferences/" +
+    val good = FakeRequest(DELETE, "/api/conferences/" +
       assets.conferences(1).uuid).withCookies(cookie)
     val deleted = route(ConferenceCtrlTest.app, good).get
     assert(status(deleted) == OK)
 
-    val bad = FakeRequest(DELETE, "/conferences/foo").withCookies(cookie)
+    val id = "NOTEXISTANT"
+    val bad = FakeRequest(DELETE, s"/api/conferences/$id").withCookies(cookie)
     val failed = route(ConferenceCtrlTest.app, bad).get
     assert(status(failed) == NOT_FOUND)
   }
