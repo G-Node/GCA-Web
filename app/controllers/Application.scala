@@ -41,4 +41,11 @@ object Application extends Controller with GCAAuth {
     Ok(views.html.submission(user, conf, None))
   }
 
+  def listAbstracts(confId: String) = AccountAwareAction { implicit request =>
+    val confServ = ConferenceService()
+    val conference = confServ.get(confId)
+
+    Ok(views.html.abstractlist(request.user, conference))
+  }
+
 }
