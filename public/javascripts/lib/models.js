@@ -331,7 +331,7 @@ define(["lib/tools"], function(tools) {
      * @param {string} [owners]     URL to abstract owners.
      * @param {boolean} [approved]
      * @param {boolean} [published]
-     * @param {Figure} [figure]
+     * @param {Array} [figures]
      * @param {Array} [authors]
      * @param {Array} [affiliations]
      * @param {Array} [references]
@@ -341,12 +341,12 @@ define(["lib/tools"], function(tools) {
      * @public
      */
     function Abstract(uuid, title, topic, text, doi, conflictOfInterest, acknowledgements,
-                      owners, approved, published, figure, authors, affiliations,
+                      owners, approved, published, figures, authors, affiliations,
                       references) {
 
         if (! (this instanceof Abstract)) {
             return new Abstract(uuid, title, topic, text, doi, conflictOfInterest,
-                                acknowledgements, approved, published, owners, figure,
+                                acknowledgements, approved, published, owners, figures,
                                 authors, affiliations, references);
         }
 
@@ -361,7 +361,7 @@ define(["lib/tools"], function(tools) {
         self.owners = owners || null;
         self.approved = approved || false;
         self.published = published || false;
-        self.figure = figure || null;
+        self.figures = figures || [];
         self.authors = authors || [];
         self.affiliations = affiliations || [];
         self.references = references || [];
@@ -376,13 +376,6 @@ define(["lib/tools"], function(tools) {
                     var value = self[prop];
 
                     switch(prop) {
-                        case "figure":
-                            if (self.figure) {
-                                obj.figure = self.figure.toObject();
-                            } else {
-                                obj.figure = null;
-                            }
-                            break;
                         case "authors":
                             obj.authors = [];
                             self.authors.forEach(appendAuthor);
@@ -396,6 +389,8 @@ define(["lib/tools"], function(tools) {
                             self.references.forEach(appendReference);
                             break;
                         case "owners":
+                            break;
+                        case "figures":
                             break;
                         default:
                             if (tools.type(value) !== "function") {
@@ -432,9 +427,7 @@ define(["lib/tools"], function(tools) {
 
                 switch(prop) {
                     case "figure":
-                        if (value) {
-                            target.figure = Figure.fromObject(value);
-                        }
+                        target.figure = Figure.fromArray(value);
                         break;
                     case "authors":
                         target.authors = Author.fromArray(value);
