@@ -17,70 +17,115 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         }
 
         var self = this;
+        self.abstractsData = null;
         self.conference = ko.observable();
-        self.abstracts = ko.observable(null);
+        self.abstracts = ko.observableArray(null);
+        self.selectedAbstract = ko.observable(null);
+
+        //maps for uuid -> abstract and doi -> abstract
+        self.uuidMap = {};
+
 
         self.init = function() {
             ko.applyBindings(window.abstractList);
         };
 
 
-        self.getConference = function(confId) {
+        self.makeLink = function(abstract) {
+            return '#' + '/uuid/' + abstract.uuid;
+        };
 
-            $.ajax({
-                async: false,
-                url: "/api/conferences/" + confId,
-                type: "GET",
-                success: success,
-                error: fail,
-                dataType: "json"
-            });
+        self.selectAbstract = function(abstract) {
+            console.log("Selecting abstract " + abstract.uuid + " " + abstract.toString());
+            window.location = self.makeLink(abstract);
+        };
 
-            function success(obj, stat, xhr) {
-                self.conference(models.Conference.fromObject(obj));
-                self.getAbstracts(self.conference().abstracts);
+        self.showAbstract = function(abstract) {
+
+            self.abstracts(null);
+            self.selectedAbstract(abstract);
+            document.title = abstract.title; //FIXME add conference
+        };
+
+        self.showAbstractByUUID = function(uuid) {
+
+            if(!uuid in self.uuidMap) {
+                console.log("Warning uuid to show not in map");
+                return;
             }
 
-            function fail(xhr, stat, msg) {
-                console.log("Error while requesting the conference: uuid = " + confId);
-            }
+            self.showAbstract(self.uuidMap[uuid]);
+        };
 
+        self.showAbstractList = function(theList) {
+            self.selectedAbstract(null);
+            self.abstracts(theList);
+            document.title = self.conference().name;
+        };
+
+        //map related stuff
+        self.buildMaps = function() {
+            self.uuidMap = {}; //empty the map
+            for (var i = 0; i < self.abstractsData.length; i++) {
+                var currentAbstract = self.abstractsData[i];
+                self.uuidMap[currentAbstract.uuid] = currentAbstract;
+            }
         };
 
 
-        self.getAbstracts = function(location) {
-            console.log("Getting abstracts at: " + location)
-            $.ajax({
-                async: false,
-                url: location,
-                type: "GET",
-                success: success,
-                error: fail,
-                dataType: "json"
-            });
+        //Data IO
+        self.ioFailHandler = function(jqxhr, textStatus, error) {
+            var err = textStatus + ", " + error;
+            console.log( "Request Failed: " + err );
+        };
 
-            function success(obj, stat, xhr) {
-                console.log("getAbstracts");
-                var absList = models.Abstract.fromArray(obj);
+        self.ensureDataAndThen = function(doAfter) {
+            console.log("ensureDataAndThen::");
+            if (self.abstractsData !== null) {
+                doAfter();
+                return;
+            }
+
+            //now load the data from the server
+            var confURL ="/api/conferences/" + confId;
+            $.getJSON(confURL, onConferenceData).fail(self.ioFailHandler);
+
+            //conference data
+            function onConferenceData(confObj) {
+                var conf = models.Conference.fromObject(confObj);
+                self.conference(conf);
+
+                //now load the abstract data
+                $.getJSON(conf.abstracts, onAbstractData).fail(self.ioFailHandler);
+            }
+
+            //abstract data
+            function onAbstractData(absArray) {
+                var absList = models.Abstract.fromArray(absArray);
+                self.abstractsData = absList;
+                self.buildMaps();
                 self.abstracts(absList);
-            }
 
-            function fail(xhr, stat, msg) {
-                console.log("Error while requesting the abstracts at " + location);
+                doAfter();
             }
-
         };
-
 
         // client-side routes
         Sammy(function() {
 
+            this.get('#/uuid/:uuid', function() {
+                var uuid = this.params['uuid'];
+                console.log("Sammy::get::uuid [" + uuid + "]");
+                self.ensureDataAndThen(function () {
+                    self.showAbstractByUUID(uuid);
+                });
+            });
+
             this.get('', function() {
-                if (confId) {
-                    self.getConference(confId);
-                } else {
-                    throw "Conference id or abstract id must be defined";
-                }
+                console.log('Sammy::get::');
+                self.ensureDataAndThen(function () {
+                    self.showAbstractList(self.abstractsData);
+                });
             });
 
         }).run();
