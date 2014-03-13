@@ -60,6 +60,8 @@ define(["lib/tools"], function(tools) {
                    var value = self[prop];
                    if (tools.type(value) !== "function") {
                        obj[prop] = value;
+                   } else if (value.name === "observable") {
+                       obj[prop] = self[prop]();
                    }
                }
             }
@@ -101,8 +103,12 @@ define(["lib/tools"], function(tools) {
             if (target.hasOwnProperty(prop)) {
                 var value = readProperty(prop, source);
 
-                if (tools.type(target[prop]) !== "function" && value !== null) {
-                    target[prop] = value;
+                if (value !== null) {
+                    if (tools.type(target[prop]) !== "function") {
+                        target[prop] = value;
+                    } else if (target[prop].name === "observable") {
+                        target[prop](value);
+                    }
                 }
             }
         }
@@ -209,6 +215,53 @@ define(["lib/tools"], function(tools) {
         return Model.fromArray(array, Author.fromObject);
     };
 
+
+    /**
+     * Observable model for authors.
+     *
+     * @param {string} [uuid]
+     * @param {string} [mail]
+     * @param {string} [firstName]
+     * @param {string} [middleName]
+     * @param {string} [lastName]
+     * @param {string} [affiliations]   Array with affiliation uuids.
+     *
+     * @returns {ObservableAuthor}
+     * @constructor
+     * @public
+     */
+    function ObservableAuthor(uuid, mail, firstName, middleName, lastName, affiliations) {
+
+        if (! (this instanceof ObservableAuthor)) {
+            return new ObservableAuthor(uuid, mail, firstName, middleName,
+                                        lastName, affiliations);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.mail = ko.observable(mail || null);
+        self.firstName = ko.observable(firstName || null);
+        self.middleName = ko.observable(middleName || null);
+        self.lastName = ko.observable(lastName || null);
+
+        self.affiliations = ko.observableArray(affiliations || []);
+
+        self.formatName = function() {
+            var middle = self.middleName() ? self.middleName() + " " : "";
+            return self.firstName() + " " + middle + self.lastName();
+        };
+
+
+    }
+
+    ObservableAuthor.fromObject = function(obj) {
+        return Model.fromObject(obj, ObservableAuthor);
+    };
+
+    ObservableAuthor.fromArray = function(array) {
+        return Model.fromArray(array, ObservableAuthor.fromObject);
+    };
+
     /**
      * Model for affiliation
      *
@@ -247,6 +300,62 @@ define(["lib/tools"], function(tools) {
         return Model.fromArray(array, Affiliation.fromObject);
     };
 
+
+    /**
+     * Obervable model for affiliation
+     *
+     * @param {string} [uuid]
+     * @param {string} [address]
+     * @param {string} [country]
+     * @param {string} [department]
+     * @param {string} [name]
+     * @param {string} [section]
+     *
+     * @returns {ObservableAffiliation}
+     * @constructor
+     * @public
+     */
+    function ObservableAffiliation(uuid, address, country, department, name, section) {
+
+        if (! (this instanceof  ObservableAffiliation)) {
+            return new ObservableAffiliation(uuid, address, country, department,
+                                             name, section);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.address = ko.observable(address || null);
+        self.country = ko.observable(country || null);
+        self.department = ko.observable(department || null);
+        self.name = ko.observable(name || null);
+        self.section = ko.observable(section || null);
+
+        self.format = function() {
+            var str =(self.name() || "")
+                .concat(self.section() ? ", " + self.section() : "")
+                .concat(self.department() ? ", " + self.department() : "")
+                .concat(self.address() ? ", " + self.address() : "")
+                .concat(self.country() ? ", " + self.country() : "");
+
+            if (str.indexOf(", ") === 0) {
+                str = str.slice(2, str.length);
+            }
+
+            return str;
+        };
+
+    }
+
+    ObservableAffiliation.fromObject = function(obj) {
+        return Model.fromObject(obj, ObservableAffiliation);
+    };
+
+    ObservableAffiliation.fromArray = function(array) {
+        return Model.fromArray(array, ObservableAffiliation.fromObject);
+    };
+    
+    
+
     /**
      * Model for figure.
      *
@@ -279,6 +388,40 @@ define(["lib/tools"], function(tools) {
 
     Figure.fromArray = function(array) {
         return Model.fromArray(array, Figure.fromObject);
+    };
+
+    /**
+     * Observable model for figure.
+     *
+     * @param {string} [uuid]
+     * @param {string} [name]
+     * @param {string} [caption]
+     * @param {string} [file]       URL to the image file.
+     *
+     * @returns {ObservableFigure}
+     * @constructor
+     * @public
+     */
+    function ObservableFigure(uuid, name, caption, file) {
+
+        if (! (this instanceof ObservableFigure)) {
+            return new ObservableFigure(uuid, name, caption, file);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.name = ko.observable(name || null);
+        self.caption = ko.observable(caption || null);
+        self.file = ko.observable(caption || null);
+
+    }
+
+    ObservableFigure.fromObject = function(obj) {
+        return Model.fromObject(obj, ObservableFigure);
+    };
+
+    ObservableFigure.fromArray = function(array) {
+        return Model.fromArray(array, ObservableFigure.fromObject);
     };
 
     /**
@@ -315,6 +458,43 @@ define(["lib/tools"], function(tools) {
 
     Reference.fromArray = function(array) {
         return Model.fromArray(array, Reference.fromObject);
+    };
+
+
+    /**
+     * Observable model for reference.
+     *
+     * @param {string} [uuid]
+     * @param {string} [authors]
+     * @param {string} [title]
+     * @param {string} [year]
+     * @param {string} [doi]
+     *
+     * @returns {ObservableReference}
+     * @constructor
+     * @public
+     */
+    function ObservableReference(uuid, authors, title, year, doi) {
+
+        if (! (this instanceof ObservableReference)) {
+            return new ObservableReference();
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.authors = ko.observable(authors || null);
+        self.title = ko.observable(title || null);
+        self.year = ko.observable(year || null);
+        self.doi = ko.observable(doi || null);
+
+    }
+
+    ObservableReference.fromObject = function(obj) {
+        return Model.fromObject(obj, ObservableReference);
+    };
+
+    ObservableReference.fromArray = function(array) {
+        return Model.fromArray(array, ObservableReference.fromObject);
     };
 
 
@@ -426,8 +606,8 @@ define(["lib/tools"], function(tools) {
                 var value = readProperty(prop, obj);
 
                 switch(prop) {
-                    case "figure":
-                        target.figure = Figure.fromArray(value);
+                    case "figures":
+                        target.figures = Figure.fromArray(value);
                         break;
                     case "authors":
                         target.authors = Author.fromArray(value);
@@ -454,13 +634,158 @@ define(["lib/tools"], function(tools) {
     };
 
 
+    /**
+     * Observable model for abstracts.
+     *
+     * @param {string} [uuid]
+     * @param {string} [title]
+     * @param {string} [topic]
+     * @param {string} [text]
+     * @param {string} [doi]
+     * @param {string} [conflictOfInterest]
+     * @param {string} [acknowledgements]
+     * @param {string} [owners]     URL to abstract owners.
+     * @param {boolean} [approved]
+     * @param {boolean} [published]
+     * @param {Array} [figures]
+     * @param {Array} [authors]
+     * @param {Array} [affiliations]
+     * @param {Array} [references]
+     *
+     * @returns {ObservableAbstract}
+     * @constructor
+     * @public
+     */
+    function ObservableAbstract(uuid, title, topic, text, doi, conflictOfInterest,
+                                acknowledgements, owners, approved, published, figures,
+                                authors, affiliations, references) {
+
+        if (! (this instanceof ObservableAbstract)) {
+            return new ObservableAbstract(uuid, title, topic, text, doi,
+                conflictOfInterest, acknowledgements, approved, published, owners,
+                figures, authors, affiliations, references);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.title = ko.observable(title || null);
+        self.topic = ko.observable(topic || null);
+        self.text = ko.observable(text || null);
+        self.doi = ko.observable(doi || null);
+        self.conflictOfInterest = ko.observable(conflictOfInterest || null);
+        self.acknowledgements = ko.observable(acknowledgements || null);
+        self.owners = ko.observable(owners || null);
+        self.approved = ko.observable(approved || false);
+        self.published = ko.observable(published || false);
+        self.figures = ko.observableArray(figures || []);
+        self.authors = ko.observableArray(authors || []);
+        self.affiliations = ko.observableArray(affiliations || []);
+        self.references = ko.observableArray(references || []);
+
+
+        self.toObject = function() {
+            var prop,
+                obj = {};
+
+            for (prop in self) {
+                if (self.hasOwnProperty(prop)) {
+                    var value = self[prop];
+
+                    switch(prop) {
+                        case "authors":
+                            obj.authors = [];
+                            self.authors().forEach(appendAuthor);
+                            break;
+                        case "affiliations":
+                            obj.affiliations = [];
+                            self.affiliations().forEach(appendAffiliation);
+                            break;
+                        case "references":
+                            obj.references = [];
+                            self.references().forEach(appendReference);
+                            break;
+                        case "owners":
+                            break;
+                        case "figures":
+                            break;
+                        default:
+                            if (tools.type(value) !== "function") {
+                                obj[prop] = value;
+                            } else if (value.name === "observable") {
+                                obj[prop] = value();
+                            }
+                    }
+                }
+            }
+
+            function appendAuthor(model) {
+                obj.authors.push(model.toObject());
+            }
+
+            function appendAffiliation(model) {
+                obj.affiliations.push(model.toObject());
+            }
+
+            function appendReference(model) {
+                obj.references.push(model.toObject());
+            }
+
+            return obj;
+        };
+
+    }
+
+    ObservableAbstract.fromObject = function(obj) {
+        var prop,
+            target = new ObservableAbstract();
+
+        for (prop in target) {
+            if (target.hasOwnProperty(prop)) {
+                var value = readProperty(prop, obj);
+
+                switch(prop) {
+                    case "figures":
+                        target.figures(Figure.fromArray(value));
+                        break;
+                    case "authors":
+                        target.authors(Author.fromArray(value));
+                        break;
+                    case "affiliations":
+                        target.affiliations(Affiliation.fromArray(value));
+                        break;
+                    case "references":
+                        target.references(Reference.fromArray(value));
+                        break;
+                    default:
+                        if (tools.type(target[prop]) !== "function") {
+                            target[prop] = value;
+                        } else if (target[prop].name === "observable") {
+                            target[prop](value);
+                        }
+                }
+            }
+        }
+
+        return target;
+    };
+
+    ObservableAbstract.fromArray = function(array) {
+        return Model.fromArray(array, ObservableAbstract.fromObject);
+    };
+
+
 
     return {
         Conference: Conference,
         Author: Author,
+        ObservableAuthor: ObservableAuthor,
         Affiliation: Affiliation,
+        ObservableAffiliation: ObservableAffiliation,
         Figure: Figure,
+        ObservableFigure: ObservableFigure,
         Reference: Reference,
-        Abstract: Abstract
+        ObservableReference: ObservableReference,
+        Abstract: Abstract,
+        ObservableAbstract: ObservableAbstract
     };
 });
