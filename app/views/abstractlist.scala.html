@@ -25,6 +25,16 @@
 
     <!-- The abstract viewer -->
     <div id="abstract" data-bind="with: selectedAbstract">
+
+        <ul class="pager">
+            <li class="previous" data-bind="css: { disabled: $parent.prevAbstract($data) == null }">
+                <a data-bind="attr: {href : $parent.prevAbstract($data)}">&larr; Previous</a>
+            </li>
+            <li class="next" data-bind="css: { disabled: $parent.nextAbstract($data) == null }">
+                <a data-bind="attr: {href : $parent.nextAbstract($data)}">Next &rarr;</a>
+            </li>
+        </ul>
+
         <div  class="title">
             <h2 data-bind="text: title"></h2>
         </div>

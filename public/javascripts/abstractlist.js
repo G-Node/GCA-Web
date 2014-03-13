@@ -22,8 +22,10 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         self.abstracts = ko.observableArray(null);
         self.selectedAbstract = ko.observable(null);
 
-        //maps for uuid -> abstract and doi -> abstract
+        //maps for uuid -> abstract, doi -> abstract,
+        //         neighbours -> prev & next of current list
         self.uuidMap = {};
+        self.neighbours = {};
 
 
         self.init = function() {
@@ -70,8 +72,46 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 var currentAbstract = self.abstractsData[i];
                 self.uuidMap[currentAbstract.uuid] = currentAbstract;
             }
+
+            self.neighbours = self.makeNeighboursMap(self.abstractsData);
         };
 
+        self.makeNeighboursMap = function(objs) {
+            var theMap = { };
+
+            if (objs === null) {
+                return theMap;
+            }
+
+            for(var i = 0; i < objs.length; i++) {
+                theMap[objs[i].uuid] = {
+                    prev: i > 0 ? self.makeLink(objs[i-1]): null,
+                    next: i + 1 != objs.length ? self.makeLink(objs[i+1]) : null
+                }
+            }
+
+            return theMap;
+        };
+
+        self.nextAbstract = function(abstract) {
+          var uuid = abstract.uuid;
+
+            if(!uuid in self.neighbours) {
+                return null;
+            }
+
+            return self.neighbours[uuid].next;
+        };
+
+        self.prevAbstract = function(abstract) {
+            var uuid = abstract.uuid;
+
+            if(!uuid in self.neighbours) {
+                return null;
+            }
+
+            return self.neighbours[uuid].prev;
+        };
 
         //Data IO
         self.ioFailHandler = function(jqxhr, textStatus, error) {
