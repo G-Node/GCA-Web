@@ -38,6 +38,27 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             return '#' + '/uuid/' + abstract.uuid;
         };
 
+        self.makeAbstractID = function(abstract) {
+            var identifier = abstract.sortId;
+
+            if (identifier === 0) {
+                return "";
+            }
+
+            var aid =  identifier & 0xFFFF;
+            var gid = (identifier & 0xFFFF0000) >> 16;
+
+            var prefix = "U ";
+            for (var i = 0; i < self.groups().length; i++) {
+                var curGroup = self.groups()[i];
+                if (curGroup.prefix === gid) {
+                    prefix = curGroup.short;
+                }
+            }
+
+            return prefix + "&nbsp;" + aid;
+        };
+
         self.selectAbstract = function(abstract) {
             console.log("Selecting abstract " + abstract.uuid + " " + abstract.toString());
             window.location = self.makeLink(abstract);

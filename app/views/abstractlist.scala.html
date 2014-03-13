@@ -20,11 +20,14 @@
     <div class="list-group" data-bind="foreach: abstracts">
         <div class="list-group-item" id="abstract-list" data-bind="click: $root.selectAbstract">
             <div class="abstract">
-                <h4 class="list-group-item-heading" data-bind="text: title"></h4>
-                <div class="list-group-item-text">
-                    <ul class="authors" data-bind="foreach: authors">
-                        <li data-bind="text: $data.formatName()"></li>
-                    </ul>
+                <div class="sortId" data-bind="html: $parent.makeAbstractID($data)"></div>
+                <div class="box">
+                    <h4 class="list-group-item-heading" data-bind="text: title"></h4>
+                    <div class="list-group-item-text">
+                        <ul class="authors" data-bind="foreach: authors">
+                            <li data-bind="text: $data.formatName()"></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
