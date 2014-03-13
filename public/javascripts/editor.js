@@ -20,8 +20,8 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         var self = this;
 
         self.abstractSaved = ko.observable(false);
-        self.abstract = ko.observable();
-        self.conference = ko.observable();
+        self.abstract = ko.observable(null);
+        self.conference = ko.observable(null);
 
 
         self.init = function() {
@@ -89,7 +89,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
                 $.ajax({
                     async: false,
-                    url: "/api/abstracts/" + abstrId,
+                    url: "/api/abstracts/" + self.abstract().uuid,
                     type: "PUT",
                     success: success,
                     error: fail,
