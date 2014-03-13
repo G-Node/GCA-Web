@@ -9,6 +9,13 @@
     <script data-main="@routes.Assets.at("javascripts/abstractlist.js")"
             src="@routes.Assets.at("javascripts/require.js")"></script>
 
+    <div>
+        <ul class="nav nav-tabs" data-bind="foreach: groups">
+            <li><a data-bind="attr: { href: link }, text: name"></a></li>
+        </ul>
+        <br/>
+    </div>
+
     <!-- The abstract list -->
     <div class="list-group" data-bind="foreach: abstracts">
         <div class="list-group-item" id="abstract-list" data-bind="click: $root.selectAbstract">
