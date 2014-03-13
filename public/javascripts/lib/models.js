@@ -432,7 +432,9 @@ define(["lib/tools"], function(tools) {
 
                 switch(prop) {
                     case "figure":
-                        target.figure = Figure.fromObject(value);
+                        if (value) {
+                            target.figure = Figure.fromObject(value);
+                        }
                         break;
                     case "authors":
                         target.authors = Author.fromArray(value);
@@ -444,7 +446,7 @@ define(["lib/tools"], function(tools) {
                         target.references = Reference.fromArray(value);
                         break;
                     default:
-                        if (tools.type(value) !== "function") {
+                        if (tools.type(target[prop]) !== "function") {
                             target[prop] = value;
                         }
                 }
