@@ -9,8 +9,9 @@
     <script data-main="@routes.Assets.at("javascripts/abstractlist.js")"
             src="@routes.Assets.at("javascripts/require.js")"></script>
 
+    <!-- The abstract list -->
     <div class="list-group" data-bind="foreach: abstracts">
-        <div class="list-group-item" id="abstract-list">
+        <div class="list-group-item" id="abstract-list" data-bind="click: $root.selectAbstract">
             <div class="abstract">
                 <h4 class="list-group-item-heading" data-bind="text: title"></h4>
                 <div class="list-group-item-text">
@@ -21,5 +22,19 @@
             </div>
         </div>
     </div>
+
+    <!-- The abstract viewer -->
+    <div id="abstract" data-bind="with: selectedAbstract">
+        <div  class="title">
+            <h2 data-bind="text: title"></h2>
+        </div>
+
+        <div class="abstract-text">
+            <p data-bind="text: text"></p>
+        </div>
+
+    </div>
+
+
 
 }
