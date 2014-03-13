@@ -28,7 +28,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
             if (confId) {
                 self.getConference(confId);
-                self.abstract(models.Abstract());
+                self.abstract(models.ObservableAbstract());
             } else if (abstrId) {
                 self.getAbstract(abstrId);
                 self.abstractSaved(true);
@@ -73,7 +73,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             });
 
             function success(obj, stat, xhr) {
-                self.conference(models.Abstract.fromObject(obj));
+                self.conference(models.ObservableAbstract.fromObject(obj));
             }
 
             function fail(xhr, stat, msg) {
@@ -116,7 +116,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             }
 
             function success(obj, stat, xhr) {
-                self.abstract(models.Abstract.fromObject(obj));
+                self.abstract(models.ObservableAbstract.fromObject(obj));
                 self.abstractSaved(true);
             }
 
@@ -133,9 +133,31 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 self.saveAbstract();
             } else {
                 console.log("refresh abstract");
-                self.abstract(self.abstract());
+                //self.abstract(self.abstract());
             }
         };
+
+
+        self.addAuthor = function() {
+            var author = models.ObservableAuthor();
+            self.abstract().authors.push(author);
+        };
+
+
+        self.removeAuthor = function(author) {
+            console.log("removeAuthor: " + author);
+        };
+
+
+        self.addAffiliation = function() {
+            var affiliation = models.ObservableAffiliation();
+            self.abstract().affiliations.push(affiliation);
+        };
+
+        self.removeAffiliation = function(affiliation) {
+            console.log("removeAffiliation: " + affiliation);
+        };
+
     }
 
     // start the editor

@@ -19,7 +19,7 @@
     <div id="abstract">
 
         <div class="editor-box">
-            <div class="btn-group pull-right">
+            <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-xs" data-target="#title-editor" data-toggle="modal">
                     Edit
                 </button>
@@ -51,40 +51,136 @@
         </div>
 
         <div class="editor-box">
-            <div class="btn-group pull-right">
-                <button type="button" class="btn btn-default btn-xs">
+
+            <div class="btn-group pull-right btn-group-hover">
+                <button type="button" class="btn btn-default btn-xs" data-target="#authors-editor" data-toggle="modal">
                     Edit
                 </button>
             </div>
+
+            <div class="modal" id="authors-editor" tabindex="-1">
+                <div class="modal-dialog" style="margin-top: 15em; width: 750px">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <table class="table">
+
+                                <div class="btn-group pull-right" style="margin: 8px; margin-top: 16px">
+                                    <button type="button" class="btn btn-default btn-sm" data-bind="click: addAuthor">
+                                        Add
+                                    </button>
+                                </div>
+
+                                <h3>Authors</h3>
+
+                                <tbody data-bind="foreach: {data: abstract().authors, as: 'person'}">
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="First Name" data-bind="value: person.firstName" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="Middle Name" data-bind="value: person.middleName" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="First Name" data-bind="value: person.lastName" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="Mail" data-bind="value: person.mail" />
+                                        </td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <button type="button" class="btn btn-default btn-sm" data-bind="click: $root.removeAuthor()">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="modal-footer" style="padding-top: 1em; padding-bottom: 1em">
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" style="margin-right: 0.3em">OK</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
             <div class="authors">
-                <ul>
-                    <li><span>Add authors for the abstract</span><sup>1</sup></li>
+                <ul data-bind="foreach: abstract().authors">
+                    <li><span data-bind="text: formatName()"></span><sup data-bind="text: $index"></sup></li>
                 </ul>
             </div>
         </div>
 
         <div class="editor-box">
-            <div class="btn-group pull-right">
-                <button type="button" class="btn btn-default btn-xs">
+            <div class="btn-group pull-right btn-group-hover">
+                <button type="button" class="btn btn-default btn-xs" data-target="#affiliations-editor" data-toggle="modal">
                     Edit
                 </button>
-                <button type="button" class="btn btn-default btn-xs">
-                    Add
-                </button>
-                <button type="button" class="btn btn-default btn-xs">
-                    Remove
-                </button>
             </div>
+
+            <div class="modal" id="affiliations-editor" tabindex="-1">
+                <div class="modal-dialog" style="margin-top: 15em; width: 750px">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <table class="table">
+
+                                <div class="btn-group pull-right" style="margin: 8px; margin-top: 16px">
+                                    <button type="button" class="btn btn-default btn-sm" data-bind="click: addAffiliation">
+                                        Add
+                                    </button>
+                                </div>
+
+                                <h3>Affiliations</h3>
+
+                                <tbody data-bind="foreach: {data: abstract().affiliations, as: 'affiliation'}">
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="Name" data-bind="value: affiliation.name" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="Section" data-bind="value: affiliation.section" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="Department" data-bind="value: affiliation.department" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="Address" data-bind="value: affiliation.address" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="Country" data-bind="value: affiliation.country" />
+                                        </td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <button type="button" class="btn btn-default btn-sm" data-bind="click: $root.removeAffiliation()">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="modal-footer" style="padding-top: 1em; padding-bottom: 1em">
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" style="margin-right: 0.3em">OK</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
             <div class="affiliations">
-                <ol>
-                    <li><span>Add affiliations for the authors</span></li>
+                <ol data-bind="foreach: abstract().affiliations">
+                    <li><span data-bind="text: format()"></span></li>
                 </ol>
             </div>
 
         </div>
 
         <div class="editor-box">
-            <div class="btn-group pull-right">
+            <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-xs" data-target="#abstract-text-editor" data-toggle="modal">
                     Edit
                 </button>
@@ -117,7 +213,7 @@
 
 
         <div class="editor-box">
-            <div class="btn-group pull-right">
+            <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-xs" data-target="#acknowledgements-editor" data-toggle="modal">
                     Edit
                 </button>
@@ -151,7 +247,7 @@
 
 
         <div class="editor-box">
-            <div class="btn-group pull-right">
+            <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-xs">
                     Edit
                 </button>
