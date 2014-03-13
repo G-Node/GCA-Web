@@ -17,10 +17,14 @@ import javax.persistence.EntityManagerFactory
 import play.Play
 import java.io.File
 
-
 class Assets(val emf: EntityManagerFactory) extends DBUtil {
 
   val figPath = Play.application().configuration().getString("file.fig_path", "./figures")
+
+  def makeSortId(group: Int, seqid: Int) : Option[Int] = {
+    val sortId : Int = group << 16 | seqid
+    Some(sortId)
+  }
 
   var abstracts : Array[Abstract] = Array(
     Abstract(
@@ -31,6 +35,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("doi one"),
       ?("coi one"),
       ?("acc one"),
+      makeSortId(1, 1),
       approved = true,
       published = true,
       authors = Seq(
@@ -56,6 +61,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("doi two"),
       ?("coi two"),
       ?("acc two"),
+      makeSortId(1, 2),
       approved = true,
       published = false,
       authors = Seq(
@@ -81,6 +87,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("doi three"),
       ?("coi three"),
       ?("acc three"),
+      makeSortId(2, 1),
       approved = true,
       published = false,
       authors = Seq(
@@ -106,6 +113,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("doi four"),
       ?("coi four"),
       ?("acc four"),
+      makeSortId(2, 2),
       approved = false,
       published = false,
       authors = Seq(
@@ -134,6 +142,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("new doi"),
       ?("No conflict at all"),
       ?("Thanks for all the fish!"),
+      makeSortId(1, 42),
       approved = false,
       published = false,
       authors = Seq(
@@ -185,8 +194,8 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
 
   var conferences : Array[Conference] = Array(
     Conference(None, ?("The first conference"),
-      Seq(AbstractGroup(None, ?(0), ?("Talk"), ?("T")),
-          AbstractGroup(None, ?(1), ?("Poster"), ?("P")))),
+      Seq(AbstractGroup(None, ?(1), ?("Talk"), ?("T")),
+          AbstractGroup(None, ?(2), ?("Poster"), ?("P")))),
     Conference(None, ?("The second conference")),
     Conference(None, ?("The third conference"))
   )
