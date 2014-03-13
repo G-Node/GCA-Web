@@ -60,7 +60,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         self.showAbstractList = function(theList) {
             self.selectedAbstract(null);
             self.abstracts(theList);
-            document.title = self.conference().title;
+            document.title = self.conference().name;
         };
 
         //map related stuff
