@@ -20,6 +20,24 @@ package object serializer {
     }
   }
 
+  class AbstractGroupFormat() extends Format[AbstractGroup] {
+    override def reads(json: JsValue): JsResult[AbstractGroup] = (
+      (__ \ "uuid").readNullable[String] and
+      (__ \ "prefix").readNullable[Int] and
+      (__ \ "name").readNullable[String] and
+      (__ \ "short").readNullable[String]
+      )(AbstractGroup(_, _, _, _)).reads(json)
+
+    override def writes(g: AbstractGroup): JsValue = {
+      Json.obj(
+        "uuid" -> g.uuid,
+        "prefix" -> g.prefix,
+        "name" -> g.name,
+        "short" -> g.short
+      )
+    }
+  }
+
   /**
    * Conference serializer.
    *
@@ -27,15 +45,20 @@ package object serializer {
    */
   class ConferenceFormat(implicit routesResolver: RoutesResolver) extends Format[Conference] {
 
+    implicit val agf = new AbstractGroupFormat()
+
     override def reads(json: JsValue): JsResult[Conference] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "name").readNullable[String]
-    )(Conference(_, _)).reads(json)
+      (__ \ "name").readNullable[String] and
+      (__ \ "groups").read[List[AbstractGroup]]
+    )(Conference(_, _, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
+      val groups: Seq[AbstractGroup] = asScalaSet(c.groups).toSeq
       Json.obj(
         "name" -> c.name,
         "uuid" -> c.uuid,
+        "groups" ->  groups,
         "abstracts" -> routesResolver.abstractsUrl(c.uuid)
       )
     }

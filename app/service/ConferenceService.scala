@@ -11,6 +11,7 @@ package service
 
 import collection.JavaConversions._
 
+import play.api._
 import models._
 import javax.persistence._
 import service.util.DBUtil
@@ -32,6 +33,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
     dbQuery { em =>
       val queryStr =
         """SELECT DISTINCT c FROM Conference c
+           LEFT JOIN FETCH c.groups
            LEFT JOIN FETCH c.owners
            LEFT JOIN FETCH c.abstracts"""
 
@@ -52,6 +54,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
     dbQuery { em =>
       val queryStr =
         """SELECT DISTINCT c FROM Conference c
+           LEFT JOIN FETCH c.groups
            INNER JOIN FETCH c.owners o
            LEFT JOIN FETCH c.abstracts
            WHERE o.uuid = :uuid"""
@@ -76,6 +79,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
     dbQuery { em =>
       val queryStr =
         """SELECT DISTINCT c FROM Conference c
+           LEFT JOIN FETCH c.groups
            LEFT JOIN FETCH c.owners
            LEFT JOIN FETCH c.abstracts
            WHERE c.uuid = :uuid"""
@@ -112,6 +116,12 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
         throw new IllegalArgumentException("Unable to create conference with not null uuid")
 
       conference.owners.add(account)
+
+      conference.groups.foreach { group =>
+        Logger.debug("Adding group:" + group.toString)
+        group.conference = conference
+      }
+
       em.merge(conference)
     }
 
@@ -148,7 +158,21 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
       if (!confChecked.owners.contains(accountChecked))
         throw new IllegalAccessException("No permissions for conference with uuid = " + conference.uuid)
 
-      em.merge(conference)
+      conference.owners = confChecked.owners
+
+      conference.groups.foreach { group =>
+        group.conference = conference
+      }
+
+      val merged = em.merge(conference)
+
+      confChecked.groups.foreach { group =>
+        if (!conference.groups.contains(group)) {
+          em.remove(group)
+        }
+      }
+
+      merged
     }
 
     get(conf.uuid)
@@ -178,6 +202,8 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
 
       if (!confChecked.owners.contains(accountChecked))
         throw new IllegalAccessException("No permissions for conference with uuid = " + id)
+
+      confChecked.groups.foreach(em.remove(_))
 
       em.remove(confChecked)
     }

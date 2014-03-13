@@ -11,7 +11,35 @@ package models
 
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
-import javax.persistence.{JoinTable, OneToMany, Entity}
+import javax.persistence.{ManyToOne, OneToMany, JoinTable, Entity}
+
+@Entity
+class AbstractGroup extends Model {
+  var prefix: Int = 0
+  var name: String = _
+  var short: String = _
+
+  @ManyToOne
+  var conference: Conference = _
+}
+
+object AbstractGroup {
+
+  def apply(uuid: Option[String],
+             prefix: Option[Int],
+             name: Option[String],
+             short: Option[String]) = {
+
+    val group = new AbstractGroup()
+    group.uuid = unwrapRef(uuid)
+    group.prefix = prefix match { case Some(i) => i; case _ => -1 }
+    group.name = unwrapRef(name)
+    group.short = unwrapRef(short)
+
+    group
+  }
+
+}
 
 /**
  * A model for that represents a conference.
@@ -23,6 +51,9 @@ import javax.persistence.{JoinTable, OneToMany, Entity}
 class Conference extends Model {
 
   var name: String = _
+
+  @OneToMany(mappedBy = "conference")
+  var groups: JSet[AbstractGroup] = new JTreeSet[AbstractGroup]()
 
   @OneToMany
   @JoinTable(name = "conference_owners")
@@ -36,6 +67,7 @@ object Conference {
 
   def apply(uuid: Option[String],
             name: Option[String],
+            groups: Seq[AbstractGroup] = Nil,
             owners: Seq[Account] = Nil,
             abstracts: Seq[Abstract] = Nil) : Conference = {
 
@@ -44,6 +76,7 @@ object Conference {
     conference.uuid       = unwrapRef(uuid)
     conference.name       = unwrapRef(name)
 
+    conference.groups     = toJSet(groups)
     conference.owners     = toJSet(owners)
     conference.abstracts  = toJSet(abstracts)
 
