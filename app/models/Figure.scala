@@ -10,7 +10,7 @@
 package models
 
 import models.Model._
-import javax.persistence.{OneToOne, Entity}
+import javax.persistence.{ManyToOne, JoinColumn, OneToOne, Entity}
 
 /**
  * A model for figures.
@@ -21,7 +21,7 @@ class Figure extends Model {
   var name: String = _
   var caption: String = _
 
-  @OneToOne(mappedBy = "figure", optional = false)
+  @ManyToOne
   var abstr: Abstract = _
 
 }

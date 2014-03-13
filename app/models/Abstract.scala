@@ -12,7 +12,6 @@ package models
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
-import org.eclipse.persistence.annotations.CascadeOnDelete
 
 /**
  * A model class for abstracts
@@ -32,9 +31,8 @@ class Abstract extends Model {
 
   @ManyToOne
   var conference : Conference = _
-  @OneToOne(orphanRemoval = true)
-  @CascadeOnDelete
-  var figure: Figure = _
+  @OneToMany(mappedBy = "abstr")
+  var figures: JSet[Figure] = new JTreeSet[Figure]()
 
   @ManyToMany
   @JoinTable(name = "abstract_owners")
@@ -45,7 +43,6 @@ class Abstract extends Model {
   var affiliations: JSet[Affiliation] = new JTreeSet[Affiliation]()
   @OneToMany(mappedBy = "abstr")
   var references: JSet[Reference] = new JTreeSet[Reference]()
-
 }
 
 
@@ -61,7 +58,7 @@ object Abstract {
             approved: Boolean,
             published: Boolean,
             conference: Option[Conference] = None,
-            figure: Option[Figure] = None,
+            figures: Seq[Figure] = Nil,
             owners:  Seq[Account] = Nil,
             authors: Seq[Author] = Nil,
             affiliations: Seq[Affiliation] = Nil,
@@ -80,7 +77,7 @@ object Abstract {
     abstr.published   = published
 
     abstr.conference  = unwrapRef(conference)
-    abstr.figure      = unwrapRef(figure)
+    abstr.figures      = toJSet(figures)
     abstr.owners      = toJSet(owners)
     abstr.authors     = toJSet(authors)
     abstr.affiliations = toJSet(affiliations)

@@ -227,8 +227,11 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
 
       figures = 0.until(figures.length).toArray.map { i: Int =>
         var fig = figures(i)
-        fig.abstr = abstracts(i)
+        var abstr = abstracts(i)
+        fig.abstr = abstr
+        abstr.figures.add(fig)
         fig = em.merge(fig)
+        abstr = em.merge(abstr)
 
         val file = new File(figPath, fig.uuid)
         if (!file.getParentFile.exists())

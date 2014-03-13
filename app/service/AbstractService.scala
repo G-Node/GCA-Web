@@ -38,7 +38,7 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
            LEFT JOIN FETCH a.authors
            LEFT JOIN FETCH a.affiliations
            LEFT JOIN FETCH a.conference c
-           LEFT JOIN FETCH a.figure
+           LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
            WHERE c.uuid = :uuid"""
 
@@ -63,7 +63,7 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
            LEFT JOIN FETCH a.authors
            LEFT JOIN FETCH a.affiliations
            LEFT JOIN FETCH a.conference
-           LEFT JOIN FETCH a.figure
+           LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
            WHERE o.uuid = :uuid"""
 
@@ -90,7 +90,7 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
            LEFT JOIN FETCH a.authors
            LEFT JOIN FETCH a.affiliations
            LEFT JOIN FETCH a.conference
-           LEFT JOIN FETCH a.figure
+           LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
            WHERE a.published = true AND a.uuid = :uuid"""
 
@@ -122,7 +122,7 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
            LEFT JOIN FETCH a.authors
            LEFT JOIN FETCH a.affiliations
            LEFT JOIN FETCH a.conference
-           LEFT JOIN FETCH a.figure
+           LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
            WHERE o.uuid = :owneruuid AND a.uuid = :uuid"""
 
@@ -272,13 +272,15 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
       if (!abstrChecked.owners.contains(accountChecked))
         throw new IllegalAccessException("No permissions for abstract with uuid = " + id)
 
-      val fig = abstrChecked.figure
-      if (fig != null) {
-        val file = new File(figPath, fig.uuid)
-        if (file.exists())
-          file.delete()
-      }
+      abstrChecked.figures.foreach( fig => {
+        if (fig != null) {
+          val file = new File(figPath, fig.uuid)
+          if (file.exists())
+            file.delete()
+        }
+      })
 
+      abstrChecked.figures.foreach(em.remove(_))
       abstrChecked.authors.foreach(em.remove(_))
       abstrChecked.affiliations.foreach(em.remove(_))
       abstrChecked.references.foreach(em.remove(_))

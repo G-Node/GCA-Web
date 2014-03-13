@@ -57,13 +57,12 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
       if (accountChecked == null)
         throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
 
-      if (abstr.uuid == null)
-        throw new IllegalArgumentException("Unable to assign figure to abstract with null uuid")
+      val abstractChecked = em.find(classOf[Abstract], abstr.uuid)
+      if (abstractChecked == null)
+        throw new EntityNotFoundException("Unable to find abstract with uuid = " + abstr.uuid)
 
-      val abstrMerged = em.merge(abstr)
-      em.refresh(abstrMerged)
+      fig.abstr = abstractChecked
 
-      fig.abstr = abstrMerged
       val figMerged = em.merge(fig)
 
       val file = new File(figPath, figMerged.uuid)
