@@ -28,8 +28,31 @@ body {
   .std-gap;
 }
 
+#abstract-list {
+  .abstract {
 
-.abstract {
+    h4 {
+      font-weight: bold;
+    }
+
+    .authors {
+      .no-gap;
+      list-style: none;
+      display: inline-block;
+      font-size: large;
+
+      .enum-with-comma;
+    }
+  }
+}
+
+#abstract-list:hover {
+  cursor: pointer;
+  background-color: @color-blue-bccn !important;
+  color: White;
+}
+
+#abstract {
 
   .title {
     .std-gap;
@@ -39,29 +62,7 @@ body {
   .authors {
 
     .std-gap;
-
-    ul {
-      .no-gap;
-      list-style: none;
-      display: inline-block;
-      font-size: large;
-    }
-
-    li {
-      display: inline-block;
-
-      span:after {
-        content: " ";
-      }
-    }
-
-    li:after {
-      content: ", ";
-    }
-
-    li:last-child:after {
-      content: "" !important;
-    }
+    .enum-with-comma;
 
   }
 

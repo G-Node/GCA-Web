@@ -28,3 +28,28 @@
   .rounded;
   .bordered(@col);
 }
+
+.enum-with-comma {
+  ul {
+    .no-gap;
+    list-style: none;
+    display: inline-block;
+    font-size: large;
+  }
+
+  li {
+    display: inline-block;
+
+    span:after {
+      content: " ";
+    }
+  }
+
+  li:after {
+    content: ", ";
+  }
+
+  li:last-child:after {
+    content: "" !important;
+  }
+}

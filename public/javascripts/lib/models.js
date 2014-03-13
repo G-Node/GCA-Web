@@ -192,6 +192,13 @@ define(["lib/tools"], function(tools) {
         self.lastName = lastName || null;
 
         self.affiliations = affiliations || null;
+
+        self.formatName = function() {
+            var middle = self.middleName ? self.middleName + " " : "";
+            return self.firstName + " " + middle + self.lastName;
+        };
+
+
     }
 
     Author.fromObject = function(obj) {

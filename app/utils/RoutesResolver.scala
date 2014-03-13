@@ -25,7 +25,7 @@ class RoutesResolver {
    * @return URL for related abstracts, like "/api/conferences/HNOPSADMHV/abstracts"
    */
   def abstractsUrl(id: String) = {
-    new URL(baseUrl + s"/api/account/$id/abstracts")
+    new URL(baseUrl + s"/api/conferences/$id/abstracts")
   }
 }
 

@@ -41,7 +41,7 @@ object Abstracts extends Controller with OwnerManager with  GCAAuth {
    *
    * @return All abstracts publicly available.
    */
-  def listByConference(id: String) = AccountAwareAction {  implicit request =>
+  def listByConference(id: String) = AccountAwareAction(isREST = true) {  implicit request =>
 
     val conferenceService = ConferenceService()
     val abstractService = AbstractService()
