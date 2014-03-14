@@ -365,6 +365,20 @@ define(["lib/tools"], function(tools) {
         self.name = name || null;
         self.section = section || null;
 
+        self.format = function() {
+            var str =(self.name || "")
+                .concat(self.section ? ", " + self.section : "")
+                .concat(self.department ? ", " + self.department : "")
+                .concat(self.address ? ", " + self.address : "")
+                .concat(self.country ? ", " + self.country : "");
+
+            if (str.indexOf(", ") === 0) {
+                str = str.slice(2, str.length);
+            }
+
+            return str;
+        };
+
     }
 
     Affiliation.fromObject = function(obj) {

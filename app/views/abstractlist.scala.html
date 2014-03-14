@@ -49,8 +49,41 @@
             <h2 data-bind="text: title"></h2>
         </div>
 
+        <div class="authors">
+            <ul data-bind="foreach: authors">
+                <li><span data-bind="text: formatName()"></span><sup data-bind="text: $index"></sup></li>
+            </ul>
+        </div>
+
+        <div class="affiliations">
+            <ol data-bind="foreach: affiliations">
+                <li><span data-bind="text: format()"></span></li>
+            </ol>
+        </div>
+
         <div class="abstract-text">
             <p data-bind="text: text"></p>
+        </div>
+
+        <div class="acknowledgements">
+            <h4>Acknowledgements</h4>
+            <p data-bind="text: acknowledgements"></p>
+        </div>
+
+        <div class="references">
+            <h4>References</h4>
+            <ol>
+                <li></li>
+            </ol>
+        </div>
+
+        <hr class="separator">
+
+        <div class="foot-info">
+            <p><b>Identifier:</b> <span data-bind="html: $parent.makeAbstractID($data)"></span></p>
+            <p><b>Conference:</b> <span>G-Node Conference 20XX, München, Germany, June 20 - 27</span></p>
+            <p><b>Citation:</b> <span>Greene G, Ehrhardt E, Gollisch T, Wachtler T (2013) Distinguishing local and global motion through non-linear retinal processing. <i>G-Node Conference 20XX</i>. doi: <a class="doilink" href="http://localhost:8000/#/doi/test.1">10.12751/test.1</a></span></p>
+            <p><b>Type:</b> <span>Poster</span></p>
         </div>
 
     </div>
