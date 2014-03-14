@@ -1,10 +1,15 @@
 # Routes
 
-# Home page
+# Home page (redirect to last conference)
 GET           /                                     controllers.Application.index
-GET           /submission/:id                       controllers.Application.submission(id: String)
+GET           /contact                              controllers.Application.contact
+GET           /impressum                            controllers.Application.impressum
 
-GET           /conference/:id                       controllers.Application.listAbstracts(id: String)
+GET           /conference/:id                       controllers.Application.conference(id: String)
+GET           /conference/:id/submission            controllers.Application.submission(id: String)
+GET           /conference/:id/abstracts             controllers.Application.abstractsPublic(id: String)
+GET           /myabstracts                          controllers.Application.abstractsPrivate()
+GET           /submitted                            controllers.Application.abstractsPending()
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                         controllers.Assets.at(path="/public", file)
