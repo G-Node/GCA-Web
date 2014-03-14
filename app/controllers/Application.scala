@@ -8,8 +8,10 @@ import service.ConferenceService
 
 object Application extends Controller with GCAAuth {
 
-  def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+  def index = AccountAwareAction { implicit request =>
+    val conference = ConferenceService().list()(0)
+
+    Redirect(routes.Application.conference(conference.uuid))
   }
 
   def showUserInfo = AccountAwareAction { implicit request =>
@@ -41,11 +43,42 @@ object Application extends Controller with GCAAuth {
     Ok(views.html.submission(user, conf, None))
   }
 
-  def listAbstracts(confId: String) = AccountAwareAction { implicit request =>
+  def abstractsPublic(confId: String) = AccountAwareAction { implicit request =>
     val confServ = ConferenceService()
     val conference = confServ.get(confId)
 
     Ok(views.html.abstractlist(request.user, conference))
   }
 
+  def abstractsPrivate = AuthenticatedAction(isREST = false) { implicit request =>
+    val conference = ConferenceService().list()(0)
+
+    // TODO all private abstracts for owner
+    Ok(views.html.abstractlist(Some(request.user), conference))
+  }
+
+  def abstractsPending = AuthenticatedAction(isREST = false) { implicit request =>
+    val conference = ConferenceService().list()(0)
+
+    // TODO all abstracts for reviewers
+    Ok(views.html.abstractlist(Some(request.user), conference))
+  }
+
+  def conference(confId: String) = AccountAwareAction { implicit request =>
+    val conference = ConferenceService().get(confId)
+
+    Ok(views.html.conference(request.user, conference))
+  }
+
+  def contact = AccountAwareAction { implicit request =>
+    val conference = ConferenceService().list()(0)
+
+    Ok(views.html.contact(request.user, conference))
+  }
+
+  def impressum = AccountAwareAction { implicit request =>
+    val conference = ConferenceService().list()(0)
+
+    Ok(views.html.impressum(request.user, conference))
+  }
 }
