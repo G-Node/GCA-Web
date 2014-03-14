@@ -365,6 +365,20 @@ define(["lib/tools"], function(tools) {
         self.name = name || null;
         self.section = section || null;
 
+        self.format = function() {
+            var str =(self.name || "")
+                .concat(self.section ? ", " + self.section : "")
+                .concat(self.department ? ", " + self.department : "")
+                .concat(self.address ? ", " + self.address : "")
+                .concat(self.country ? ", " + self.country : "");
+
+            if (str.indexOf(", ") === 0) {
+                str = str.slice(2, str.length);
+            }
+
+            return str;
+        };
+
     }
 
     Affiliation.fromObject = function(obj) {
@@ -577,6 +591,7 @@ define(["lib/tools"], function(tools) {
      * Model for abstracts.
      *
      * @param {string} [uuid]
+     * @param {number} [sortId]
      * @param {string} [title]
      * @param {string} [topic]
      * @param {string} [text]
@@ -595,18 +610,19 @@ define(["lib/tools"], function(tools) {
      * @constructor
      * @public
      */
-    function Abstract(uuid, title, topic, text, doi, conflictOfInterest, acknowledgements,
+    function Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest, acknowledgements,
                       owners, approved, published, figures, authors, affiliations,
                       references) {
 
         if (! (this instanceof Abstract)) {
-            return new Abstract(uuid, title, topic, text, doi, conflictOfInterest,
+            return new Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
                                 acknowledgements, approved, published, owners, figures,
                                 authors, affiliations, references);
         }
 
         var self = tools.inherit(this, Model, uuid);
 
+        self.sortId = sortId || 0;
         self.title = title || null;
         self.topic = topic || null;
         self.text = text || null;

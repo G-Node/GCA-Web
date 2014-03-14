@@ -8,7 +8,6 @@
 // LICENSE file in the root of the Project.
 
 package models
-
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
@@ -25,6 +24,8 @@ class Abstract extends Model {
   var doi:   String = _
   var conflictOfInterest: String = _
   var acknowledgements: String = _
+
+  var sortId: Int = _
 
   var approved: Boolean = false
   var published: Boolean = false
@@ -55,6 +56,7 @@ object Abstract {
             doi: Option[String],
             conflictOfInterest: Option[String],
             acknowledgements: Option[String],
+            sortId: Option[Int],
             approved: Boolean,
             published: Boolean,
             conference: Option[Conference] = None,
@@ -73,6 +75,7 @@ object Abstract {
     abstr.doi         = unwrapRef(doi)
     abstr.conflictOfInterest = unwrapRef(conflictOfInterest)
     abstr.acknowledgements   = unwrapRef(acknowledgements)
+    abstr.sortId = sortId match { case Some(i) => i; case _ => 0 }
     abstr.approved    = approved
     abstr.published   = published
 

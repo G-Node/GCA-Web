@@ -11,7 +11,7 @@ package models
 
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
-import javax.persistence.{JoinTable, ManyToMany, ManyToOne, Entity}
+import javax.persistence._
 
 /**
  * Model class for abstract authors
@@ -23,12 +23,16 @@ class Author extends Model {
   var firstName: String = _
   var middleName: String = _
   var lastName: String = _
+  var position: Int = _
 
   @ManyToOne
   var abstr: Abstract = _
   @ManyToMany
   @JoinTable(name = "author_affiliations")
   var affiliations: JSet[Affiliation] = new JTreeSet[Affiliation]()
+
+  @Transient
+  var affiliationPositions: Seq[Int] = Nil
 
 }
 
@@ -40,8 +44,10 @@ object Author {
             firstName: Option[String],
             middleName: Option[String],
             lastName: Option[String],
+            position: Option[Int],
             abstr: Option[Abstract] = None,
-            affiliations: Seq[Affiliation] = Nil) : Author = {
+            affiliations: Seq[Affiliation] = Nil,
+            affiliationPositions: Seq[Int] = Nil) : Author = {
 
     val author = new Author()
 
@@ -50,9 +56,11 @@ object Author {
     author.firstName    = unwrapRef(firstName)
     author.middleName   = unwrapRef(middleName)
     author.lastName     = unwrapRef(lastName)
+    author.position     = unwrapVal(position)
 
     author.abstr        = unwrapRef(abstr)
     author.affiliations = toJSet(affiliations)
+    author.affiliationPositions = affiliationPositions
 
     author
   }

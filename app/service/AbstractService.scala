@@ -40,7 +40,8 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
            LEFT JOIN FETCH a.conference c
            LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
-           WHERE c.uuid = :uuid"""
+           WHERE c.uuid = :uuid
+           ORDER BY a.sortId, a.title"""
 
       val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
       query.setParameter("uuid", conference.uuid)
@@ -65,7 +66,8 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
            LEFT JOIN FETCH a.conference
            LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
-           WHERE o.uuid = :uuid"""
+           WHERE o.uuid = :uuid
+          ORDER BY a.sortId, a.title"""
 
       val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
       query.setParameter("uuid", account.uuid)

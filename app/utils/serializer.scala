@@ -95,8 +95,10 @@ package object serializer {
       (__ \ "mail").readNullable[String] and
       (__ \ "firstName").readNullable[String] and
       (__ \ "middleName").readNullable[String] and
-      (__ \ "lastName").readNullable[String]
-    )(Author(_, _, _, _, _)).reads(json)
+      (__ \ "lastName").readNullable[String] and
+      (__ \ "position").readNullable[Int] and
+      (__ \ "affiliations").read[Seq[Int]]
+    )(Author(_, _, _, _, _, _, None, Nil, _)).reads(json)
 
     override def writes(a: Author): JsValue = {
       Json.obj(
@@ -104,7 +106,9 @@ package object serializer {
         "email" -> a.mail,
         "firstName" -> a.firstName,
         "middleName" -> a.middleName,
-        "lastName" -> a.lastName
+        "lastName" -> a.lastName,
+        "position" -> a.position,
+        "affiliations" -> (for (affiliation <- a.affiliations) yield a.position)
       )
     }
   }
@@ -120,8 +124,9 @@ package object serializer {
       (__ \ "country").readNullable[String] and
       (__ \ "department").readNullable[String] and
       (__ \ "name").readNullable[String] and
-      (__ \ "section").readNullable[String]
-    )(Affiliation(_, _, _, _, _, _)).reads(json)
+      (__ \ "section").readNullable[String] and
+      (__ \ "position").readNullable[Int]
+    )(Affiliation(_, _, _, _, _, _, _)).reads(json)
 
     override def writes(a: Affiliation): JsValue = {
       Json.obj(
@@ -130,7 +135,8 @@ package object serializer {
         "country" -> a.country,
         "department" -> a.department,
         "name" -> a.name,
-        "section" -> a.section
+        "section" -> a.section,
+        "position" -> a.position
       )
     }
   }
@@ -204,12 +210,13 @@ package object serializer {
       (__ \ "doi").readNullable[String] and
       (__ \ "conflictOfInterest").readNullable[String] and
       (__ \ "acknowledgements").readNullable[String] and
+      (__ \ "sortId").readNullable[Int] and
       (__ \ "approved").read[Boolean] and
       (__ \ "published").read[Boolean] and
       (__ \ "authors").lazyRead( list[Author](authorF) ) and
       (__ \ "affiliations").lazyRead( list[Affiliation](affiliationF) ) and
       (__ \ "references").lazyRead( list[Reference](referenceF) )
-    )(Abstract(_, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
+    )(Abstract(_, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
       val figures: Seq[Figure] = asScalaSet(a.figures).toSeq
@@ -224,6 +231,7 @@ package object serializer {
         "doi" -> a.doi,
         "conflictOfInterest" -> a.conflictOfInterest,
         "acknowledgements" -> a.acknowledgements,
+        "sortId" -> a.sortId,
         "approved" -> a.approved,
         "published" -> a.published,
         "conference" -> a.conference.uuid,
