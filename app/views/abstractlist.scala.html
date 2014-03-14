@@ -11,7 +11,7 @@
 
     <div>
         <ul class="nav nav-tabs" data-bind="foreach: groups">
-            <li><a data-bind="attr: { href: link }, text: name"></a></li>
+            <li data-bind="attr: {class: state}"><a data-bind="attr: { href: link }, text: name"></a></li>
         </ul>
         <br/>
     </div>

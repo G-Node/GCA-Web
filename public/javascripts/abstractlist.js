@@ -21,7 +21,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         self.conference = ko.observable();
         self.abstracts = ko.observableArray(null);
         self.selectedAbstract = ko.observable(null);
-        self.groups = ko.observable(null);
+        self.groups = ko.observableArray(null);
 
         //maps for uuid -> abstract, doi -> abstract,
         //         neighbours -> prev & next of current list
@@ -38,6 +38,19 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             return '#' + '/uuid/' + abstract.uuid;
         };
 
+        self.getGroupById = function(groupid) {
+            var foundGroup = null;
+            for (var i = 0; i < self.groups().length; i++) {
+                var curGroup = self.groups()[i];
+                if (curGroup.prefix === groupid) {
+                    foundGroup = curGroup;
+                    break;
+                }
+            }
+
+            return foundGroup;
+        };
+
         self.makeAbstractID = function(abstract) {
             var identifier = abstract.sortId;
 
@@ -49,15 +62,14 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             var gid = (identifier & 0xFFFF0000) >> 16;
 
             var prefix = "U ";
-            for (var i = 0; i < self.groups().length; i++) {
-                var curGroup = self.groups()[i];
-                if (curGroup.prefix === gid) {
-                    prefix = curGroup.short;
-                }
+            var g = self.getGroupById(gid);
+            if (g !== null) {
+                prefix = g.short;
             }
 
             return prefix + "&nbsp;" + aid;
         };
+
 
         self.selectAbstract = function(abstract) {
             console.log("Selecting abstract " + abstract.uuid + " " + abstract.toString());
@@ -81,16 +93,58 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             self.showAbstract(self.uuidMap[uuid]);
         };
 
-        self.showAbstractsByGroup = function(groupid) {
-            self.selectedAbstract(null);
-            self.abstracts(self.abstractsData);
-            document.title = groupid;
+        self.activateGroup = function(groupId) {
+
+
+        };
+
+
+        self.showAbstractsByGroup = function(groupId) {
+
+            console.log("groupid" + groupId);
+
+            var selGroup = null;
+            for (var i = 0; i < self.groups().length; i++) {
+                var curGroup = self.groups()[i];
+                if (curGroup.short === groupId) {
+                    selGroup = curGroup;
+                    //we don't break here because we want to set
+                    //all the groups 'state' member
+
+                    curGroup.state("active");
+                } else {
+                    curGroup.state("");
+                }
+            }
+
+
+
+            if (selGroup === null) {
+                //FIXME: show error
+                console.log("Error invalid group selected");
+                self.showAbstractList([]);
+                return;
+            }
+
+            if (selGroup.short === "A") {
+                // "A" means all, no filtering needed
+                self.showAbstractList(self.abstractsData);
+                return;
+            }
+
+            var filtered = self.abstractsData.filter(function (abstract) {
+                var gid = (abstract.sortId & 0xFFFF0000) >> 16;
+                return selGroup.prefix === gid;
+            });
+
+            self.showAbstractList(filtered);
         };
 
         self.showAbstractList = function(theList) {
             self.selectedAbstract(null);
             self.abstracts(theList);
             document.title = self.conference().name;
+            self.neighbours = self.makeNeighboursMap(theList);
         };
 
 
@@ -101,11 +155,13 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                     prefix: _prefix,
                     name: _name,
                     short: _short,
-                    link: "#/groups/" + _short
+                    link: "#/groups/" + _short,
+                    state: ko.observable("")
                 };
             }
 
             var theGroups = [mkGroup(~0, "All", "A")];
+            theGroups[0].state("active");
             var confGroups = self.conference().groups;
             for (var i = 0; i < confGroups.length; i++) {
                 var g = confGroups[i];
@@ -122,8 +178,6 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 var currentAbstract = self.abstractsData[i];
                 self.uuidMap[currentAbstract.uuid] = currentAbstract;
             }
-
-            self.neighbours = self.makeNeighboursMap(self.abstractsData);
         };
 
         self.makeNeighboursMap = function(objs) {
