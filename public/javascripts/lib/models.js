@@ -173,25 +173,33 @@ define(["lib/tools"], function(tools) {
     /**
      * Model for conference.
      *
-     * @param {string} [uuid]   The uuid of the conference.
-     * @param {string} [name]   The name of the conference.
-     * @param {Array}  [groups] List of {AbstractGroups}
-     * @param {string} [owners] URL to all abstract owners.
-     * @param {string} [abstracts] The URL to all abstracts.
+     * @param {string}  [uuid]   The uuid of the conference.
+     * @param {string}  [name]   The name of the conference.
+     * @param {string}  [short]
+     * @param {string}  [cite]
+     * @param {string}  [link]
+     * @param {boolean} [isOpen]
+     * @param {Array}   [groups] List of {AbstractGroups}
+     * @param {string}  [owners] URL to all abstract owners.
+     * @param {string}  [abstracts] The URL to all abstracts.
      *
      * @returns {Conference}
      * @constructor
      * @public
      */
-    function Conference(uuid, name, groups, owners, abstracts) {
+    function Conference(uuid, name, short, cite, link, isOpen, groups, owners, abstracts) {
 
         if (! (this instanceof Conference)) {
-            return new Conference(uuid, name, groups, owners, abstracts);
+            return new Conference(uuid, name, short, cite, link, isOpen, groups, owners, abstracts);
         }
 
         var self = tools.inherit(this, Model, uuid);
 
         self.name = name || null;
+        self.short = short || null;
+        self.cite = cite || null;
+        self.link = link || null;
+        self.isOpen = isOpen || false;
         self.groups = groups || null;
         self.owners = owners || null;
         self.abstracts = abstracts || null;
