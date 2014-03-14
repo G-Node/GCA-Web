@@ -249,6 +249,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 self.abstractsData = absList;
                 self.buildMaps();
                 self.abstracts(absList);
+                self.neighbours = self.makeNeighboursMap(absList);
 
                 doAfter();
             }
