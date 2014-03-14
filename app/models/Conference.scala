@@ -51,6 +51,12 @@ object AbstractGroup {
 class Conference extends Model {
 
   var name: String = _
+  var short: String = _
+  var cite: String = _
+  var link: String = _
+
+  var isOpen: Boolean = _
+
 
   @OneToMany(mappedBy = "conference")
   var groups: JSet[AbstractGroup] = new JTreeSet[AbstractGroup]()
@@ -67,6 +73,10 @@ object Conference {
 
   def apply(uuid: Option[String],
             name: Option[String],
+            short: Option[String],
+            cite: Option[String],
+            link: Option[String],
+            isOpen: Option[Boolean],
             groups: Seq[AbstractGroup] = Nil,
             owners: Seq[Account] = Nil,
             abstracts: Seq[Abstract] = Nil) : Conference = {
@@ -75,6 +85,10 @@ object Conference {
 
     conference.uuid       = unwrapRef(uuid)
     conference.name       = unwrapRef(name)
+    conference.short      = unwrapRef(short)
+    conference.cite       = unwrapRef(cite)
+    conference.link       = unwrapRef(link)
+    conference.isOpen     = isOpen match {case Some(b) => b; case _ => false}
 
     conference.groups     = toJSet(groups)
     conference.owners     = toJSet(owners)
