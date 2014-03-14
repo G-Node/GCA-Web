@@ -212,7 +212,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             });
 
             this.get('#/groups/:group', function() {
-                var group = this.params['uuid'];
+                var group = this.params['group'];
                 console.log("Sammy::get::group [" + group + "]");
                 self.ensureDataAndThen(function () {
                     self.showAbstractsByGroup(group);
