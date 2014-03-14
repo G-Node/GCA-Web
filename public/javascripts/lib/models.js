@@ -136,11 +136,46 @@ define(["lib/tools"], function(tools) {
         return created;
     };
 
+
+    /**
+     * Model for AbstractGroup
+     *
+     * @param {string} [uuid]
+     * @param {number} [prefix]
+     * @param {string} [name]
+     * @param {string} [short]
+     *
+     * @returns {AbstractGroup}
+     * @constructor
+     * @public
+     */
+    function AbstractGroup(uuid, prefix, name, short) {
+
+        if (! (this instanceof  AbstractGroup)) {
+            return new AbstractGroup(uuid, prefix, name, short);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.prefix = prefix || 0;
+        self.name = name || null;
+        self.short = short || null;
+    }
+
+    AbstractGroup.fromObject = function(obj) {
+        return Model.fromObject(obj, AbstractGroup);
+    };
+
+    AbstractGroup.fromArray = function(array) {
+        return Model.fromArray(array, AbstractGroup.fromObject);
+    };
+
     /**
      * Model for conference.
      *
      * @param {string} [uuid]   The uuid of the conference.
      * @param {string} [name]   The name of the conference.
+     * @param {Array}  [groups] List of {AbstractGroups}
      * @param {string} [owners] URL to all abstract owners.
      * @param {string} [abstracts] The URL to all abstracts.
      *
@@ -148,22 +183,62 @@ define(["lib/tools"], function(tools) {
      * @constructor
      * @public
      */
-    function Conference(uuid, name, owners, abstracts) {
+    function Conference(uuid, name, groups, owners, abstracts) {
 
         if (! (this instanceof Conference)) {
-            return new Conference(uuid, name, owners, abstracts);
+            return new Conference(uuid, name, groups, owners, abstracts);
         }
 
         var self = tools.inherit(this, Model, uuid);
 
         self.name = name || null;
+        self.groups = groups || null;
         self.owners = owners || null;
         self.abstracts = abstracts || null;
+
+        self.toObject = function() {
+            var prop,
+                obj = {};
+
+            for (prop in self) {
+                if (self.hasOwnProperty(prop)) {
+                    var value = self[prop];
+
+                    if (prop === "groups") {
+                        obj.groups = [];
+                        self.groups.forEach(appendGroup);
+                    } else if (tools.type(value) !== "function") {
+                        obj[prop] = value;
+                    }
+                }
+            }
+
+            function appendGroup(model) {
+                obj.groups.push(model.toObject());
+            }
+
+            return obj;
+        };
 
     }
 
     Conference.fromObject = function(obj) {
-        return Model.fromObject(obj, Conference);
+        var prop,
+            target = new Conference();
+
+        for (prop in target) {
+            if (target.hasOwnProperty(prop)) {
+                var value = readProperty(prop, obj);
+
+                if (prop === "groups") {
+                    target.groups = AbstractGroup.fromArray(value);
+                } else if (tools.type(target[prop]) !== "function") {
+                        target[prop] = value;
+                }
+            }
+        }
+
+        return target;
     };
 
     Conference.fromArray = function(array) {

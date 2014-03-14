@@ -184,7 +184,9 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
   }
 
   var conferences : Array[Conference] = Array(
-    Conference(None, ?("The first conference")),
+    Conference(None, ?("The first conference"),
+      Seq(AbstractGroup(None, ?(0), ?("Talk"), ?("T")),
+          AbstractGroup(None, ?(1), ?("Poster"), ?("P")))),
     Conference(None, ?("The second conference")),
     Conference(None, ?("The third conference"))
   )
@@ -199,6 +201,11 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       // add alice to conference owners and merge conferences
       conferences = conferences.map { conf =>
         conf.owners.add(alice)
+
+        conf.groups.foreach{
+          group => group.conference = conf
+        }
+
         em.merge(conf)
       }
 
@@ -253,6 +260,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
     }
 
     dbTransaction { (em, tx) =>
+      em.createQuery("DELETE FROM AbstractGroup").executeUpdate()
       em.createQuery("DELETE FROM Affiliation").executeUpdate()
       em.createQuery("DELETE FROM Author").executeUpdate()
       em.createQuery("DELETE FROM Reference").executeUpdate()

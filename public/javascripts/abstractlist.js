@@ -21,9 +21,12 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         self.conference = ko.observable();
         self.abstracts = ko.observableArray(null);
         self.selectedAbstract = ko.observable(null);
+        self.groups = ko.observable(null);
 
-        //maps for uuid -> abstract and doi -> abstract
+        //maps for uuid -> abstract, doi -> abstract,
+        //         neighbours -> prev & next of current list
         self.uuidMap = {};
+        self.neighbours = {};
 
 
         self.init = function() {
@@ -57,10 +60,38 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             self.showAbstract(self.uuidMap[uuid]);
         };
 
+        self.showAbstractsByGroup = function(groupid) {
+            self.selectedAbstract(null);
+            self.abstracts(self.abstractsData);
+            document.title = groupid;
+        };
+
         self.showAbstractList = function(theList) {
             self.selectedAbstract(null);
             self.abstracts(theList);
             document.title = self.conference().name;
+        };
+
+
+        self.buildGroups = function() {
+
+            function mkGroup(_prefix, _name, _short) {
+                return {
+                    prefix: _prefix,
+                    name: _name,
+                    short: _short,
+                    link: "#/groups/" + _short
+                };
+            }
+
+            var theGroups = [mkGroup(~0, "All", "A")];
+            var confGroups = self.conference().groups;
+            for (var i = 0; i < confGroups.length; i++) {
+                var g = confGroups[i];
+                theGroups.push(mkGroup(g.prefix, g.name, g.short));
+            }
+
+          self.groups(theGroups);
         };
 
         //map related stuff
@@ -70,8 +101,46 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 var currentAbstract = self.abstractsData[i];
                 self.uuidMap[currentAbstract.uuid] = currentAbstract;
             }
+
+            self.neighbours = self.makeNeighboursMap(self.abstractsData);
         };
 
+        self.makeNeighboursMap = function(objs) {
+            var theMap = { };
+
+            if (objs === null) {
+                return theMap;
+            }
+
+            for(var i = 0; i < objs.length; i++) {
+                theMap[objs[i].uuid] = {
+                    prev: i > 0 ? self.makeLink(objs[i-1]): null,
+                    next: i + 1 != objs.length ? self.makeLink(objs[i+1]) : null
+                }
+            }
+
+            return theMap;
+        };
+
+        self.nextAbstract = function(abstract) {
+          var uuid = abstract.uuid;
+
+            if(!uuid in self.neighbours) {
+                return null;
+            }
+
+            return self.neighbours[uuid].next;
+        };
+
+        self.prevAbstract = function(abstract) {
+            var uuid = abstract.uuid;
+
+            if(!uuid in self.neighbours) {
+                return null;
+            }
+
+            return self.neighbours[uuid].prev;
+        };
 
         //Data IO
         self.ioFailHandler = function(jqxhr, textStatus, error) {
@@ -94,7 +163,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             function onConferenceData(confObj) {
                 var conf = models.Conference.fromObject(confObj);
                 self.conference(conf);
-
+                self.buildGroups();
                 //now load the abstract data
                 $.getJSON(conf.abstracts, onAbstractData).fail(self.ioFailHandler);
             }
@@ -120,6 +189,15 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                     self.showAbstractByUUID(uuid);
                 });
             });
+
+            this.get('#/groups/:group', function() {
+                var group = this.params['uuid'];
+                console.log("Sammy::get::group [" + group + "]");
+                self.ensureDataAndThen(function () {
+                    self.showAbstractsByGroup(group);
+                });
+            });
+
 
             this.get('', function() {
                 console.log('Sammy::get::');
