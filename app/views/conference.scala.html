@@ -1,0 +1,10 @@
+@(account: Option[Account], conference: Conference)
+
+@template(account, Option(conference), "conference") {
+
+    <!-- The conference info -->
+    <div class="header">
+        <h1>Here you can submit an abstract for @conference.name</h1>
+    </div>
+
+}
