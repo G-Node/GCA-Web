@@ -108,7 +108,7 @@ package object serializer {
         "middleName" -> a.middleName,
         "lastName" -> a.lastName,
         "position" -> a.position,
-        "affiliations" -> Seq(for (affiliation <- a.affiliations) yield a.position)
+        "affiliations" -> (for (affiliation <- a.affiliations) yield a.position)
       )
     }
   }
