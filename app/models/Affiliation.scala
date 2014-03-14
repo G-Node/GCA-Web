@@ -24,6 +24,7 @@ class Affiliation extends Model {
   var department: String = _
   var name: String = _
   var section: String = _
+  var position: Int = _
 
   @ManyToOne
   var abstr: Abstract = _
@@ -41,6 +42,7 @@ object Affiliation {
             department: Option[String],
             name: Option[String],
             section: Option[String],
+            position: Option[Int],
             abstr: Option[Abstract] = None,
             authors: List[Author] = Nil) : Affiliation = {
 
@@ -52,6 +54,7 @@ object Affiliation {
     affiliation.department  = unwrapRef(department)
     affiliation.name        = unwrapRef(name)
     affiliation.section     = unwrapRef(section)
+    affiliation.position    = unwrapVal(position)
 
     affiliation.abstr       = unwrapRef(abstr)
     affiliation.authors     = toJSet(authors)

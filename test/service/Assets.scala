@@ -39,13 +39,13 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       approved = true,
       published = true,
       authors = Seq(
-        Author(None, ?("one@foo.bar"), ?("One"), ?("Middle"), ?("Name")),
-        Author(None, ?("two@foo.bar"), ?("Two"), ?("Middle"), ?("Name")),
-        Author(None, ?("three@foo.bar"), ?("The"), None, ?("Name"))
+        Author(None, ?("one@foo.bar"), ?("One"), ?("Middle"), ?("Name"), ?(1)),
+        Author(None, ?("two@foo.bar"), ?("Two"), ?("Middle"), ?("Name"), ?(2)),
+        Author(None, ?("three@foo.bar"), ?("The"), None, ?("Name"), ?(3))
       ),
       affiliations = Seq(
-        Affiliation(None, ?("One address"), ?("Andorra"), ?("One department"), None, None, None),
-        Affiliation(None, ?("Two address"), ?("Andorra"), ?("Two department"), None, None, None)
+        Affiliation(None, ?("One address"), ?("Andorra"), ?("One department"), None,None, ?(1)),
+        Affiliation(None, ?("Two address"), ?("Andorra"), ?("Two department"), None, None, ?(2))
       ),
       references = Seq(
         Reference(None, ?("Authorone et al."), ?("Title One"), ?(2000), None),
@@ -65,13 +65,13 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       approved = true,
       published = false,
       authors = Seq(
-        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name")),
-        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name")),
-        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"))
+        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name"), ?(1)),
+        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name"), ?(2)),
+        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"), ?(3))
       ),
       affiliations = Seq(
-        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None, None),
-        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None, None)
+        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None, ?(1)),
+        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None, ?(2))
       ),
       references = Seq(
         Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
@@ -91,13 +91,13 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       approved = true,
       published = false,
       authors = Seq(
-        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name")),
-        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name")),
-        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"))
+        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name"), ?(1)),
+        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name"), ?(2)),
+        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"), ?(3))
       ),
       affiliations = Seq(
-        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None, None),
-        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None, None)
+        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None, ?(1)),
+        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None, ?(2))
       ),
       references = Seq(
         Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
@@ -117,13 +117,13 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       approved = false,
       published = false,
       authors = Seq(
-        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name")),
-        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name")),
-        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"))
+        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name"), ?(1)),
+        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name"), ?(2)),
+        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"), ?(3))
       ),
       affiliations = Seq(
-        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None, None),
-        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None, None)
+        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None, ?(1)),
+        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None, ?(2))
       ),
       references = Seq(
         Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
@@ -146,11 +146,11 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       approved = false,
       published = false,
       authors = Seq(
-        Author(None, ?("new@mail.bar"), ?("New"), ?("Cool"), ?("Author")),
-        Author(None, ?("foo@mail.bar"), ?("Second"), None, ?("Author"))
+        Author(None, ?("new@mail.bar"), ?("New"), ?("Cool"), ?("Author"), ?(1)),
+        Author(None, ?("foo@mail.bar"), ?("Second"), None, ?("Author"), ?(2))
       ),
       affiliations = Seq(
-        Affiliation(None, ?("New Street 5"), ?("New York"), ?("New Department"), None, None, None)
+        Affiliation(None, ?("New Street 5"), ?("New York"), ?("New Department"), None, None, ?(1))
       ),
       references = Seq(
         Reference(None, ?("E. Albert et al."), ?("New is always better"), ?(2000), None)

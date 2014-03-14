@@ -16,9 +16,9 @@ class SerializerTest extends JUnitSuite {
   val sampleConference: Conference = Conference(Option("someuuid"), Option("bar"))
   val sampleAccount: Account = Account(Option("someuuid"), Option("example@gnode.org"))
   val sampleAuthor: Author = Author(Option("someuuid"), Option("email"), Option("first"),
-    Option("middle"), Option("last"))
+    Option("middle"), Option("last"), Option(1))
   val sampleAffiliation: Affiliation = Affiliation(Option("someuuid"), Option("address"), Option("country"),
-    Option("department"), Option("name"), Option("section"))
+    Option("department"), Option("name"), Option("section"), Option(1))
   val sampleReference: Reference = Reference(Option("someuuid"), Option("authors"), Option("title"),
     Option(2013), Option("doi"))
   val sampleFigure: Figure = Figure(Option("someuuid"), Option("name"), Option("caption"))
@@ -58,12 +58,16 @@ class SerializerTest extends JUnitSuite {
     val jsFormat = new AuthorFormat()
 
     val original = Author(Option("someuuid"), Option("email"), Option("first"),
-                            Option("middle"), Option("last"))
+                            Option("middle"), Option("last"), Option(1))
     val json = jsFormat.writes(original)
 
     jsFormat.reads(json).fold(
       valid = { converted => {assert(converted.uuid == original.uuid)}},
-      invalid = { errors => throw new MatchError(errors.toString()) }
+      invalid = {
+        errors => throw new MatchError(
+          errors.toString()
+        )
+      }
     )
   }
 
@@ -72,7 +76,7 @@ class SerializerTest extends JUnitSuite {
     val jsFormat = new AffiliationFormat()
 
     val original = Affiliation(Option("someuuid"), Option("address"), Option("country"),
-      Option("department"), Option("name"), Option("section"))
+      Option("department"), Option("name"), Option("section"), Option(1))
     val json = jsFormat.writes(original)
 
     jsFormat.reads(json).fold(
