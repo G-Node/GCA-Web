@@ -140,22 +140,86 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         self.addAuthor = function() {
             var author = models.ObservableAuthor();
+            author.position(self.abstract().authors().length);
             self.abstract().authors.push(author);
         };
 
 
         self.removeAuthor = function(author) {
-            console.log("removeAuthor: " + author);
+            var position = author.position(),
+                authors = self.abstract().authors();
+
+            authors.splice(position, 1);
+            authors.forEach(function(a, i) {
+                a.position(i);
+            });
+
+            self.abstract().authors(authors);
         };
 
 
         self.addAffiliation = function() {
             var affiliation = models.ObservableAffiliation();
+            affiliation.position(self.abstract().affiliations().length);
             self.abstract().affiliations.push(affiliation);
         };
 
+
         self.removeAffiliation = function(affiliation) {
-            console.log("removeAffiliation: " + affiliation);
+            var position = affiliation.position(),
+                affiliations = self.abstract().affiliations(),
+                authors = self.abstract().authors();
+
+            affiliations.splice(position, 1);
+            affiliations.forEach(function(a, i) {
+                a.position(i);
+            });
+
+            authors.forEach(function(author) {
+                var affiliationPositions = author.affiliations(),
+                    removePos = affiliationPositions.indexOf(position);
+
+                if (removePos >= 0) {
+                    affiliationPositions.splice(removePos, 1);
+                }
+
+                for (var i = 0; i < affiliationPositions.length; i++) {
+                    if (affiliationPositions[i] >= removePos) {
+                        affiliationPositions[i] = affiliationPositions[i] - 1;
+                    }
+                }
+
+                author.affiliations(affiliationPositions);
+            });
+
+            self.abstract().affiliations(affiliations);
+        };
+
+        self.authorsForAffiliation = function(affiliation) {
+            var authors = [];
+
+            self.abstract().authors().forEach(function(author) {
+               if (author.affiliations().indexOf(affiliation.position() >= 0)) {
+                   authors.push(author);
+               }
+            });
+
+            return authors;
+        };
+
+        self.affiliateAuthor = function(affiliation) {
+            var authorPosition = $("#author-select-" + affiliation.position()).find("select").val(),
+                authors = self.abstract().authors();
+
+            if (authorPosition >= 0 && authorPosition < authors.length) {
+                var author = authors[authorPosition];
+                author.affiliations.push(affiliation.position());
+
+                console.log("Add author '" + author.formatName() + "' to affiliation '" + affiliation.format() + "'");
+            } else {
+                throw "Unable to add author to affiliation: " + affiliation.format();
+            }
+
         };
 
     }

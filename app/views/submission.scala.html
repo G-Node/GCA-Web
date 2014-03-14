@@ -88,7 +88,7 @@
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
-                                                <button type="button" class="btn btn-default btn-sm" data-bind="click: $root.removeAuthor()">
+                                                <button type="button" class="btn btn-default btn-sm" data-bind="click: $root.removeAuthor.bind(person)">
                                                     Remove
                                                 </button>
                                             </div>
@@ -153,8 +153,21 @@
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
-                                                <button type="button" class="btn btn-default btn-sm" data-bind="click: $root.removeAffiliation()">
+                                                <button type="button" class="btn btn-default btn-sm" data-bind="click: $root.removeAffiliation.bind(affiliation)">
                                                     Remove
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" data-bind="attr: {id: 'author-select-' + affiliation.position()}">
+                                            <select class="form-control" data-bind="options: $root.abstract().authors, optionsText: function(e) { return e.formatName(); }, optionsValue: 'position'">
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <button type="button" class="btn btn-default btn-sm" data-bind="click: $root.affiliateAuthor.bind(affiliation)">
+                                                    Add
                                                 </button>
                                             </div>
                                         </td>
