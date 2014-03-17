@@ -6,7 +6,6 @@ import models.Figure
 import utils.GCAAuth
 import utils.serializer.FigureFormat
 import play.api.libs.json._
-import utils.RESTResults._
 import scala.collection.JavaConversions._
 import play.api.libs.json.JsArray
 
@@ -81,7 +80,7 @@ object Figures extends Controller with GCAAuth {
    */
   def delete(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
     FigureService().delete(id, request.user)
-    Deleted
+    Ok(Json.obj("error" -> false))
   }
 
 }
