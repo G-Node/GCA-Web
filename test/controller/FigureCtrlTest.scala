@@ -16,6 +16,11 @@ import play.api.libs.json.JsObject
 import play.api.mvc.Cookie
 
 import utils.serializer.FigureFormat
+import scala.Some
+import play.api.mvc.AnyContentAsMultipartFormData
+import play.api.test.FakeApplication
+import play.api.libs.json.JsObject
+import play.api.mvc.Cookie
 
 /**
  * Test
@@ -93,29 +98,42 @@ class FigureCtrlTest extends BaseCtrlTest {
     assert(status(result) == CREATED)
   }
 
+  @Test
   def testGet(): Unit = {
-    var uuid = assets.abstracts(0).uuid // abstract that has figure
-    var request = FakeRequest(GET, s"/api/abstracts/$uuid/figure")
-    var result = route(FigureCtrlTest.app, request).get
+    val uuid = assets.abstracts(0).uuid // abstract that has figure
+    val request = FakeRequest(GET, s"/api/abstracts/$uuid/figures")
+    val result = route(FigureCtrlTest.app, request).get
 
     assert(status(result) == OK)
     assert(contentType(result) == Some("application/json"))
-    assert(formatter.reads(contentAsJson(result)).get.uuid == uuid)
 
-    uuid = assets.abstracts(1).uuid // no figure for this abstract
-    request = FakeRequest(GET, s"/api/abstracts/$uuid/figure")
-    result = route(FigureCtrlTest.app, request).get
-    assert(status(result) == NOT_FOUND)
+    val existingIds: Array[String] = for (c <- assets.figures) yield c.uuid
+    for (jconf <- contentAsJson(result).as[List[JsObject]])
+      assert(existingIds.contains(formatter.reads(jconf).get.uuid))
   }
 
-  def testGetFile(): Unit = {
-    val uuid = assets.abstracts(0).uuid
-    val request = FakeRequest(GET, s"/abstracts/$uuid/figure/image")
+  @Test
+  def testDownload(): Unit = {
+    val uuid = assets.figures(0).uuid
+    val request = FakeRequest(GET, s"/api/figures/$uuid/image")
     val result = route(FigureCtrlTest.app, request).get
 
     assert(status(result) == OK)
     val file = contentAsBytes(result)
     // TODO here make some file assert
+  }
+
+  @Test
+  def testDelete(): Unit = {
+    val uuid = assets.figures(0).uuid
+    val request = FakeRequest(DELETE, s"/api/figures/$uuid").withCookies(cookie)
+    val deleted = route(FigureCtrlTest.app, request).get
+    assert(status(deleted) == OK)
+
+    val id = "NOTEXISTANT"
+    val bad = FakeRequest(DELETE, s"/api/figures/$id").withCookies(cookie)
+    val failed = route(FigureCtrlTest.app, bad).get
+    assert(status(failed) == NOT_FOUND)
   }
 }
 
