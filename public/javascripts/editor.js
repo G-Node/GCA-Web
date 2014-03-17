@@ -256,6 +256,18 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             author.affiliations(affiliations);
         }
 
+        self.doAddReference = function() {
+            self.abstract().references.push(models.ObservableReference());
+        }
+
+        self.doRemoveReference = function(index) {
+            var references = self.abstract().references();
+
+            references.splice(index, 1);
+
+            self.abstract().references(references);
+        }
+
     }
 
     // start the editor

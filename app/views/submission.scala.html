@@ -20,59 +20,57 @@
 
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
-                <button type="button" class="btn btn-default btn-xs" data-target="#title-editor" data-toggle="modal">
+                <button type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal">
                     Edit
                 </button>
             </div>
 
             <div class="modal" id="title-editor" tabindex="-1">
-                <div class="modal-dialog" style="margin-top: 15em">
+                <div class="modal-dialog">
                     <div class="modal-content">
-                        <div class="modal-body form-horizontal">
-                            <div class="form-group">
-                                <label for="title" class="col-sm-2 control-label">Title</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="title"
-                                           data-bind="value: abstract().title" />
-                                </div>
-                            </div>
-                            <div class="form-group" style="margin-bottom: 0">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
-                                            data-bind="click: refresh">OK</button>
-                                </div>
-                            </div>
+                        <div class="modal-header">
+                            <h3>Enter a Title</h3>
+                        </div>
+
+                        <div class="modal-body">
+                            <label for="title"></label>
+                            <input type="text" class="form-control" id="title" data-bind="value: abstract().title" />
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                                Close
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div  class="title">
-                <h2 data-bind="text: abstract().title">Enter your abstract title here</h2>
+                <h2 data-bind="text: abstract().title"></h2>
             </div>
         </div>
 
         <div class="editor-box">
 
             <div class="btn-group pull-right btn-group-hover">
-                <button type="button" class="btn btn-default btn-xs" data-target="#authors-editor" data-toggle="modal">
+                <button type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal">
                     Edit
                 </button>
             </div>
 
             <div class="modal" id="authors-editor" tabindex="-1">
-                <div class="modal-dialog" style="margin-top: 15em; width: 750px">
+                <div class="modal-dialog">
                     <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: addAuthor">
+                                Add
+                            </button>
+
+                            <h3>Edit Authors</h3>
+                        </div>
+
                         <div class="modal-body">
-
-                            <div class="btn-group pull-right" style="margin: 8px; margin-top: 16px">
-                                <button type="button" class="btn btn-default btn-sm" data-bind="click: addAuthor">
-                                    Add
-                                </button>
-                            </div>
-
-                            <h3>Authors</h3>
-
                             <table class="table">
                                 <tbody data-bind="foreach: {data: abstract().authors, as: 'person'}">
                                     <tr>
@@ -105,8 +103,8 @@
                             </table>
                         </div>
 
-                        <div class="modal-footer" style="padding-top: 1em; padding-bottom: 1em">
-                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" style="margin-right: 0.3em">OK</button>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
                         </div>
 
                     </div>
@@ -122,26 +120,24 @@
 
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
-                <button type="button" class="btn btn-default btn-xs" data-target="#affiliations-editor"
+                <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
                         data-toggle="modal">
                     Edit
                 </button>
             </div>
 
             <div class="modal" id="affiliations-editor" tabindex="-1">
-                <div class="modal-dialog" style="margin-top: 15em; width: 750px">
+                <div class="modal-dialog">
                     <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: addAffiliation">
+                                Add
+                            </button>
+
+                            <h3>Edit Affiliations</h3>
+                        </div>
+
                         <div class="modal-body">
-
-                            <div class="btn-group pull-right" style="margin: 8px; margin-top: 16px">
-                                <button type="button" class="btn btn-default btn-sm"
-                                data-bind="click: addAffiliation">
-                                    Add
-                                </button>
-                            </div>
-
-                            <h3>Affiliations</h3>
-
                             <table class="table">
                                 <tbody data-bind="foreach: {data: abstract().affiliations, as: 'affiliation'}">
                                     <tr>
@@ -208,8 +204,10 @@
                             </table>
                         </div>
 
-                        <div class="modal-footer" style="padding-top: 1em; padding-bottom: 1em">
-                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" style="margin-right: 0.3em">OK</button>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                                Close
+                            </button>
                         </div>
 
                     </div>
@@ -226,66 +224,66 @@
 
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
-                <button type="button" class="btn btn-default btn-xs" data-target="#abstract-text-editor"
+                <button type="button" class="btn btn-default btn-sm" data-target="#abstract-text-editor"
                         data-toggle="modal">
                     Edit
                 </button>
             </div>
 
             <div class="modal" id="abstract-text-editor" tabindex="-1">
-                <div class="modal-dialog" style="margin-top: 15em">
+                <div class="modal-dialog">
                     <div class="modal-content">
-                        <div class="modal-body form-horizontal">
-                            <div class="form-group">
-                                <label for="text" class="col-sm-2 control-label">Abstract Text</label>
-                                <div class="col-sm-10">
-                                    <textarea rows="10" class="form-control" id="text"
-                                              data-bind="value: abstract().text"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-group" style="margin-bottom: 0">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
-                                        OK
-                                    </button>
-                                </div>
-                            </div>
+                        <div class="modal-header">
+                            <h3>Enter the Abstract Text</h3>
+                        </div>
+
+                        <div class="modal-body">
+                            <textarea rows="10" class="form-control" id="text"
+                                      data-bind="value: abstract().text">
+                            </textarea>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                                Close
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="abstract-text" data-bind="foreach: {data: abstract().paragraphs(), as: 'p'}">
-                <p data-bind="text: p">Enter the abstract text</p>
+                <p data-bind="text: p"></p>
             </div>
         </div>
 
 
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
-                <button type="button" class="btn btn-default btn-xs" data-target="#acknowledgements-editor"
+                <button type="button" class="btn btn-default btn-sm" data-target="#acknowledgements-editor"
                         data-toggle="modal">
                     Edit
                 </button>
             </div>
 
             <div class="modal" id="acknowledgements-editor" tabindex="-1">
-                <div class="modal-dialog" style="margin-top: 15em">
+                <div class="modal-dialog">
                     <div class="modal-content">
-                        <div class="modal-body form-horizontal">
-                            <div class="form-group">
-                                <label for="text" class="col-sm-2 control-label">Acknowledgements</label>
-                                <div class="col-sm-10">
-                                    <textarea rows="10" class="form-control" id="text"
-                                              data-bind="value: abstract().acknowledgements"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-group" style="margin-bottom: 0">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
-                                            data-bind="click: refresh">OK</button>
-                                </div>
-                            </div>
+                        <div class="modal-header">
+                            <h3>Enter Acknowledgements Text</h3>
+                        </div>
+
+                        <div class="modal-body">
+                            <label for="text"></label>
+                            <textarea rows="10" class="form-control" id="text"
+                                      data-bind="value: abstract().acknowledgements">
+                            </textarea>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                                Close
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -293,26 +291,83 @@
 
             <div class="acknowledgements">
                 <h4>Acknowledgements</h4>
-                <p data-bind="text: abstract().acknowledgements">Some acknowledgements</p>
+                <p data-bind="text: abstract().acknowledgements"></p>
             </div>
         </div>
 
 
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
-                <button type="button" class="btn btn-default btn-xs">
+                <button type="button" class="btn btn-default btn-sm" data-target="#references-editor"
+                        data-toggle="modal">
                     Edit
                 </button>
             </div>
+
+            <div class="modal" id="references-editor" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <button type="button" class="btn btn-default btn-sm pull-right"
+                                    data-bind="click: doAddReference">
+                                Add
+                            </button>
+
+                            <h3>References</h3>
+                        </div>
+
+                        <div class="modal-body">
+                            <table class="table">
+                                <tbody data-bind="foreach: {data: abstract().references, as: 'reference'}">
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="Authors"
+                                            data-bind="value: reference.authors" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="Title"
+                                            data-bind="value: reference.title" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="Year"
+                                            data-bind="value: reference.year" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control input-sm" placeholder="DOI"
+                                            data-bind="value: reference.doi" />
+                                        </td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <button type="button" class="btn btn-default btn-sm"
+                                                        data-bind="click: $root.doRemoveReference.bind($root, $index, reference)">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="references">
-                <ol>
-                    <li>Edit your references</li>
+                <ol data-bind="foreach: {data: abstract().references, as: 'reference'}">
+                    <li data-bind="text: reference.format()"></li>
                 </ol>
             </div>
         </div>
 
         <div data-bind="ifnot: abstractSaved">
-            <button type="button" class="btn btn-default btn-xs" data-bind="click: saveAbstract">
+            <button type="button" class="btn btn-default btn-sm" data-bind="click: saveAbstract">
                 Submit Abstract
             </button>
         </div>

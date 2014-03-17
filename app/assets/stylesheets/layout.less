@@ -129,10 +129,53 @@ body {
   .no-gap;
   .bordered-round(@color-bg);
 
+  min-height: 3.2em;
+
   .btn-group-hover {
     margin-right: @default-margin;
     margin-top: @default-margin;
     visibility: hidden !important;
+  }
+
+
+  .modal-header {
+
+    h3 {
+      margin: 4px 0 0 0;
+      padding: 0;
+    }
+
+    button {
+      margin-right: 12px;
+    }
+  }
+
+  .modal-dialog {
+    margin-top: 10em;
+    width: 750px;
+  }
+
+  .modal-body {
+    td {
+      border: 0;
+    }
+  }
+
+  .modal-footer {
+    margin: 0;
+    padding-top: 14px;
+    padding-bottom: 14px;
+
+    button {
+      margin-right: 6px;
+    }
+  }
+
+
+  .title {
+    h2:empty {
+      content: Enter your abstract title here;
+    }
   }
 
 }

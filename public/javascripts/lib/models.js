@@ -604,6 +604,15 @@ define(["lib/tools"], function(tools) {
         self.year = ko.observable(year || null);
         self.doi = ko.observable(doi || null);
 
+        self.format = function() {
+            var str =(self.authors() || "")
+                .concat(self.title() ? " " + self.title() : "")
+                .concat(self.year() ? " (" + self.year() + ")" : "")
+                .concat(self.doi() ? ", " + self.doi() : "");
+
+            return str;
+        };
+
     }
 
     ObservableReference.fromObject = function(obj) {
