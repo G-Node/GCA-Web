@@ -32,7 +32,6 @@ package object serializer {
     }
   }
 
-
   private implicit val dateFormat = new Format[DateTime] {
     private val datePattern = "MM/dd/yyyy HH:mm a"
     private val dateFormatter = DateTimeFormat.forPattern(datePattern)
@@ -261,12 +260,11 @@ package object serializer {
       (__ \ "conflictOfInterest").readNullable[String] and
       (__ \ "acknowledgements").readNullable[String] and
       (__ \ "sortId").readNullable[Int] and
-      (__ \ "approved").read[Boolean] and
-      (__ \ "published").read[Boolean] and
+      (__ \ "state").readNullable[AbstractState.State] and
       (__ \ "authors").lazyRead( list[Author](authorF) ) and
       (__ \ "affiliations").lazyRead( list[Affiliation](affiliationF) ) and
       (__ \ "references").lazyRead( list[Reference](referenceF) )
-    )(Abstract(_, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
+    )(Abstract(_, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
       val figures: Seq[Figure] = asScalaSet(a.figures).toSeq
@@ -282,8 +280,7 @@ package object serializer {
         "conflictOfInterest" -> a.conflictOfInterest,
         "acknowledgements" -> a.acknowledgements,
         "sortId" -> a.sortId,
-        "approved" -> a.approved,
-        "published" -> a.published,
+        "state" -> a.state,
         "conference" -> a.conference.uuid,
         "figures" -> JsArray( for (auth <- figures) yield figureF.writes(auth) ),
         "owners" -> routesResolver.ownersUrl(a.uuid),

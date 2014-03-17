@@ -607,8 +607,7 @@ define(["lib/tools"], function(tools) {
      * @param {string} [conflictOfInterest]
      * @param {string} [acknowledgements]
      * @param {string} [owners]     URL to abstract owners.
-     * @param {boolean} [approved]
-     * @param {boolean} [published]
+     * @param {string} [state]
      * @param {Array} [figures]
      * @param {Array} [authors]
      * @param {Array} [affiliations]
@@ -619,12 +618,12 @@ define(["lib/tools"], function(tools) {
      * @public
      */
     function Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest, acknowledgements,
-                      owners, approved, published, figures, authors, affiliations,
+                      owners, state, figures, authors, affiliations,
                       references) {
 
         if (! (this instanceof Abstract)) {
             return new Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                                acknowledgements, approved, published, owners, figures,
+                                acknowledgements, state, owners, figures,
                                 authors, affiliations, references);
         }
 
@@ -638,8 +637,7 @@ define(["lib/tools"], function(tools) {
         self.conflictOfInterest = conflictOfInterest || null;
         self.acknowledgements = acknowledgements || null;
         self.owners = owners || null;
-        self.approved = approved || false;
-        self.published = published || false;
+        self.state = state || "InPreparation";
         self.figures = figures || [];
         self.authors = authors || [];
         self.affiliations = affiliations || [];
@@ -744,8 +742,7 @@ define(["lib/tools"], function(tools) {
      * @param {string} [conflictOfInterest]
      * @param {string} [acknowledgements]
      * @param {string} [owners]     URL to abstract owners.
-     * @param {boolean} [approved]
-     * @param {boolean} [published]
+     * @param {string} [state]
      * @param {Array} [figures]
      * @param {Array} [authors]
      * @param {Array} [affiliations]
@@ -756,12 +753,12 @@ define(["lib/tools"], function(tools) {
      * @public
      */
     function ObservableAbstract(uuid, title, topic, text, doi, conflictOfInterest,
-                                acknowledgements, owners, approved, published, figures,
+                                acknowledgements, owners, state, figures,
                                 authors, affiliations, references) {
 
         if (! (this instanceof ObservableAbstract)) {
             return new ObservableAbstract(uuid, title, topic, text, doi,
-                conflictOfInterest, acknowledgements, approved, published, owners,
+                conflictOfInterest, acknowledgements, state, owners,
                 figures, authors, affiliations, references);
         }
 
@@ -774,8 +771,7 @@ define(["lib/tools"], function(tools) {
         self.conflictOfInterest = ko.observable(conflictOfInterest || null);
         self.acknowledgements = ko.observable(acknowledgements || null);
         self.owners = ko.observable(owners || null);
-        self.approved = ko.observable(approved || false);
-        self.published = ko.observable(published || false);
+        self.state = ko.observable(state || "InPreparation");
         self.figures = ko.observableArray(figures || []);
         self.authors = ko.observableArray(authors || []);
         self.affiliations = ko.observableArray(affiliations || []);
