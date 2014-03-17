@@ -4,10 +4,9 @@ import play.api.mvc._
 import play.api.libs.json._
 import utils.GCAAuth
 import utils.serializer.ConferenceFormat
-import utils.RESTResults._
 import service.ConferenceService
-import javax.persistence.{EntityNotFoundException, NoResultException}
 import utils.DefaultRoutesResolver._
+import models.Conference
 
 /**
  * Conferences controller.
@@ -15,25 +14,18 @@ import utils.DefaultRoutesResolver._
  */
 object Conferences extends Controller with OwnerManager with GCAAuth {
 
+  implicit val confFormat = new ConferenceFormat()
+
   /**
    * Create a new conference.
    *
    * @return Created with conference in JSON / BadRequest
    */
   def create = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
-    val formatter = new ConferenceFormat()
-    formatter.reads(request.body).fold(
-      invalid = e => JSONValidationError(e),
-      valid = conference => {
-        try {
-          val resp = ConferenceService().create(conference, request.user)
-          Created(formatter.writes(resp))
-        } catch {
-          case e1: EntityNotFoundException => UserNotFound
-          case e2: IllegalArgumentException => ObjectNotFound
-        }
-      }
-    )
+    val conference = request.body.as[Conference]
+    val resp = ConferenceService().create(conference, request.user)
+
+    Created(confFormat.writes(resp))
   }
 
   /**
@@ -42,9 +34,8 @@ object Conferences extends Controller with OwnerManager with GCAAuth {
    * @return Ok with all conferences publicly available.
    */
   def list = Action { request =>
-    val formatter = new ConferenceFormat()
     Ok(JsArray(
-      for (conf <- ConferenceService().list()) yield formatter.writes(conf)
+      for (conf <- ConferenceService().list()) yield confFormat.writes(conf)
     ))
   }
 
@@ -56,12 +47,7 @@ object Conferences extends Controller with OwnerManager with GCAAuth {
    * @return OK with conference in JSON / NotFound
    */
   def get(id: String) = Action { request =>
-    val formatter = new ConferenceFormat()
-    try {
-      Ok(formatter.writes(ConferenceService().get(id)))
-    } catch {
-      case e: NoResultException => ObjectNotFound
-    }
+    Ok(confFormat.writes(ConferenceService().get(id)))
   }
 
   /**
@@ -72,21 +58,11 @@ object Conferences extends Controller with OwnerManager with GCAAuth {
    * @return OK with conference in JSON / BadRequest / Forbidden
    */
   def update(id: String) = AuthenticatedAction(parse.json, isREST = true) { request =>
-    val formatter = new ConferenceFormat()
-    formatter.reads(request.body).fold(
-      invalid = e => JSONValidationError(e),
-      valid = conference => {
-        try {
-          conference.uuid = id
-          val resp = ConferenceService().update(conference, request.user)
-          Ok(formatter.writes(resp))
-        } catch {
-          case e1: EntityNotFoundException => UserNotFound
-          case e2: IllegalArgumentException => ObjectNotFound
-          case e3: IllegalAccessException => AccessForbidden
-        }
-      }
-    )
+    val conference = request.body.as[Conference]
+    conference.uuid = id
+    val resp = ConferenceService().update(conference, request.user)
+
+    Ok(confFormat.writes(resp))
   }
 
   /**
@@ -97,15 +73,8 @@ object Conferences extends Controller with OwnerManager with GCAAuth {
    * @return OK | BadRequest | Forbidden
    */
   def delete(id: String) = AuthenticatedAction(isREST = true) { request =>
-    try{
-      ConferenceService().delete(id, request.user)
-      Deleted
-    } catch {
-      case e1: EntityNotFoundException => UserNotFound
-      case e2: IllegalArgumentException => ObjectNotFound
-      case e3: IllegalAccessException => AccessForbidden
-    }
+    ConferenceService().delete(id, request.user)
+    Ok(Json.obj("error" -> false))
   }
-
 }
 

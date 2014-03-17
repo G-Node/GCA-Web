@@ -5,12 +5,15 @@ import scala.concurrent.Future
 import securesocial.core.{Authenticator, IdentityProvider, UserService, SecureSocial}
 import models.Account
 import javax.persistence.{EntityNotFoundException, NoResultException}
-import scala.Some
-import play.api.mvc.SimpleResult
-import play.api.libs.json.Json
+import play.api.libs.json._
 import securesocial.core.providers.utils.RoutesHelper
 import play.api.i18n.Messages
 import scala.language.higherKinds
+import scala.Some
+import play.api.mvc.SimpleResult
+import utils.RequestWithAccount
+import utils.RequestAuthenticated
+import play.api.libs.json.JsResultException
 
 
 case class RequestWithAccount[A](user: Option[Account], request: Request[A]) extends WrappedRequest(request)
@@ -102,6 +105,9 @@ trait GCAAuth extends securesocial.core.SecureSocial {
   def exHandlerJSON() : PartialFunction[Throwable, SimpleResult] = {
     case e: NoResultException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
     case e: EntityNotFoundException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
+    case e: IllegalArgumentException => BadRequest(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
+    case e: JsResultException => BadRequest(Json.obj("error" -> true, "causes" -> JsError.toFlatJson(e.errors)))
+    case e: IllegalAccessException => Forbidden(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
     case e: Exception => InternalServerError(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
   }
 }
