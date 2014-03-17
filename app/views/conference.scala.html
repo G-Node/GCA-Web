@@ -12,6 +12,14 @@
     @if(conference.isOpen) {
     <div>
         <p>Abstract submission is currently open. In order to submit an abstract please press the appropriate button below.</p>
+        @if(!account.isDefined) {
+            <form action="@securesocial.core.providers.utils.RoutesHelper.login()">
+                <input type="submit" value="Sign In">
+            </form>
+            <form action="@securesocial.core.providers.utils.RoutesHelper.startSignUp()">
+                <input type="submit" value="Sign Up">
+            </form>
+        }
         <form action="@routes.Application.submission(conference.uuid)">
             <input type="submit" value="Submit an Abstract">
         </form>
