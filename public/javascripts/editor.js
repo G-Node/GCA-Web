@@ -199,28 +199,62 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             var authors = [];
 
             self.abstract().authors().forEach(function(author) {
-               if (author.affiliations().indexOf(affiliation.position() >= 0)) {
-                   authors.push(author);
-               }
+                var aff = author.affiliations(),
+                    pos = affiliation.position(),
+                    found = aff.indexOf(pos);
+                if (found >= 0) {
+                    authors.push(author);
+                }
             });
 
             return authors;
         };
 
-        self.affiliateAuthor = function(affiliation) {
+        /**
+         * Add an affiliation position to an author.
+         * The author information is determined through jQuery by the respective select element.
+         *
+         * @param affiliation   The affiliation that is added to the author.
+         */
+        self.doAddAuthorToAffiliation = function(affiliation) {
             var authorPosition = $("#author-select-" + affiliation.position()).find("select").val(),
                 authors = self.abstract().authors();
 
             if (authorPosition >= 0 && authorPosition < authors.length) {
-                var author = authors[authorPosition];
-                author.affiliations.push(affiliation.position());
+                var author = authors[authorPosition],
+                    affiliationPosition = affiliation.position();
 
-                console.log("Add author '" + author.formatName() + "' to affiliation '" + affiliation.format() + "'");
+                if (author.affiliations().indexOf(affiliationPosition) < 0) {
+                    author.affiliations.push(affiliation.position());
+                    console.log("Add author '" + author.formatName() + "' to affiliation '" + affiliation.format() + "'");
+                } else {
+                    console.log("Author '" + author.formatName() + "' is already affiliated with '" + affiliation.format() + "'");
+                }
+
             } else {
                 throw "Unable to add author to affiliation: " + affiliation.format();
             }
 
         };
+
+        /**
+         * Remove all affiliation positions for the authors affiliations array.
+         *
+         * @param affiliation   The affiliation to remove.
+         * @param author        The author from which to remove the affiliation.
+         */
+        self.doRemoveAffiliationFromAuthor = function(affiliation, author) {
+            var affiliationPos = affiliation.position(),
+                affiliations = author.affiliations();
+
+            while (affiliations.indexOf(affiliationPos) >= 0) {
+                affiliations.splice(affiliations.indexOf(affiliationPos), 1);
+                console.log("Remove affiliation '" + affiliation.format() +
+                            "' from author '" + author.formatName() + "'");
+            }
+
+            author.affiliations(affiliations);
+        }
 
     }
 

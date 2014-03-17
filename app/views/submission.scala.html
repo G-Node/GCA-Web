@@ -7,7 +7,7 @@
         <div id="abstract_uuid">@abstr.map(_.uuid).getOrElse("")</div>
     </div>
 
-    <script data-main="@routes.Assets.at("javascripts/editor")"
+    <script data-main="@routes.Assets.at("javascripts/editor.js")"
             src="@routes.Assets.at("javascripts/require.js")"></script>
 
     <div class="header">
@@ -32,12 +32,14 @@
                             <div class="form-group">
                                 <label for="title" class="col-sm-2 control-label">Title</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="title" data-bind="value: abstract().title" />
+                                    <input type="text" class="form-control" id="title"
+                                           data-bind="value: abstract().title" />
                                 </div>
                             </div>
                             <div class="form-group" style="margin-bottom: 0">
                                 <div class="col-sm-offset-2 col-sm-10">
-                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" data-bind="click: refresh">OK</button>
+                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
+                                            data-bind="click: refresh">OK</button>
                                 </div>
                             </div>
                         </div>
@@ -75,20 +77,25 @@
                                 <tbody data-bind="foreach: {data: abstract().authors, as: 'person'}">
                                     <tr>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="First Name" data-bind="value: person.firstName" />
+                                            <input type="text" class="form-control input-sm" placeholder="First Name"
+                                                   data-bind="value: person.firstName" />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Middle Name" data-bind="value: person.middleName" />
+                                            <input type="text" class="form-control input-sm" placeholder="Middle Name"
+                                                   data-bind="value: person.middleName" />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="First Name" data-bind="value: person.lastName" />
+                                            <input type="text" class="form-control input-sm" placeholder="First Name"
+                                                   data-bind="value: person.lastName" />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Mail" data-bind="value: person.mail" />
+                                            <input type="text" class="form-control input-sm" placeholder="Mail"
+                                                   data-bind="value: person.mail" />
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
-                                                <button type="button" class="btn btn-default btn-sm" data-bind="click: $root.removeAuthor.bind(person)">
+                                                <button type="button" class="btn btn-default btn-sm"
+                                                        data-bind="click: $root.removeAuthor.bind(person)">
                                                     Remove
                                                 </button>
                                             </div>
@@ -115,7 +122,8 @@
 
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
-                <button type="button" class="btn btn-default btn-xs" data-target="#affiliations-editor" data-toggle="modal">
+                <button type="button" class="btn btn-default btn-xs" data-target="#affiliations-editor"
+                        data-toggle="modal">
                     Edit
                 </button>
             </div>
@@ -127,7 +135,8 @@
                             <table class="table">
 
                                 <div class="btn-group pull-right" style="margin: 8px; margin-top: 16px">
-                                    <button type="button" class="btn btn-default btn-sm" data-bind="click: addAffiliation">
+                                    <button type="button" class="btn btn-default btn-sm"
+                                            data-bind="click: addAffiliation">
                                         Add
                                     </button>
                                 </div>
@@ -137,36 +146,59 @@
                                 <tbody data-bind="foreach: {data: abstract().affiliations, as: 'affiliation'}">
                                     <tr>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Name" data-bind="value: affiliation.name" />
+                                            <input type="text" class="form-control input-sm" placeholder="Name"
+                                                   data-bind="value: affiliation.name" />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Section" data-bind="value: affiliation.section" />
+                                            <input type="text" class="form-control input-sm" placeholder="Section"
+                                                   data-bind="value: affiliation.section" />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Department" data-bind="value: affiliation.department" />
+                                            <input type="text" class="form-control input-sm" placeholder="Department"
+                                                   data-bind="value: affiliation.department" />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Address" data-bind="value: affiliation.address" />
+                                            <input type="text" class="form-control input-sm" placeholder="Address"
+                                                   data-bind="value: affiliation.address" />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Country" data-bind="value: affiliation.country" />
+                                            <input type="text" class="form-control input-sm" placeholder="Country"
+                                                   data-bind="value: affiliation.country" />
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
-                                                <button type="button" class="btn btn-default btn-sm" data-bind="click: $root.removeAffiliation.bind(affiliation)">
+                                                <button type="button" class="btn btn-default btn-sm"
+                                                        data-bind="click: $root.removeAffiliation.bind($root, affiliation)">
                                                     Remove
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
+                                    <!-- ko foreach: {data: $root.authorsForAffiliation(affiliation), as: 'author'} -->
+                                    <tr>
+                                        <td colspan="5" data-bind="text: author.formatName()"></td>
+                                        <td>
+                                            <div class="btn-group pull-right">
+                                                <button type="button" class="btn btn-default btn-sm"
+                                                        data-bind="click: $root.doRemoveAffiliationFromAuthor.bind($root, affiliation, author)">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- /ko -->
                                     <tr>
                                         <td colspan="5" data-bind="attr: {id: 'author-select-' + affiliation.position()}">
-                                            <select class="form-control" data-bind="options: $root.abstract().authors, optionsText: function(e) { return e.formatName(); }, optionsValue: 'position'">
+                                            <select class="form-control"
+                                                    data-bind="options: $root.abstract().authors,
+                                                               optionsText: function(e) { return e.formatName(); },
+                                                               optionsValue: 'position'">
                                             </select>
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
-                                                <button type="button" class="btn btn-default btn-sm" data-bind="click: $root.affiliateAuthor.bind(affiliation)">
+                                                <button type="button" class="btn btn-default btn-sm"
+                                                        data-bind="click: $root.doAddAuthorToAffiliation.bind($root, affiliation)">
                                                     Add
                                                 </button>
                                             </div>
@@ -194,7 +226,8 @@
 
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
-                <button type="button" class="btn btn-default btn-xs" data-target="#abstract-text-editor" data-toggle="modal">
+                <button type="button" class="btn btn-default btn-xs" data-target="#abstract-text-editor"
+                        data-toggle="modal">
                     Edit
                 </button>
             </div>
@@ -206,12 +239,14 @@
                             <div class="form-group">
                                 <label for="text" class="col-sm-2 control-label">Abstract Text</label>
                                 <div class="col-sm-10">
-                                    <textarea rows="10" class="form-control" id="text" data-bind="value: abstract().text"></textarea>
+                                    <textarea rows="10" class="form-control" id="text"
+                                              data-bind="value: abstract().text"></textarea>
                                 </div>
                             </div>
                             <div class="form-group" style="margin-bottom: 0">
                                 <div class="col-sm-offset-2 col-sm-10">
-                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" data-bind="click: refresh">OK</button>
+                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
+                                            data-bind="click: refresh">OK</button>
                                 </div>
                             </div>
                         </div>
@@ -227,7 +262,8 @@
 
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
-                <button type="button" class="btn btn-default btn-xs" data-target="#acknowledgements-editor" data-toggle="modal">
+                <button type="button" class="btn btn-default btn-xs" data-target="#acknowledgements-editor"
+                        data-toggle="modal">
                     Edit
                 </button>
             </div>
@@ -239,12 +275,14 @@
                             <div class="form-group">
                                 <label for="text" class="col-sm-2 control-label">Acknowledgements</label>
                                 <div class="col-sm-10">
-                                    <textarea rows="10" class="form-control" id="text" data-bind="value: abstract().acknowledgements"></textarea>
+                                    <textarea rows="10" class="form-control" id="text"
+                                              data-bind="value: abstract().acknowledgements"></textarea>
                                 </div>
                             </div>
                             <div class="form-group" style="margin-bottom: 0">
                                 <div class="col-sm-offset-2 col-sm-10">
-                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" data-bind="click: refresh">OK</button>
+                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
+                                            data-bind="click: refresh">OK</button>
                                 </div>
                             </div>
                         </div>
