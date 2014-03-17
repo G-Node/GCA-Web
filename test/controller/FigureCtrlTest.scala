@@ -1,6 +1,5 @@
 package controller
 
-import scala.Some
 import scala.io.Source.fromFile
 
 import java.io.File
@@ -11,9 +10,6 @@ import play.api.test._
 import play.api.Play
 import play.api.test.Helpers._
 import play.api.http.Writeable
-import play.api.test.FakeApplication
-import play.api.libs.json.JsObject
-import play.api.mvc.Cookie
 
 import utils.serializer.FigureFormat
 import scala.Some
