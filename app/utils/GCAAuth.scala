@@ -4,7 +4,7 @@ import play.api.mvc._
 import scala.concurrent.Future
 import securesocial.core.{Authenticator, IdentityProvider, UserService, SecureSocial}
 import models.Account
-import javax.persistence.NoResultException
+import javax.persistence.{EntityNotFoundException, NoResultException}
 import scala.Some
 import play.api.mvc.SimpleResult
 import play.api.libs.json.Json
@@ -101,6 +101,7 @@ trait GCAAuth extends securesocial.core.SecureSocial {
 
   def exHandlerJSON() : PartialFunction[Throwable, SimpleResult] = {
     case e: NoResultException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
+    case e: EntityNotFoundException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
     case e: Exception => InternalServerError(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
   }
 }
