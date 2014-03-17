@@ -13,7 +13,8 @@ import utils.DefaultRoutesResolver._
  */
 class SerializerTest extends JUnitSuite {
 
-  val sampleConference: Conference = Conference(Option("someuuid"), Option("bar"), Some("XX"), Some("X"), None, Some(false))
+  val sampleConference: Conference = Conference(Option("someuuid"), Option("bar"), Some("XX"), Some("X"),
+                                                None, Some(false), None, None, None)
   val sampleAccount: Account = Account(Option("someuuid"), Option("example@gnode.org"))
   val sampleAuthor: Author = Author(Option("someuuid"), Option("email"), Option("first"),
     Option("middle"), Option("last"), Option(1))
@@ -31,7 +32,8 @@ class SerializerTest extends JUnitSuite {
   def testConference(): Unit = {
     val jsFormat = new ConferenceFormat()
 
-    val original = Conference(Option("someuuid"), Option("bar"), Some("XX"), Some("X"), None, Some(false))
+    val original = Conference(Option("someuuid"), Option("bar"), Some("XX"), Some("X"),
+                             None, Some(false), None, None, None, None)
     val json = jsFormat.writes(original)
 
     jsFormat.reads(json).fold(

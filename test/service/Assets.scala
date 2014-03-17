@@ -16,6 +16,7 @@ import service.util.DBUtil
 import javax.persistence.EntityManagerFactory
 import play.Play
 import java.io.File
+import org.joda.time.DateTime
 
 class Assets(val emf: EntityManagerFactory) extends DBUtil {
 
@@ -195,12 +196,15 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
   var conferences : Array[Conference] = Array(
     Conference(None, ?("The first conference"), ?("C1"),
       ?("The C1 Conf, Somewhere, Sometime"), ?("http://www.google.come"), ?(true),
+      ?(new DateTime(393415200000L)), ?(new DateTime(574423200000L)), ?(new DateTime(1321005600000L)),
+      ?("https://pbs.twimg.com/profile_images/1131588420/bccn-logo-only.png"),
+      ?("https://pbs.twimg.com/profile_images/1131588420/bccn-logo-only.png"),
       Seq(AbstractGroup(None, ?(1), ?("Talk"), ?("T")),
           AbstractGroup(None, ?(2), ?("Poster"), ?("P")))),
     Conference(None, ?("The second conference"), ?("C2"),
-      ?("The C2 Conf, Somewhere, Sometime"), ?(""), ?(false)),
+      ?("The C2 Conf, Somewhere, Sometime"), ?(""), ?(false), None, None),
     Conference(None, ?("The third conference"), ?("C3"),
-      ?("The C3 Conf, Somewhere, Sometime"), ?(""), ?(false))
+      ?("The C3 Conf, Somewhere, Sometime"), ?(""), ?(false), None, None)
   )
 
   def fillDB() : Unit = {

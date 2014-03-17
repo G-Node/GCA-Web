@@ -7,10 +7,13 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 import models._
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import play.api.data.validation.ValidationError
 
 package object serializer {
 
-  implicit val urlWrites = new Writes[URL] {
+  private implicit val urlWrites = new Writes[URL] {
     def writes(url: URL) = {
       if (url == null) {
         JsNull
@@ -18,6 +21,27 @@ package object serializer {
         Json.toJson(url.toString)
       }
     }
+  }
+
+
+
+
+  private implicit val dateFormat = new Format[DateTime] {
+    private val datePattern = "MM/dd/yyyy HH:mm a"
+    private val dateFormatter = DateTimeFormat.forPattern(datePattern)
+    
+    def writes(date: DateTime) = {
+      Json.toJson(dateFormatter.print(date))
+    }
+
+    def reads(json: JsValue): JsResult[DateTime] = {
+      json match {
+        case JsString(s) => JsSuccess(dateFormatter.parseDateTime(s))
+        case JsNumber(n) => JsSuccess(new DateTime(n.toLong))
+        case _ => JsError(Seq(JsPath() -> Seq(ValidationError("error.expected.jodadate.format", datePattern))))
+      }
+    }
+
   }
 
   class AbstractGroupFormat() extends Format[AbstractGroup] {
@@ -38,7 +62,7 @@ package object serializer {
     }
   }
 
-  /**
+  /**url
    * Conference serializer.
    *
    * @param routesResolver a RoutesResolver to resolve urls
@@ -54,9 +78,14 @@ package object serializer {
       (__ \ "cite").readNullable[String] and
       (__ \ "link").readNullable[String] and
       (__ \ "isOpen").readNullable[Boolean] and
+      (__ \ "start").readNullable[DateTime] and
+      (__ \ "end").readNullable[DateTime] and
+      (__ \ "deadline").readNullable[DateTime] and
+      (__ \ "logo").readNullable[String] and
+      (__ \ "thumbnail").readNullable[String] and
 
       (__ \ "groups").read[List[AbstractGroup]]
-    )(Conference(_, _, _, _, _, _, _)).reads(json)
+    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
       val groups: Seq[AbstractGroup] = asScalaSet(c.groups).toSeq
@@ -68,6 +97,11 @@ package object serializer {
         "link" -> c.link,
         "isOpen" -> c.isOpen,
         "groups" ->  groups,
+        "start" -> c.startDate,
+        "end" -> c.endDate,
+        "deadline" -> c.deadline,
+        "logo" -> c.logo,
+        "thumbnail" -> c.thumbnail,
         "abstracts" -> routesResolver.abstractsUrl(c.uuid)
       )
     }

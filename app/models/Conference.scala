@@ -11,7 +11,10 @@ package models
 
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
-import javax.persistence.{ManyToOne, OneToMany, JoinTable, Entity}
+import javax.persistence._
+import org.joda.time.DateTime
+import scala.Some
+import models.util.DateTimeConverter
 
 @Entity
 class AbstractGroup extends Model {
@@ -57,6 +60,17 @@ class Conference extends Model {
 
   var isOpen: Boolean = _
 
+  @Convert(converter = classOf[DateTimeConverter])
+  var startDate: DateTime = _
+
+  @Convert(converter = classOf[DateTimeConverter])
+  var endDate: DateTime = _
+
+  @Convert(converter = classOf[DateTimeConverter])
+  var deadline: DateTime = null
+
+  var logo: String = _
+  var thumbnail: String = _
 
   @OneToMany(mappedBy = "conference")
   var groups: JSet[AbstractGroup] = new JTreeSet[AbstractGroup]()
@@ -77,6 +91,11 @@ object Conference {
             cite: Option[String],
             link: Option[String],
             isOpen: Option[Boolean],
+            startDate: Option[DateTime],
+            endDate: Option[DateTime],
+            deadline: Option[DateTime] = null,
+            logo: Option[String] = null,
+            thumbnail: Option[String] = null,
             groups: Seq[AbstractGroup] = Nil,
             owners: Seq[Account] = Nil,
             abstracts: Seq[Abstract] = Nil) : Conference = {
@@ -89,6 +108,12 @@ object Conference {
     conference.cite       = unwrapRef(cite)
     conference.link       = unwrapRef(link)
     conference.isOpen     = isOpen match {case Some(b) => b; case _ => false}
+    conference.startDate  = unwrapRef(startDate)
+    conference.endDate    = unwrapRef(endDate)
+    conference.deadline   = unwrapRef(deadline)
+
+    conference.logo       = unwrapRef(logo)
+    conference.thumbnail  = unwrapRef(thumbnail)
 
     conference.groups     = toJSet(groups)
     conference.owners     = toJSet(owners)
