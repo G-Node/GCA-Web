@@ -64,16 +64,16 @@
                 <div class="modal-dialog" style="margin-top: 15em; width: 750px">
                     <div class="modal-content">
                         <div class="modal-body">
+
+                            <div class="btn-group pull-right" style="margin: 8px; margin-top: 16px">
+                                <button type="button" class="btn btn-default btn-sm" data-bind="click: addAuthor">
+                                    Add
+                                </button>
+                            </div>
+
+                            <h3>Authors</h3>
+
                             <table class="table">
-
-                                <div class="btn-group pull-right" style="margin: 8px; margin-top: 16px">
-                                    <button type="button" class="btn btn-default btn-sm" data-bind="click: addAuthor">
-                                        Add
-                                    </button>
-                                </div>
-
-                                <h3>Authors</h3>
-
                                 <tbody data-bind="foreach: {data: abstract().authors, as: 'person'}">
                                     <tr>
                                         <td>
@@ -115,7 +115,7 @@
 
             <div class="authors">
                 <ul data-bind="foreach: abstract().authors">
-                    <li><span data-bind="text: formatName()"></span><sup data-bind="text: $index"></sup></li>
+                    <li><span data-bind="text: formatName()"></span><sup data-bind="text: formatAffiliations()"></sup></li>
                 </ul>
             </div>
         </div>
@@ -132,17 +132,17 @@
                 <div class="modal-dialog" style="margin-top: 15em; width: 750px">
                     <div class="modal-content">
                         <div class="modal-body">
+
+                            <div class="btn-group pull-right" style="margin: 8px; margin-top: 16px">
+                                <button type="button" class="btn btn-default btn-sm"
+                                data-bind="click: addAffiliation">
+                                    Add
+                                </button>
+                            </div>
+
+                            <h3>Affiliations</h3>
+
                             <table class="table">
-
-                                <div class="btn-group pull-right" style="margin: 8px; margin-top: 16px">
-                                    <button type="button" class="btn btn-default btn-sm"
-                                            data-bind="click: addAffiliation">
-                                        Add
-                                    </button>
-                                </div>
-
-                                <h3>Affiliations</h3>
-
                                 <tbody data-bind="foreach: {data: abstract().affiliations, as: 'affiliation'}">
                                     <tr>
                                         <td>
@@ -245,8 +245,9 @@
                             </div>
                             <div class="form-group" style="margin-bottom: 0">
                                 <div class="col-sm-offset-2 col-sm-10">
-                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
-                                            data-bind="click: refresh">OK</button>
+                                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                                        OK
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -254,8 +255,8 @@
                 </div>
             </div>
 
-            <div class="abstract-text">
-                <p data-bind="text: abstract().text">Enter the abstract text</p>
+            <div class="abstract-text" data-bind="foreach: {data: abstract().paragraphs(), as: 'p'}">
+                <p data-bind="text: p">Enter the abstract text</p>
             </div>
         </div>
 

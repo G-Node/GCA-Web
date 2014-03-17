@@ -339,6 +339,16 @@ define(["lib/tools"], function(tools) {
             return self.firstName() + " " + middle + self.lastName();
         };
 
+        self.formatAffiliations = function() {
+            var formatted = [];
+
+            self.affiliations().forEach(function(pos, i) {
+                formatted[i] = pos + 1;
+            });
+
+            return formatted.sort().join(", ");
+        };
+
     }
 
     ObservableAuthor.fromObject = function(obj) {
@@ -791,6 +801,15 @@ define(["lib/tools"], function(tools) {
         self.affiliations = ko.observableArray(affiliations || []);
         self.references = ko.observableArray(references || []);
 
+        self.paragraphs = function() {
+            var para = [];
+
+            if (self.text()) {
+                para = self.text().split('\n');
+            }
+
+            return para;
+        };
 
         self.toObject = function() {
             var prop,
