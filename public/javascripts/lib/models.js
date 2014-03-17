@@ -261,16 +261,18 @@ define(["lib/tools"], function(tools) {
      * @param {string} [firstName]
      * @param {string} [middleName]
      * @param {string} [lastName]
+     * @param {number} [position]
      * @param {string} [affiliations]   Array with affiliation uuids.
      *
      * @returns {Author}
      * @constructor
      * @public
      */
-    function Author(uuid, mail, firstName, middleName, lastName, affiliations) {
+    function Author(uuid, mail, firstName, middleName, lastName, position, affiliations) {
 
         if (! (this instanceof Author)) {
-            return new Author(uuid, mail, firstName, middleName, lastName, affiliations);
+            return new Author(uuid, mail, firstName, middleName, lastName, position,
+                              affiliations);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -279,6 +281,7 @@ define(["lib/tools"], function(tools) {
         self.firstName = firstName || null;
         self.middleName = middleName || null;
         self.lastName = lastName || null;
+        self.position = position || 0;
 
         self.affiliations = affiliations || null;
 
@@ -286,7 +289,6 @@ define(["lib/tools"], function(tools) {
             var middle = self.middleName ? self.middleName + " " : "";
             return self.firstName + " " + middle + self.lastName;
         };
-
 
     }
 
@@ -307,17 +309,19 @@ define(["lib/tools"], function(tools) {
      * @param {string} [firstName]
      * @param {string} [middleName]
      * @param {string} [lastName]
+     * @param {number} [position]
      * @param {string} [affiliations]   Array with affiliation uuids.
      *
      * @returns {ObservableAuthor}
      * @constructor
      * @public
      */
-    function ObservableAuthor(uuid, mail, firstName, middleName, lastName, affiliations) {
+    function ObservableAuthor(uuid, mail, firstName, middleName, lastName, position,
+                              affiliations) {
 
         if (! (this instanceof ObservableAuthor)) {
             return new ObservableAuthor(uuid, mail, firstName, middleName,
-                                        lastName, affiliations);
+                                        lastName, position, affiliations);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -326,6 +330,7 @@ define(["lib/tools"], function(tools) {
         self.firstName = ko.observable(firstName || null);
         self.middleName = ko.observable(middleName || null);
         self.lastName = ko.observable(lastName || null);
+        self.position = ko.observable(position || 0);
 
         self.affiliations = ko.observableArray(affiliations || []);
 
@@ -334,6 +339,15 @@ define(["lib/tools"], function(tools) {
             return self.firstName() + " " + middle + self.lastName();
         };
 
+        self.formatAffiliations = function() {
+            var formatted = [];
+
+            self.affiliations().forEach(function(pos, i) {
+                formatted[i] = pos + 1;
+            });
+
+            return formatted.sort().join(", ");
+        };
 
     }
 
@@ -354,15 +368,17 @@ define(["lib/tools"], function(tools) {
      * @param {string} [department]
      * @param {string} [name]
      * @param {string} [section]
+     * @param {number} [position]
      *
      * @returns {Affiliation}
      * @constructor
      * @public
      */
-    function Affiliation(uuid, address, country, department, name, section) {
+    function Affiliation(uuid, address, country, department, name, section, position) {
 
         if (! (this instanceof  Affiliation)) {
-            return new Affiliation(uuid, address, country, department, name, section);
+            return new Affiliation(uuid, address, country, department, name, section,
+                                   position);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -372,6 +388,7 @@ define(["lib/tools"], function(tools) {
         self.department = department || null;
         self.name = name || null;
         self.section = section || null;
+        self.position = position || 0;
 
         self.format = function() {
             var str =(self.name || "")
@@ -407,16 +424,18 @@ define(["lib/tools"], function(tools) {
      * @param {string} [department]
      * @param {string} [name]
      * @param {string} [section]
+     * @param {number} [position]
      *
      * @returns {ObservableAffiliation}
      * @constructor
      * @public
      */
-    function ObservableAffiliation(uuid, address, country, department, name, section) {
+    function ObservableAffiliation(uuid, address, country, department, name, section,
+                                   position) {
 
         if (! (this instanceof  ObservableAffiliation)) {
             return new ObservableAffiliation(uuid, address, country, department,
-                                             name, section);
+                                             name, section, position);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -426,6 +445,7 @@ define(["lib/tools"], function(tools) {
         self.department = ko.observable(department || null);
         self.name = ko.observable(name || null);
         self.section = ko.observable(section || null);
+        self.position = ko.observable(position || 0);
 
         self.format = function() {
             var str =(self.name() || "")
@@ -583,6 +603,15 @@ define(["lib/tools"], function(tools) {
         self.title = ko.observable(title || null);
         self.year = ko.observable(year || null);
         self.doi = ko.observable(doi || null);
+
+        self.format = function() {
+            var str =(self.authors() || "")
+                .concat(self.title() ? " " + self.title() : "")
+                .concat(self.year() ? " (" + self.year() + ")" : "")
+                .concat(self.doi() ? ", " + self.doi() : "");
+
+            return str;
+        };
 
     }
 
@@ -781,6 +810,15 @@ define(["lib/tools"], function(tools) {
         self.affiliations = ko.observableArray(affiliations || []);
         self.references = ko.observableArray(references || []);
 
+        self.paragraphs = function() {
+            var para = [];
+
+            if (self.text()) {
+                para = self.text().split('\n');
+            }
+
+            return para;
+        };
 
         self.toObject = function() {
             var prop,
@@ -847,13 +885,13 @@ define(["lib/tools"], function(tools) {
                         target.figures(Figure.fromArray(value));
                         break;
                     case "authors":
-                        target.authors(Author.fromArray(value));
+                        target.authors(ObservableAuthor.fromArray(value));
                         break;
                     case "affiliations":
-                        target.affiliations(Affiliation.fromArray(value));
+                        target.affiliations(ObservableAffiliation.fromArray(value));
                         break;
                     case "references":
-                        target.references(Reference.fromArray(value));
+                        target.references(ObservableReference.fromArray(value));
                         break;
                     default:
                         if (tools.type(target[prop]) !== "function") {

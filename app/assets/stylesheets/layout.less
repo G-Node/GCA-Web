@@ -129,10 +129,92 @@ body {
   .no-gap;
   .bordered-round(@color-bg);
 
+  min-height: 3.2em;
+
   .btn-group-hover {
     margin-right: @default-margin;
     margin-top: @default-margin;
     visibility: hidden !important;
+  }
+
+
+  .modal-header {
+
+    h3 {
+      margin: 4px 0 0 0;
+      padding: 0;
+    }
+
+    button {
+      margin-right: 12px;
+    }
+  }
+
+  .modal-dialog {
+    margin-top: 10em;
+    width: 750px;
+  }
+
+  .modal-body {
+    td {
+      border: 0;
+    }
+  }
+
+  .modal-footer {
+    margin: 0;
+    padding-top: 14px;
+    padding-bottom: 14px;
+
+    button {
+      margin-right: 6px;
+    }
+  }
+
+
+  .title {
+    h2:empty::after {
+        color: @color-fg-light;
+        content: "1. Enter your abstract title here";
+    }
+  }
+
+  .authors {
+    ul:empty::after {
+      list-style: none;
+      color: @color-fg-light;
+      content: "2. Add all abstract authors";
+    }
+  }
+
+  .affiliations {
+    ol:empty::after {
+      font-size: small;
+      list-style: none;
+      color: @color-fg-light;
+      content: "3. Add affiliations and assign authors";
+    }
+  }
+
+  .abstract-text:empty::after {
+    color: @color-fg-light;
+    content: "4. Enter the abstract text";
+  }
+
+  .acknowledgements{
+    p:empty::after {
+      color: @color-fg-light;
+      content: "4. Optionally: enter acknowledgements text";
+    }
+  }
+
+  .references {
+    ol:empty::after {
+      list-style: none;
+      color: @color-fg-light;
+      margin-left: -20px;
+      content: "5. Add referenced sources";
+    }
   }
 
 }
