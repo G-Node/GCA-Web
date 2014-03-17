@@ -77,14 +77,14 @@
             </ol>
         </div>
 
-        <hr class="separator">
+    <hr class="separator">
 
-        <div class="foot-info">
-            <p><b>Identifier:</b> <span data-bind="html: $parent.makeAbstractID($data)"></span></p>
-            <p><b>Conference:</b> <span>G-Node Conference 20XX, München, Germany, June 20 - 27</span></p>
-            <p><b>Citation:</b> <span>Greene G, Ehrhardt E, Gollisch T, Wachtler T (2013) Distinguishing local and global motion through non-linear retinal processing. <i>G-Node Conference 20XX</i>. doi: <a class="doilink" href="http://localhost:8000/#/doi/test.1">10.12751/test.1</a></span></p>
-            <p><b>Type:</b> <span>Poster</span></p>
-        </div>
+    <div class="foot-info">
+        <p><b>Identifier:</b> <span data-bind="html: $parent.makeAbstractID($data)"></span></p>
+        <p data-bind="with: $parent.conference"><b>Conference:</b> <span data-bind="html: cite"></span></p>
+        <p><b>Citation:</b> <span>Greene G, Ehrhardt E, Gollisch T, Wachtler T (2013) Distinguishing local and global motion through non-linear retinal processing. <i>G-Node Conference 20XX</i>. doi: <a class="doilink" href="http://localhost:8000/#/doi/test.1">10.12751/test.1</a></span></p>
+        <p><b>Type:</b> <span>Poster</span></p>
+    </div>
 
     </div>
 

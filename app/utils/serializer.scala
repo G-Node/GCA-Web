@@ -50,14 +50,23 @@ package object serializer {
     override def reads(json: JsValue): JsResult[Conference] = (
       (__ \ "uuid").readNullable[String] and
       (__ \ "name").readNullable[String] and
+      (__ \ "short").readNullable[String] and
+      (__ \ "cite").readNullable[String] and
+      (__ \ "link").readNullable[String] and
+      (__ \ "isOpen").readNullable[Boolean] and
+
       (__ \ "groups").read[List[AbstractGroup]]
-    )(Conference(_, _, _)).reads(json)
+    )(Conference(_, _, _, _, _, _, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
       val groups: Seq[AbstractGroup] = asScalaSet(c.groups).toSeq
       Json.obj(
         "name" -> c.name,
         "uuid" -> c.uuid,
+        "short" -> c.short,
+        "cite" -> c.cite,
+        "link" -> c.link,
+        "isOpen" -> c.isOpen,
         "groups" ->  groups,
         "abstracts" -> routesResolver.abstractsUrl(c.uuid)
       )

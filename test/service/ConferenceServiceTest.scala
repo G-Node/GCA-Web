@@ -64,18 +64,19 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
   @Test
   def testCreate() : Unit = {
-    val c = srv.create(Conference(None, Some("fooconf")), assets.alice)
+    val c = srv.create(Conference(None, Some("fooconf"), Some("F1"), Some("F"), None, Some(false)), assets.alice)
 
     assert(c.uuid != null)
     assert(c.name == "fooconf")
     assert(c.owners.head.uuid == assets.alice.uuid)
 
     intercept[IllegalArgumentException] {
-      srv.create(Conference(Some("uuid"), Some("wrongconf")), assets.alice)
+      srv.create(Conference(Some("uuid"), Some("wrongconf"), Some("bla"), None, None, Some(false)), assets.alice)
     }
 
     intercept[EntityNotFoundException] {
-      srv.create(Conference(None, Some("fooconf two")), Account(Some("uuid"), Some("foo@bar.com")))
+      srv.create(Conference(None, Some("fooconf two"), Some("XX"), Some("X"), None, Some(false)),
+        Account(Some("uuid"), Some("foo@bar.com")))
     }
   }
 
@@ -88,11 +89,11 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
     assert(c.name == "changed conference name")
 
     intercept[IllegalArgumentException] {
-      srv.update(Conference(None, Some("wrongconf")), assets.alice)
+      srv.update(Conference(None, Some("wrongconf"), Some("XX"), Some("X"), None, Some(false)), assets.alice)
     }
 
     intercept[EntityNotFoundException] {
-      srv.update(Conference(Some("uuid"), Some("wrongconf")), assets.alice)
+      srv.update(Conference(Some("uuid"), Some("wrongconf"), Some("XX"), Some("X"), None, Some(false)), assets.alice)
     }
 
     intercept[EntityNotFoundException] {

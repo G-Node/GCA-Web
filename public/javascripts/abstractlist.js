@@ -275,14 +275,14 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             });
 
 
-            this.get('', function() {
+            this.get('#/', function() {
                 console.log('Sammy::get::');
                 self.ensureDataAndThen(function () {
                     self.showAbstractList(self.abstractsData);
                 });
             });
 
-        }).run();
+        }).run('#/');
 
     }
 

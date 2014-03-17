@@ -193,11 +193,14 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
   }
 
   var conferences : Array[Conference] = Array(
-    Conference(None, ?("The first conference"),
+    Conference(None, ?("The first conference"), ?("C1"),
+      ?("The C1 Conf, Somewhere, Sometime"), ?("http://www.google.come"), ?(true),
       Seq(AbstractGroup(None, ?(1), ?("Talk"), ?("T")),
           AbstractGroup(None, ?(2), ?("Poster"), ?("P")))),
-    Conference(None, ?("The second conference")),
-    Conference(None, ?("The third conference"))
+    Conference(None, ?("The second conference"), ?("C2"),
+      ?("The C2 Conf, Somewhere, Sometime"), ?(""), ?(false)),
+    Conference(None, ?("The third conference"), ?("C3"),
+      ?("The C3 Conf, Somewhere, Sometime"), ?(""), ?(false))
   )
 
   def fillDB() : Unit = {
