@@ -23,7 +23,14 @@ package object serializer {
     }
   }
 
+  private implicit val stateWrites = new Format[AbstractState.State] {
+    override def writes(s: AbstractState.State): JsValue = JsString(s.toString)
 
+    override def reads(json: JsValue): JsResult[AbstractState.State] = json match {
+      case JsString(str) => JsSuccess(AbstractState.withName(str))
+      case _ => JsError(Seq(JsPath() -> Seq(ValidationError("error.expected.string"))))
+    }
+  }
 
 
   private implicit val dateFormat = new Format[DateTime] {
