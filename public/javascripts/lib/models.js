@@ -40,9 +40,10 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @returns {string|Boolean|Number}
      */
     function toType(str) {
-        var val = str.trim();
+        var val = str;
 
         if (tools.type(str) === "string") {
+            str = str.trim();
             if (str.match(/^(\+|-)?((\d+(\.\d+)?)|(\.\d+))$/)) {
                 val = Number(str);
             } else if (str.match(/^(true|false)$/)) {
@@ -945,10 +946,14 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                         target.figures(Figure.fromArray(value));
                         break;
                     case "authors":
-                        target.authors(ObservableAuthor.fromArray(value));
+                        target.authors(
+                            ObservableAuthor.fromArray(value).sort(byPosition)
+                        );
                         break;
                     case "affiliations":
-                        target.affiliations(ObservableAffiliation.fromArray(value));
+                        target.affiliations(
+                            ObservableAffiliation.fromArray(value).sort(byPosition)
+                        );
                         break;
                     case "references":
                         target.references(ObservableReference.fromArray(value));
@@ -961,6 +966,10 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                         }
                 }
             }
+        }
+
+        function byPosition(a, b) {
+            return a.position() - b.position();
         }
 
         return target;
