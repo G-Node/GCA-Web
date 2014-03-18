@@ -19,6 +19,15 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         var self = this;
 
         self.conferences = ko.observableArray(null);
+        self.isLoading = ko.observable(true);
+        self.errorLevel = ko.observable('warning');
+        self.curError = ko.observable(null);
+
+        this.setError = function(level, text) {
+            this.curError(text);
+            this.errorLevel('alert-' + level);
+        };
+
 
         self.init = function() {
             ko.applyBindings(window.dashboard);
@@ -28,14 +37,11 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
             console.log( "Request Failed: " + err );
+            self.setError("Error during IO!");
         };
 
         self.ensureDataAndThen = function(doAfter) {
             console.log("ensureDataAndThen::");
-            //if (self.conferences() !== null) {
-            //    doAfter();
-            //    return;
-            //}
 
             //now load the data from the server
             var confURL = "/api/user/self/conferences";
@@ -60,6 +66,8 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                         $.getJSON(absUrl, onAbstractData(current)).fail(self.ioFailHandler);
                     });
                 }
+
+                doAfter();
             }
 
             function onAbstractData(currentConf) {
@@ -77,7 +85,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             this.get('#/', function() {
                 console.log('Sammy::get::');
                 self.ensureDataAndThen(function () {
-
+                    self.isLoading(false);
                 });
             });
 
