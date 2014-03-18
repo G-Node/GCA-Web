@@ -33,6 +33,27 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
     }
 
     /**
+     * Convert a string to Boolean or Number if it represents one of them.
+     *
+     * @param str       The string to convert.
+     *
+     * @returns {string|Boolean|Number}
+     */
+    function toType(str) {
+        var val = str.trim();
+
+        if (tools.type(str) === "string") {
+            if (str.match(/^(\+|-)?((\d+(\.\d+)?)|(\.\d+))$/)) {
+                val = Number(str);
+            } else if (str.match(/^(true|false)$/)) {
+                val = (str === "true");
+            }
+        }
+
+        return val;
+    }
+
+    /**
      * Base class for models.
      *
      * @param {string} [uuid]   The uuid of the model.
@@ -59,9 +80,9 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                if (self.hasOwnProperty(prop)) {
                    var value = self[prop];
                    if (tools.type(value) !== "function") {
-                       obj[prop] = value;
+                       obj[prop] = toType(value);
                    } else if (value.name === "observable") {
-                       obj[prop] = self[prop]();
+                       obj[prop] = toType(self[prop]());
                    }
                }
             }
@@ -259,7 +280,7 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                         obj.groups = [];
                         self.groups.forEach(appendGroup);
                     } else if (tools.type(value) !== "function") {
-                        obj[prop] = value;
+                        obj[prop] = toType(value);
                     }
                 }
             }
@@ -743,7 +764,7 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                             break;
                         default:
                             if (tools.type(value) !== "function") {
-                                obj[prop] = value;
+                                obj[prop] = toType(value);
                             }
                     }
                 }
@@ -886,9 +907,9 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                             break;
                         default:
                             if (tools.type(value) !== "function") {
-                                obj[prop] = value;
+                                obj[prop] = toType(value);
                             } else if (value.name === "observable") {
-                                obj[prop] = value();
+                                obj[prop] = toType(value());
                             }
                     }
                 }
