@@ -40,11 +40,11 @@ class Abstract extends Model with Owned {
   @ManyToMany
   @JoinTable(name = "abstract_owners")
   var owners:  JSet[Account] = new JTreeSet[Account]()
-  @OneToMany(mappedBy = "abstr")
+  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL))
   var authors: JSet[Author] = new JTreeSet[Author]()
-  @OneToMany(mappedBy = "abstr")
+  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL))
   var affiliations: JSet[Affiliation] = new JTreeSet[Affiliation]()
-  @OneToMany(mappedBy = "abstr")
+  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL))
   var references: JSet[Reference] = new JTreeSet[Reference]()
 }
 
