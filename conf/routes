@@ -9,6 +9,7 @@ GET           /conference/:id                       controllers.Application.conf
 GET           /conference/:id/submission            controllers.Application.submission(id: String)
 GET           /conference/:id/abstracts             controllers.Application.abstractsPublic(id: String)
 GET           /myabstracts                          controllers.Application.abstractsPrivate()
+GET           /myabstracts/:id/edit                 controllers.Application.edit(id: String)
 GET           /submitted                            controllers.Application.abstractsPending()
 
 # Map static resources from the /public folder to the /assets URL path

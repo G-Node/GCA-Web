@@ -190,6 +190,15 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
 
       abstr.authors.foreach { author =>
         author.abstr = abstr
+
+        for (pos <- author.affiliationPositions) {
+          abstr.affiliations.find(_.position == pos) match {
+            case Some(affiliation) =>
+              affiliation.authors.add(author)
+              author.affiliations.add(affiliation)
+            case _ =>
+          }
+        }
       }
 
       abstr.affiliations.foreach { affiliation =>
@@ -234,6 +243,15 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
 
       abstr.authors.foreach { author =>
         author.abstr = abstr
+
+        for (pos <- author.affiliationPositions) {
+          abstr.affiliations.find(_.position == pos) match {
+            case Some(affiliation) =>
+              affiliation.authors.add(author)
+              author.affiliations.add(affiliation)
+            case _ =>
+          }
+        }
       }
 
       abstr.affiliations.foreach { affiliation =>
