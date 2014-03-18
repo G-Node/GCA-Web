@@ -9,6 +9,8 @@
 
 package models
 
+import _root_.java.util
+import play.api.Play.current
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence.{Embedded, Embeddable, ManyToMany, Entity}
@@ -113,6 +115,11 @@ class Account extends Model with Identity {
   @ManyToMany(mappedBy = "owners")
   var conferences: JSet[Conference] = new JTreeSet[Conference]()
 
+
+  def isAdmin = {
+    val admins = current.configuration.getStringList("admins").get
+    admins.contains(mail)
+  }
 
   //Identity specific getter
 
