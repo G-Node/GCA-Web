@@ -14,6 +14,7 @@ import play.api.mvc.SimpleResult
 import utils.RequestWithAccount
 import utils.RequestAuthenticated
 import play.api.libs.json.JsResultException
+import service.UserStore
 
 
 case class RequestWithAccount[A](user: Option[Account], request: Request[A]) extends WrappedRequest(request)
@@ -83,6 +84,10 @@ trait GCAAuth extends securesocial.core.SecureSocial {
 
       Future.successful(response.discardingCookies(Authenticator.discardingCookie))
     }
+  }
+
+  def getUserStore = {
+    UserService.delegate.get.asInstanceOf[UserStore]
   }
 
   def getAccount[A](request: Request[A]): Option[Account] = {
