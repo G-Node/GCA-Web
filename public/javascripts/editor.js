@@ -29,11 +29,10 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             if (confId) {
                 self.getConference(confId);
                 self.abstract(models.ObservableAbstract());
-            } else if (abstrId) {
+            }
+            if (abstrId) {
                 self.getAbstract(abstrId);
                 self.abstractSaved(true);
-            } else {
-                throw "Conference id or abstract id must be defined";
             }
 
             ko.applyBindings(window.editor);
@@ -73,7 +72,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             });
 
             function success(obj, stat, xhr) {
-                self.conference(models.ObservableAbstract.fromObject(obj));
+                self.abstract(models.ObservableAbstract.fromObject(obj));
             }
 
             function fail(xhr, stat, msg) {
