@@ -3,8 +3,8 @@ package controllers
 import play.api._
 import play.api.mvc._
 import utils.GCAAuth
-import models.{Conference, Account, Abstract}
-import service.ConferenceService
+import models._
+import service.{AbstractService, ConferenceService}
 
 object Application extends Controller with GCAAuth {
 
@@ -41,6 +41,12 @@ object Application extends Controller with GCAAuth {
     val srv = ConferenceService()
     val conf = srv.get(id)
     Ok(views.html.submission(user, conf, None))
+  }
+
+  def edit(id: String) = AuthenticatedAction(isREST = false) { implicit request =>
+    val abstr = AbstractService().getOwn(id, request.user)
+
+    Ok(views.html.submission(request.user, abstr.conference, Option(abstr)))
   }
 
   def abstractsPublic(confId: String) = AccountAwareAction { implicit request =>
