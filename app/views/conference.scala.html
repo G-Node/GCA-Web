@@ -2,9 +2,35 @@
 
 @template(account, Option(conference), "conference") {
 
-    <!-- The conference info -->
+    <!-- The conference info page -->
     <div class="header">
-        <h1>Here you can submit an abstract for @conference.name</h1>
+        <h1>@conference.name Abstract Submission</h1>
     </div>
 
+    <hr class="separator">
+
+    @if(conference.isOpen) {
+    <div>
+        <p>Abstract submission is currently open. In order to submit an abstract please press the appropriate button below.</p>
+        @if(!account.isDefined) {
+
+            <form action="@securesocial.core.providers.utils.RoutesHelper.login()">
+                <p><input type="submit" value="Sign In"> if you already have an account.</p>
+            </form>
+
+            <form action="@securesocial.core.providers.utils.RoutesHelper.startSignUp()">
+                <p>If not, please <input type="submit" value="Register"> and proceed with submission.</p>
+            </form>
+
+        } else {
+            <form action="@routes.Application.submission(conference.uuid)">
+                <input type="submit" value="Submit an Abstract">
+            </form>
+        }
+    </div>
+    } else {
+    <div>
+        <p>Abstract submission is currently closed.</p>
+    </div>
+    }
 }
