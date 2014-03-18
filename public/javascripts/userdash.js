@@ -33,6 +33,11 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             ko.applyBindings(window.dashboard);
         };
 
+        self.selectAbstractForConference = function(abstract, conference) {
+            console.log("Select abtract: " + abstract.uuid + " for conference: + " + conference.uuid);
+        };
+
+
         //Data IO
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;

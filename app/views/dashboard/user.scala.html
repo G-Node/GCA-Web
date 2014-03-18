@@ -36,13 +36,14 @@
                 <div class="panel-body">
                     <span data-bind="text: cite"></span>
                 </div>
-                <ul class="list-group" data-bind="foreach: abstracts">
-                    <li class="list-group-item">
+                <ul  class="list-group" data-bind="foreach: abstracts">
+                    <li id="abstract-list" class="list-group-item abstract" data-bind="click: function(data, event) { $root.selectAbstractForConference($data, $parent) } ">
                         <span data-bind="text: title"> </span>
                         <span class="badge" data-bind="text: state"></span>
-                        <p data-bind="text:console.log($root, $parent, $data)"></p>
                     </li>
                 </ul>
         </div>
     </div>
+
+
 }
