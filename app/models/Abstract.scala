@@ -12,6 +12,8 @@ import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
 
+
+
 /**
  * A model class for abstracts
  */
@@ -27,8 +29,8 @@ class Abstract extends Model {
 
   var sortId: Int = _
 
-  var approved: Boolean = false
-  var published: Boolean = false
+  @Convert(converter = classOf[AbstractStateConverter])
+  var state: AbstractState.State = AbstractState.InPreparation
 
   @ManyToOne
   var conference : Conference = _
@@ -57,8 +59,7 @@ object Abstract {
             conflictOfInterest: Option[String],
             acknowledgements: Option[String],
             sortId: Option[Int],
-            approved: Boolean,
-            published: Boolean,
+            state: Option[AbstractState.State],
             conference: Option[Conference] = None,
             figures: Seq[Figure] = Nil,
             owners:  Seq[Account] = Nil,
@@ -76,8 +77,7 @@ object Abstract {
     abstr.conflictOfInterest = unwrapRef(conflictOfInterest)
     abstr.acknowledgements   = unwrapRef(acknowledgements)
     abstr.sortId = sortId match { case Some(i) => i; case _ => 0 }
-    abstr.approved    = approved
-    abstr.published   = published
+    abstr.state  = unwrapRef(state)
 
     abstr.conference  = unwrapRef(conference)
     abstr.figures      = toJSet(figures)

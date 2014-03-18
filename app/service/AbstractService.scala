@@ -94,10 +94,11 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
            LEFT JOIN FETCH a.conference
            LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
-           WHERE a.published = true AND a.uuid = :uuid"""
+           WHERE a.state = :state AND a.uuid = :uuid"""
 
       val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
       query.setParameter("uuid", id)
+      query.setParameter("state", AbstractState.Published)
       query.getSingleResult
     }
   }

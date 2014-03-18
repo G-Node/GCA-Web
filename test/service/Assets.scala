@@ -37,8 +37,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("coi one"),
       ?("acc one"),
       makeSortId(1, 1),
-      approved = true,
-      published = true,
+      state = ?(AbstractState.Published),
       authors = Seq(
         Author(None, ?("one@foo.bar"), ?("One"), ?("Middle"), ?("Name"), ?(1)),
         Author(None, ?("two@foo.bar"), ?("Two"), ?("Middle"), ?("Name"), ?(2)),
@@ -63,8 +62,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("coi two"),
       ?("acc two"),
       makeSortId(1, 2),
-      approved = true,
-      published = false,
+      ?(AbstractState.InReview),
       authors = Seq(
         Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name"), ?(1)),
         Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name"), ?(2)),
@@ -89,8 +87,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("coi three"),
       ?("acc three"),
       makeSortId(2, 1),
-      approved = true,
-      published = false,
+      ?(AbstractState.Submitted),
       authors = Seq(
         Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name"), ?(1)),
         Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name"), ?(2)),
@@ -115,8 +112,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("coi four"),
       ?("acc four"),
       makeSortId(2, 2),
-      approved = false,
-      published = false,
+      ?(AbstractState.Submitted),
       authors = Seq(
         Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name"), ?(1)),
         Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name"), ?(2)),
@@ -144,8 +140,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("No conflict at all"),
       ?("Thanks for all the fish!"),
       makeSortId(1, 42),
-      approved = false,
-      published = false,
+      ?(AbstractState.InReview),
       authors = Seq(
         Author(None, ?("new@mail.bar"), ?("New"), ?("Cool"), ?("Author"), ?(1)),
         Author(None, ?("foo@mail.bar"), ?("Second"), None, ?("Author"), ?(2))
