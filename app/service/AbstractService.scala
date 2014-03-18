@@ -75,6 +75,26 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DB
     }
   }
 
+  def listOwn(conference: Conference, account: Account) : Seq[Abstract] = {
+    dbQuery { em =>
+      val queryStr =
+        """SELECT DISTINCT a FROM Abstract a
+           LEFT JOIN FETCH a.owners o
+           LEFT JOIN FETCH a.authors
+           LEFT JOIN FETCH a.affiliations
+           LEFT JOIN FETCH a.conference c
+           LEFT JOIN FETCH a.figures
+           LEFT JOIN FETCH a.references
+           WHERE c.uuid = :ConfUuid AND o.uuid = :OwnerUuid
+           ORDER BY a.sortId, a.title"""
+
+      val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
+      query.setParameter("ConfUuid", conference.uuid)
+      query.setParameter("OwnerUuid", account.uuid)
+      asScalaBuffer(query.getResultList)
+    }
+  }
+
   /**
    * Return a published abstract by id.
    *
