@@ -41,8 +41,9 @@ DELETE        /api/figures/:id                      controllers.api.Figures.dele
 # [...] maybe add more figure functions
 
 # Account interface
-GET           /user                                 controllers.Application.showUserInfo
+GET           /api/users                            controllers.api.Accounts.accountsByEmail(email: String)
 GET           /api/user/:id/abstracts               controllers.api.Abstracts.listByAccount(id: String)
+GET           /user                                 controllers.Application.showUserInfo
 GET           /secret                               controllers.Application.showSecret
 
 # Login page

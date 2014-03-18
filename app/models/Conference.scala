@@ -15,6 +15,8 @@ import javax.persistence._
 import org.joda.time.DateTime
 import scala.Some
 import models.util.DateTimeConverter
+import scala.collection.JavaConversions._
+import scala.Some
 
 @Entity
 class AbstractGroup extends Model {
@@ -80,6 +82,11 @@ class Conference extends Model {
   var owners: JSet[Account] = new JTreeSet[Account]()
   @OneToMany(mappedBy = "conference")
   var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
+
+  def isOwner(account: Account) = {
+    val ownersList: Seq[Account] = asScalaSet(owners).toSeq
+    ownersList.contains(account)
+  }
 
 }
 
