@@ -118,7 +118,7 @@ class Account extends Model with Identity {
 
   def isAdmin = {
     val admins = current.configuration.getStringList("admins").get
-    admins.contains(mail)
+    admins.contains(userid)
   }
 
   //Identity specific getter
