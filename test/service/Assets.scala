@@ -112,7 +112,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("coi four"),
       ?("acc four"),
       makeSortId(2, 2),
-      ?(AbstractState.Submitted),
+      ?(AbstractState.InPreparation),
       authors = Seq(
         Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name"), ?(1)),
         Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name"), ?(2)),
