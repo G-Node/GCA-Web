@@ -228,6 +228,85 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
     }
   }
 
+  /**
+   * Set owners for an existing conference.
+   * This is only permitted if the account owns the conference.
+   *
+   * @param conference The conference to update.
+   * @param account    The account who wants to update the conference.
+   * @param owners     The list of actual owners.
+   *
+   * @throws IllegalArgumentException If the conference has no uuid
+   * @throws EntityNotFoundException If the conference or the user does not exist
+   * @throws IllegalAccessException If account is not an owner.
+   */
+  def setPermissions(conference: Conference, account: Account, owners: List[Account]) : Unit = {
+    val conf = dbTransaction { (em, tx) =>
+
+      if (conference.uuid == null)
+        throw new IllegalArgumentException("Unable to update a conference without uuid")
+
+      for (user <- owners ++ List[Account](account)) {
+        val accountChecked = em.find(classOf[Account], user.uuid)
+        if (accountChecked == null)
+          throw new EntityNotFoundException("Unable to find account with uuid = " + user.uuid)
+      }
+
+      val confChecked = em.find(classOf[Conference], conference.uuid)
+      if (confChecked == null)
+        throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
+
+      if (!confChecked.owners.contains(account))
+        throw new IllegalAccessException("No permissions for conference with uuid = " + conference.uuid)
+
+      confChecked.owners = Model.toJSet(owners)
+
+      confChecked.owners.foreach { owner =>
+        owner.conferences.add(conference)
+      }
+
+      val merged = em.merge(conference)
+
+      merged
+    }
+
+    getPermissions(conf, account)
+  }
+
+  /**
+   * Set owners for an existing conference.
+   * This is only permitted if the account owns the conference.
+   *
+   * @param conference The conference to update.
+   * @param account    The account who wants to update the conference.
+   *
+   * @throws IllegalArgumentException If the conference has no uuid
+   * @throws EntityNotFoundException If the conference or the user does not exist
+   * @throws IllegalAccessException If account is not an owner.
+   */
+  def getPermissions(conference: Conference, account: Account) : List[Account] = {
+    val conf = dbTransaction { (em, tx) =>
+
+      if (conference.uuid == null)
+        throw new IllegalArgumentException("Unable to update a conference without uuid")
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val confChecked = em.find(classOf[Conference], conference.uuid)
+      if (confChecked == null)
+        throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
+
+      if (!confChecked.owners.contains(account))
+        throw new IllegalAccessException("No permissions for conference with uuid = " + conference.uuid)
+
+      get(confChecked.uuid)
+    }
+
+    conf.owners.toList
+  }
+
 }
 
 
