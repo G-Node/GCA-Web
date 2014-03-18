@@ -3,11 +3,14 @@
 @template(account, Option(conference), "conference") {
 
     <!-- The conference info page -->
+
     <div class="header">
         <h1>@conference.name Abstract Submission</h1>
     </div>
 
     <hr class="separator">
+
+    <!-- Buttons to register, sign in and submit -->
 
     @if(conference.isOpen) {
     <div>
@@ -32,5 +35,15 @@
     <div>
         <p>Abstract submission is currently closed.</p>
     </div>
+    }
+
+    <hr class="separator">
+
+    <!-- Conference owner section to manage owners -->
+
+    @if(account.isDefined) {
+        @if(conference.isOwner(account.get)) {
+            <p>You are the owner of this conference. Some more owners can be added here.</p>
+        }
     }
 }

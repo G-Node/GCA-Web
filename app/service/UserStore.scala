@@ -14,6 +14,7 @@ import utils.AnormExtension._
 import service.util.DBUtil
 import javax.persistence.{TypedQuery, Persistence, EntityManagerFactory}
 import models.Account
+import collection.JavaConversions._
 
 
 class UserStore(application: Application) extends UserServicePlugin(application) with DBUtil {
@@ -76,6 +77,19 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     }
   }
 
+  def findByEmail(email: String): List[Account] = {
+    Logger.debug("findByEmail $email")
+
+    dbTransaction { (em, tx) =>
+      val queryStr =
+        """SELECT a from Account a
+           WHERE LOWER(a.mail) = LOWER(:mail)"""
+
+      val query : TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
+      query.setParameter("mail", email)
+      query.getResultList.toSet.toList
+    }
+  }
 
   def save(user: Identity): Identity = {
 
