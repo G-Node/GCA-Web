@@ -2,7 +2,7 @@
  * Module for misc utility functions
  * @module {models}
  */
-define(["lib/tools"], function(tools) {
+define(["lib/tools", "lib/accessors"], function(tools, acc) {
     "use strict";
 
     /**
@@ -67,6 +67,47 @@ define(["lib/tools"], function(tools) {
             }
 
             return obj;
+        };
+
+        /**
+         * Makes all properties of the model observable, that are either accessors or
+         * arrayAccessors or specified in by properties parameter.
+         *
+         * @param {Array} [properties]  List of property names to convert into observable
+         *                              values, if specified only properties specified
+         *                              here are converted.
+         */
+        self.makeObservable = function(properties) {
+            var prop,
+                accessors = ["accessor", "arrayAccessor"];
+
+            for (prop in self) {
+                if (self.hasOwnProperty(prop)) {
+                    var value = self[prop],
+                        vname = value ? value.name : null,
+                        convert = false;
+
+                    if (properties && properties.indexOf(prop) >= 0) {
+                        convert = true;
+                    } else if (!properties && accessors.indexOf(vname) >= 0) {
+                        convert = true;
+                    }
+
+                    if (convert) {
+                        if (tools.type(value) === "function") {
+                            if (vname === "accessor") {
+                                self[prop] = ko.observable(self[prop]());
+                            } else if (vname === "arrayAccessor") {
+                                self[prop] = ko.observableArray(self[prop]());
+                            }
+                        } else if (tools.type(value) === "array") {
+                            self[prop] = ko.observableArray(value);
+                        } else {
+                            self[prop] = ko.observable(value);
+                        }
+                    }
+                }
+            }
         };
 
         /**
@@ -187,10 +228,12 @@ define(["lib/tools"], function(tools) {
      * @constructor
      * @public
      */
-    function Conference(uuid, name, short, cite, link, isOpen, groups, owners, abstracts) {
+    function Conference(uuid, name, short, cite, link, isOpen, groups,
+                        owners, abstracts) {
 
         if (! (this instanceof Conference)) {
-            return new Conference(uuid, name, short, cite, link, isOpen, groups, owners, abstracts);
+            return new Conference(uuid, name, short, cite, link, isOpen, groups,
+                                  owners, abstracts);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -646,8 +689,8 @@ define(["lib/tools"], function(tools) {
      * @constructor
      * @public
      */
-    function Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest, acknowledgements,
-                      owners, state, figures, authors, affiliations,
+    function Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
+                      acknowledgements, owners, state, figures, authors, affiliations,
                       references) {
 
         if (! (this instanceof Abstract)) {
