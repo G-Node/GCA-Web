@@ -43,6 +43,7 @@ DELETE        /api/figures/:id                      controllers.api.Figures.dele
 # Account interface
 GET           /user                                 controllers.Application.showUserInfo
 GET           /api/user/:id/abstracts               controllers.api.Abstracts.listByAccount(id: String)
+GET           /api/user/self/conferences/:id/abstracts               controllers.api.Abstracts.listOwn(id: String)
 GET           /secret                               controllers.Application.showSecret
 
 # Login page

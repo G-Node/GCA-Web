@@ -66,6 +66,22 @@ object Abstracts extends Controller with OwnerManager with  GCAAuth {
 
 
   /**
+   * List all abstracts for a given conference and a given user
+   *
+   * @return All (accessible) abstracts for a given user.
+   */
+  def listOwn(conferenceId: String) = AuthenticatedAction(isREST = true) { implicit request =>
+
+  val conferenceService = ConferenceService()
+  val abstractService = AbstractService()
+
+  val conference = conferenceService.get(conferenceId)
+  val abstracts = abstractService.listOwn(conference, request.user)
+
+  Ok(Json.toJson(abstracts))
+}
+
+  /**
    * An abstract info by id.
    *
    * @param id The id of the abstract.
