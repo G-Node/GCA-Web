@@ -1,0 +1,49 @@
+@(account: Account)
+
+@template(Some(account), None, "myabstracts") {
+
+    <div class="hidden-data">
+        <div id="conference-uuid">@account.uuid</div>
+    </div>
+
+    <script data-main="@routes.Assets.at("javascripts/userdash.js")"
+                  src="@routes.Assets.at("javascripts/require.js")"></script>
+
+
+    <!-- Loading box -->
+
+    <div data-bind="if: isLoading">
+        <div class="alert alert-info fade in out">
+            <h4>Loading data</h4>
+            <p>Please wait...</p>
+        </div>
+    </div>
+
+    <!-- Error message box -->
+
+    <div data-bind="if: curError">
+        <div class="alert alert-warning fade in alert-dismissable" data-bind="css: errorLevel">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong data-bind="html: curError"></strong>
+        </div>
+    </div>
+
+    <div data-bind="foreach: conferences">
+        <div class="panel panel-default">
+            <div class="panel-heading" >
+                <h4 class="panel-title" data-bind="text: name"></h4>
+            </div>
+                <div class="panel-body">
+                    <span data-bind="text: cite"></span>
+                </div>
+                <ul  class="list-group" data-bind="foreach: abstracts">
+                    <li id="abstract-list" class="list-group-item abstract" data-bind="click: function(data, event) { $root.selectAbstractForConference($data, $parent) } ">
+                        <span data-bind="text: title"> </span>
+                        <span class="badge" data-bind="text: state"></span>
+                    </li>
+                </ul>
+        </div>
+    </div>
+
+
+}

@@ -36,7 +36,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
            LEFT JOIN FETCH c.groups
            LEFT JOIN FETCH c.owners
            LEFT JOIN FETCH c.abstracts
-           ORDER BY c.startDate
+           ORDER BY c.startDate DESC
         """
 
 
@@ -60,7 +60,23 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
            INNER JOIN FETCH c.owners o
            LEFT JOIN FETCH c.abstracts
            WHERE o.uuid = :uuid
-           ORDER BY c.startDate"""
+           ORDER BY c.startDate DESC"""
+
+      val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
+      query.setParameter("uuid", account.uuid)
+
+      asScalaBuffer(query.getResultList)
+    }
+  }
+
+  def listWithAbstractsOfAccount(account: Account) : Seq[Conference] = {
+    dbQuery { em =>
+      val queryStr =
+        """SELECT DISTINCT c FROM Conference c
+           INNER JOIN FETCH c.owners o
+           INNER JOIN FETCH c.abstracts
+           WHERE o.uuid = :uuid
+           ORDER BY c.startDate DESC"""
 
       val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
       query.setParameter("uuid", account.uuid)

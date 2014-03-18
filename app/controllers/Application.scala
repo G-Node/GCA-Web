@@ -51,10 +51,8 @@ object Application extends Controller with GCAAuth {
   }
 
   def abstractsPrivate = AuthenticatedAction(isREST = false) { implicit request =>
-    val conference = ConferenceService().list()(0)
 
-    // TODO all private abstracts for owner
-    Ok(views.html.abstractlist(Some(request.user), conference))
+    Ok(views.html.dashboard.user(request.user))
   }
 
   def abstractsPending = AuthenticatedAction(isREST = false) { implicit request =>

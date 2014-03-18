@@ -40,6 +40,18 @@ object Conferences extends Controller with OwnerManager with GCAAuth {
   }
 
   /**
+   * List all available conferences for which the current user is an owner
+   * of at least an abstract
+   *
+   * @return Ok with all conferences publicly available.
+   */
+  def listWithOwnAbstracts =  AuthenticatedAction(isREST = true) { request =>
+    val service = ConferenceService()
+    val conferences = service.listWithAbstractsOfAccount(request.user)
+    Ok(Json.toJson(conferences))
+  }
+
+  /**
    * A conference info by id.
    *
    * @param id The id of the conference.
