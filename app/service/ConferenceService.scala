@@ -69,6 +69,22 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
     }
   }
 
+  def listWithAbstractsOfAccount(account: Account) : Seq[Conference] = {
+    dbQuery { em =>
+      val queryStr =
+        """SELECT DISTINCT c FROM Conference c
+           INNER JOIN FETCH c.owners o
+           INNER JOIN FETCH c.abstracts
+           WHERE o.uuid = :uuid
+           ORDER BY c.startDate DESC"""
+
+      val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
+      query.setParameter("uuid", account.uuid)
+
+      asScalaBuffer(query.getResultList)
+    }
+  }
+
   /**
    * Get a conference specified by its id.
    *
