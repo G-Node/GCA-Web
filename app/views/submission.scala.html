@@ -69,7 +69,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: addAuthor">
+                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: doEditAddAuthor">
                                 Add
                             </button>
 
@@ -99,7 +99,7 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.removeAuthor.bind(person)">
+                                                        data-bind="click: $root.doEditRemoveAuthor.bind(person)">
                                                     Remove
                                                 </button>
                                             </div>
@@ -142,7 +142,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: addAffiliation">
+                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: doEditAddAffiliation">
                                 Add
                             </button>
 
@@ -176,19 +176,19 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.removeAffiliation.bind($root, affiliation)">
+                                                        data-bind="click: $root.doEditRemoveAffiliation.bind($root, affiliation)">
                                                     Remove
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
-                                    <!-- ko foreach: {data: $root.authorsForAffiliation(affiliation), as: 'author'} -->
+                                    <!-- ko foreach: {data: $root.getEditorAuthorsForAffiliation(affiliation), as: 'author'} -->
                                     <tr>
                                         <td colspan="5" data-bind="text: author.formatName()"></td>
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doRemoveAffiliationFromAuthor.bind($root, affiliation, author)">
+                                                        data-bind="click: $root.doEditRemoveAffiliationFromAuthor.bind($root, affiliation, author)">
                                                     Remove
                                                 </button>
                                             </div>
@@ -206,7 +206,7 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doAddAuthorToAffiliation.bind($root, affiliation)">
+                                                        data-bind="click: $root.doEditAddAuthorToAffiliation.bind($root, affiliation)">
                                                     Add
                                                 </button>
                                             </div>
@@ -334,7 +334,7 @@
 
                         <div class="modal-header">
                             <button type="button" class="btn btn-default btn-sm pull-right"
-                                    data-bind="click: doAddReference">
+                                    data-bind="click: doEditAddReference">
                                 Add
                             </button>
 
@@ -364,7 +364,7 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doRemoveReference.bind($root, $index, reference)">
+                                                        data-bind="click: $root.doEditRemoveReference.bind($root, $index, reference)">
                                                     Remove
                                                 </button>
                                             </div>
@@ -395,7 +395,7 @@
         </div>
 
         <div>
-            <button type="button" class="btn btn-default btn-sm" data-bind="click: saveAbstract">
+            <button type="button" class="btn btn-default btn-sm" data-bind="click: doSaveAbstract">
                 Submit Abstract
             </button>
         </div>

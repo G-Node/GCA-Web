@@ -26,22 +26,41 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         self.isAbstractSaved = ko.observable(false);
 
+
         self.init = function() {
 
             if (confId) {
-                self.getConference(confId);
-                self.abstract(models.ObservableAbstract());
+                self.requestConference(confId);
             }
             if (abstrId) {
-                self.getAbstract(abstrId);
+                self.requestAbstract(abstrId);
                 self.isAbstractSaved(true);
+            } else {
+                self.abstract(models.ObservableAbstract());
+                self.editedAbstract(self.abstract());
             }
 
             ko.applyBindings(window.editor);
         };
 
 
-        self.getConference = function(confId) {
+        self.getEditorAuthorsForAffiliation = function(affiliation) {
+            var authors = [];
+
+            self.editedAbstract().authors().forEach(function(author) {
+                var aff = author.affiliations(),
+                    pos = affiliation.position(),
+                    found = aff.indexOf(pos);
+                if (found >= 0) {
+                    authors.push(author);
+                }
+            });
+
+            return authors;
+        };
+
+
+        self.requestConference = function(confId) {
 
             $.ajax({
                 async: false,
@@ -62,7 +81,8 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         };
 
-        self.getAbstract = function(abstrId) {
+
+        self.requestAbstract = function(abstrId) {
 
             $.ajax({
                 async: false,
@@ -85,7 +105,9 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         };
 
 
-        self.saveAbstract = function() {
+        self.doSaveAbstract = function(abstract) {
+
+            abstract = abstract || self.abstract();
 
             if (self.isAbstractSaved()) {
 
@@ -97,7 +119,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                     error: fail,
                     contentType: "application/json",
                     dataType: "json",
-                    data: self.abstract().toJSON()
+                    data: abstract.toJSON()
                 });
 
             } else if (confId) {
@@ -110,7 +132,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                     error: fail,
                     contentType: "application/json",
                     dataType: "json",
-                    data: self.abstract().toJSON()
+                    data: abstract.toJSON()
                 });
 
             } else {
@@ -135,18 +157,22 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
 
         self.doEndEdit = function() {
-            self.abstract(self.editedAbstract());
+            if (self.isAbstractSaved()) {
+                self.doSaveAbstract(self.editedAbstract())
+            } else {
+                self.abstract(self.editedAbstract());
+            }
         };
 
 
-        self.addAuthor = function() {
+        self.doEditAddAuthor = function() {
             var author = models.ObservableAuthor();
             author.position(self.editedAbstract().authors().length);
             self.editedAbstract().authors.push(author);
         };
 
 
-        self.removeAuthor = function(author) {
+        self.doEditRemoveAuthor = function(author) {
             var position = author.position(),
                 authors = self.editedAbstract().authors();
 
@@ -159,14 +185,14 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         };
 
 
-        self.addAffiliation = function() {
+        self.doEditAddAffiliation = function() {
             var affiliation = models.ObservableAffiliation();
             affiliation.position(self.editedAbstract().affiliations().length);
             self.editedAbstract().affiliations.push(affiliation);
         };
 
 
-        self.removeAffiliation = function(affiliation) {
+        self.doEditRemoveAffiliation = function(affiliation) {
             var position = affiliation.position(),
                 affiliations = self.editedAbstract().affiliations(),
                 authors = self.editedAbstract().authors();
@@ -196,20 +222,6 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             self.editedAbstract().affiliations(affiliations);
         };
 
-        self.authorsForAffiliation = function(affiliation) {
-            var authors = [];
-
-            self.editedAbstract().authors().forEach(function(author) {
-                var aff = author.affiliations(),
-                    pos = affiliation.position(),
-                    found = aff.indexOf(pos);
-                if (found >= 0) {
-                    authors.push(author);
-                }
-            });
-
-            return authors;
-        };
 
         /**
          * Add an affiliation position to an author.
@@ -217,7 +229,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
          *
          * @param affiliation   The affiliation that is added to the author.
          */
-        self.doAddAuthorToAffiliation = function(affiliation) {
+        self.doEditAddAuthorToAffiliation = function(affiliation) {
             var authorPosition = $("#author-select-" + affiliation.position()).find("select").val(),
                 authors = self.editedAbstract().authors();
 
@@ -238,13 +250,14 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         };
 
+
         /**
          * Remove all affiliation positions for the authors affiliations array.
          *
          * @param affiliation   The affiliation to remove.
          * @param author        The author from which to remove the affiliation.
          */
-        self.doRemoveAffiliationFromAuthor = function(affiliation, author) {
+        self.doEditRemoveAffiliationFromAuthor = function(affiliation, author) {
             var affiliationPos = affiliation.position(),
                 affiliations = author.affiliations();
 
@@ -257,11 +270,13 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             author.affiliations(affiliations);
         };
 
-        self.doAddReference = function() {
+
+        self.doEditAddReference = function() {
             self.editedAbstract().references.push(models.ObservableReference());
         };
 
-        self.doRemoveReference = function(index) {
+
+        self.doEditRemoveReference = function(index) {
             var references = self.editedAbstract().references();
 
             references.splice(index, 1);
