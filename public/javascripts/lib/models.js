@@ -44,7 +44,9 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
 
         if (tools.type(str) === "string") {
             str = str.trim();
-            if (str.match(/^(\+|-)?((\d+(\.\d+)?)|(\.\d+))$/)) {
+            if (str === "") {
+                val = null;
+            } else if (str.match(/^(\+|-)?((\d+(\.\d+)?)|(\.\d+))$/)) {
                 val = Number(str);
             } else if (str.match(/^(true|false)$/)) {
                 val = (str === "true");
