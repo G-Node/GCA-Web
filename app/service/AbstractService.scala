@@ -11,7 +11,7 @@ package service
 
 import models._
 import javax.persistence.{EntityNotFoundException, TypedQuery, Persistence, EntityManagerFactory}
-import service.util.DBUtil
+import service.util.{PermissionsBase, DBUtil}
 import scala.collection.JavaConversions._
 import java.io.File
 import play.Play
@@ -20,7 +20,7 @@ import play.Play
  * Service class that provides data access logic for abstracts and nested
  * authors and affiliations.
  */
-class AbstractService(val emf: EntityManagerFactory, figPath: String) extends DBUtil {
+class AbstractService(val emf: EntityManagerFactory, figPath: String) extends PermissionsBase {
 
   /**
    * List all published abstracts that belong to a conference.

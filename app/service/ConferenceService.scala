@@ -14,7 +14,7 @@ import collection.JavaConversions._
 import play.api._
 import models._
 import javax.persistence._
-import service.util.DBUtil
+import service.util.{PermissionsBase, DBUtil}
 
 /**
  * Service class for that implements data access logic for conferences.
@@ -22,7 +22,7 @@ import service.util.DBUtil
  * TODO prefetch stuff
  * TODO write test
  */
-class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
+class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
 
   /**
    * List all available conferences.
@@ -227,100 +227,6 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
       em.remove(confChecked)
     }
   }
-
-  /**
-   * Set owners for an existing conference.
-   * This is only permitted if the account owns the conference.
-   *
-   * @param conference The conference to update.
-   * @param account    The account who wants to update the conference.
-   * @param owners     The list of actual owners.
-   *
-   * @throws IllegalArgumentException If the conference has no uuid
-   * @throws EntityNotFoundException If the conference or the user does not exist
-   * @throws IllegalAccessException If account is not an owner.
-   */
-  def setPermissions(conference: Conference, account: Account, owners: List[Account]) : List[Account] = {
-    val conf = dbTransaction { (em, tx) =>
-
-      if (conference.uuid == null)
-        throw new IllegalArgumentException("Unable to update a conference without uuid")
-
-      if (owners.isEmpty)
-        throw new IllegalArgumentException("Owners of the conference cannot be empty")
-
-      val accountChecked = em.find(classOf[Account], account.uuid)
-      if (accountChecked == null)
-        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
-
-      val confChecked = em.find(classOf[Conference], conference.uuid)
-      if (confChecked == null)
-        throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
-
-      if (!confChecked.owners.contains(accountChecked))
-        throw new IllegalAccessException("No permissions for conference with uuid = " + conference.uuid)
-
-      val verified = for (user <- owners) yield {
-        em.find(classOf[Account], user.uuid) match {
-          case null => throw new EntityNotFoundException("Unable to find account with uuid = " + user.uuid)
-          case a => a
-        }
-      }
-
-      confChecked.owners.foreach { owner =>
-        confChecked.owners.remove(owner)
-        owner.conferences.remove(confChecked)
-        em.merge(owner)
-      }
-
-      verified.foreach { owner =>
-        confChecked.owners.add(owner)
-        owner.conferences.add(confChecked)
-        em.merge(owner)
-      }
-
-      val merged = em.merge(confChecked)
-
-      merged
-    }
-
-    conf.owners.toList
-  }
-
-  /**
-   * Get permissions of an existing conference.
-   * This is only permitted if the account owns the conference.
-   *
-   * @param conference conference.
-   * @param account    The account who wants to access permissions.
-   *
-   * @throws IllegalArgumentException If the conference has no uuid
-   * @throws EntityNotFoundException If the conference or the user does not exist
-   * @throws IllegalAccessException If account is not an owner.
-   */
-  def getPermissions(conference: Conference, account: Account) : List[Account] = {
-    val conf = dbTransaction { (em, tx) =>
-
-      if (conference.uuid == null)
-        throw new IllegalArgumentException("Unable to update a conference without uuid")
-
-      val accountChecked = em.find(classOf[Account], account.uuid)
-      if (accountChecked == null)
-        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
-
-      val confChecked = em.find(classOf[Conference], conference.uuid)
-      if (confChecked == null)
-        throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
-
-      if (!confChecked.owners.contains(accountChecked))
-        throw new IllegalAccessException("No permissions for conference with uuid = " + conference.uuid)
-
-      get(confChecked.uuid)
-    }
-
-    conf.owners.toList
-  }
-
 }
 
 
