@@ -19,10 +19,12 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         var self = this;
 
-        self.abstractSaved = ko.observable(false);
-        self.abstract = ko.observable(null);
-        self.conference = ko.observable(null);
 
+        self.conference = ko.observable(null);
+        self.abstract = ko.observable(null);
+        self.editedAbstract = ko.observable(null);
+
+        self.isAbstractSaved = ko.observable(false);
 
         self.init = function() {
 
@@ -32,7 +34,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             }
             if (abstrId) {
                 self.getAbstract(abstrId);
-                self.abstractSaved(true);
+                self.isAbstractSaved(true);
             }
 
             ko.applyBindings(window.editor);
@@ -73,6 +75,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
             function success(obj, stat, xhr) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
+                self.editedAbstract(self.abstract())
             }
 
             function fail(xhr, stat, msg) {
@@ -84,7 +87,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         self.saveAbstract = function() {
 
-            if (self.abstractSaved()) {
+            if (self.isAbstractSaved()) {
 
                 $.ajax({
                     async: false,
@@ -116,7 +119,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
             function success(obj, stat, xhr) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
-                self.abstractSaved(true);
+                self.isAbstractSaved(true);
             }
 
             function fail(xhr, stat, msg) {
@@ -125,49 +128,48 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         };
 
 
-        self.refresh = function() {
+        self.doStartEdit = function() {
+            var obj = $.extend(true, {}, self.abstract().toObject());
+            self.editedAbstract(models.ObservableAbstract.fromObject(obj));
+        };
 
-            if (self.abstractSaved()) {
-                console.log("save abstract");
-                self.saveAbstract();
-            } else {
-                console.log("refresh abstract");
-                //self.abstract(self.abstract());
-            }
+
+        self.doEndEdit = function() {
+            self.abstract(self.editedAbstract());
         };
 
 
         self.addAuthor = function() {
             var author = models.ObservableAuthor();
-            author.position(self.abstract().authors().length);
-            self.abstract().authors.push(author);
+            author.position(self.editedAbstract().authors().length);
+            self.editedAbstract().authors.push(author);
         };
 
 
         self.removeAuthor = function(author) {
             var position = author.position(),
-                authors = self.abstract().authors();
+                authors = self.editedAbstract().authors();
 
             authors.splice(position, 1);
             authors.forEach(function(a, i) {
                 a.position(i);
             });
 
-            self.abstract().authors(authors);
+            self.editedAbstract().authors(authors);
         };
 
 
         self.addAffiliation = function() {
             var affiliation = models.ObservableAffiliation();
-            affiliation.position(self.abstract().affiliations().length);
-            self.abstract().affiliations.push(affiliation);
+            affiliation.position(self.editedAbstract().affiliations().length);
+            self.editedAbstract().affiliations.push(affiliation);
         };
 
 
         self.removeAffiliation = function(affiliation) {
             var position = affiliation.position(),
-                affiliations = self.abstract().affiliations(),
-                authors = self.abstract().authors();
+                affiliations = self.editedAbstract().affiliations(),
+                authors = self.editedAbstract().authors();
 
             affiliations.splice(position, 1);
             affiliations.forEach(function(a, i) {
@@ -191,13 +193,13 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 author.affiliations(affiliationPositions);
             });
 
-            self.abstract().affiliations(affiliations);
+            self.editedAbstract().affiliations(affiliations);
         };
 
         self.authorsForAffiliation = function(affiliation) {
             var authors = [];
 
-            self.abstract().authors().forEach(function(author) {
+            self.editedAbstract().authors().forEach(function(author) {
                 var aff = author.affiliations(),
                     pos = affiliation.position(),
                     found = aff.indexOf(pos);
@@ -217,7 +219,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
          */
         self.doAddAuthorToAffiliation = function(affiliation) {
             var authorPosition = $("#author-select-" + affiliation.position()).find("select").val(),
-                authors = self.abstract().authors();
+                authors = self.editedAbstract().authors();
 
             if (authorPosition >= 0 && authorPosition < authors.length) {
                 var author = authors[authorPosition],
@@ -253,18 +255,18 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             }
 
             author.affiliations(affiliations);
-        }
+        };
 
         self.doAddReference = function() {
-            self.abstract().references.push(models.ObservableReference());
-        }
+            self.editedAbstract().references.push(models.ObservableReference());
+        };
 
         self.doRemoveReference = function(index) {
-            var references = self.abstract().references();
+            var references = self.editedAbstract().references();
 
             references.splice(index, 1);
 
-            self.abstract().references(references);
+            self.editedAbstract().references(references);
         }
 
     }
@@ -274,10 +276,10 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         var data = tools.hiddenData();
 
-        console.log(data.conferenceUuid);
-        console.log(data.abstractUuid);
+        console.log(data["conferenceUuid"]);
+        console.log(data["abstractUuid"]);
 
-        window.editor = EditorViewModel(data.conferenceUuid, data.abstractUuid);
+        window.editor = EditorViewModel(data["conferenceUuid"], data["abstractUuid"]);
         window.editor.init();
     });
 
