@@ -19,12 +19,36 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         var self = this;
 
+        self.textCharacterLimit = 2000;
+        self.ackCharacterLimit = 200;
 
         self.conference = ko.observable(null);
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
 
         self.isAbstractSaved = ko.observable(false);
+
+        self.editorTextCharactersLeft = ko.computed(
+            function() {
+                if (self.editedAbstract() && self.editedAbstract().text()) {
+                    return self.textCharacterLimit - self.editedAbstract().text().length;
+                } else {
+                    return self.textCharacterLimit;
+                }
+            },
+            self
+        );
+
+        self.editorAckCharactersLeft = ko.computed(
+            function() {
+                if (self.editedAbstract() && self.editedAbstract().acknowledgements()) {
+                    return self.ackCharacterLimit - self.editedAbstract().acknowledgements().length;
+                } else {
+                    return self.ackCharacterLimit;
+                }
+            },
+            self
+        );
 
 
         self.init = function() {

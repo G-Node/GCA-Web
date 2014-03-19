@@ -255,8 +255,11 @@
 
                         <div class="modal-body">
                             <textarea rows="10" class="form-control" id="text"
-                                      data-bind="value: editedAbstract().text">
+                                      data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'">
                             </textarea>
+                            <div>
+                                <span>Characters left: </span><span data-bind="text: editorTextCharactersLeft"></span>
+                            </div>
                         </div>
 
                         <div class="modal-footer">
@@ -294,10 +297,12 @@
                         </div>
 
                         <div class="modal-body">
-                            <label for="text"></label>
                             <textarea rows="10" class="form-control" id="text"
-                                      data-bind="value: editedAbstract().acknowledgements">
+                                      data-bind="value: editedAbstract().acknowledgements, valueUpdate: 'afterkeydown'">
                             </textarea>
+                            <div>
+                                <span>Characters left: </span><span data-bind="text: editorAckCharactersLeft"></span>
+                            </div>
                         </div>
 
                         <div class="modal-footer">
