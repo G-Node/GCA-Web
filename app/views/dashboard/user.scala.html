@@ -22,12 +22,15 @@
     <div style="display: none" data-bind="visible: true">
 
     <!-- Error message box -->
-    <div data-bind="if: curError">
-        <div class="alert alert-warning fade in alert-dismissable" data-bind="css: errorLevel">
+    <div data-bind="visible: error">
+        <!-- ko with: error -->
+        <div class="alert alert-warning fade in alert-dismissable" data-bind="css: level">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <strong data-bind="html: curError"></strong>
+            <strong data-bind="html: message"></strong>
         </div>
+        <!-- /ko -->
     </div>
+
 
     <div data-bind="foreach: conferences">
         <div class="panel panel-default">
