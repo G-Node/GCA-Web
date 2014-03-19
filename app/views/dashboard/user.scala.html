@@ -11,7 +11,6 @@
 
 
     <!-- Loading box -->
-
     <div data-bind="if: isLoading">
         <div class="alert alert-info fade in out">
             <h4>Loading data</h4>
@@ -19,8 +18,10 @@
         </div>
     </div>
 
-    <!-- Error message box -->
+    <!-- Knockout !flickerbox  -->
+    <div style="display: none" data-bind="visible: true">
 
+    <!-- Error message box -->
     <div data-bind="if: curError">
         <div class="alert alert-warning fade in alert-dismissable" data-bind="css: errorLevel">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -45,5 +46,6 @@
         </div>
     </div>
 
+    </div>
 
 }

@@ -9,6 +9,9 @@
     <script data-main="@routes.Assets.at("javascripts/abstractlist.js")"
             src="@routes.Assets.at("javascripts/require.js")"></script>
 
+    <!-- Knockout non-flicker  -->
+    <div style="display: none" data-bind="visible: true">
+
     <div>
         <ul class="nav nav-tabs" data-bind="foreach: groups">
             <li data-bind="attr: {class: state}"><a data-bind="attr: { href: link }, text: name"></a></li>
@@ -87,6 +90,8 @@
     </div>
 
     </div>
+
+    </div> <!-- KO !flickerbox -->
 
 
 
