@@ -3,18 +3,21 @@ package controllers.api
 import play.api.mvc._
 import play.api.libs.json._
 import utils.GCAAuth
-import utils.serializer.ConferenceFormat
+import utils.serializer.{AccountFormat, ConferenceFormat}
 import service.ConferenceService
 import utils.DefaultRoutesResolver._
 import models.Conference
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsObject
 
 /**
  * Conferences controller.
  * Manages HTTP request logic for conferences.
  */
-object Conferences extends Controller with OwnerManager with GCAAuth {
+object Conferences extends Controller with GCAAuth {
 
   implicit val confFormat = new ConferenceFormat()
+  val accountFormat = new AccountFormat()
 
   /**
    * Create a new conference.
@@ -87,6 +90,39 @@ object Conferences extends Controller with OwnerManager with GCAAuth {
   def delete(id: String) = AuthenticatedAction(isREST = true) { request =>
     ConferenceService().delete(id, request.user)
     Ok(Json.obj("error" -> false))
+  }
+
+  /**
+   * Set permissions on the conference.
+   *
+   * @return a list of updated permissions (accounts) as JSON
+   */
+  def setPermissions(id: String) = AuthenticatedAction(parse.json, isREST = true) { request =>
+
+    val to_set = for (acc <- request.body.as[List[JsObject]])
+      yield accountFormat.reads(acc).get
+
+    val srv = ConferenceService()
+    val owners = srv.setPermissions(srv.get(id), request.user, to_set)
+
+    Ok(JsArray(
+      for (acc <- owners) yield accountFormat.writes(acc)
+    ))
+  }
+
+  /**
+   * Get permissions of the conference.
+   *
+   * @return a list of updated permissions (accounts) as JSON
+   */
+  def getPermissions(id: String) = AuthenticatedAction(isREST = true) { request =>
+
+    val srv = ConferenceService()
+    val owners = srv.getPermissions(srv.get(id), request.user)
+
+    Ok(JsArray(
+      for (acc <- owners) yield accountFormat.writes(acc)
+    ))
   }
 }
 

@@ -143,7 +143,7 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
     assert(srv.getPermissions(conference, alice).contains(alice))
 
-    assert(srv.setPermissions(conference, bob, List[Account](bob, eve)).contains(eve))
+    assert(srv.setPermissions(conference, alice, List[Account](bob, eve)).contains(eve))
 
     assert(!srv.getPermissions(conference, bob).contains(alice))
 
