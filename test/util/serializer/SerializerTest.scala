@@ -24,7 +24,7 @@ class SerializerTest extends JUnitSuite {
     Option(2013), Option("doi"))
   val sampleFigure: Figure = Figure(Option("someuuid"), Option("name"), Option("caption"))
   val sampleAbstract = Abstract(Option("someuuid"), Option("title"), Option("topic"),
-      Option("text"), Option("doi"), Option("conflictOfInterest"), Option("acknowledgements"),
+      Option("text"), Option("doi"), Option("conflictOfInterest"), Option("acknowledgements"), Option(true), Option("reason"),
         Some(0), Some(AbstractState.InPreparation), Option(sampleConference), Seq(sampleFigure), Nil, Seq(sampleAuthor),
           Seq(sampleAffiliation), Seq(sampleReference))
 

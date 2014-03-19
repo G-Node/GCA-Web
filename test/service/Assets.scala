@@ -36,6 +36,8 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("doi one"),
       ?("coi one"),
       ?("acc one"),
+      ?(true),
+      ?("very good reason"),
       makeSortId(1, 1),
       state = ?(AbstractState.Published),
       authors = Seq(
@@ -61,6 +63,8 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("doi two"),
       ?("coi two"),
       ?("acc two"),
+      ?(true),
+      ?("very good reason"),
       makeSortId(1, 2),
       ?(AbstractState.InReview),
       authors = Seq(
@@ -86,6 +90,8 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("doi three"),
       ?("coi three"),
       ?("acc three"),
+      ?(false),
+      None,
       makeSortId(2, 1),
       ?(AbstractState.Submitted),
       authors = Seq(
@@ -111,6 +117,8 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("doi four"),
       ?("coi four"),
       ?("acc four"),
+      ?(false),
+      None,
       makeSortId(2, 2),
       ?(AbstractState.InPreparation),
       authors = Seq(
@@ -139,6 +147,8 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ?("new doi"),
       ?("No conflict at all"),
       ?("Thanks for all the fish!"),
+      ?(false),
+      None,
       makeSortId(1, 42),
       ?(AbstractState.InReview),
       authors = Seq(

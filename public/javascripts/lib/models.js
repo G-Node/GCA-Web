@@ -702,6 +702,8 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @param {string} [doi]
      * @param {string} [conflictOfInterest]
      * @param {string} [acknowledgements]
+     * @param {Boolean} [isTalk]
+     * @param {string} [reasonForTalk]
      * @param {string} [owners]     URL to abstract owners.
      * @param {string} [state]
      * @param {Array} [figures]
@@ -714,13 +716,13 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @public
      */
     function Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                      acknowledgements, owners, state, figures, authors, affiliations,
-                      references) {
+                      acknowledgements, isTalk, reasonForTalk, owners, state, figures,
+                      authors, affiliations, references) {
 
         if (! (this instanceof Abstract)) {
             return new Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                                acknowledgements, state, owners, figures,
-                                authors, affiliations, references);
+                                acknowledgements, isTalk, reasonForTalk, owners, state,
+                                figures, authors, affiliations, references);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -732,6 +734,8 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.doi = doi || null;
         self.conflictOfInterest = conflictOfInterest || null;
         self.acknowledgements = acknowledgements || null;
+        self.isTalk = isTalk || false;
+        self.reasonForTalk = reasonForTalk || null;
         self.owners = owners || null;
         self.state = state || "InPreparation";
         self.figures = figures || [];
@@ -831,12 +835,15 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * Observable model for abstracts.
      *
      * @param {string} [uuid]
+     * @param {number} [sortId]
      * @param {string} [title]
      * @param {string} [topic]
      * @param {string} [text]
      * @param {string} [doi]
      * @param {string} [conflictOfInterest]
      * @param {string} [acknowledgements]
+     * @param {Boolean} [isTalk]
+     * @param {string} [reasonForTalk]
      * @param {string} [owners]     URL to abstract owners.
      * @param {string} [state]
      * @param {Array} [figures]
@@ -848,14 +855,14 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @constructor
      * @public
      */
-    function ObservableAbstract(uuid, title, topic, text, doi, conflictOfInterest,
-                                acknowledgements, owners, state, figures,
+    function ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
+                                acknowledgements, isTalk, reasonForTalk, owners, state, figures,
                                 authors, affiliations, references) {
 
         if (! (this instanceof ObservableAbstract)) {
-            return new ObservableAbstract(uuid, title, topic, text, doi,
-                conflictOfInterest, acknowledgements, state, owners,
-                figures, authors, affiliations, references);
+            return new ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
+                                          acknowledgements, isTalk, reasonForTalk, owners, state,
+                                          figures, authors, affiliations, references);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -866,6 +873,8 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.doi = ko.observable(doi || null);
         self.conflictOfInterest = ko.observable(conflictOfInterest || null);
         self.acknowledgements = ko.observable(acknowledgements || null);
+        self.isTalk = ko.observable(isTalk || false);
+        self.reasonForTalk = ko.observable(reasonForTalk || null);
         self.owners = ko.observable(owners || null);
         self.state = ko.observable(state || "InPreparation");
         self.figures = ko.observableArray(figures || []);

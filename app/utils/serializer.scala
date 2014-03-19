@@ -259,12 +259,14 @@ package object serializer {
       (__ \ "doi").readNullable[String] and
       (__ \ "conflictOfInterest").readNullable[String] and
       (__ \ "acknowledgements").readNullable[String] and
+      (__ \ "isTalk").readNullable[Boolean] and
+      (__ \ "reasonForTalk").readNullable[String] and
       (__ \ "sortId").readNullable[Int] and
       (__ \ "state").readNullable[AbstractState.State] and
       (__ \ "authors").lazyRead( list[Author](authorF) ) and
       (__ \ "affiliations").lazyRead( list[Affiliation](affiliationF) ) and
       (__ \ "references").lazyRead( list[Reference](referenceF) )
-    )(Abstract(_, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
+    )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
       val figures: Seq[Figure] = asScalaSet(a.figures).toSeq
@@ -279,6 +281,8 @@ package object serializer {
         "doi" -> a.doi,
         "conflictOfInterest" -> a.conflictOfInterest,
         "acknowledgements" -> a.acknowledgements,
+        "isTalk" -> a.isTalk,
+        "reasonForTalk" -> a.reasonForTalk,
         "sortId" -> a.sortId,
         "state" -> a.state,
         "conference" -> a.conference.uuid,

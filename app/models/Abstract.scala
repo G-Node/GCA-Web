@@ -27,6 +27,9 @@ class Abstract extends Model with Owned {
   var conflictOfInterest: String = _
   var acknowledgements: String = _
 
+  var isTalk: Boolean = false
+  var reasonForTalk : String = _
+
   var sortId: Int = _
 
   @Convert(converter = classOf[AbstractStateConverter])
@@ -58,6 +61,8 @@ object Abstract {
             doi: Option[String],
             conflictOfInterest: Option[String],
             acknowledgements: Option[String],
+            isTalk: Option[Boolean],
+            reasonForTalk: Option[String],
             sortId: Option[Int],
             state: Option[AbstractState.State],
             conference: Option[Conference] = None,
@@ -76,8 +81,10 @@ object Abstract {
     abstr.doi         = unwrapRef(doi)
     abstr.conflictOfInterest = unwrapRef(conflictOfInterest)
     abstr.acknowledgements   = unwrapRef(acknowledgements)
-    abstr.sortId = sortId match { case Some(i) => i; case _ => 0 }
-    abstr.state  = unwrapRef(state)
+    abstr.sortId             = sortId match { case Some(i) => i; case _ => 0 }
+    abstr.isTalk             = isTalk match { case Some(i) => i; case _ => false}
+    abstr.reasonForTalk      = unwrapRef(reasonForTalk)
+    abstr.state              = unwrapRef(state)
 
     abstr.conference  = unwrapRef(conference)
     abstr.figures      = toJSet(figures)
