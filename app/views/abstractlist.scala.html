@@ -9,6 +9,14 @@
     <script data-main="@routes.Assets.at("javascripts/abstractlist.js")"
             src="@routes.Assets.at("javascripts/require.js")"></script>
 
+    <!-- Loading box -->
+    <div data-bind="if: isLoading">
+        <div class="alert alert-info fade in out">
+            <h4>Loading data</h4>
+            <p>Please wait...</p>
+        </div>
+    </div>
+
     <!-- Knockout non-flicker  -->
     <div style="display: none" data-bind="visible: true">
 

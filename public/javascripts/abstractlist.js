@@ -18,6 +18,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         var self = this;
         self.abstractsData = null;
+        self.isLoading = ko.observable(true);
         self.conference = ko.observable();
         self.abstracts = ko.observableArray(null);
         self.selectedAbstract = ko.observable(null);
@@ -225,8 +226,10 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         self.ensureDataAndThen = function(doAfter) {
             console.log("ensureDataAndThen::");
+            self.isLoading(true);
             if (self.abstractsData !== null) {
                 doAfter();
+                self.isLoading(false);
                 return;
             }
 
@@ -252,6 +255,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 self.neighbours = self.makeNeighboursMap(absList);
 
                 doAfter();
+                self.isLoading(false);
             }
         };
 
