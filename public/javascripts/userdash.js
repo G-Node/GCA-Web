@@ -33,8 +33,8 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             ko.applyBindings(window.dashboard);
         };
 
-        self.selectAbstractForConference = function(abstract, conference) {
-            console.log("Select abtract: " + abstract.uuid + " for conference: + " + conference.uuid);
+        self.makeAbstractLink = function(abstract, conference) {
+            return "/myabstracts/" + abstract.uuid + "/edit";
         };
 
 
