@@ -126,7 +126,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
 
             if (selGroup === null) {
-                //FIXME: show error
+                self.setError("danger", "Internal error [group selection]!")
                 console.log("Error invalid group selected");
                 self.showAbstractList([]);
                 return;
