@@ -18,33 +18,7 @@ import models.util.DateTimeConverter
 import scala.collection.JavaConversions._
 import scala.Some
 
-@Entity
-class AbstractGroup extends Model {
-  var prefix: Int = 0
-  var name: String = _
-  var short: String = _
 
-  @ManyToOne
-  var conference: Conference = _
-}
-
-object AbstractGroup {
-
-  def apply(uuid: Option[String],
-             prefix: Option[Int],
-             name: Option[String],
-             short: Option[String]) = {
-
-    val group = new AbstractGroup()
-    group.uuid = unwrapRef(uuid)
-    group.prefix = prefix match { case Some(i) => i; case _ => -1 }
-    group.name = unwrapRef(name)
-    group.short = unwrapRef(short)
-
-    group
-  }
-
-}
 
 /**
  * A model for that represents a conference.
@@ -82,6 +56,8 @@ class Conference extends Model with Owned {
   var owners: JSet[Account] = new JTreeSet[Account]()
   @OneToMany(mappedBy = "conference")
   var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
+  @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL))
+  var topics: JSet[Topic] = new JTreeSet[Topic]()
 
   def isOwner(account: Account) = {
     val ownersList: Seq[Account] = asScalaSet(owners).toSeq
