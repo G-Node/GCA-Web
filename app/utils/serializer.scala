@@ -68,6 +68,14 @@ package object serializer {
     }
   }
 
+  class TopicFormat extends Format[Topic] {
+
+    override def writes(o: Topic): JsValue = JsString(o.topic)
+
+    override def reads(json: JsValue): JsResult[Topic] = JsSuccess(Topic(json.as[String], None))
+
+  }
+
   /**url
    * Conference serializer.
    *
@@ -76,6 +84,7 @@ package object serializer {
   class ConferenceFormat(implicit routesResolver: RoutesResolver) extends Format[Conference] {
 
     implicit val agf = new AbstractGroupFormat()
+    implicit val tf = new TopicFormat()
 
     override def reads(json: JsValue): JsResult[Conference] = (
       (__ \ "uuid").readNullable[String] and
@@ -90,8 +99,9 @@ package object serializer {
       (__ \ "logo").readNullable[String] and
       (__ \ "thumbnail").readNullable[String] and
 
-      (__ \ "groups").read[List[AbstractGroup]]
-    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _)).reads(json)
+      (__ \ "groups").read[List[AbstractGroup]] and
+      (__ \ "topics").read[List[Topic]]
+    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
       val groups: Seq[AbstractGroup] = asScalaSet(c.groups).toSeq
@@ -108,7 +118,8 @@ package object serializer {
         "deadline" -> c.deadline,
         "logo" -> c.logo,
         "thumbnail" -> c.thumbnail,
-        "abstracts" -> routesResolver.abstractsUrl(c.uuid)
+        "abstracts" -> routesResolver.abstractsUrl(c.uuid),
+        "topics" -> JsArray(for (topic <- c.topics.toSeq) yield tf.writes(topic))
       )
     }
   }

@@ -36,6 +36,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
            LEFT JOIN FETCH c.groups
            LEFT JOIN FETCH c.owners
            LEFT JOIN FETCH c.abstracts
+           LEFT JOIN FETCH c.topics
            ORDER BY c.startDate DESC
         """
 
@@ -59,6 +60,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
            LEFT JOIN FETCH c.groups
            INNER JOIN FETCH c.owners o
            LEFT JOIN FETCH c.abstracts
+           LEFT JOIN FETCH c.topics
            WHERE o.uuid = :uuid
            ORDER BY c.startDate DESC"""
 
@@ -75,6 +77,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
         """SELECT DISTINCT c FROM Conference c
            INNER JOIN FETCH c.owners o
            INNER JOIN FETCH c.abstracts
+           LEFT JOIN FETCH c.topics
            WHERE o.uuid = :uuid
            ORDER BY c.startDate DESC"""
 
@@ -101,6 +104,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
            LEFT JOIN FETCH c.groups
            LEFT JOIN FETCH c.owners
            LEFT JOIN FETCH c.abstracts
+           LEFT JOIN FETCH c.topics
            WHERE c.uuid = :uuid"""
 
       val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
@@ -139,6 +143,10 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
       conference.groups.foreach { group =>
         Logger.debug("Adding group:" + group.toString)
         group.conference = conference
+      }
+
+      conference.topics.foreach { topic =>
+        topic.conference = conference
       }
 
       em.merge(conference)
@@ -183,11 +191,21 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
         group.conference = conference
       }
 
+      conference.topics.foreach { topic =>
+        topic.conference = conference
+      }
+
       val merged = em.merge(conference)
 
       confChecked.groups.foreach { group =>
-        if (!conference.groups.contains(group)) {
+        if (!merged.groups.contains(group)) {
           em.remove(group)
+        }
+      }
+
+      confChecked.topics.foreach { topic =>
+        if (!merged.topics.contains(topic)) {
+          em.remove(topic)
         }
       }
 
@@ -223,6 +241,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
         throw new IllegalAccessException("No permissions for conference with uuid = " + id)
 
       confChecked.groups.foreach(em.remove(_))
+      confChecked.topics.foreach(em.remove(_))
 
       em.remove(confChecked)
     }

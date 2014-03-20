@@ -253,11 +253,11 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @public
      */
     function Conference(uuid, name, short, cite, link, isOpen, groups,
-                        owners, abstracts) {
+                        owners, abstracts, topics) {
 
         if (! (this instanceof Conference)) {
             return new Conference(uuid, name, short, cite, link, isOpen, groups,
-                                  owners, abstracts);
+                                  owners, abstracts, topics);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -267,9 +267,10 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.cite = cite || null;
         self.link = link || null;
         self.isOpen = isOpen || false;
-        self.groups = groups || null;
-        self.owners = owners || null;
-        self.abstracts = abstracts || null;
+        self.groups = groups || [];
+        self.owners = owners || [];
+        self.abstracts = abstracts || [];
+        self.topics = topics || [];
 
         self.toObject = function() {
             var prop,
@@ -305,10 +306,17 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
             if (target.hasOwnProperty(prop)) {
                 var value = readProperty(prop, obj);
 
-                if (prop === "groups") {
-                    target.groups = AbstractGroup.fromArray(value);
-                } else if (tools.type(target[prop]) !== "function") {
-                        target[prop] = value;
+                switch (prop) {
+                    case "groups":
+                        target.groups = AbstractGroup.fromArray(value);
+                        break;
+                    case "topics":
+                        target.topics = value ? value.sort() : value;
+                        break;
+                    default:
+                        if (tools.type(target[prop]) !== "function") {
+                            target[prop] = value;
+                        }
                 }
             }
         }

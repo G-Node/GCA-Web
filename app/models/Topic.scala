@@ -16,7 +16,6 @@ import javax.persistence._
  * Model for a conference topic
  */
 @Entity
-@Table(uniqueConstraints = Array(new UniqueConstraint(columnNames = Array("TOPIC", "CONFERENCE_UUID"))))
 class Topic extends Model {
 
   @Basic(optional = false)
@@ -29,7 +28,7 @@ class Topic extends Model {
 
 object Topic {
 
-  def apply(topic: String, conference: Option[Conference]) {
+  def apply(topic: String, conference: Option[Conference]) : Topic = {
     val t = new Topic()
 
 
