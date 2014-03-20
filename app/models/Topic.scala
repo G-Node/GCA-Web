@@ -24,6 +24,7 @@ class Topic extends Model {
   @ManyToOne(optional = false)
   var conference: Conference = _
 
+  override def toString : String = topic
 }
 
 object Topic {
