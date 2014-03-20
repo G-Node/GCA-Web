@@ -134,6 +134,27 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
     }
   }
 
+  @Test
+  def testPermissions() : Unit = {
+    val conference = assets.conferences(0) // alice is the only owner
+    val alice = assets.alice // or conference.owners.toList(0)
+    val bob = assets.bob
+    val eve = assets.eve
+
+    assert(srv.getPermissions(conference, alice).contains(alice))
+
+    assert(srv.setPermissions(conference, alice, List[Account](bob, eve)).contains(eve))
+
+    assert(!srv.getPermissions(conference, bob).contains(alice))
+
+    intercept[IllegalAccessException] {
+      srv.setPermissions(conference, alice, List[Account](alice, bob))
+    }
+
+    intercept[IllegalArgumentException] {
+      srv.setPermissions(conference, bob, List[Account]())
+    }
+  }
 }
 
 object ConferenceServiceTest {

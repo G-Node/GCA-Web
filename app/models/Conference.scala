@@ -53,7 +53,7 @@ object AbstractGroup {
  * maybe we should keep it simple for now.
  */
 @Entity
-class Conference extends Model {
+class Conference extends Model with Owned {
 
   var name: String = _
   var short: String = _

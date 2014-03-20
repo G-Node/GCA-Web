@@ -18,7 +18,7 @@ import javax.persistence._
  * A model class for abstracts
  */
 @Entity
-class Abstract extends Model {
+class Abstract extends Model with Owned {
 
   var title: String = _
   var topic: String = _

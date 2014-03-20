@@ -4,8 +4,8 @@ import play.api.test.{FakeRequest, FakeApplication}
 import org.junit.{Test, Before, AfterClass, BeforeClass}
 import play.api.Play
 import play.api.test.Helpers._
-import utils.serializer.AbstractFormat
-import play.api.libs.json.Json
+import utils.serializer.{AccountFormat, AbstractFormat}
+import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import models.Abstract
 import play.api.mvc.Cookie
 import utils.DefaultRoutesResolver._
@@ -135,6 +135,39 @@ class AbstractsCtrlTest extends BaseCtrlTest {
 
     val reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
     assert(status(reqAuthResult) == OK)
+  }
+
+  @Test
+  def testPermissions(): Unit = {
+
+    val accountFormat = new AccountFormat()
+
+    def parseOwners = {json: JsValue =>
+      for (acc <- json.as[List[JsObject]])
+        yield accountFormat.reads(acc).get.uuid
+    }
+
+    val abstrid = assets.abstracts(0).uuid
+
+    var getR = FakeRequest(GET, s"/api/abstracts/$abstrid/owners").withCookies(cookie)
+    var response = route(AbstractsCtrlTest.app, getR).get
+
+    assert(status(response) == OK)
+    assert(parseOwners(contentAsJson(response)).contains(assets.alice.uuid))
+
+    val body = JsArray(for (acc <- List(assets.bob, assets.eve)) yield accountFormat.writes(acc))
+    val postR = FakeRequest(PUT, s"/api/abstracts/$abstrid/owners").withCookies(cookie).withJsonBody(body)
+    response = route(AbstractsCtrlTest.app, postR).get
+
+    assert(status(response) == OK)
+    assert(parseOwners(contentAsJson(response)).contains(assets.eve.uuid))
+
+    val bobCookie = getCookie(assets.bob.identityId, "testtest")
+    getR = FakeRequest(GET, s"/api/abstracts/$abstrid/owners").withCookies(bobCookie)
+    response = route(AbstractsCtrlTest.app, getR).get
+
+    assert(status(response) == OK)
+    assert(!parseOwners(contentAsJson(response)).contains(assets.alice.uuid))
   }
 
 }

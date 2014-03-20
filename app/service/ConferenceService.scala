@@ -14,7 +14,7 @@ import collection.JavaConversions._
 import play.api._
 import models._
 import javax.persistence._
-import service.util.DBUtil
+import service.util.{PermissionsBase, DBUtil}
 
 /**
  * Service class for that implements data access logic for conferences.
@@ -22,7 +22,7 @@ import service.util.DBUtil
  * TODO prefetch stuff
  * TODO write test
  */
-class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
+class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
 
   /**
    * List all available conferences.
@@ -227,7 +227,6 @@ class ConferenceService(val emf: EntityManagerFactory) extends DBUtil {
       em.remove(confChecked)
     }
   }
-
 }
 
 

@@ -156,6 +156,27 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
     }
   }
 
+  @Test
+  def testPermissions() : Unit = {
+    val abstr = assets.abstracts(0) // alice is the only owner
+    val alice = assets.alice // or abstr.owners.toList(0)
+    val bob = assets.bob
+    val eve = assets.eve
+
+    assert(srv.getPermissions(abstr, alice).contains(alice))
+
+    assert(srv.setPermissions(abstr, alice, List[Account](bob, eve)).contains(bob))
+
+    assert(!srv.getPermissions(abstr, bob).contains(alice))
+
+    intercept[IllegalAccessException] {
+      srv.setPermissions(abstr, alice, List[Account](alice, bob))
+    }
+
+    intercept[IllegalArgumentException] {
+      srv.setPermissions(abstr, bob, List[Account]())
+    }
+  }
 }
 
 
