@@ -57,7 +57,7 @@
                 </button>
                 <!-- left hand side brand / icon -->
                 <a class="navbar-brand" href="@routes.Application.conference(conference.map(_.uuid).getOrElse("#"))">
-                    @conference.map(_.name).getOrElse("GCA")
+                    @conference.map(_.short).getOrElse("GCA")
                 </a>
             </div>
             <div class="navbar-collapse collapse">
