@@ -2,15 +2,32 @@
 @import "base/_font";
 @import "base/_classes";
 
+html {
+  position: relative;
+  min-height: 100%;
+}
+
 body {
   font-family: @family-sans;
   color: @color-fg;
-  background-color: @color-grey;
+  background-color: @color-bg;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.navbar {
+  margin-bottom: 20px;
+}
+
+.header,
+.marketing,
+.footer {
+  padding-right: 2em;
+  padding-left: 2em;
 }
 
 
 .main-content {
-  .bordered-round;
   padding: 2em;
   background-color: @color-bg;
 }
@@ -74,7 +91,7 @@ body {
 
 #abstract-list-item:hover {
   cursor: pointer;
-  background-color: @color-blue-bccn !important;
+  background-color: @color-blue-sky !important;
   color: White;
 }
 
