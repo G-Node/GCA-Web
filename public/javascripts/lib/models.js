@@ -980,6 +980,34 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
     };
 
 
+    /**
+     * Observable model for user accounts.
+     *
+     * @param {string} [uuid]
+     * @param {string} [mail]
+     *
+     * @returns {ObservableAccount}
+     * @constructor
+     * @public
+     */
+    function ObservableAccount(uuid, mail) {
+
+        if (! (this instanceof ObservableAccount)) {
+            return new ObservableAccount(uuid, mail);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.mail = ko.observable(mail || null);
+    }
+
+    ObservableAccount.fromObject = function(obj) {
+        return Model.fromObject(obj, ObservableAccount);
+    };
+
+    ObservableAccount.fromArray = function(array) {
+        return Model.fromArray(array, ObservableAccount.fromObject);
+    };
 
     return {
         Conference: Conference,
@@ -992,6 +1020,7 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         Reference: Reference,
         ObservableReference: ObservableReference,
         Abstract: Abstract,
-        ObservableAbstract: ObservableAbstract
+        ObservableAbstract: ObservableAbstract,
+        ObservableAccount: ObservableAccount
     };
 });

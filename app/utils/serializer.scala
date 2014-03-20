@@ -128,7 +128,7 @@ package object serializer {
     override def writes(account: Account): JsValue = {
       Json.obj(
         "uuid" -> account.uuid,
-        "email" -> account.mail,
+        "mail" -> account.mail,
         "abstracts" -> routesResolver.abstractsUrl(account.uuid)
       )
     }
