@@ -4,36 +4,40 @@
 
     <!-- The conference info page -->
 
-    <div class="header">
-        <h1>@conference.name Abstract Submission</h1>
+    <div class="page-header">
+        <h1>@conference.name</h1>
     </div>
 
-    <hr class="separator">
+    @if(conference.logo != null && conference.link != null) {
+        <div>
+            <a href="@conference.link">
+                <img class="conference-logo img-responsive img-rounded" src="@conference.logo" alt="Conference Logo">
+            </a>
+        </div>
+    }
 
     <!-- Buttons to register, sign in and submit -->
 
+    <h3>Abstract Submission</h3>
     @if(conference.isOpen) {
     <div>
-        <p>Abstract submission is currently open. In order to submit an abstract please press the appropriate button below.</p>
+        <p>Submission is currently <span class="text-success"><b>open</b></span>.
         @if(!account.isDefined) {
+            In order to submit an abstract please login or register.</p>
 
-            <form action="@securesocial.core.providers.utils.RoutesHelper.login()">
-                <p><input type="submit" value="Sign In"> if you already have an account.</p>
-            </form>
-
-            <form action="@securesocial.core.providers.utils.RoutesHelper.startSignUp()">
-                <p>If not, please <input type="submit" value="Register"> and proceed with submission.</p>
-            </form>
+        <a href="@securesocial.core.providers.utils.RoutesHelper.login()" class="btn btn-primary">Login</a>
+        <a href="@securesocial.core.providers.utils.RoutesHelper.startSignUp()" class="btn btn-primary">Sign up</a>
 
         } else {
+            In order to submit an abstract please press the appropriate button below.</p>
             <form action="@routes.Application.submission(conference.uuid)">
-                <input type="submit" value="Submit an Abstract">
+                <input class="btn btn-success" type="submit" value="Submit an Abstract">
             </form>
         }
     </div>
     } else {
     <div>
-        <p>Abstract submission is currently closed.</p>
+        <p>Abstract submission is currently <span class="text-danger"><b>closed</b></span>.</p>
     </div>
     }
 
