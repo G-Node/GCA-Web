@@ -15,6 +15,10 @@ body {
   padding-bottom: 20px;
 }
 
+.glyphicon {
+  margin-left: 0.5em;
+}
+
 .navbar {
   margin-bottom: 20px;
 }
@@ -153,6 +157,14 @@ body {
     .std-gap
   }
 
+  .poster-or-talk, .topic {
+    .std-gap
+  }
+
+}
+
+.state-btn-group {
+  margin: 1.2em 0 0 0;
 }
 
 .editor-box {
@@ -224,6 +236,12 @@ body {
       list-style: none;
       color: @color-fg-light;
       content: "3. Add affiliations and assign authors";
+    }
+  }
+
+  #affiliations-editor {
+    tbody .affiliation-form td {
+      border-top: 1px solid @color-border;
     }
   }
 

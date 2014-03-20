@@ -50,6 +50,46 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             self
         );
 
+        self.showButtonSave = ko.computed(
+            function() {
+                if (self.abstract()) {
+                    var saved = self.isAbstractSaved(),
+                        state = self.abstract().state();
+
+                    return !saved || !state || state === 'InPreparation';
+                } else {
+                    return false;
+                }
+            },
+            self
+        );
+
+        self.showButtonSubmit = ko.computed(
+            function() {
+                if (self.abstract()) {
+                    var saved = self.isAbstractSaved(),
+                        state = self.abstract().state();
+
+                    return saved && (!state || state === 'InPreparation');
+                } else {
+                    return false;
+                }
+            },
+            self
+        );
+
+        self.showButtonWithdraw = ko.computed(
+            function() {
+                if (self.abstract()) {
+                    var ok = ['Submitted', 'InReview'];
+                    return self.isAbstractSaved() && (ok.indexOf(self.abstract().state()) >= 0);
+                } else {
+                    return false;
+                }
+            },
+            self
+        );
+
 
         self.init = function() {
 
@@ -131,7 +171,9 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         self.doSaveAbstract = function(abstract) {
 
-            abstract = abstract || self.abstract();
+            if (! (abstract instanceof models.ObservableAbstract)) {
+                abstract = self.abstract();
+            }
 
             if (self.isAbstractSaved()) {
 
@@ -171,6 +213,18 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             function fail(xhr, stat, msg) {
                 console.log("Error while saving the abstract");
             }
+        };
+
+
+        self.doSubmitAbstract = function() {
+            self.abstract().state('Submitted');
+            self.doSaveAbstract(self.abstract())
+        };
+
+
+        self.doWithdrawAbstract = function() {
+            self.abstract().state('Withdrawn');
+            self.doSaveAbstract(self.abstract())
         };
 
 

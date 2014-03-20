@@ -890,6 +890,20 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.affiliations = ko.observableArray(affiliations || []);
         self.references = ko.observableArray(references || []);
 
+        this.isTalk.computed = ko.computed({
+            read: function() {
+                return self.isTalk().toString();
+            },
+            write: function(val) {
+                val = (val === "true");
+                if (!val) {
+                    self.reasonForTalk(null);
+                }
+                self.isTalk(val);
+            },
+            owner: this
+        });
+
         self.paragraphs = function() {
             var para = [];
 
@@ -898,6 +912,12 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
             }
 
             return para;
+        };
+
+        self.citation = function() {
+            var citetaion = "";
+
+
         };
 
         self.toObject = function() {
