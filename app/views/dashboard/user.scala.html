@@ -11,7 +11,6 @@
 
 
     <!-- Loading box -->
-
     <div data-bind="if: isLoading">
         <div class="alert alert-info fade in out">
             <h4>Loading data</h4>
@@ -19,14 +18,19 @@
         </div>
     </div>
 
-    <!-- Error message box -->
+    <!-- Knockout !flickerbox  -->
+    <div style="display: none" data-bind="visible: true">
 
-    <div data-bind="if: curError">
-        <div class="alert alert-warning fade in alert-dismissable" data-bind="css: errorLevel">
+    <!-- Error message box -->
+    <div data-bind="visible: error">
+        <!-- ko with: error -->
+        <div class="alert alert-warning fade in alert-dismissable" data-bind="css: level">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <strong data-bind="html: curError"></strong>
+            <strong data-bind="html: message"></strong>
         </div>
+        <!-- /ko -->
     </div>
+
 
     <div data-bind="foreach: conferences">
         <div class="panel panel-default">
@@ -36,14 +40,17 @@
                 <div class="panel-body">
                     <span data-bind="text: cite"></span>
                 </div>
-                <ul  class="list-group" data-bind="foreach: abstracts">
-                    <li id="abstract-list" class="list-group-item abstract" data-bind="click: function(data, event) { $root.selectAbstractForConference($data, $parent) } ">
-                        <span data-bind="text: title"> </span>
-                        <span class="badge" data-bind="text: state"></span>
-                    </li>
+                <ul id="abstract-list" class="list-group" data-bind="foreach: abstracts">
+                    <a data-bind="attr: { href: $root.makeAbstractLink($data, $parent) }">
+                        <li id="abstract-list-item" class="list-group-item abstract">
+                            <span data-bind="text: title"> </span>
+                            <span class="badge" data-bind="text: state"></span>
+                        </li>
+                    </a>
                 </ul>
         </div>
     </div>
 
+    </div>
 
 }

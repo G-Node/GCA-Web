@@ -20,12 +20,12 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         self.conferences = ko.observableArray(null);
         self.isLoading = ko.observable(true);
-        self.errorLevel = ko.observable('warning');
-        self.curError = ko.observable(null);
+        self.error = ko.observable(false);
 
-        this.setError = function(level, text) {
-            this.curError(text);
-            this.errorLevel('alert-' + level);
+
+        self.setError = function(level, text) {
+            self.error({message: text, level: 'alert-' + level});
+            self.isLoading(false);
         };
 
 
@@ -33,8 +33,8 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             ko.applyBindings(window.dashboard);
         };
 
-        self.selectAbstractForConference = function(abstract, conference) {
-            console.log("Select abtract: " + abstract.uuid + " for conference: + " + conference.uuid);
+        self.makeAbstractLink = function(abstract, conference) {
+            return "/myabstracts/" + abstract.uuid + "/edit";
         };
 
 
@@ -42,7 +42,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
             console.log( "Request Failed: " + err );
-            self.setError("Error during IO!");
+            self.setError("danger", "Error while lading data [" + err + "]!");
         };
 
         self.ensureDataAndThen = function(doAfter) {

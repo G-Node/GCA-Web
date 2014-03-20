@@ -18,10 +18,12 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         var self = this;
         self.abstractsData = null;
+        self.isLoading = ko.observable(true);
         self.conference = ko.observable();
         self.abstracts = ko.observableArray(null);
         self.selectedAbstract = ko.observable(null);
         self.groups = ko.observableArray(null);
+        self.error = ko.observable(false);
 
         //maps for uuid -> abstract, doi -> abstract,
         //         neighbours -> prev & next of current list
@@ -33,6 +35,10 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             ko.applyBindings(window.abstractList);
         };
 
+        self.setError = function(level, text) {
+            self.error({message: text, level: 'alert-' + level});
+            self.isLoading(false);
+        };
 
         self.makeLink = function(abstract) {
             return '#' + '/uuid/' + abstract.uuid;
@@ -120,7 +126,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
 
             if (selGroup === null) {
-                //FIXME: show error
+                self.setError("danger", "Internal error [group selection]!")
                 console.log("Error invalid group selected");
                 self.showAbstractList([]);
                 return;
@@ -221,12 +227,15 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
             console.log( "Request Failed: " + err );
+            self.setError("danger", "Error while fetching data from server: <br\\>" + error);
         };
 
         self.ensureDataAndThen = function(doAfter) {
             console.log("ensureDataAndThen::");
+            self.isLoading(true);
             if (self.abstractsData !== null) {
                 doAfter();
+                self.isLoading(false);
                 return;
             }
 
@@ -252,6 +261,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 self.neighbours = self.makeNeighboursMap(absList);
 
                 doAfter();
+                self.isLoading(false);
             }
         };
 

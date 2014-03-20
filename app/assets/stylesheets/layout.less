@@ -29,6 +29,18 @@ body {
 }
 
 #abstract-list {
+  a {
+    color: @color-fg;
+    text-decoration: none;
+  }
+
+  a:visited {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+#abstract-list-item {
   .abstract {
 
     .sortId {
@@ -56,9 +68,11 @@ body {
       .enum-with-comma;
     }
   }
+
+
 }
 
-#abstract-list:hover {
+#abstract-list-item:hover {
   cursor: pointer;
   background-color: @color-blue-bccn !important;
   color: White;
