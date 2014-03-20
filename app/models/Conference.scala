@@ -81,7 +81,8 @@ object Conference {
             thumbnail: Option[String] = null,
             groups: Seq[AbstractGroup] = Nil,
             owners: Seq[Account] = Nil,
-            abstracts: Seq[Abstract] = Nil) : Conference = {
+            abstracts: Seq[Abstract] = Nil,
+            topics: Seq[Topic] = Nil): Conference = {
 
     val conference = new Conference()
 
@@ -101,6 +102,7 @@ object Conference {
     conference.groups     = toJSet(groups)
     conference.owners     = toJSet(owners)
     conference.abstracts  = toJSet(abstracts)
+    conference.topics     = toJSet(topics)
 
     conference
   }
