@@ -7,7 +7,7 @@ import play.api.Play
 import play.api.test.Helpers._
 
 import utils.serializer.{AccountFormat, ConferenceFormat}
-import play.api.libs.json.{JsArray, JsObject}
+import play.api.libs.json.{JsValue, JsArray, JsObject}
 import utils.DefaultRoutesResolver._
 import scala.Some
 import play.api.test.FakeApplication
@@ -101,37 +101,35 @@ class ConferenceCtrlTest extends BaseCtrlTest {
 
   @Test
   def testPermissions(): Unit = {
-    val confid = assets.conferences(0).uuid // alice is the only owner
+
     val accountFormat = new AccountFormat()
 
-    val alice = assets.alice
-    val bob = assets.bob
-    val eve = assets.eve
+    def parseOwners = {json: JsValue =>
+      for (acc <- json.as[List[JsObject]])
+        yield accountFormat.reads(acc).get.uuid
+    }
+
+    val confid = assets.conferences(0).uuid
 
     var getR = FakeRequest(GET, s"/api/conferences/$confid/owners").withCookies(cookie)
     var response = route(ConferenceCtrlTest.app, getR).get
 
-    var ids = for (acc <- contentAsJson(response).as[List[JsObject]])
-      yield accountFormat.reads(acc).get.uuid
     assert(status(response) == OK)
-    assert(ids.contains(alice.uuid))
+    assert(parseOwners(contentAsJson(response)).contains(assets.alice.uuid))
 
-    val body = JsArray(for (acc <- (bob, eve)) yield accountFormat.writes(acc))
-    val postR = FakeRequest(POST, s"/api/conferences/$confid/owners").withCookies(cookie).withJsonBody(body)
+    val body = JsArray(for (acc <- List(assets.bob, assets.eve)) yield accountFormat.writes(acc))
+    val postR = FakeRequest(PUT, s"/api/conferences/$confid/owners").withCookies(cookie).withJsonBody(body)
     response = route(ConferenceCtrlTest.app, postR).get
 
-    ids = for (acc <- contentAsJson(response).as[List[JsObject]])
-    yield accountFormat.reads(acc).get.uuid
     assert(status(response) == OK)
-    assert(ids.contains(eve.uuid))
+    assert(parseOwners(contentAsJson(response)).contains(assets.eve.uuid))
 
-    getR = FakeRequest(GET, s"/api/conferences/$confid/owners").withCookies(getCookie(assets.bob.identityId, "testtest"))
+    val bobCookie = getCookie(assets.bob.identityId, "testtest")
+    getR = FakeRequest(GET, s"/api/conferences/$confid/owners").withCookies(bobCookie)
     response = route(ConferenceCtrlTest.app, getR).get
 
-    ids = for (acc <- contentAsJson(response).as[List[JsObject]])
-    yield accountFormat.reads(acc).get.uuid
     assert(status(response) == OK)
-    assert(ids.contains(eve.uuid))
+    assert(!parseOwners(contentAsJson(response)).contains(assets.alice.uuid))
   }
 }
 

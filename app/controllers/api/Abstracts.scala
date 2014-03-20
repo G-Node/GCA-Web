@@ -3,8 +3,8 @@ package controllers.api
 import play.api._
 import play.api.mvc._
 import service._
-import utils.serializer.AbstractFormat
-import play.api.libs.json.Json
+import utils.serializer.{AccountFormat, AbstractFormat}
+import play.api.libs.json.{JsArray, JsObject, Json}
 import utils.GCAAuth
 import models.Abstract
 import utils.DefaultRoutesResolver._
@@ -13,9 +13,10 @@ import utils.DefaultRoutesResolver._
  * Abstracts controller.
  * Manages HTTP request logic for abstracts.
  */
-object Abstracts extends Controller with OwnerManager with  GCAAuth {
+object Abstracts extends Controller with  GCAAuth {
 
   implicit val absFormat = new AbstractFormat()
+  val accountFormat = new AccountFormat()
 
   /**
    * Create a new abstract.
@@ -139,5 +140,38 @@ object Abstracts extends Controller with OwnerManager with  GCAAuth {
     val abstracts = AbstractService()
     abstracts.delete(id, request.user)
     Ok("Abstract Deleted") //FIXME: JSON
+  }
+
+  /**
+   * Set permissions on the abstract.
+   *
+   * @return a list of updated permissions (accounts) as JSON
+   */
+  def setPermissions(id: String) = AuthenticatedAction(parse.json, isREST = true) { request =>
+
+    val to_set = for (acc <- request.body.as[List[JsObject]])
+      yield accountFormat.reads(acc).get
+
+    val srv = AbstractService()
+    val owners = srv.setPermissions(srv.get(id), request.user, to_set)
+
+    Ok(JsArray(
+      for (acc <- owners) yield accountFormat.writes(acc)
+    ))
+  }
+
+  /**
+   * Get permissions of the abstract.
+   *
+   * @return a list of updated permissions (accounts) as JSON
+   */
+  def getPermissions(id: String) = AuthenticatedAction(isREST = true) { request =>
+
+    val srv = AbstractService()
+    val owners = srv.getPermissions(srv.get(id), request.user)
+
+    Ok(JsArray(
+      for (acc <- owners) yield accountFormat.writes(acc)
+    ))
   }
 }
