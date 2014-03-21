@@ -11,8 +11,6 @@ import play.api.i18n.Messages
 import scala.language.higherKinds
 import scala.Some
 import play.api.mvc.SimpleResult
-import utils.RequestWithAccount
-import utils.RequestAuthenticated
 import play.api.libs.json.JsResultException
 import service.UserStore
 
