@@ -70,6 +70,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         self.changeHandler = function(newValue) {
             self.haveChanges(true);
+            return true;
         };
 
         self.makeConferenceObservable = function (conf) {

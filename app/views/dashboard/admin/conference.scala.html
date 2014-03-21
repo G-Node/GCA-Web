@@ -44,8 +44,8 @@
                 <div class="form-group">
                     <label for="state" class="col-sm-2 control-label">Submission</label>
                     <div class="col-sm-10">
-                        <input type="checkbox" class="form-control" id="state"
-                               placeholder="State" data-bind="checked: isOpen, valueUpdate: 'afterkeydown'">
+                        <input type="checkbox" class="form-control" id="state" name="submission"
+                               placeholder="State" data-bind="checked: isOpen, valueUpdate: 'afterkeydown', click: $root.changeHandler">
                     </div>
                 </div>
 
