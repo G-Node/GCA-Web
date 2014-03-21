@@ -102,7 +102,7 @@ trait GCAAuth extends securesocial.core.SecureSocial {
 
   def exHandlerHTML() : PartialFunction[Throwable, SimpleResult] = {
     case e: NoResultException => NotFound("No Result !\n" + e.getStackTraceString)
-    case e: Exception => InternalServerError("<html><h1>Uh oh!</h1><br/>\n" + e.getStackTraceString + "</html>")
+    case e: Exception => InternalServerError(views.html.error.InternalServerError(e))
   }
 
   def exHandlerJSON() : PartialFunction[Throwable, SimpleResult] = {
