@@ -86,9 +86,50 @@
 
 
                 <ul class="nav navbar-nav navbar-right">
-                    @if(account.isDefined) {
-                        <li><a href="@securesocial.core.providers.utils.RoutesHelper.logout()">Hello @account.get.firstName Logout</a></li>
-                    } else {
+                    @account.map { acc =>
+                        <li class="dropdown">
+                            <a href="#" id="usermenu" role="button" class="dropdown-toggle" data-toggle="dropdown">
+                                @acc.firstName @acc.lastName
+                            <b class="caret"></b>
+                            </a>
+
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="usermenu">
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="@routes.Application.abstractsPrivate()">My Abstracts</a>
+                                </li>
+                                <li class="divider"></li>
+
+                                @if(acc.isAdmin) {
+                                    <li role="presentation" class="dropdown-header">Site Admin</li>
+                                    <li role="presentation">
+                                        <a role="menuitem" tabindex="-1" href="@routes.Application.createConference()">Create Conference</a>
+                                    </li>
+                                    <li class="divider"></li>
+                                }
+
+                                @conference.map { conf =>
+
+                                  @if(acc.isAdmin || conf.isOwner(acc)) {
+                                      <li role="presentation" class="dropdown-header">Conference Admin</li>
+                                      <li role="presentation">
+                                          <a role="menuitem" tabindex="-1" href="@routes.Application.adminConference(conf.uuid)">Conference Settings</a>
+                                      </li>
+                                      <li class="divider"></li>
+                                  }
+
+                                }
+
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="@securesocial.core.providers.utils.RoutesHelper.logout()">Logout</a>
+                                </li>
+
+                            </ul>
+                        </li>
+
+
+                    }
+
+                    @if(account.isEmpty) {
                         <li><a href="@securesocial.core.providers.utils.RoutesHelper.login()">Login</a></li>
                     }
                 </ul>
