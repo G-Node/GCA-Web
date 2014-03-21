@@ -85,4 +85,24 @@ object Application extends Controller with GCAAuth {
 
     Ok(views.html.impressum(request.user, conference))
   }
+
+  def createConference() = AuthenticatedAction { implicit request =>
+
+    if (!request.user.isAdmin) {
+      Unauthorized(views.html.error.NotAuthorized())
+    } else {
+      Ok(views.html.dashboard.admin.conference(request.user, None))
+    }
+  }
+
+  def adminConference(confId: String) = AuthenticatedAction { request =>
+    val confServ = ConferenceService()
+    val conference = confServ.get(confId)
+
+    if (!(conference.isOwner(request.user) || request.user.isAdmin)) {
+      Unauthorized("Not allowed!")
+    } else {
+      Ok(views.html.dashboard.admin.conference(request.user, Some(conference)))
+    }
+  }
 }
