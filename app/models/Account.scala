@@ -9,7 +9,6 @@
 
 package models
 
-import _root_.java.util
 import play.api.Play.current
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
