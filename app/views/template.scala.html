@@ -98,7 +98,11 @@
                                     <a role="menuitem" tabindex="-1" href="@routes.Application.abstractsPrivate()">My Abstracts</a>
                                 </li>
                                 <li class="divider"></li>
-
+                                <li role="presentation" class="dropdown-header">My Settings</li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="/password">Change password</a>
+                                </li>
+                                <li class="divider"></li>
                                 @if(acc.isAdmin) {
                                     <li role="presentation" class="dropdown-header">Site Admin</li>
                                     <li role="presentation">
