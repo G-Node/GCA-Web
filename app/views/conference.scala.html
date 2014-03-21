@@ -85,18 +85,18 @@
             <p>You are the owner of this conference. Some more owners can be added here.</p>
 
             <p>Here is the list of current owners:</p>
-            <ul data-bind="foreach: owners, visible: owners().length > 0">
+            <ul data-bind="foreach: owners, visible: owners().length > 0" class="unstyled">
                 <li>
-                    <span data-bind="text: mail"></span>
-                    <a href="#" data-bind="click: $parent.removeOwner">Remove</a>
+                    <button data-bind="click: $parent.removeOwner, enable: $parent.owners().length > 1" class="btn btn-mini btn-primary">Remove</button>
+                    <strong><span data-bind="text: mail"></span></strong>
                 </li>
             </ul>
 
             <form data-bind="submit: addOwner">
                 Add owner by e-mail: <input data-bind="value: newEmail" placeholder="enter a valid e-mail here" />
-                <button type="submit">Add to the list</button>
+                <button type="submit" class="btn btn-primary">Add to the list</button>
                 and after
-                <button data-bind="click: save">Save all</button>
+                <button data-bind="click: save" class="btn btn-primary">Save changes</button>
             </form>
         }
     }

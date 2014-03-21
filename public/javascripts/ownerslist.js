@@ -90,7 +90,10 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 data: "[" + data.join(",") + "]",
                 type: "PUT",
                 contentType: "application/json",
-                success: function(result) { self.updateOwners(result) },
+                success: function(result) {
+                    self.updateOwners(result);
+                    self.setError("owners_update", "Changes saved")
+                },
                 error: self.ioFailHandler
             });
         };
