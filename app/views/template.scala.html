@@ -76,7 +76,7 @@
                             </li>
                         }
 
-                        @if(account.isDefined) {
+                        @account.map { acc =>
                             <li class=@if(active.toLowerCase == "myabstracts") {"active"} else {""}>
                                 <a href="@routes.Application.abstractsPrivate()">My Abstracts</a>
                             </li>
