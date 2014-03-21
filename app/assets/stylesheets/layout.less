@@ -2,16 +2,48 @@
 @import "base/_font";
 @import "base/_classes";
 
+html {
+  position: relative;
+  min-height: 100%;
+}
+
 body {
   font-family: @family-sans;
   color: @color-fg;
-  background-color: @color-grey;
+  background-color: @color-bg;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
+.glyphicon {
+  margin-left: 0.5em;
+}
+
+.navbar {
+  margin-bottom: 20px;
+}
+
+.conference-logo {
+  max-height: 128px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.header,
+.marketing,
+.footer {
+  padding-right: 2em;
+  padding-left: 2em;
+}
+
+.page-header {
+  margin-top: 2em;
+}
 
 .main-content {
-  .bordered-round;
-  padding: 2em;
+  padding-left: 30px;
+  padding-right: 30px;
   background-color: @color-bg;
 }
 
@@ -74,7 +106,7 @@ body {
 
 #abstract-list-item:hover {
   cursor: pointer;
-  background-color: @color-blue-bccn !important;
+  background-color: @color-blue-sky !important;
   color: White;
 }
 
@@ -136,6 +168,14 @@ body {
     .std-gap
   }
 
+  .poster-or-talk, .topic {
+    .std-gap
+  }
+
+}
+
+.state-btn-group {
+  margin: 1.2em 0 0 0;
 }
 
 .editor-box {
@@ -207,6 +247,12 @@ body {
       list-style: none;
       color: @color-fg-light;
       content: "3. Add affiliations and assign authors";
+    }
+  }
+
+  #affiliations-editor {
+    tbody .affiliation-form td {
+      border-top: 1px solid @color-border;
     }
   }
 

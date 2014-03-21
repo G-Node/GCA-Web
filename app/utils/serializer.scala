@@ -68,6 +68,14 @@ package object serializer {
     }
   }
 
+  class TopicFormat extends Format[Topic] {
+
+    override def writes(o: Topic): JsValue = JsString(o.topic)
+
+    override def reads(json: JsValue): JsResult[Topic] = JsSuccess(Topic(json.as[String], None))
+
+  }
+
   /**url
    * Conference serializer.
    *
@@ -76,6 +84,7 @@ package object serializer {
   class ConferenceFormat(implicit routesResolver: RoutesResolver) extends Format[Conference] {
 
     implicit val agf = new AbstractGroupFormat()
+    implicit val tf = new TopicFormat()
 
     override def reads(json: JsValue): JsResult[Conference] = (
       (__ \ "uuid").readNullable[String] and
@@ -90,8 +99,9 @@ package object serializer {
       (__ \ "logo").readNullable[String] and
       (__ \ "thumbnail").readNullable[String] and
 
-      (__ \ "groups").read[List[AbstractGroup]]
-    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _)).reads(json)
+      (__ \ "groups").read[List[AbstractGroup]] and
+      (__ \ "topics").read[List[Topic]]
+    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
       val groups: Seq[AbstractGroup] = asScalaSet(c.groups).toSeq
@@ -108,7 +118,8 @@ package object serializer {
         "deadline" -> c.deadline,
         "logo" -> c.logo,
         "thumbnail" -> c.thumbnail,
-        "abstracts" -> routesResolver.abstractsUrl(c.uuid)
+        "abstracts" -> routesResolver.abstractsUrl(c.uuid),
+        "topics" -> JsArray(for (topic <- c.topics.toSeq) yield tf.writes(topic))
       )
     }
   }
@@ -259,12 +270,14 @@ package object serializer {
       (__ \ "doi").readNullable[String] and
       (__ \ "conflictOfInterest").readNullable[String] and
       (__ \ "acknowledgements").readNullable[String] and
+      (__ \ "isTalk").readNullable[Boolean] and
+      (__ \ "reasonForTalk").readNullable[String] and
       (__ \ "sortId").readNullable[Int] and
       (__ \ "state").readNullable[AbstractState.State] and
       (__ \ "authors").lazyRead( list[Author](authorF) ) and
       (__ \ "affiliations").lazyRead( list[Affiliation](affiliationF) ) and
       (__ \ "references").lazyRead( list[Reference](referenceF) )
-    )(Abstract(_, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
+    )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
       val figures: Seq[Figure] = asScalaSet(a.figures).toSeq
@@ -279,6 +292,8 @@ package object serializer {
         "doi" -> a.doi,
         "conflictOfInterest" -> a.conflictOfInterest,
         "acknowledgements" -> a.acknowledgements,
+        "isTalk" -> a.isTalk,
+        "reasonForTalk" -> a.reasonForTalk,
         "sortId" -> a.sortId,
         "state" -> a.state,
         "conference" -> a.conference.uuid,

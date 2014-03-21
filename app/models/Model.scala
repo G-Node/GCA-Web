@@ -15,7 +15,7 @@ import javax.persistence.{PrePersist, Id, MappedSuperclass}
 
 /**
  * Trait that defines stuff that is common for all models.
- * This trait may be extended with some other properties like timestamps
+ * This trait may be extended with some that properties like timestamps
  * etc. when needed.
  */
 @MappedSuperclass
@@ -43,8 +43,8 @@ class Model extends Ordered[Model] {
 
   override def equals(that: Any) : Boolean = {
     that match {
-      case t: Model => this.compare(t) == 0
-      case _ => super.equals(that)
+      case t: Model => (uuid != null && uuid == t.uuid) || hashCode == t.hashCode
+      case _ => false
     }
   }
 

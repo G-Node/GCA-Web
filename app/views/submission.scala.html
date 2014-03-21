@@ -11,7 +11,25 @@
             src="@routes.Assets.at("javascripts/require.js")"></script>
 
     <div class="header">
-        <h1>Abstract submission for @conference.name</h1>
+        <div class="pull-right state-btn-group">
+            <span data-bind="if: showButtonSave">
+                <button type="button" class="btn btn-lg" data-bind="click: doSaveAbstract">
+                    Save
+                </button>
+            </span>
+            <span data-bind="if: showButtonSubmit">
+                <button type="button" class="btn btn-lg" data-bind="click: doSubmitAbstract">
+                    Submit
+                </button>
+            </span>
+            <span data-bind="if: showButtonWithdraw">
+                <button type="button" class="btn btn-lg"  data-bind="click: doWithdrawAbstract">
+                    Withdraw
+                </button>
+            </span>
+        </div>
+
+        <h2>Abstract submission for @conference.name</h2>
     </div>
 
     <hr class="separator">
@@ -20,7 +38,8 @@
 
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
-                <button type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal">
+                <button type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal"
+                        data-bind="click: doStartEdit">
                     Edit
                 </button>
             </div>
@@ -34,12 +53,16 @@
 
                         <div class="modal-body">
                             <label for="title"></label>
-                            <input type="text" class="form-control" id="title" data-bind="value: abstract().title" />
+                            <input type="text" class="form-control" id="title" data-bind="value: editedAbstract().title" />
                         </div>
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
-                                Close
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
+                                    data-bind="click: doEndEdit">
+                                Ok
                             </button>
                         </div>
                     </div>
@@ -54,7 +77,8 @@
         <div class="editor-box">
 
             <div class="btn-group pull-right btn-group-hover">
-                <button type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal">
+                <button type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal"
+                        data-bind="click: doStartEdit">
                     Edit
                 </button>
             </div>
@@ -63,8 +87,9 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: addAuthor">
+                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: doEditAddAuthor">
                                 Add
+                                <span class="glyphicon glyphicon-user"></span>
                             </button>
 
                             <h3>Edit Authors</h3>
@@ -72,7 +97,7 @@
 
                         <div class="modal-body">
                             <table class="table">
-                                <tbody data-bind="foreach: {data: abstract().authors, as: 'person'}">
+                                <tbody data-bind="foreach: {data: editedAbstract().authors, as: 'person'}">
                                     <tr>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="First Name"
@@ -83,7 +108,7 @@
                                                    data-bind="value: person.middleName" />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="First Name"
+                                            <input type="text" class="form-control input-sm" placeholder="Last Name"
                                                    data-bind="value: person.lastName" />
                                         </td>
                                         <td>
@@ -93,8 +118,9 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.removeAuthor.bind(person)">
+                                                        data-bind="click: $root.doEditRemoveAuthor.bind(person)">
                                                     Remove
+                                                    <span class="glyphicon glyphicon-user"></span>
                                                 </button>
                                             </div>
                                         </td>
@@ -104,7 +130,13 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"
+                                    data-bind="click: doEndEdit">
+                                Ok
+                            </button>
                         </div>
 
                     </div>
@@ -121,7 +153,7 @@
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
-                        data-toggle="modal">
+                        data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
                 </button>
             </div>
@@ -130,8 +162,9 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: addAffiliation">
+                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: doEditAddAffiliation">
                                 Add
+                                <span class="glyphicon glyphicon-envelope"></span>
                             </button>
 
                             <h3>Edit Affiliations</h3>
@@ -139,8 +172,8 @@
 
                         <div class="modal-body">
                             <table class="table">
-                                <tbody data-bind="foreach: {data: abstract().affiliations, as: 'affiliation'}">
-                                    <tr>
+                                <tbody data-bind="foreach: {data: editedAbstract().affiliations, as: 'affiliation'}">
+                                    <tr class="affiliation-form">
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Name"
                                                    data-bind="value: affiliation.name" />
@@ -164,20 +197,22 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.removeAffiliation.bind($root, affiliation)">
+                                                        data-bind="click: $root.doEditRemoveAffiliation.bind($root, affiliation)">
                                                     Remove
+                                                    <span class="glyphicon glyphicon-envelope"></span>
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
-                                    <!-- ko foreach: {data: $root.authorsForAffiliation(affiliation), as: 'author'} -->
+                                    <!-- ko foreach: {data: $root.getEditorAuthorsForAffiliation(affiliation), as: 'author'} -->
                                     <tr>
                                         <td colspan="5" data-bind="text: author.formatName()"></td>
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doRemoveAffiliationFromAuthor.bind($root, affiliation, author)">
+                                                        data-bind="click: $root.doEditRemoveAffiliationFromAuthor.bind($root, affiliation, author)">
                                                     Remove
+                                                    <span class="glyphicon glyphicon-user"></span>
                                                 </button>
                                             </div>
                                         </td>
@@ -186,7 +221,7 @@
                                     <tr>
                                         <td colspan="5" data-bind="attr: {id: 'author-select-' + affiliation.position()}">
                                             <select class="form-control"
-                                                    data-bind="options: $root.abstract().authors,
+                                                    data-bind="options: $root.editedAbstract().authors,
                                                                optionsText: function(e) { return e.formatName(); },
                                                                optionsValue: 'position'">
                                             </select>
@@ -194,8 +229,9 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doAddAuthorToAffiliation.bind($root, affiliation)">
+                                                        data-bind="click: $root.doEditAddAuthorToAffiliation.bind($root, affiliation)">
                                                     Add
+                                                    <span class="glyphicon glyphicon-user"></span>
                                                 </button>
                                             </div>
                                         </td>
@@ -205,8 +241,12 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
-                                Close
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"
+                                    data-bind="click: doEndEdit">
+                                Ok
                             </button>
                         </div>
 
@@ -225,7 +265,7 @@
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#abstract-text-editor"
-                        data-toggle="modal">
+                        data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
                 </button>
             </div>
@@ -239,13 +279,20 @@
 
                         <div class="modal-body">
                             <textarea rows="10" class="form-control" id="text"
-                                      data-bind="value: abstract().text">
+                                      data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'">
                             </textarea>
+                            <div>
+                                <span>Characters left: </span><span data-bind="text: editorTextCharactersLeft"></span>
+                            </div>
                         </div>
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
-                                Close
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-sm btn-default"
+                                    data-dismiss="modal" data-bind="click: doEndEdit">
+                                Ok
                             </button>
                         </div>
                     </div>
@@ -261,7 +308,7 @@
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#acknowledgements-editor"
-                        data-toggle="modal">
+                        data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
                 </button>
             </div>
@@ -274,15 +321,21 @@
                         </div>
 
                         <div class="modal-body">
-                            <label for="text"></label>
                             <textarea rows="10" class="form-control" id="text"
-                                      data-bind="value: abstract().acknowledgements">
+                                      data-bind="value: editedAbstract().acknowledgements, valueUpdate: 'afterkeydown'">
                             </textarea>
+                            <div>
+                                <span>Characters left: </span><span data-bind="text: editorAckCharactersLeft"></span>
+                            </div>
                         </div>
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
-                                Close
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
+                                    data-bind="click: doEndEdit">
+                                Ok
                             </button>
                         </div>
                     </div>
@@ -299,7 +352,7 @@
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#references-editor"
-                        data-toggle="modal">
+                        data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
                 </button>
             </div>
@@ -310,7 +363,7 @@
 
                         <div class="modal-header">
                             <button type="button" class="btn btn-default btn-sm pull-right"
-                                    data-bind="click: doAddReference">
+                                    data-bind="click: doEditAddReference">
                                 Add
                             </button>
 
@@ -319,7 +372,7 @@
 
                         <div class="modal-body">
                             <table class="table">
-                                <tbody data-bind="foreach: {data: abstract().references, as: 'reference'}">
+                                <tbody data-bind="foreach: {data: editedAbstract().references, as: 'reference'}">
                                     <tr>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Authors"
@@ -340,7 +393,7 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doRemoveReference.bind($root, $index, reference)">
+                                                        data-bind="click: $root.doEditRemoveReference.bind($root, $index, reference)">
                                                     Remove
                                                 </button>
                                             </div>
@@ -351,8 +404,12 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
-                                Close
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"
+                                    data-bind="click: doEndEdit">
+                                Ok
                             </button>
                         </div>
                     </div>
@@ -366,20 +423,110 @@
             </div>
         </div>
 
-        <div>
-            <button type="button" class="btn btn-default btn-sm" data-bind="click: saveAbstract">
-                Submit Abstract
-            </button>
+
+        <div class="editor-box">
+            <div class="btn-group pull-right btn-group-hover">
+                <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
+                data-toggle="modal" data-bind="click: doStartEdit">
+                    Edit
+                </button>
+            </div>
+
+            <div class="modal" id="topic-editor" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Set the Abstract Topic</h3>
+                        </div>
+
+                        <div class="modal-body">
+                            <select class="form-control"
+                                    data-bind="options: conference().topics,
+                                               value: editedAbstract().topic">
+                            </select>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
+                            data-bind="click: doEndEdit">
+                                Ok
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h4>Topic</h4>
+                <p data-bind="text: abstract().topic"></p>
+            </div>
+        </div>
+
+        <div class="editor-box">
+            <div class="btn-group pull-right btn-group-hover">
+                <button type="button" class="btn btn-default btn-sm" data-target="#is-talk-editor"
+                data-toggle="modal" data-bind="click: doStartEdit">
+                    Edit
+                </button>
+            </div>
+
+            <div class="modal" id="is-talk-editor" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Poster or Talk</h3>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="false"
+                                           data-bind="checked: editedAbstract().isTalk.computed">
+                                    This abstract is for a poster only
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="true"
+                                           data-bind="checked: editedAbstract().isTalk.computed">
+                                    This abstract is a poster and a talk
+                                </label>
+                            </div>
+                            <div data-bind="if: editedAbstract().isTalk">
+                                <input type="text" class="form-control" placeholder="Reason for a Talk"
+                                       data-bind="value: editedAbstract().reasonForTalk">
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
+                            data-bind="click: doEndEdit">
+                                Ok
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="poster-or-talk">
+                <h4>Poster or Talk</h4>
+                <div data-bind="if: abstract().isTalk">
+                    <p>This abstract could be a talk</p>
+                    <p>Reason: <span data-bind="text: abstract().reasonForTalk"></span></p>
+                </div>
+                <div data-bind="ifnot: abstract().isTalk">
+                    <p>This is an abstract for a poster</p>
+                </div>
+            </div>
         </div>
 
         <hr class="separator">
-
-        <div class="foot-info">
-            <p><b>Identifier:</b> <span>T&nbsp;100</span></p>
-            <p><b>Conference:</b> <span>G-Node Conference 20XX, München, Germany, June 20 - 27</span></p>
-            <p><b>Citation:</b> <span>Greene G, Ehrhardt E, Gollisch T, Wachtler T (2013) Distinguishing local and global motion through non-linear retinal processing. <i>G-Node Conference 20XX</i>. doi: <a class="doilink" href="http://localhost:8000/#/doi/test.1">10.12751/test.1</a></span></p>
-            <p><b>Type:</b> <span>Poster</span></p>
-        </div>
 
     </div>
 
