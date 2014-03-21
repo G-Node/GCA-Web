@@ -1,4 +1,4 @@
-require(["lib/models", "lib/tools"], function(models, tools) {
+require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi) {
     "use strict";
 
     /**
@@ -170,6 +170,35 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         };
 
 
+        self.doFigureUpload = function() {
+
+            var json = {
+                    name: $("#figure-name").val(),
+                    caption: $("#figure-caption").val()
+                },
+                input = $("#figure-file"),
+                mp = multi.MultiPart();
+
+            //mp.appendText("figure", JSON.stringify(json));
+            //mp.appendInput("file", input, ready);
+
+            var fd = new FormData();
+            fd.append('file', input.get(0).files[0]);
+            fd.append('figure', JSON.stringify(json));
+
+            $.ajax({
+                url: '/api/abstracts/' + self.abstract().uuid + '/figures',
+                data: fd,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function(data){
+                    alert(data);
+                }
+            });
+        }
+
+
         self.doSaveAbstract = function(abstract) {
 
             if (! (abstract instanceof models.ObservableAbstract)) {
@@ -229,13 +258,16 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         };
 
 
-        self.doStartEdit = function() {
+        self.doStartEdit = function(editorId) {
+            var ed = $(editorId).find("input").first()
+            ed.focus()
+
             var obj = $.extend(true, {}, self.abstract().toObject());
             self.editedAbstract(models.ObservableAbstract.fromObject(obj));
         };
 
 
-        self.doEndEdit = function() {
+        self.doEndEdit = function(editorId) {
             if (self.isAbstractSaved()) {
                 self.doSaveAbstract(self.editedAbstract())
             } else {

@@ -39,7 +39,7 @@
         <div class="editor-box">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal"
-                        data-bind="click: doStartEdit">
+                        data-bind="click: doStartEdit.bind($root, '#title-editor')">
                     Edit
                 </button>
             </div>
@@ -527,6 +527,22 @@
                     <p>This is an abstract for a poster</p>
                 </div>
             </div>
+        </div>
+
+        <div>
+
+                <form action="#" method="post" enctype="multipart/form-data">
+                    <input type="text" name="figure-name" id="figure-name" class="form-control input-sm" placeholder="Figure Name">
+                    <input type="text" name="figure-caption" id="figure-caption" class="form-control input-sm" placeholder="Figure Caption">
+
+                    <input type="file" name="figure-file" id="figure-file" class="form-control input-sm">
+
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
+                            data-bind="click: doFigureUpload">
+                        Upload
+                    </button>
+                </form>
+
         </div>
 
         <hr class="separator">
