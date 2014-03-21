@@ -61,18 +61,18 @@
                 </a>
             </div>
             <div class="navbar-collapse collapse">
-                @if(conference.isDefined) {
+                @conference.map { conf =>
                     <ul class="nav navbar-nav">
-                            <a href="@routes.Application.conference(conference.get.uuid)"> @conference.get.short</a>
                         <li class=@if(active.toLowerCase == "conference") {"active"} else {""}>
+                            <a href="@routes.Application.conference(conf.uuid)"> @conference.get.short</a>
                         </li>
                         <li class=@if(active.toLowerCase == "abstracts") {"active"} else {""}>
-                            <a href="@routes.Application.abstractsPublic(conference.get.uuid)">Abstracts</a>
+                            <a href="@routes.Application.abstractsPublic(conf.uuid)">Abstracts</a>
                         </li>
 
                         @if(conference.get.isOpen && account.isDefined) {
                             <li class=@if(active.toLowerCase == "submission") {"active"} else {""}>
-                                <a href="@routes.Application.submission(conference.get.uuid)">Submission</a>
+                                <a href="@routes.Application.submission(conf.uuid)">Submission</a>
                             </li>
                         }
 
@@ -81,9 +81,10 @@
                                 <a href="@routes.Application.abstractsPrivate()">My Abstracts</a>
                             </li>
                         }
-
                     </ul>
                 }
+
+
                 <ul class="nav navbar-nav navbar-right">
                     @if(account.isDefined) {
                         <li><a href="@securesocial.core.providers.utils.RoutesHelper.logout()">Hello @account.get.firstName Logout</a></li>
