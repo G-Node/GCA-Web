@@ -9,23 +9,22 @@
     </div>
 
     @errorMsg.map { msg =>
-        <div class="alert alert-error fade in alert-dismissable">
-            @Messages(msg)
+        <div class="alert alert-danger fade in alert-dismissable">
+            <strong>@Messages(msg)</strong>
         </div>
     }
 
     @request.flash.get("success").map { msg =>
-        <div class="alert alert-info">
+        <div class="alert alert-info fade in alert-dismissable">
             @msg
         </div>
     }
 
     @request.flash.get("error").map { msg =>
-        <div class="alert alert-error fade in alert-dismissable">
-            @msg
+        <div class="alert alert-danger fade in alert-dismissable">
+            <strong>@msg</strong>
         </div>
     }
-
 
     @defining( Registry.providers.all.values.filter( _.id != UsernamePassword) ) { externalProviders =>
 
