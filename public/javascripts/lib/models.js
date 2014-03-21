@@ -44,7 +44,9 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
 
         if (tools.type(str) === "string") {
             str = str.trim();
-            if (str.match(/^(\+|-)?((\d+(\.\d+)?)|(\.\d+))$/)) {
+            if (str === "") {
+                val = null;
+            } else if (str.match(/^(\+|-)?((\d+(\.\d+)?)|(\.\d+))$/)) {
                 val = Number(str);
             } else if (str.match(/^(true|false)$/)) {
                 val = (str === "true");
@@ -251,11 +253,11 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @public
      */
     function Conference(uuid, name, short, cite, link, isOpen, groups,
-                        owners, abstracts) {
+                        owners, abstracts, topics) {
 
         if (! (this instanceof Conference)) {
             return new Conference(uuid, name, short, cite, link, isOpen, groups,
-                                  owners, abstracts);
+                                  owners, abstracts, topics);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -265,9 +267,10 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.cite = cite || null;
         self.link = link || null;
         self.isOpen = isOpen || false;
-        self.groups = groups || null;
-        self.owners = owners || null;
-        self.abstracts = abstracts || null;
+        self.groups = groups || [];
+        self.owners = owners || [];
+        self.abstracts = abstracts || [];
+        self.topics = topics || [];
 
         self.toObject = function() {
             var prop,
@@ -303,10 +306,17 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
             if (target.hasOwnProperty(prop)) {
                 var value = readProperty(prop, obj);
 
-                if (prop === "groups") {
-                    target.groups = AbstractGroup.fromArray(value);
-                } else if (tools.type(target[prop]) !== "function") {
-                        target[prop] = value;
+                switch (prop) {
+                    case "groups":
+                        target.groups = AbstractGroup.fromArray(value);
+                        break;
+                    case "topics":
+                        target.topics = value ? value.sort() : value;
+                        break;
+                    default:
+                        if (tools.type(target[prop]) !== "function") {
+                            target[prop] = value;
+                        }
                 }
             }
         }
@@ -700,6 +710,8 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @param {string} [doi]
      * @param {string} [conflictOfInterest]
      * @param {string} [acknowledgements]
+     * @param {Boolean} [isTalk]
+     * @param {string} [reasonForTalk]
      * @param {string} [owners]     URL to abstract owners.
      * @param {string} [state]
      * @param {Array} [figures]
@@ -712,13 +724,13 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @public
      */
     function Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                      acknowledgements, owners, state, figures, authors, affiliations,
-                      references) {
+                      acknowledgements, isTalk, reasonForTalk, owners, state, figures,
+                      authors, affiliations, references) {
 
         if (! (this instanceof Abstract)) {
             return new Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                                acknowledgements, state, owners, figures,
-                                authors, affiliations, references);
+                                acknowledgements, isTalk, reasonForTalk, owners, state,
+                                figures, authors, affiliations, references);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -730,6 +742,8 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.doi = doi || null;
         self.conflictOfInterest = conflictOfInterest || null;
         self.acknowledgements = acknowledgements || null;
+        self.isTalk = isTalk || false;
+        self.reasonForTalk = reasonForTalk || null;
         self.owners = owners || null;
         self.state = state || "InPreparation";
         self.figures = figures || [];
@@ -829,12 +843,15 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * Observable model for abstracts.
      *
      * @param {string} [uuid]
+     * @param {number} [sortId]
      * @param {string} [title]
      * @param {string} [topic]
      * @param {string} [text]
      * @param {string} [doi]
      * @param {string} [conflictOfInterest]
      * @param {string} [acknowledgements]
+     * @param {Boolean} [isTalk]
+     * @param {string} [reasonForTalk]
      * @param {string} [owners]     URL to abstract owners.
      * @param {string} [state]
      * @param {Array} [figures]
@@ -846,14 +863,14 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @constructor
      * @public
      */
-    function ObservableAbstract(uuid, title, topic, text, doi, conflictOfInterest,
-                                acknowledgements, owners, state, figures,
+    function ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
+                                acknowledgements, isTalk, reasonForTalk, owners, state, figures,
                                 authors, affiliations, references) {
 
         if (! (this instanceof ObservableAbstract)) {
-            return new ObservableAbstract(uuid, title, topic, text, doi,
-                conflictOfInterest, acknowledgements, state, owners,
-                figures, authors, affiliations, references);
+            return new ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
+                                          acknowledgements, isTalk, reasonForTalk, owners, state,
+                                          figures, authors, affiliations, references);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -864,12 +881,28 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.doi = ko.observable(doi || null);
         self.conflictOfInterest = ko.observable(conflictOfInterest || null);
         self.acknowledgements = ko.observable(acknowledgements || null);
+        self.isTalk = ko.observable(isTalk || false);
+        self.reasonForTalk = ko.observable(reasonForTalk || null);
         self.owners = ko.observable(owners || null);
         self.state = ko.observable(state || "InPreparation");
         self.figures = ko.observableArray(figures || []);
         self.authors = ko.observableArray(authors || []);
         self.affiliations = ko.observableArray(affiliations || []);
         self.references = ko.observableArray(references || []);
+
+        this.isTalk.computed = ko.computed({
+            read: function() {
+                return self.isTalk().toString();
+            },
+            write: function(val) {
+                val = (val === "true");
+                if (!val) {
+                    self.reasonForTalk(null);
+                }
+                self.isTalk(val);
+            },
+            owner: this
+        });
 
         self.paragraphs = function() {
             var para = [];
@@ -879,6 +912,12 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
             }
 
             return para;
+        };
+
+        self.citation = function() {
+            var citetaion = "";
+
+
         };
 
         self.toObject = function() {

@@ -19,27 +19,112 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         var self = this;
 
-        self.abstractSaved = ko.observable(false);
-        self.abstract = ko.observable(null);
+        self.textCharacterLimit = 2000;
+        self.ackCharacterLimit = 200;
+
         self.conference = ko.observable(null);
+        self.abstract = ko.observable(null);
+        self.editedAbstract = ko.observable(null);
+
+        self.isAbstractSaved = ko.observable(false);
+
+        self.editorTextCharactersLeft = ko.computed(
+            function() {
+                if (self.editedAbstract() && self.editedAbstract().text()) {
+                    return self.textCharacterLimit - self.editedAbstract().text().length;
+                } else {
+                    return self.textCharacterLimit;
+                }
+            },
+            self
+        );
+
+        self.editorAckCharactersLeft = ko.computed(
+            function() {
+                if (self.editedAbstract() && self.editedAbstract().acknowledgements()) {
+                    return self.ackCharacterLimit - self.editedAbstract().acknowledgements().length;
+                } else {
+                    return self.ackCharacterLimit;
+                }
+            },
+            self
+        );
+
+        self.showButtonSave = ko.computed(
+            function() {
+                if (self.abstract()) {
+                    var saved = self.isAbstractSaved(),
+                        state = self.abstract().state();
+
+                    return !saved || !state || state === 'InPreparation';
+                } else {
+                    return false;
+                }
+            },
+            self
+        );
+
+        self.showButtonSubmit = ko.computed(
+            function() {
+                if (self.abstract()) {
+                    var saved = self.isAbstractSaved(),
+                        state = self.abstract().state();
+
+                    return saved && (!state || state === 'InPreparation');
+                } else {
+                    return false;
+                }
+            },
+            self
+        );
+
+        self.showButtonWithdraw = ko.computed(
+            function() {
+                if (self.abstract()) {
+                    var ok = ['Submitted', 'InReview'];
+                    return self.isAbstractSaved() && (ok.indexOf(self.abstract().state()) >= 0);
+                } else {
+                    return false;
+                }
+            },
+            self
+        );
 
 
         self.init = function() {
 
             if (confId) {
-                self.getConference(confId);
-                self.abstract(models.ObservableAbstract());
+                self.requestConference(confId);
             }
             if (abstrId) {
-                self.getAbstract(abstrId);
-                self.abstractSaved(true);
+                self.requestAbstract(abstrId);
+                self.isAbstractSaved(true);
+            } else {
+                self.abstract(models.ObservableAbstract());
+                self.editedAbstract(self.abstract());
             }
 
             ko.applyBindings(window.editor);
         };
 
 
-        self.getConference = function(confId) {
+        self.getEditorAuthorsForAffiliation = function(affiliation) {
+            var authors = [];
+
+            self.editedAbstract().authors().forEach(function(author) {
+                var aff = author.affiliations(),
+                    pos = affiliation.position(),
+                    found = aff.indexOf(pos);
+                if (found >= 0) {
+                    authors.push(author);
+                }
+            });
+
+            return authors;
+        };
+
+
+        self.requestConference = function(confId) {
 
             $.ajax({
                 async: false,
@@ -60,7 +145,8 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         };
 
-        self.getAbstract = function(abstrId) {
+
+        self.requestAbstract = function(abstrId) {
 
             $.ajax({
                 async: false,
@@ -73,6 +159,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
             function success(obj, stat, xhr) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
+                self.editedAbstract(self.abstract())
             }
 
             function fail(xhr, stat, msg) {
@@ -82,9 +169,13 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         };
 
 
-        self.saveAbstract = function() {
+        self.doSaveAbstract = function(abstract) {
 
-            if (self.abstractSaved()) {
+            if (! (abstract instanceof models.ObservableAbstract)) {
+                abstract = self.abstract();
+            }
+
+            if (self.isAbstractSaved()) {
 
                 $.ajax({
                     async: false,
@@ -94,7 +185,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                     error: fail,
                     contentType: "application/json",
                     dataType: "json",
-                    data: self.abstract().toJSON()
+                    data: abstract.toJSON()
                 });
 
             } else if (confId) {
@@ -107,7 +198,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                     error: fail,
                     contentType: "application/json",
                     dataType: "json",
-                    data: self.abstract().toJSON()
+                    data: abstract.toJSON()
                 });
 
             } else {
@@ -116,7 +207,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
             function success(obj, stat, xhr) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
-                self.abstractSaved(true);
+                self.isAbstractSaved(true);
             }
 
             function fail(xhr, stat, msg) {
@@ -125,49 +216,64 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         };
 
 
-        self.refresh = function() {
+        self.doSubmitAbstract = function() {
+            self.abstract().state('Submitted');
+            self.doSaveAbstract(self.abstract())
+        };
 
-            if (self.abstractSaved()) {
-                console.log("save abstract");
-                self.saveAbstract();
+
+        self.doWithdrawAbstract = function() {
+            self.abstract().state('Withdrawn');
+            self.doSaveAbstract(self.abstract())
+        };
+
+
+        self.doStartEdit = function() {
+            var obj = $.extend(true, {}, self.abstract().toObject());
+            self.editedAbstract(models.ObservableAbstract.fromObject(obj));
+        };
+
+
+        self.doEndEdit = function() {
+            if (self.isAbstractSaved()) {
+                self.doSaveAbstract(self.editedAbstract())
             } else {
-                console.log("refresh abstract");
-                //self.abstract(self.abstract());
+                self.abstract(self.editedAbstract());
             }
         };
 
 
-        self.addAuthor = function() {
+        self.doEditAddAuthor = function() {
             var author = models.ObservableAuthor();
-            author.position(self.abstract().authors().length);
-            self.abstract().authors.push(author);
+            author.position(self.editedAbstract().authors().length);
+            self.editedAbstract().authors.push(author);
         };
 
 
-        self.removeAuthor = function(author) {
+        self.doEditRemoveAuthor = function(author) {
             var position = author.position(),
-                authors = self.abstract().authors();
+                authors = self.editedAbstract().authors();
 
             authors.splice(position, 1);
             authors.forEach(function(a, i) {
                 a.position(i);
             });
 
-            self.abstract().authors(authors);
+            self.editedAbstract().authors(authors);
         };
 
 
-        self.addAffiliation = function() {
+        self.doEditAddAffiliation = function() {
             var affiliation = models.ObservableAffiliation();
-            affiliation.position(self.abstract().affiliations().length);
-            self.abstract().affiliations.push(affiliation);
+            affiliation.position(self.editedAbstract().affiliations().length);
+            self.editedAbstract().affiliations.push(affiliation);
         };
 
 
-        self.removeAffiliation = function(affiliation) {
+        self.doEditRemoveAffiliation = function(affiliation) {
             var position = affiliation.position(),
-                affiliations = self.abstract().affiliations(),
-                authors = self.abstract().authors();
+                affiliations = self.editedAbstract().affiliations(),
+                authors = self.editedAbstract().authors();
 
             affiliations.splice(position, 1);
             affiliations.forEach(function(a, i) {
@@ -191,23 +297,9 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 author.affiliations(affiliationPositions);
             });
 
-            self.abstract().affiliations(affiliations);
+            self.editedAbstract().affiliations(affiliations);
         };
 
-        self.authorsForAffiliation = function(affiliation) {
-            var authors = [];
-
-            self.abstract().authors().forEach(function(author) {
-                var aff = author.affiliations(),
-                    pos = affiliation.position(),
-                    found = aff.indexOf(pos);
-                if (found >= 0) {
-                    authors.push(author);
-                }
-            });
-
-            return authors;
-        };
 
         /**
          * Add an affiliation position to an author.
@@ -215,9 +307,9 @@ require(["lib/models", "lib/tools"], function(models, tools) {
          *
          * @param affiliation   The affiliation that is added to the author.
          */
-        self.doAddAuthorToAffiliation = function(affiliation) {
+        self.doEditAddAuthorToAffiliation = function(affiliation) {
             var authorPosition = $("#author-select-" + affiliation.position()).find("select").val(),
-                authors = self.abstract().authors();
+                authors = self.editedAbstract().authors();
 
             if (authorPosition >= 0 && authorPosition < authors.length) {
                 var author = authors[authorPosition],
@@ -236,13 +328,14 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         };
 
+
         /**
          * Remove all affiliation positions for the authors affiliations array.
          *
          * @param affiliation   The affiliation to remove.
          * @param author        The author from which to remove the affiliation.
          */
-        self.doRemoveAffiliationFromAuthor = function(affiliation, author) {
+        self.doEditRemoveAffiliationFromAuthor = function(affiliation, author) {
             var affiliationPos = affiliation.position(),
                 affiliations = author.affiliations();
 
@@ -253,18 +346,20 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             }
 
             author.affiliations(affiliations);
-        }
+        };
 
-        self.doAddReference = function() {
-            self.abstract().references.push(models.ObservableReference());
-        }
 
-        self.doRemoveReference = function(index) {
-            var references = self.abstract().references();
+        self.doEditAddReference = function() {
+            self.editedAbstract().references.push(models.ObservableReference());
+        };
+
+
+        self.doEditRemoveReference = function(index) {
+            var references = self.editedAbstract().references();
 
             references.splice(index, 1);
 
-            self.abstract().references(references);
+            self.editedAbstract().references(references);
         }
 
     }
@@ -274,10 +369,10 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         var data = tools.hiddenData();
 
-        console.log(data.conferenceUuid);
-        console.log(data.abstractUuid);
+        console.log(data["conferenceUuid"]);
+        console.log(data["abstractUuid"]);
 
-        window.editor = EditorViewModel(data.conferenceUuid, data.abstractUuid);
+        window.editor = EditorViewModel(data["conferenceUuid"], data["abstractUuid"]);
         window.editor.init();
     });
 
