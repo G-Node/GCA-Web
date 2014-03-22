@@ -73,9 +73,27 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             return true;
         };
 
+        self.removeTopic = function(data) {
+            console.log("Remove" + data);
+
+            var index = self.conference().topics.indexOf(data);
+            self.conference().topics.splice(index, 1);
+
+            self.haveChanges(true);
+        };
+
+        self.addTopic = function(data) {
+            var sel = $("#addTopic");
+            var text = sel.val();
+            self.conference().topics.push(text);
+            sel.val("");
+
+            self.haveChanges(true);
+        };
+
         self.makeConferenceObservable = function (conf) {
             conf.makeObservable(["name", "short", "cite", "start", "end",
-                "deadline", "logo", "thumbnail", "link", "isOpen"]);
+                "deadline", "logo", "thumbnail", "link", "isOpen", "topics"]);
 
             for(var prop in conf) {
                 if (conf.hasOwnProperty(prop)) {
