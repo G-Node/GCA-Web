@@ -192,6 +192,12 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
       }
 
       conference.topics.foreach { topic =>
+        confChecked.topics.find {
+          _.topic == topic.topic
+        }.map {
+          t => topic.uuid = t.uuid
+        }
+
         topic.conference = conference
       }
 
