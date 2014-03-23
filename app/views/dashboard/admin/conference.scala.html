@@ -1,0 +1,177 @@
+@(account: Account, conference: Option[Conference])
+
+@template(Some(account), conference, "conference") {
+
+    <div class="hidden-data">
+        <div id="conference-uuid">@conference.map(_.uuid).getOrElse("")</div>
+        <div id="account-uuid"> @account.uuid</div>
+    </div>
+
+    <script data-main="@routes.Assets.at("javascripts/adminConference.js")"
+    src="@routes.Assets.at("javascripts/require.js")"></script>
+
+    <!-- Loading box -->
+    <div data-bind="if: isLoading">
+        <div class="alert alert-info fade in out">
+            <h4 data-bind="text: isLoading">Loading data</h4>
+            <p>Please wait...</p>
+        </div>
+    </div>
+
+    <!-- Knockout non-flicker  -->
+    <div style="display: none" data-bind="visible: true">
+
+            <!-- Error message box -->
+        <div data-bind="visible: error">
+                <!-- ko with: error -->
+            <div class="alert fade in alert-dismissable" data-bind="css: level">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <strong data-bind="html: message"></strong>
+            </div>
+                <!-- /ko -->
+        </div>
+
+            <!-- The conference info page -->
+
+        <div class="page-header">
+            <h1>Admin Panel</h1>
+        </div>
+
+        <div data-bind="with: conference">
+
+            <form class="form-horizontal admin-form" role="form">
+
+                <div class="form-group">
+                    <label for="state" class="col-sm-2 control-label">Submission</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" class="form-control" id="state" name="submission"
+                               placeholder="State" data-bind="checked: isOpen, valueUpdate: 'afterkeydown', click: $root.changeHandler">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="name"
+                               placeholder="Name" data-bind="value: name, valueUpdate: 'afterkeydown'">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="short" class="col-sm-2 control-label">Short</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="short"
+                               placeholder="Short name" data-bind="value: short, valueUpdate: 'afterkeydown'">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cite" class="col-sm-2 control-label">Cite</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="short"
+                              placeholder="Cite text" data-bind="value: cite, valueUpdate: 'afterkeydown'">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="start" class="col-sm-2 control-label">Start</label>
+                    <div class="col-sm-10">
+                        <input type="datetime" class="form-control" id="start"
+                              placeholder="" data-bind="value: start, valueUpdate: 'afterkeydown'">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="end" class="col-sm-2 control-label">End</label>
+                    <div class="col-sm-10">
+                        <input type="datetime" class="form-control" id="end"
+                              placeholder="" data-bind="value: end, valueUpdate: 'afterkeydown'">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="deadline" class="col-sm-2 control-label">Deadline</label>
+                    <div class="col-sm-10">
+                        <input type="datetime" class="form-control" id="deadline"
+                              placeholder="" data-bind="value: deadline, valueUpdate: 'afterkeydown'">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="logo" class="col-sm-2 control-label">Logo</label>
+                    <div class="col-sm-10">
+                        <input type="url" class="form-control" id="logo"
+                               placeholder="Banner Logo" data-bind="value: logo, valueUpdate: 'afterkeydown'">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="thumbnail" class="col-sm-2 control-label">Thumbnail</label>
+                    <div class="col-sm-10">
+                        <input type="url" class="form-control" id="short"
+                               placeholder="Thumbnail image"
+                               data-bind="value: thumbnail, valueUpdate: 'afterkeydown'">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="link" class="col-sm-2 control-label">Link</label>
+                    <div class="col-sm-10">
+                        <input type="url" class="form-control" id="link"
+                               placeholder="Link to the conference homepage"
+                               data-bind="value: link, valueUpdate: 'afterkeydown'">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 text-right"><b>Topics</b></div>
+                    <ul class="col-sm-10 list-inline" data-bind="foreach: topics">
+                        <li><span class="label label-default" data-bind="text: $data"></span>
+                            <a data-bind="click: $root.removeTopic"><span class="glyphicon glyphicon-remove"></span></a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-4">
+                        <input class="form-control" type="text" placeholder="topic" id="addTopic">
+                    </div>
+                    <div class="col-sm-1">
+                        <a class="btn btn-default" data-bind="click: $root.addTopic"><span class="glyphicon glyphicon-plus"></span> Add Topic</a>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-success"
+                                data-bind="click: $root.saveConference, text: $root.saveButtonText, css { disabled: $root.saveButtonDisabled }">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <hr>
+
+        <!-- manage owners -->
+        <div data-bind="visible: owners().length > 0">
+            <p class="lead">Owner Management</p>
+            <p>Here is the list of current owners:</p>
+            <ul data-bind="foreach: owners" class="unstyled">
+                <li>
+                    <strong><span data-bind="text: mail"></span></strong>
+                    <button data-bind="click: $parent.removeOwner, enable: $parent.owners().length > 1"
+                            class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+                </li>
+            </ul>
+
+            <form data-bind="submit: addOwner">
+                Add owner by e-mail: <input data-bind="value: newEmail" placeholder="enter a valid e-mail here" />
+                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add</button>
+                and after
+                <button data-bind="click: saveOwner" class="btn btn-success">Save changes</button>
+            </form>
+        </div>
+
+    </div> <!-- KO !flickerbox -->
+}
+

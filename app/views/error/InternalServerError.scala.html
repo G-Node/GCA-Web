@@ -1,0 +1,10 @@
+@(ex: Exception)(implicit lang: Lang)
+@template(None, None, "") {
+    <div class="callout-danger">
+        <h2>Internal Server Error - 500 </h2>
+        <p>There was an internal error while processing the request!</p>
+        <code>
+            @ex.getStackTraceString
+        </code>
+    </div>
+}

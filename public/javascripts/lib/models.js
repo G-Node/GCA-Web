@@ -245,19 +245,25 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @param {string}  [link]
      * @param {boolean} [isOpen]
      * @param {Array}   [groups] List of {AbstractGroups}
+     * @param {string}  [start]
+     * @param {string}  [end]
+     * @param {string}  [logo]
+     * @param {string}  [thumbnail]
+     * @param {string}  [deadline]
      * @param {string}  [owners] URL to all abstract owners.
      * @param {string}  [abstracts] The URL to all abstracts.
+     * @param {Array}   [topics]
      *
      * @returns {Conference}
      * @constructor
      * @public
      */
     function Conference(uuid, name, short, cite, link, isOpen, groups,
-                        owners, abstracts, topics) {
+                        start, end, deadline, logo, thumbnail, owners, abstracts, topics) {
 
         if (! (this instanceof Conference)) {
             return new Conference(uuid, name, short, cite, link, isOpen, groups,
-                                  owners, abstracts, topics);
+                                  start, end, deadline, logo, thumbnail, owners, abstracts, topics);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -268,6 +274,11 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.link = link || null;
         self.isOpen = isOpen || false;
         self.groups = groups || [];
+        self.start = start || null;
+        self.end = end || null;
+        self.deadline = deadline || null;
+        self.logo = logo || null;
+        self.thumbnail = thumbnail || null;
         self.owners = owners || [];
         self.abstracts = abstracts || [];
         self.topics = topics || [];
@@ -285,6 +296,8 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                         self.groups.forEach(appendGroup);
                     } else if (tools.type(value) !== "function") {
                         obj[prop] = toType(value);
+                    } else if (value.name === "observable") {
+                        obj[prop] = toType(self[prop]());
                     }
                 }
             }
