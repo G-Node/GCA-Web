@@ -33,6 +33,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
         self.init = function() {
             ko.applyBindings(window.abstractList);
+            MathJax.Hub.Configured(); //start MathJax
         };
 
         self.setError = function(level, text) {
@@ -87,6 +88,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             self.abstracts(null);
             self.selectedAbstract(abstract);
             document.title = abstract.title; //FIXME add conference
+            MathJax.Hub.Queue(["Typeset",MathJax.Hub]); //re-render equations
         };
 
         self.showAbstractByUUID = function(uuid) {
@@ -100,7 +102,6 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         };
 
         self.activateGroup = function(groupId) {
-
 
         };
 
