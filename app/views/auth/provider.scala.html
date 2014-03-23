@@ -26,20 +26,23 @@
                     @helper.inputText(
                         loginForm.get("username"),
                         '_label -> Messages("securesocial.signup.username"),
-                        'class -> "input-xlarge"
+                        'class -> "input-xlarge",
+                        '_help -> ""
                     )
                 } else {
                     @helper.inputText(
                         loginForm.get("username"),
                         '_label -> Messages("securesocial.signup.email1"),
-                        'class -> "input-xlarge"
+                        'class -> "input-xlarge",
+                        '_help -> ""
                     )
                 }
 
                 @helper.inputPassword(
                     loginForm.get("password"),
                     '_label -> Messages("securesocial.signup.password1"),
-                    'class -> "input-xlarge"
+                    'class -> "input-xlarge",
+                    '_help -> ""
                 )
 
                 <div class="form-actions">
