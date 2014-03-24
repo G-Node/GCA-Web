@@ -37,7 +37,7 @@ class Abstract extends Model with Owned {
 
   @ManyToOne
   var conference : Conference = _
-  @OneToMany(mappedBy = "abstr")
+  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var figures: JSet[Figure] = new JTreeSet[Figure]()
 
   @ManyToMany

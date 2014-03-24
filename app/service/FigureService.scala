@@ -61,11 +61,12 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
       if (abstractChecked == null)
         throw new EntityNotFoundException("Unable to find abstract with uuid = " + abstr.uuid)
 
+      abstractChecked.figures.add(fig)
       fig.abstr = abstractChecked
 
-      val figMerged = em.merge(fig)
+      em.persist(fig)
 
-      val file = new File(figPath, figMerged.uuid)
+      val file = new File(figPath, fig.uuid)
       val parent = file.getParentFile
 
       if (!parent.exists()) {
@@ -74,7 +75,7 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
 
       data.moveTo(file, replace = false)
 
-      figMerged
+      fig
     }
 
     get(figCreated.uuid)
