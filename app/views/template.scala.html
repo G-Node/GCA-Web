@@ -69,9 +69,12 @@
                         <li class=@if(active.toLowerCase == "conference") {"active"} else {""}>
                             <a href="@routes.Application.conference(conf.uuid)"> @conference.get.short</a>
                         </li>
-                        <li class=@if(active.toLowerCase == "abstracts") {"active"} else {""}>
-                            <a href="@routes.Application.abstractsPublic(conf.uuid)">Abstracts</a>
-                        </li>
+
+                        @if(conf.isPublished) {
+                            <li class=@if(active.toLowerCase == "abstracts") {"active"} else {""}>
+                                <a href="@routes.Application.abstractsPublic(conf.uuid)">Abstracts</a>
+                            </li>
+                        }
 
                         @if(conference.get.isOpen && account.isDefined) {
                             <li class=@if(active.toLowerCase == "submission") {"active"} else {""}>
