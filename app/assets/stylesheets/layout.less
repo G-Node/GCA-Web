@@ -61,6 +61,9 @@ body {
 }
 
 #abstract-list {
+
+  margin-top: 0.5em;
+
   a {
     color: @color-fg;
     text-decoration: none;
@@ -78,6 +81,7 @@ body {
     .sortId {
       float: left;
       width: 6ex;
+      min-height: 2ex;
       margin-top: 0.5em;
     }
 
@@ -106,26 +110,31 @@ body {
 
 #abstract-list-item:hover {
   cursor: pointer;
-  background-color: @color-blue-sky !important;
+  background-color: @color-bccn-3 !important;
   color: White;
 }
 
 #abstract {
 
+  .pager {
+    .no-gap;
+  }
+
   .title {
-    .std-gap;
+    .small-gap;
 
   }
 
   .authors {
 
-    .std-gap;
+    .small-gap;
     .enum-with-comma;
 
   }
 
   .affiliations {
-    .std-gap;
+    .small-gap;
+    padding-left: 1.5em;
 
     ol {
       .no-gap;
