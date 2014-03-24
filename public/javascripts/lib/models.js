@@ -375,11 +375,21 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.lastName = lastName || null;
         self.position = position || 0;
 
-        self.affiliations = affiliations || null;
+        self.affiliations = affiliations || [];
 
         self.formatName = function() {
             var middle = self.middleName ? self.middleName + " " : "";
             return self.firstName + " " + middle + self.lastName;
+        };
+
+        self.formatAffiliations = function() {
+            var formatted = [];
+
+            self.affiliations.forEach(function(pos, i) {
+                formatted[i] = pos + 1;
+            });
+
+            return formatted.sort().join(", ");
         };
 
     }
@@ -768,6 +778,20 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.affiliations = affiliations || [];
         self.references = references || [];
 
+
+        self.paragraphs = function() {
+            var para = [];
+
+            if (self.text) {
+                para = self.text.split('\n');
+            }
+
+            return para;
+        };
+
+        self.formatType = function() {
+          return self.isTalk === true ? "Talk" : "Poster";
+        };
 
         self.toObject = function() {
             var prop,
