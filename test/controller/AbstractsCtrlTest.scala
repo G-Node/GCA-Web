@@ -6,7 +6,7 @@ import play.api.Play
 import play.api.test.Helpers._
 import utils.serializer.{AccountFormat, AbstractFormat}
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
-import models.Abstract
+import models.{AbstractState, Abstract}
 import play.api.mvc.Cookie
 import utils.DefaultRoutesResolver._
 
@@ -121,7 +121,9 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     assert(status(reqAuthResult) == OK)
 
     val loadedAbs = contentAsJson(reqAuthResult).as[Seq[Abstract]]
-    assert(loadedAbs.length > 0)
+
+    //Assure we have at least one, but none that is not published
+    assert(loadedAbs.length > 0 && loadedAbs.count{ _.state != AbstractState.Published } == 0)
   }
 
   @Test

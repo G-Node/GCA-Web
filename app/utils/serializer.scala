@@ -123,6 +123,7 @@ package object serializer {
         "logo" -> c.logo,
         "thumbnail" -> c.thumbnail,
         "abstracts" -> routesResolver.abstractsUrl(c.uuid),
+        "allAbstracts" -> routesResolver.allAbstractsUrl(c.uuid),
         "topics" -> JsArray(for (topic <- c.topics.toSeq) yield tf.writes(topic))
       )
     }
@@ -284,9 +285,22 @@ package object serializer {
     )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
+
+      implicit object AuthorOrder extends Ordering[Author] {
+        override def compare(x: Author, y: Author): Int = if (x.position < y.position) {  -1 }
+                                                          else if (x.position > y.position) { 1 }
+                                                          else { 0 }
+      }
+
+      implicit object AffOrder extends Ordering[Affiliation] {
+        override def compare(x: Affiliation, y: Affiliation): Int = if (x.position < y.position) {  -1 }
+                                                                    else if (x.position > y.position) { 1 }
+                                                                    else { 0 }
+      }
+
       val figures: Seq[Figure] = asScalaSet(a.figures).toSeq
-      val authors: Seq[Author] = asScalaSet(a.authors).toSeq
-      val affiliations: Seq[Affiliation] = asScalaSet(a.affiliations).toSeq
+      val authors: Seq[Author] = asScalaSet(a.authors).toSeq.sorted
+      val affiliations: Seq[Affiliation] = asScalaSet(a.affiliations).toSeq.sorted
       val references: Seq[Reference] = asScalaSet(a.references).toSeq
       Json.obj(
         "uuid" -> a.uuid,

@@ -40,6 +40,34 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
            LEFT JOIN FETCH a.conference c
            LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
+           WHERE c.uuid = :uuid AND a.state = :state
+           ORDER BY a.sortId, a.title"""
+
+      val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
+      query.setParameter("uuid", conference.uuid)
+      query.setParameter("state", AbstractState.Published)
+      asScalaBuffer(query.getResultList)
+    }
+  }
+
+  /**
+  * List all abstracts (independent of the state) that belong to a conference.
+  *
+  * @param conference The conference for which to list the abstracts.
+    *
+  * @return All published abstracts that are associated with a
+  *         certain conference.
+    */
+  def listAll(conference: Conference) : Seq[Abstract] = {
+    dbQuery { em =>
+      val queryStr =
+        """SELECT DISTINCT a FROM Abstract a
+           LEFT JOIN FETCH a.owners
+           LEFT JOIN FETCH a.authors
+           LEFT JOIN FETCH a.affiliations
+           LEFT JOIN FETCH a.conference c
+           LEFT JOIN FETCH a.figures
+           LEFT JOIN FETCH a.references
            WHERE c.uuid = :uuid
            ORDER BY a.sortId, a.title"""
 

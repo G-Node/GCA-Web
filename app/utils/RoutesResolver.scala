@@ -29,6 +29,17 @@ class RoutesResolver {
   }
 
   /**
+   * Builds an URL to all related abstracts from a given object ID.
+   *
+   * @param id an ID of a Conference object to insert into the URL
+   *
+   * @return URL for related abstracts, like "/api/conferences/HNOPSADMHV/allAbstracts"
+   */
+  def allAbstractsUrl(id: String) = {
+    new URL(baseUrl + s"/api/conferences/$id/allAbstracts")
+  }
+
+  /**
    * Builds an URL to figure file.
    *
    * @param id an ID of a Figure object to insert into the URL
