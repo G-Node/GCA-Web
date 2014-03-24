@@ -285,8 +285,15 @@ package object serializer {
     )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
+
+      implicit object AuthorOrder extends Ordering[Author] {
+        override def compare(x: Author, y: Author): Int = if (x.position < y.position) {  -1 }
+                                                          else if (x.position > y.position) { 1 }
+                                                          else { 0 }
+      }
+
       val figures: Seq[Figure] = asScalaSet(a.figures).toSeq
-      val authors: Seq[Author] = asScalaSet(a.authors).toSeq
+      val authors: Seq[Author] = asScalaSet(a.authors).toSeq.sorted
       val affiliations: Seq[Affiliation] = asScalaSet(a.affiliations).toSeq
       val references: Seq[Reference] = asScalaSet(a.references).toSeq
       Json.obj(
