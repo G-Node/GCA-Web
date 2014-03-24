@@ -37,17 +37,17 @@ class Abstract extends Model with Owned {
 
   @ManyToOne
   var conference : Conference = _
-  @OneToMany(mappedBy = "abstr")
+  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var figures: JSet[Figure] = new JTreeSet[Figure]()
 
   @ManyToMany
   @JoinTable(name = "abstract_owners")
   var owners:  JSet[Account] = new JTreeSet[Account]()
-  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL))
+  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var authors: JSet[Author] = new JTreeSet[Author]()
-  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL))
+  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var affiliations: JSet[Affiliation] = new JTreeSet[Affiliation]()
-  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL))
+  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var references: JSet[Reference] = new JTreeSet[Reference]()
 }
 

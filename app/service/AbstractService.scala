@@ -292,6 +292,7 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
 
       abstr.owners = abstrChecked.owners
       abstr.conference = abstrChecked.conference
+      abstr.figures = abstrChecked.figures
 
       val merged = em.merge(abstr)
 

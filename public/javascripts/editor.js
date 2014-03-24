@@ -1,4 +1,4 @@
-require(["lib/models", "lib/tools"], function(models, tools) {
+require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi) {
     "use strict";
 
     /**
@@ -26,7 +26,19 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
 
-        self.isAbstractSaved = ko.observable(false);
+        self.isAbstractSaved = ko.computed(
+            function() {
+                return self.abstract() && self.abstract().uuid;
+            },
+            self
+        );
+
+        self.hasAbstractFigures = ko.computed(
+            function() {
+                return self.abstract() && self.abstract().figures().length > 0;
+            },
+            self
+        );
 
         self.editorTextCharactersLeft = ko.computed(
             function() {
@@ -98,7 +110,6 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             }
             if (abstrId) {
                 self.requestAbstract(abstrId);
-                self.isAbstractSaved(true);
             } else {
                 self.abstract(models.ObservableAbstract());
                 self.editedAbstract(self.abstract());
@@ -170,6 +181,36 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         };
 
 
+        self.figureUpload = function(callback) {
+
+            var json = { name: $("#figure-name").val(), caption: $("#figure-caption").val() },
+                files = $("#figure-file").get(0).files,
+                data = new FormData();
+
+            if (files.length > 0) {
+                data.append('file', files[0]);
+                data.append('figure', JSON.stringify(json));
+
+                $.ajax({
+                    url: '/api/abstracts/' + self.abstract().uuid + '/figures',
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    type: 'POST',
+                    success: callback,
+                    error: function() { console.log("Error while saving the figure"); }
+                });
+            } else {
+                console.log("No figure data!")
+            }
+        }
+
+
+        self.doRemoveFigure = function() {
+
+        };
+
+
         self.doSaveAbstract = function(abstract) {
 
             if (! (abstract instanceof models.ObservableAbstract)) {
@@ -182,7 +223,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                     async: false,
                     url: "/api/abstracts/" + self.abstract().uuid,
                     type: "PUT",
-                    success: success,
+                    success: successAbs,
                     error: fail,
                     contentType: "application/json",
                     dataType: "json",
@@ -195,7 +236,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                     async: false,
                     url: "/api/conferences/" + confId + "/abstracts",
                     type: "POST",
-                    success: success,
+                    success: successAbs,
                     error: fail,
                     contentType: "application/json",
                     dataType: "json",
@@ -206,9 +247,20 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 throw "Conference id or abstract id must be defined";
             }
 
-            function success(obj, stat, xhr) {
+            function successAbs(obj, stat, xhr) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
-                self.isAbstractSaved(true);
+                self.editedAbstract(self.abstract());
+
+                var doFig = !self.hasAbstractFigures();
+                if (doFig) {
+                    self.figureUpload(successFig);
+                } else {
+                    console.log("Abstract has already a figure.");
+                }
+            }
+
+            function successFig(obj, stat, xhr) {
+                self.requestAbstract(self.abstract().uuid)
             }
 
             function fail(xhr, stat, msg) {
@@ -229,13 +281,16 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         };
 
 
-        self.doStartEdit = function() {
+        self.doStartEdit = function(editorId) {
+            var ed = $(editorId).find("input").first();
+            ed.focus();
+
             var obj = $.extend(true, {}, self.abstract().toObject());
             self.editedAbstract(models.ObservableAbstract.fromObject(obj));
         };
 
 
-        self.doEndEdit = function() {
+        self.doEndEdit = function(editorId) {
             if (self.isAbstractSaved()) {
                 self.doSaveAbstract(self.editedAbstract())
             } else {
