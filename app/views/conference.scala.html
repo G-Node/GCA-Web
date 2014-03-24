@@ -13,30 +13,6 @@
         </div>
     </div>
 
-    <script data-main="@routes.Assets.at("javascripts/ownerslist.js")"
-        src="@routes.Assets.at("javascripts/require.js")"></script>
-
-    <!-- Loading box -->
-    <div data-bind="if: isLoading">
-        <div class="alert alert-info fade in out">
-            <h4>Loading data</h4>
-            <p>Please wait...</p>
-        </div>
-    </div>
-
-    <!-- Knockout non-flicker  -->
-    <div style="display: none" data-bind="visible: true">
-
-    <!-- Error message box -->
-    <div data-bind="visible: error">
-            <!-- ko with: error -->
-        <div class="alert alert-warning fade in alert-dismissable" data-bind="css: level">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <strong data-bind="html: message"></strong>
-        </div>
-            <!-- /ko -->
-    </div>
-
     <!-- The conference info page -->
 
     <div class="page-header">
@@ -80,8 +56,6 @@
     </div>
     }
 
-
-
     <!-- Conference owner section to manage owners -->
 
     @if(account.isDefined) {
@@ -95,5 +69,4 @@
         }
     }
 
-    </div> <!-- KO !flickerbox -->
 }

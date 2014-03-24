@@ -172,10 +172,11 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
            LEFT JOIN FETCH a.owners o
            LEFT JOIN FETCH a.authors
            LEFT JOIN FETCH a.affiliations
-           LEFT JOIN FETCH a.conference
+           LEFT JOIN FETCH a.conference c
+           LEFT JOIN       c.owners co
            LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
-           WHERE o.uuid = :owneruuid AND a.uuid = :uuid"""
+           WHERE (o.uuid = :owneruuid OR co.uuid = :owneruuid) AND a.uuid = :uuid"""
 
       val accountChecked = em.find(classOf[Account], account.uuid)
       if (accountChecked == null)
