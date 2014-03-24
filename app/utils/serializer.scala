@@ -123,6 +123,7 @@ package object serializer {
         "logo" -> c.logo,
         "thumbnail" -> c.thumbnail,
         "abstracts" -> routesResolver.abstractsUrl(c.uuid),
+        "allAbstracts" -> routesResolver.allAbstractsUrl(c.uuid),
         "topics" -> JsArray(for (topic <- c.topics.toSeq) yield tf.writes(topic))
       )
     }
