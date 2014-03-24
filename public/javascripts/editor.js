@@ -26,7 +26,12 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
 
-        self.isAbstractSaved = ko.observable(false);
+        self.isAbstractSaved = ko.computed(
+            function() {
+                return self.abstract() && self.abstract().uuid;
+            },
+            self
+        );
 
         self.editorTextCharactersLeft = ko.computed(
             function() {
@@ -98,7 +103,6 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
             }
             if (abstrId) {
                 self.requestAbstract(abstrId);
-                self.isAbstractSaved(true);
             } else {
                 self.abstract(models.ObservableAbstract());
                 self.editedAbstract(self.abstract());
@@ -177,12 +181,8 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
                     caption: $("#figure-caption").val()
                 },
                 input = $("#figure-file"),
-                mp = multi.MultiPart();
+                fd = new FormData();
 
-            //mp.appendText("figure", JSON.stringify(json));
-            //mp.appendInput("file", input, ready);
-
-            var fd = new FormData();
             fd.append('file', input.get(0).files[0]);
             fd.append('figure', JSON.stringify(json));
 
@@ -237,7 +237,6 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
 
             function success(obj, stat, xhr) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
-                self.isAbstractSaved(true);
             }
 
             function fail(xhr, stat, msg) {
@@ -259,8 +258,8 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
 
 
         self.doStartEdit = function(editorId) {
-            var ed = $(editorId).find("input").first()
-            ed.focus()
+            var ed = $(editorId).find("input").first();
+            ed.focus();
 
             var obj = $.extend(true, {}, self.abstract().toObject());
             self.editedAbstract(models.ObservableAbstract.fromObject(obj));
