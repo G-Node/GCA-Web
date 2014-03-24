@@ -33,6 +33,13 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
             self
         );
 
+        self.hasAbstractFigures = ko.computed(
+            function() {
+                return self.abstract() && self.abstract().figures().length > 0;
+            },
+            self
+        );
+
         self.editorTextCharactersLeft = ko.computed(
             function() {
                 if (self.editedAbstract() && self.editedAbstract().text()) {
@@ -174,28 +181,28 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
         };
 
 
-        self.doFigureUpload = function() {
+        self.figureUpload = function(callback) {
 
-            var json = {
-                    name: $("#figure-name").val(),
-                    caption: $("#figure-caption").val()
-                },
-                input = $("#figure-file"),
-                fd = new FormData();
+            var json = { name: $("#figure-name").val(), caption: $("#figure-caption").val() },
+                files = $("#figure-file").get(0).files,
+                data = new FormData();
 
-            fd.append('file', input.get(0).files[0]);
-            fd.append('figure', JSON.stringify(json));
+            if (files.length > 0) {
+                data.append('file', files[0]);
+                data.append('figure', JSON.stringify(json));
 
-            $.ajax({
-                url: '/api/abstracts/' + self.abstract().uuid + '/figures',
-                data: fd,
-                processData: false,
-                contentType: false,
-                type: 'POST',
-                success: function(data){
-                    alert(data);
-                }
-            });
+                $.ajax({
+                    url: '/api/abstracts/' + self.abstract().uuid + '/figures',
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    type: 'POST',
+                    success: callback,
+                    error: function() { console.log("Error while saving the figure"); }
+                });
+            } else {
+                console.log("No figure data!")
+            }
         }
 
 
@@ -211,7 +218,7 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
                     async: false,
                     url: "/api/abstracts/" + self.abstract().uuid,
                     type: "PUT",
-                    success: success,
+                    success: successAbs,
                     error: fail,
                     contentType: "application/json",
                     dataType: "json",
@@ -224,7 +231,7 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
                     async: false,
                     url: "/api/conferences/" + confId + "/abstracts",
                     type: "POST",
-                    success: success,
+                    success: successAbs,
                     error: fail,
                     contentType: "application/json",
                     dataType: "json",
@@ -235,8 +242,20 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
                 throw "Conference id or abstract id must be defined";
             }
 
-            function success(obj, stat, xhr) {
+            function successAbs(obj, stat, xhr) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
+                self.editedAbstract(self.abstract());
+
+                var doFig = !self.hasAbstractFigures();
+                if (doFig) {
+                    self.figureUpload(successFig);
+                } else {
+                    console.log("Abstract has already a figure.");
+                }
+            }
+
+            function successFig(obj, stat, xhr) {
+                self.requestAbstract(self.abstract().uuid)
             }
 
             function fail(xhr, stat, msg) {
