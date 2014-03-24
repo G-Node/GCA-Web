@@ -105,6 +105,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             }
 
             ko.applyBindings(window.editor);
+            MathJax.Hub.Configured(); //start MathJax
         };
 
 
@@ -240,6 +241,9 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             } else {
                 self.abstract(self.editedAbstract());
             }
+
+            //re-do Math typesetting, TODO: do this at a more sensible place
+            MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
         };
 
 
