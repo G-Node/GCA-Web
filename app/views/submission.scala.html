@@ -420,6 +420,7 @@
             </div>
 
             <div class="references">
+                <h4>References</h4>
                 <ol data-bind="foreach: {data: abstract().references, as: 'reference'}">
                     <li data-bind="text: reference.format()"></li>
                 </ol>
@@ -529,19 +530,77 @@
             </div>
         </div>
 
-        <div>
+        <div class="editor-box">
 
-                <form action="#" method="post" enctype="multipart/form-data">
-                    <input type="text" name="figure-name" id="figure-name" class="form-control input-sm" placeholder="Figure Name">
-                    <input type="text" name="figure-caption" id="figure-caption" class="form-control input-sm" placeholder="Figure Caption">
+            <div class="btn-group pull-right btn-group-hover">
+                <button type="button" class="btn btn-default btn-sm" data-target="#figure-editor"
+                        data-toggle="modal" data-bind="click: doStartEdit">
+                    Edit
+                </button>
+            </div>
 
-                    <input type="file" name="figure-file" id="figure-file" class="form-control input-sm">
+            <div class="modal" id="figure-editor" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Add a Figure</h3>
+                        </div>
 
-                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
-                            data-bind="click: figureUpload">
-                        Upload
-                    </button>
-                </form>
+                        <div class="modal-body">
+                            <div data-bind="ifnot: hasAbstractFigures">
+                                <div class="form-group">
+                                    <input type="text" name="figure-name" id="figure-name" class="form-control input-sm"
+                                           placeholder="Figure Name">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" name="figure-caption" id="figure-caption"
+                                           class="form-control input-sm" placeholder="Figure Caption">
+                                </div>
+                                <div class="form-group">
+                                    <input type="file" name="figure-file" id="figure-file"
+                                           class="form-control input-sm">
+                                </div>
+
+                            </div>
+                            <div data-bind="if: hasAbstractFigures">
+                                <button type="button" class="btn btn-default btn-sm pull-right"
+                                        data-bind="click: $root.doRemoveFigure">
+                                    Remove
+                                </button>
+
+                                <div class="figure-box">
+                                    <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
+                                    data-bind="click: doEndEdit">
+                                Ok
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="figure">
+                <h4>Figure</h4>
+                <div data-bind="if: hasAbstractFigures" class="figure-box">
+                    <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
+                    <div class="figure-caption">
+                        <span data-bind="text: abstract().figures()[0].name"></span>
+                        <span data-bind="text: abstract().figures()[0].caption"></span>
+                    </div>
+                </div>
+                <div data-bind="ifnot: hasAbstractFigures">
+                    No figure uploaded.
+                </div>
+            </div>
 
         </div>
 

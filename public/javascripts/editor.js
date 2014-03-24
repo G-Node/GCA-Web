@@ -206,6 +206,11 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
         }
 
 
+        self.doRemoveFigure = function() {
+
+        };
+
+
         self.doSaveAbstract = function(abstract) {
 
             if (! (abstract instanceof models.ObservableAbstract)) {
