@@ -571,23 +571,23 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @param {string} [uuid]
      * @param {string} [name]
      * @param {string} [caption]
-     * @param {string} [file]       URL to the image file.
+     * @param {string} [URL]       URL to the image URL.
      *
      * @returns {Figure}
      * @constructor
      * @public
      */
-    function Figure(uuid, name, caption, file) {
+    function Figure(uuid, name, caption, URL) {
 
         if (! (this instanceof Figure)) {
-            return new Figure(uuid, name, caption, file);
+            return new Figure(uuid, name, caption, URL);
         }
 
         var self = tools.inherit(this, Model, uuid);
 
         self.name = name || null;
         self.caption = caption || null;
-        self.file = caption || null;
+        self.URL = caption || null;
 
     }
 
@@ -605,23 +605,23 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @param {string} [uuid]
      * @param {string} [name]
      * @param {string} [caption]
-     * @param {string} [file]       URL to the image file.
+     * @param {string} [URL]       URL to the image URL.
      *
      * @returns {ObservableFigure}
      * @constructor
      * @public
      */
-    function ObservableFigure(uuid, name, caption, file) {
+    function ObservableFigure(uuid, name, caption, URL) {
 
         if (! (this instanceof ObservableFigure)) {
-            return new ObservableFigure(uuid, name, caption, file);
+            return new ObservableFigure(uuid, name, caption, URL);
         }
 
         var self = tools.inherit(this, Model, uuid);
 
         self.name = ko.observable(name || null);
         self.caption = ko.observable(caption || null);
-        self.file = ko.observable(caption || null);
+        self.URL = ko.observable(URL || null);
 
     }
 
@@ -697,12 +697,10 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.doi = ko.observable(doi || null);
 
         self.format = function() {
-            var str =(self.authors() || "")
+            return (self.authors() || "")
                 .concat(self.title() ? " " + self.title() : "")
                 .concat(self.year() ? " (" + self.year() + ")" : "")
                 .concat(self.doi() ? ", " + self.doi() : "");
-
-            return str;
         };
 
     }
