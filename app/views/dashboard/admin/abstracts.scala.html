@@ -1,0 +1,44 @@
+@(account: Account, conference: Conference)
+
+@template(Some(account), Some(conference), "conference") {
+
+    <div class="hidden-data">
+        <div id="conference-uuid">@conference.uuid</div>
+    </div>
+
+    <script data-main="@routes.Assets.at("javascripts/adminAbstracts.js")"
+                  src="@routes.Assets.at("javascripts/require.js")"></script>
+
+    <!-- Loading box -->
+    <div data-bind="if: message">
+        <!-- ko with: message -->
+        <div class="alert alert-info fade in out" data-bind="css: level">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h4 data-bind="text: message">Loading data</h4>
+            <p data-bind="html: desc">Please wait...</p>
+        </div>
+        <!-- /ko -->
+    </div>
+
+    <!-- Knockout non-flicker  -->
+    <div style="display: none" data-bind="visible: true">
+
+        <div class="page-header">
+            <h1>@conference.name <small>Abstracts</small></h1>
+        </div>
+
+        <!-- The abstract list -->
+        <ul id="abstract-list" class="list-group" data-bind="foreach: abstracts">
+            <li id="abstract-list-item" class="list-group-item abstract">
+                <a data-bind="attr: { href: $root.makeAbstractLink($data, $parent) }">
+                    <span data-bind="text: $root.mkAuthorList($data)"></span>
+                    <b><span data-bind="text: title"> </span></b>
+                    <span class="badge pull-right" data-bind="text: state"></span>
+                </a>
+            </li>
+        </ul>
+        </div>
+
+    </div> <!-- KO !flickerbox -->
+
+}

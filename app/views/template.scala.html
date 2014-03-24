@@ -122,6 +122,9 @@
                                   @if(acc.isAdmin || conf.isOwner(acc)) {
                                       <li role="presentation" class="dropdown-header">Conference Admin</li>
                                       <li role="presentation">
+                                          <a role="menuitem" tabindex="-1" href="@routes.Application.adminAbstracts(conf.uuid)">Conference Abstracts</a>
+                                      </li>
+                                      <li role="presentation">
                                           <a role="menuitem" tabindex="-1" href="@routes.Application.adminConference(conf.uuid)">Conference Settings</a>
                                       </li>
                                       <li class="divider"></li>

@@ -7,6 +7,8 @@ GET           /impressum                                      controllers.Applic
 
 GET           /dashboard/conference                           controllers.Application.createConference()
 GET           /dashboard/conference/:id                       controllers.Application.adminConference(id: String)
+GET           /dashboard/conference/:id/abstracts             controllers.Application.adminAbstracts(id: String)
+
 
 GET           /conference/:id                                 controllers.Application.conference(id: String)
 GET           /conference/:id/submission                      controllers.Application.submission(id: String)
@@ -20,6 +22,7 @@ GET           /submitted                                      controllers.Applic
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                   controllers.Assets.at(path="/public", file)
 
+# API ------------------------------------------------------------------------------------------------------------------
 # Conference interface
 POST          /api/conferences                                controllers.api.Conferences.create()
 GET           /api/conferences                                controllers.api.Conferences.list()
@@ -54,6 +57,7 @@ GET           /api/user/self/conferences/:id/abstracts        controllers.api.Ab
 GET           /api/user/self/conferences                      controllers.api.Conferences.listWithOwnAbstracts()
 GET           /secret                                         controllers.Application.showSecret
 
+# Auth -----------------------------------------------------------------------------------------------------------------
 # Login page
 GET           /login                                          securesocial.controllers.LoginPage.login
 GET           /logout                                         securesocial.controllers.LoginPage.logout
