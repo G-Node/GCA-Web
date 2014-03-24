@@ -13,23 +13,23 @@
     <div class="header">
         <div class="pull-right state-btn-group">
             <span data-bind="if: showButtonSave">
-                <button type="button" class="btn btn-lg" data-bind="click: doSaveAbstract">
+                <button type="button" class="btn btn-success" data-bind="click: doSaveAbstract">
                     Save
                 </button>
             </span>
             <span data-bind="if: showButtonSubmit">
-                <button type="button" class="btn btn-lg" data-bind="click: doSubmitAbstract">
+                <button type="button" class="btn btn-danger" data-bind="click: doSubmitAbstract">
                     Submit
                 </button>
             </span>
             <span data-bind="if: showButtonWithdraw">
-                <button type="button" class="btn btn-lg"  data-bind="click: doWithdrawAbstract">
+                <button type="button" class="btn btn-danger"  data-bind="click: doWithdrawAbstract">
                     Withdraw
                 </button>
             </span>
         </div>
 
-        <h2>Abstract submission for @conference.name</h2>
+        <h2>Abstract submission  <small>@conference.name</small></h2>
     </div>
 
     <hr class="separator">
