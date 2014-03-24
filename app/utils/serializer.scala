@@ -292,9 +292,15 @@ package object serializer {
                                                           else { 0 }
       }
 
+      implicit object AffOrder extends Ordering[Affiliation] {
+        override def compare(x: Affiliation, y: Affiliation): Int = if (x.position < y.position) {  -1 }
+                                                                    else if (x.position > y.position) { 1 }
+                                                                    else { 0 }
+      }
+
       val figures: Seq[Figure] = asScalaSet(a.figures).toSeq
       val authors: Seq[Author] = asScalaSet(a.authors).toSeq.sorted
-      val affiliations: Seq[Affiliation] = asScalaSet(a.affiliations).toSeq
+      val affiliations: Seq[Affiliation] = asScalaSet(a.affiliations).toSeq.sorted
       val references: Seq[Reference] = asScalaSet(a.references).toSeq
       Json.obj(
         "uuid" -> a.uuid,
