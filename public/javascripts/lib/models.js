@@ -243,7 +243,9 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @param {string}  [short]
      * @param {string}  [cite]
      * @param {string}  [link]
+     * @param {string}  [description]
      * @param {boolean} [isOpen]
+     * @param {boolean} [isPublished]
      * @param {Array}   [groups] List of {AbstractGroups}
      * @param {string}  [start]
      * @param {string}  [end]
@@ -258,11 +260,11 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @constructor
      * @public
      */
-    function Conference(uuid, name, short, cite, link, isOpen, groups,
+    function Conference(uuid, name, short, cite, link, description, isOpen, isPublished, groups,
                         start, end, deadline, logo, thumbnail, owners, abstracts, topics) {
 
         if (! (this instanceof Conference)) {
-            return new Conference(uuid, name, short, cite, link, isOpen, groups,
+            return new Conference(uuid, name, short, cite, link, description, isOpen, isPublished, groups,
                                   start, end, deadline, logo, thumbnail, owners, abstracts, topics);
         }
 
@@ -272,7 +274,9 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.short = short || null;
         self.cite = cite || null;
         self.link = link || null;
+        self.description = description || null;
         self.isOpen = isOpen || false;
+        self.isPublished = isPublished || false;
         self.groups = groups || [];
         self.start = start || null;
         self.end = end || null;

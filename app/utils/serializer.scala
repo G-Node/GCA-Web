@@ -92,7 +92,9 @@ package object serializer {
       (__ \ "short").readNullable[String] and
       (__ \ "cite").readNullable[String] and
       (__ \ "link").readNullable[String] and
+      (__ \ "description").readNullable[String] and
       (__ \ "isOpen").readNullable[Boolean] and
+      (__ \ "isPublished").readNullable[Boolean] and
       (__ \ "start").readNullable[DateTime] and
       (__ \ "end").readNullable[DateTime] and
       (__ \ "deadline").readNullable[DateTime] and
@@ -101,7 +103,7 @@ package object serializer {
 
       (__ \ "groups").read[List[AbstractGroup]] and
       (__ \ "topics").read[List[Topic]]
-    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
+    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
       val groups: Seq[AbstractGroup] = asScalaSet(c.groups).toSeq
@@ -111,7 +113,9 @@ package object serializer {
         "short" -> c.short,
         "cite" -> c.cite,
         "link" -> c.link,
+        "description" -> c.description,
         "isOpen" -> c.isOpen,
+        "isPublished" -> c.isPublished,
         "groups" ->  groups,
         "start" -> c.startDate,
         "end" -> c.endDate,

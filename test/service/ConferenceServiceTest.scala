@@ -65,7 +65,7 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
   @Test
   def testCreate() : Unit = {
     val c = srv.create(Conference(None, Some("fooconf"), Some("F1"), Some("F"),
-                       None, Some(false), None, None),
+                       None, None, Some(false), Some(true), None, None),
                        assets.alice)
 
     assert(c.uuid != null)
@@ -74,13 +74,13 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
     intercept[IllegalArgumentException] {
       srv.create(Conference(Some("uuid"), Some("wrongconf"), Some("bla"),
-                 None, None, Some(false), None, None),
+                 None, None, None, Some(false), Some(true), None, None),
                  assets.alice)
     }
 
     intercept[EntityNotFoundException] {
       srv.create(Conference(None, Some("fooconf two"), Some("XX"), Some("X"),
-                 None, Some(false), None, None, None),
+                 None, None, Some(false), Some(true), None, None, None),
         Account(Some("uuid"), Some("foo@bar.com")))
     }
   }
@@ -95,12 +95,12 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
 
     intercept[IllegalArgumentException] {
       srv.update(Conference(None, Some("wrongconf"), Some("XX"), Some("X"),
-                 None, Some(false), None, None, None), assets.alice)
+                 None, None, Some(false), Some(true), None, None, None), assets.alice)
     }
 
     intercept[EntityNotFoundException] {
       srv.update(Conference(Some("uuid"), Some("wrongconf"), Some("XX"), Some("X"),
-                 None, Some(false), None, None, None), assets.alice)
+                 None, None, Some(false), Some(true), None, None, None), assets.alice)
     }
 
     intercept[EntityNotFoundException] {

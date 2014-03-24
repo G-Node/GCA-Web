@@ -34,7 +34,10 @@ class Conference extends Model with Owned {
   var cite: String = _
   var link: String = _
 
+  var description: String = _
+
   var isOpen: Boolean = _
+  var isPublished: Boolean = _
 
   @Convert(converter = classOf[DateTimeConverter])
   var startDate: DateTime = _
@@ -73,7 +76,9 @@ object Conference {
             short: Option[String],
             cite: Option[String],
             link: Option[String],
+            description: Option[String],
             isOpen: Option[Boolean],
+            isPublished: Option[Boolean],
             startDate: Option[DateTime],
             endDate: Option[DateTime],
             deadline: Option[DateTime] = null,
@@ -86,23 +91,25 @@ object Conference {
 
     val conference = new Conference()
 
-    conference.uuid       = unwrapRef(uuid)
-    conference.name       = unwrapRef(name)
-    conference.short      = unwrapRef(short)
-    conference.cite       = unwrapRef(cite)
-    conference.link       = unwrapRef(link)
-    conference.isOpen     = isOpen match {case Some(b) => b; case _ => false}
-    conference.startDate  = unwrapRef(startDate)
-    conference.endDate    = unwrapRef(endDate)
-    conference.deadline   = unwrapRef(deadline)
+    conference.uuid        = unwrapRef(uuid)
+    conference.name        = unwrapRef(name)
+    conference.short       = unwrapRef(short)
+    conference.cite        = unwrapRef(cite)
+    conference.link        = unwrapRef(link)
+    conference.description = unwrapRef(description)
+    conference.isOpen      = isOpen match {case Some(b) => b; case _ => false}
+    conference.isPublished = isPublished match {case Some(b) => b; case _ => false}
+    conference.startDate   = unwrapRef(startDate)
+    conference.endDate     = unwrapRef(endDate)
+    conference.deadline    = unwrapRef(deadline)
 
-    conference.logo       = unwrapRef(logo)
-    conference.thumbnail  = unwrapRef(thumbnail)
+    conference.logo        = unwrapRef(logo)
+    conference.thumbnail   = unwrapRef(thumbnail)
 
-    conference.groups     = toJSet(groups)
-    conference.owners     = toJSet(owners)
-    conference.abstracts  = toJSet(abstracts)
-    conference.topics     = toJSet(topics)
+    conference.groups      = toJSet(groups)
+    conference.owners      = toJSet(owners)
+    conference.abstracts   = toJSet(abstracts)
+    conference.topics      = toJSet(topics)
 
     conference
   }

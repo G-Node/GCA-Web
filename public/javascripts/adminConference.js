@@ -92,8 +92,8 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         };
 
         self.makeConferenceObservable = function (conf) {
-            conf.makeObservable(["name", "short", "cite", "start", "end",
-                "deadline", "logo", "thumbnail", "link", "isOpen", "topics"]);
+            conf.makeObservable(["name", "short", "cite", "description", "start", "end",
+                "deadline", "logo", "thumbnail", "link", "isOpen", "isPublished", "topics"]);
 
             for(var prop in conf) {
                 if (conf.hasOwnProperty(prop)) {
