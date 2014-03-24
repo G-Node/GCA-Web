@@ -232,7 +232,7 @@ package object serializer {
   /**
    * Figure serializer.
    */
-  class FigureFormat extends Format[Figure] {
+  class FigureFormat(implicit routesResolver: RoutesResolver) extends Format[Figure] {
 
     override def reads(json: JsValue): JsResult[Figure] = (
       (__ \ "uuid").readNullable[String] and
@@ -248,7 +248,7 @@ package object serializer {
           "uuid" -> a.uuid,
           "name" -> a.name,
           "caption" -> a.caption,
-          "URL" -> a.uuid  // TODO: build URL
+          "URL" -> routesResolver.figureFileUrl(a.uuid)
         )
       }
     }

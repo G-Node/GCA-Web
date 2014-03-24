@@ -27,6 +27,18 @@ class RoutesResolver {
   def abstractsUrl(id: String) = {
     new URL(baseUrl + s"/api/conferences/$id/abstracts")
   }
+
+  /**
+   * Builds an URL to figure file.
+   *
+   * @param id an ID of a Figure object to insert into the URL
+   *
+   * @return URL for file, like "/api/figures/HNOPSADMHV/image"
+   */
+  def figureFileUrl(id: String) = {
+    new URL(baseUrl + s"/api/figures/$id/image")
+  }
+
 }
 
 object DefaultRoutesResolver {

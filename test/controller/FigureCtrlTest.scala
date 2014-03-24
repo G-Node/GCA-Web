@@ -12,6 +12,7 @@ import play.api.test.Helpers._
 import play.api.http.Writeable
 
 import utils.serializer.FigureFormat
+import utils.DefaultRoutesResolver._
 import scala.Some
 import play.api.mvc.AnyContentAsMultipartFormData
 import play.api.test.FakeApplication
