@@ -15,7 +15,7 @@ import play.api.test.FakeApplication
 import play.api.Play
 import javax.persistence.{EntityNotFoundException, NoResultException, EntityManagerFactory, Persistence}
 import service.util.DBUtil
-import models.Account
+import models.{AbstractState, Account}
 
 /**
  * Test for the abstracts service layer
@@ -38,6 +38,15 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
   @Test
   def testList() : Unit = {
     var abstracts = srv.list(assets.conferences(0))
+    assert(abstracts.size == assets.abstracts.count{ _.state == AbstractState.Published })
+
+    abstracts = srv.list(assets.conferences(1))
+    assert(abstracts.size == 0)
+  }
+
+  @Test
+  def testListAll() : Unit = {
+    var abstracts = srv.listAll(assets.conferences(0))
     assert(abstracts.size == assets.abstracts.size)
 
     abstracts = srv.list(assets.conferences(1))
