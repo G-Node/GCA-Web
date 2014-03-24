@@ -28,6 +28,7 @@ PUT           /api/conferences/:id                            controllers.api.Co
 DELETE        /api/conferences/:id                            controllers.api.Conferences.delete(id: String)
 POST          /api/conferences/:id/abstracts                  controllers.api.Abstracts.create(id: String)
 GET           /api/conferences/:id/abstracts                  controllers.api.Abstracts.listByConference(id: String)
+GET           /api/conferences/:id/allAbstracts               controllers.api.Abstracts.listAllByConference(id: String)
 PUT           /api/conferences/:id/owners                     controllers.api.Conferences.setPermissions(id: String)
 GET           /api/conferences/:id/owners                     controllers.api.Conferences.getPermissions(id: String)
 

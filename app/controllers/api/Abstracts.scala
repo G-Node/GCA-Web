@@ -38,7 +38,7 @@ object Abstracts extends Controller with  GCAAuth {
   }
 
   /**
-   * List all abstracts for a given conference.
+   * List all published abstracts for a given conference.
    *
    * @return All abstracts publicly available.
    */
@@ -51,6 +51,26 @@ object Abstracts extends Controller with  GCAAuth {
 
     val abstracts = abstractService.list(conference)
 
+    Ok(Json.toJson(abstracts))
+  }
+
+  /**
+   * List all abstracts for a given conference.
+   *
+   * @return All abstracts publicly available.
+   */
+  def listAllByConference(id: String) = AuthenticatedAction(isREST = true) {  implicit request =>
+
+    val conferenceService = ConferenceService()
+    val abstractService = AbstractService()
+
+    val conference = conferenceService.get(id)
+
+    if (!(request.user.isAdmin || conference.isOwner(request.user))) {
+      throw new IllegalAccessException("Not allowed")
+    }
+
+    val abstracts = abstractService.listAll(conference)
     Ok(Json.toJson(abstracts))
   }
 
