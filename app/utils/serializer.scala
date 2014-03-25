@@ -313,6 +313,7 @@ package object serializer {
         "reasonForTalk" -> a.reasonForTalk,
         "sortId" -> a.sortId,
         "state" -> a.state,
+        "mtime" -> a.mtime,
         "conference" -> a.conference.uuid,
         "figures" -> JsArray( for (auth <- figures) yield figureF.writes(auth) ),
         "owners" -> routesResolver.ownersUrl(a.uuid),
