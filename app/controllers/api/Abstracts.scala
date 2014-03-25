@@ -3,7 +3,7 @@ package controllers.api
 import play.api._
 import play.api.mvc._
 import service._
-import utils.serializer.{AccountFormat, AbstractFormat}
+import utils.serializer.{StateLogWrites, AccountFormat, AbstractFormat}
 import play.api.libs.json.{JsArray, JsObject, Json}
 import utils.GCAAuth
 import models.Abstract
@@ -197,5 +197,11 @@ object Abstracts extends Controller with  GCAAuth {
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
     ))
+  }
+
+  def listState(id: String) = AuthenticatedAction(isREST = true) { request =>
+    implicit val logWrites = new StateLogWrites()
+    val srv = AbstractService()
+    Ok(Json.toJson(srv.listStates(id, request.user)))
   }
 }

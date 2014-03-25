@@ -44,6 +44,7 @@ POST          /api/abstracts/:id/figures                      controllers.api.Fi
 GET           /api/abstracts/:id/figures                      controllers.api.Figures.list(id: String)
 PUT           /api/abstracts/:id/owners                       controllers.api.Abstracts.setPermissions(id: String)
 GET           /api/abstracts/:id/owners                       controllers.api.Abstracts.getPermissions(id: String)
+GET           /api/abstracts/:id/stateLog                     controllers.api.Abstracts.listState(id: String)
 
 # Figure interface
 GET           /api/figures/:id/image                          controllers.api.Figures.download(id: String)
