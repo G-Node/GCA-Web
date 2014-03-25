@@ -11,10 +11,13 @@
          | |_| |_____| |\  | (_) | (_| |  __/
           \____|     |_| \_|\___/ \__,_|\___|
 
-          Brought to you by the German Neuroinformatics Node (G-Node)
+          Brought to you by the German Neuroinformatics Node (G-Node) @@gnode
           Copyright (c) 2013,2014 G-Node
-          License: Apache 2.0 (see http://www.apache.org/licenses/LICENSE-2.0.html)
-          Author: Christian Kellner <kellner@@bio.lmu.de>
+          License: BSD-4 clause and Apache 2.0 (see http://www.apache.org/licenses/LICENSE-2.0.html)
+          Authors: Christian Kellner <kellner@@bio.lmu.de>
+                   Andrey Sobolev <sobolev.andrey@@gmail.com>
+                   Adrian Stoewer <adrian.stoewer@@rz.ifi.lmu.de>
+
     -->
     <title>@conference.map(_.name).getOrElse("G-Node Conference Application Suite")</title>
 
@@ -138,8 +141,6 @@
 
                             </ul>
                         </li>
-
-
                     }
 
                     @if(account.isEmpty) {
@@ -162,6 +163,7 @@
                     <ul class="list-inline">
                         <li><a href="@routes.Application.contact">Contact</a></li>
                         <li><a href="@routes.Application.impressum">Imprint</a></li>
+                        <li><a href="@routes.Application.about">About</a></li>
                     </ul>
                 </div>
                 <div class="pull-right"><p>The G-Node Conference Site &mdash; © <a href="http://www.g-node.org">G-Node</a> 2014 </p></div>
