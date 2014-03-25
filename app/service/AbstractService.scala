@@ -373,6 +373,32 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
     }
   }
 
+  /**
+   * List all state logs of a given abstract
+   * @param id       abstract id
+   * @param account  account (for permission)
+   * @return         Sorted sequence of log entries (newest first)
+   */
+  def listStates(id: String, account: Account) : Seq[StateLogEntry] = {
+    dbTransaction { (em, tx) =>
+
+      val queryStr =
+        """SELECT DISTINCT a FROM Abstract a
+           LEFT JOIN FETCH a.owners o
+           LEFT JOIN FETCH a.stateLog
+           WHERE a.uuid = :uuid"""
+
+      val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
+      query.setParameter("uuid", id)
+      val abstr = query.getSingleResult
+
+      if (!(account.isAdmin || abstr.owners.contains(account))) {
+        throw new IllegalAccessException("No permissions for abstract with uuid = " + id)
+      }
+
+      abstr.stateLog.toSeq.sortWith (_.timestamp.getMillis > _.timestamp.getMillis)
+    }
+  }
 }
 
 
