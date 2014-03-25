@@ -67,7 +67,7 @@
                 @conference.map { conf =>
                     <ul class="nav navbar-nav">
                         <li class=@if(active.toLowerCase == "conference") {"active"} else {""}>
-                            <a href="@routes.Application.conference(conf.uuid)"> @conference.get.short</a>
+                            <a href="@routes.Application.conference(conf.short)"> @conference.get.short</a>
                         </li>
 
                         @if(conf.isPublished) {
