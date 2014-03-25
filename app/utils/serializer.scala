@@ -168,7 +168,7 @@ package object serializer {
     override def writes(a: Author): JsValue = {
       Json.obj(
         "uuid" -> a.uuid,
-        "email" -> a.mail,
+        "mail" -> a.mail,
         "firstName" -> a.firstName,
         "middleName" -> a.middleName,
         "lastName" -> a.lastName,
