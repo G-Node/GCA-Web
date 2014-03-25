@@ -193,7 +193,7 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
             }
 
             function fail() {
-                self.setError("Error", "Unable to request the conference: uuid = " + confId, true);
+                self.setError("Error", "Unable to request the conference: uuid = " + confId);
             }
 
         };
@@ -217,7 +217,7 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
             }
 
             function fail() {
-                self.setError("Error", "Unable to request the abstract: uuid = " + abstrId, true);
+                self.setError("Error", "Unable to request the abstract: uuid = " + abstrId);
             }
 
         };
@@ -230,6 +230,21 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
                 data = new FormData();
 
             if (files.length > 0) {
+                var fileName = files[0].name,
+                    fileSize = files[0].size,
+                    splitted = fileName.split('.'),
+                    ending   = splitted[splitted.length - 1].toLowerCase();
+
+                if (['jpeg', 'jpg', 'gif', 'giff', 'png'].indexOf(ending) < 0) {
+                    self.setError("Error", "Figure file format not supported (only jpeg, gif or png is allowed).");
+                    return;
+                }
+
+                if (fileSize > 5242880) {
+                    self.setError("Error", "Figure file is too large (limit is 5MB).");
+                    return;
+                }
+
                 data.append('file', files[0]);
                 data.append('figure', JSON.stringify(json));
 
@@ -257,7 +272,7 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
             }
 
             function fail() {
-                self.setError("Error", "Unable to save the figure", true);
+                self.setError("Error", "Unable to save the figure");
             }
         };
 
@@ -294,7 +309,7 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
             }
 
             function fail() {
-                self.setError("Error", "Unable to delete the figure", true);
+                self.setError("Error", "Unable to delete the figure");
             }
         };
 
@@ -302,7 +317,7 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
         self.doSaveAbstract = function(abstract) {
 
             if (! self.isChangeOk()) {
-                self.setError("Error", "Unable to save abstract: illegal state", true);
+                self.setError("Error", "Unable to save abstract: illegal state");
                 return;
             }
 
@@ -347,13 +362,14 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
 
                 if (! self.hasAbstractFigures()) {
                     self.figureUpload(successFig);
+                } else {
+                    self.setOk("Ok", "Abstract saved.", true);
                 }
-
-                self.setOk("Ok", "Abstract saved.", true);
             }
 
             function successFig() {
                 self.requestAbstract(self.abstract().uuid)
+                self.setOk("Ok", "Abstract and figure saved.", true);
             }
 
             function fail() {
@@ -477,7 +493,7 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
                     author.affiliations.push(affiliation.position());
                 }
             } else {
-                self.setError("Error", "Unable to add author to affiliation: " + affiliation.format(), true);
+                self.setError("Error", "Unable to add author to affiliation: " + affiliation.format());
             }
 
         };
