@@ -186,6 +186,15 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
       srv.setPermissions(abstr, bob, List[Account]())
     }
   }
+
+  @Test
+  def testStateLog() : Unit = {
+    val abstr = assets.abstracts(0)
+    val state = srv.listStates(abstr.uuid, assets.alice)
+
+    assert(state.size > 0)
+    assert(state.exists(p => p.state == AbstractState.InPreparation))
+  }
 }
 
 
