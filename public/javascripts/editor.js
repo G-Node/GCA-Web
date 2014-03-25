@@ -25,6 +25,7 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
         self.conference = ko.observable(null);
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
+        self.originalState = ko.observable(null);
 
         self.isAbstractSaved = ko.computed(
             function() {
@@ -66,7 +67,7 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
             function() {
                 if (self.abstract()) {
                     var saved = self.isAbstractSaved(),
-                        state = self.abstract().state();
+                        state = self.originalState();
 
                     return !saved || !state || state === 'InPreparation';
                 } else {
@@ -80,7 +81,7 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
             function() {
                 if (self.abstract()) {
                     var saved = self.isAbstractSaved(),
-                        state = self.abstract().state();
+                        state = self.originalState();
 
                     return saved && (!state || state === 'InPreparation');
                 } else {
@@ -94,10 +95,49 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
             function() {
                 if (self.abstract()) {
                     var ok = ['Submitted', 'InReview'];
-                    return self.isAbstractSaved() && (ok.indexOf(self.abstract().state()) >= 0);
+                    return self.isAbstractSaved() && (ok.indexOf(self.originalState()) >= 0);
                 } else {
                     return false;
                 }
+            },
+            self
+        );
+
+        self.showButtonReactivate = ko.computed(
+            function() {
+                var saved = self.isAbstractSaved(),
+                    state = self.originalState();
+
+                return saved && (!state || state === 'Withdrawn');
+            },
+            self
+        );
+
+
+        self.isChangeOk = ko.computed(
+            function() {
+                var saved = self.isAbstractSaved(),
+                    oldState = self.originalState(),
+                    newState = self.abstract() ? self.abstract().state() : null,
+                    isOk = false;
+
+                if (!saved) {
+                    isOk = (newState === 'InPreparation' || newState === 'Submitted');
+                } else {
+                    switch(oldState) {
+                        case 'InPreparation':
+                            isOk = (newState === 'InPreparation' || newState === 'Submitted');
+                            break;
+                        case 'Submitted':
+                            isOk = (newState === 'Withdrawn');
+                            break;
+                        case 'Withdrawn':
+                            isOk = (newState === 'InPreparation');
+                            break;
+                    }
+                }
+
+                return isOk;
             },
             self
         );
@@ -112,6 +152,7 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
                 self.requestAbstract(abstrId);
             } else {
                 self.abstract(models.ObservableAbstract());
+                self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract());
             }
 
@@ -171,6 +212,7 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
 
             function success(obj, stat, xhr) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
+                self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract())
             }
 
@@ -223,6 +265,11 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
 
 
         self.doRemoveFigure = function() {
+
+            if (! self.isChangeOk()) {
+                throw "Unable to save abstract: illegal state";
+            }
+
             if (self.hasAbstractFigures()) {
                 var figure = self.abstract().figures()[0];
 
@@ -253,6 +300,10 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
 
 
         self.doSaveAbstract = function(abstract) {
+
+            if (! self.isChangeOk()) {
+                throw "Unable to save abstract: illegal state";
+            }
 
             if (! (abstract instanceof models.ObservableAbstract)) {
                 abstract = self.abstract();
@@ -290,6 +341,7 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
 
             function successAbs(obj, stat, xhr) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
+                self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract());
 
                 var doFig = !self.hasAbstractFigures();
@@ -318,6 +370,12 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
 
         self.doWithdrawAbstract = function() {
             self.abstract().state('Withdrawn');
+            self.doSaveAbstract(self.abstract())
+        };
+
+
+        self.doReactivateAbstract = function() {
+            self.abstract().state('InPreparation');
             self.doSaveAbstract(self.abstract())
         };
 

@@ -17,6 +17,11 @@
                     Save
                 </button>
             </span>
+            <span data-bind="if: showButtonReactivate">
+                <button type="button" class="btn btn-success" data-bind="click: doReactivateAbstract">
+                    Reactivate
+                </button>
+            </span>
             <span data-bind="if: showButtonSubmit">
                 <button type="button" class="btn btn-danger" data-bind="click: doSubmitAbstract">
                     Submit
@@ -36,7 +41,7 @@
 
     <div id="abstract">
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal"
                         data-bind="click: doStartEdit.bind($root, '#title-editor')">
@@ -75,7 +80,7 @@
             </div>
         </div>
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
 
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal"
@@ -151,7 +156,7 @@
             </div>
         </div>
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
@@ -263,7 +268,7 @@
 
         </div>
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#abstract-text-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
@@ -309,7 +314,7 @@
         </div>
 
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#acknowledgements-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
@@ -353,7 +358,7 @@
         </div>
 
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#references-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
@@ -429,7 +434,7 @@
         </div>
 
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
                 data-toggle="modal" data-bind="click: doStartEdit">
@@ -470,7 +475,7 @@
             </div>
         </div>
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#is-talk-editor"
                 data-toggle="modal" data-bind="click: doStartEdit">
@@ -531,7 +536,7 @@
             </div>
         </div>
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
 
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#figure-editor"
