@@ -67,8 +67,9 @@
                 </a>
             </div>
             <div class="navbar-collapse collapse">
-                @conference.map { conf =>
-                    <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav">
+
+                    @conference.map { conf =>
                         <li class=@if(active.toLowerCase == "conference") {"active"} else {""}>
                             <a href="@routes.Application.conference(conf.short)"> @conference.get.short</a>
                         </li>
@@ -90,8 +91,13 @@
                                 <a href="@routes.Application.abstractsPrivate()">My Abstracts</a>
                             </li>
                         }
+                    }
+
+                    @if(conference.isEmpty) {
+                        <li class="active"><a>@active</a></li>
+                    }
+
                     </ul>
-                }
 
 
                 <ul class="nav navbar-nav navbar-right">
@@ -143,7 +149,7 @@
                         </li>
                     }
 
-                    @if(account.isEmpty) {
+                    @if(account.isEmpty && !("login" :: "register" :: Nil).contains(active.toLowerCase)) {
                         <li><a href="@securesocial.core.providers.utils.RoutesHelper.login()">Login</a></li>
                     }
                 </ul>

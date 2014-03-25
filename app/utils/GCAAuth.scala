@@ -85,7 +85,10 @@ trait GCAAuth extends securesocial.core.SecureSocial {
   }
 
   def getUserStore = {
-    UserService.delegate.get.asInstanceOf[UserStore]
+    UserService.delegate match {
+      case Some(u: UserStore) => u
+      case _ => throw new RuntimeException("Could not obtain User Store")
+    }
   }
 
   def getAccount[A](request: Request[A]): Option[Account] = {
