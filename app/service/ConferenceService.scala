@@ -15,6 +15,7 @@ import play.api._
 import models._
 import javax.persistence._
 import service.util.{PermissionsBase, DBUtil}
+import java.net.URLDecoder
 
 /**
  * Service class for that implements data access logic for conferences.
@@ -106,10 +107,11 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
            LEFT JOIN FETCH c.owners
            LEFT JOIN FETCH c.abstracts
            LEFT JOIN FETCH c.topics
-           WHERE c.uuid = :uuid"""
+           WHERE c.uuid = :uuid or c.short = :short"""
 
       val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
       query.setParameter("uuid", id)
+      query.setParameter("short", URLDecoder.decode(id, "UTF-8"))
 
       query.getSingleResult
     }
