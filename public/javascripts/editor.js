@@ -188,12 +188,12 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
                 dataType: "json"
             });
 
-            function success(obj, stat, xhr) {
+            function success(obj) {
                 self.conference(models.Conference.fromObject(obj));
             }
 
-            function fail(xhr, stat, msg) {
-                console.log("Error while requesting the conference: uuid = " + confId);
+            function fail() {
+                self.setError("Error", "Unable to request the conference: uuid = " + confId, true);
             }
 
         };
@@ -210,14 +210,14 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
                 dataType: "json"
             });
 
-            function success(obj, stat, xhr) {
+            function success(obj) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
                 self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract())
             }
 
-            function fail(xhr, stat, msg) {
-                console.log("Error while requesting the abstract: uuid = " + abstrId);
+            function fail() {
+                self.setError("Error", "Unable to request the abstract: uuid = " + abstrId, true);
             }
 
         };
@@ -243,8 +243,6 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
                     success: success,
                     error: fail
                 });
-            } else {
-                console.log("No figure data!")
             }
 
             function success(obj, stat, xhr) {
@@ -258,8 +256,8 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
                 }
             }
 
-            function fail(xhr, stat, msg) {
-                console.log("Error while saving the figure: " + msg);
+            function fail() {
+                self.setError("Error", "Unable to save the figure", true);
             }
         };
 
@@ -267,7 +265,8 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
         self.doRemoveFigure = function() {
 
             if (! self.isChangeOk()) {
-                throw "Unable to save abstract: illegal state";
+                self.setError("Error", "Unable to save abstract: illegal state");
+                return;
             }
 
             if (self.hasAbstractFigures()) {
@@ -281,20 +280,21 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
                     error: fail
                 })
             } else {
-                console.log("Unable to delete figure: abstract has no figure");
+                self.setWarning("Error", "Unable to delete figure: abstract has no figure", true);
             }
 
-            function success(obj, stat, xhr) {
+            function success() {
                 $("#figure-name").val(null);
                 $("#figure-caption").val(null);
                 $("#figure-file").val(null);
 
-                console.log("Figure deleted: " + JSON.stringify(obj));
                 self.requestAbstract(self.abstract().uuid);
+
+                self.setOk("Ok", "Figure removed from abstract");
             }
 
-            function fail(xhr, stat, msg) {
-                console.log("Error while deleting the figure: " + msg);
+            function fail() {
+                self.setError("Error", "Unable to delete the figure", true);
             }
         };
 
@@ -302,7 +302,8 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
         self.doSaveAbstract = function(abstract) {
 
             if (! self.isChangeOk()) {
-                throw "Unable to save abstract: illegal state";
+                self.setError("Error", "Unable to save abstract: illegal state", true);
+                return;
             }
 
             if (! (abstract instanceof models.ObservableAbstract)) {
@@ -336,28 +337,27 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
                 });
 
             } else {
-                throw "Conference id or abstract id must be defined";
+                self.setError("Error", "Conference id or abstract id must be defined. This is a bug: please report!");
             }
 
-            function successAbs(obj, stat, xhr) {
+            function successAbs(obj) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
                 self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract());
 
-                var doFig = !self.hasAbstractFigures();
-                if (doFig) {
+                if (! self.hasAbstractFigures()) {
                     self.figureUpload(successFig);
-                } else {
-                    console.log("Abstract has already a figure.");
                 }
+
+                self.setOk("Ok", "Abstract saved.", true);
             }
 
-            function successFig(obj, stat, xhr) {
+            function successFig() {
                 self.requestAbstract(self.abstract().uuid)
             }
 
-            function fail(xhr, stat, msg) {
-                console.log("Error while saving the abstract");
+            function fail() {
+                self.setError("Error", "Unable to save abstract!");
             }
         };
 
@@ -389,7 +389,7 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
         };
 
 
-        self.doEndEdit = function(editorId) {
+        self.doEndEdit = function() {
             if (self.isAbstractSaved()) {
                 self.doSaveAbstract(self.editedAbstract())
             } else {
@@ -475,13 +475,9 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
 
                 if (author.affiliations().indexOf(affiliationPosition) < 0) {
                     author.affiliations.push(affiliation.position());
-                    console.log("Add author '" + author.formatName() + "' to affiliation '" + affiliation.format() + "'");
-                } else {
-                    console.log("Author '" + author.formatName() + "' is already affiliated with '" + affiliation.format() + "'");
                 }
-
             } else {
-                throw "Unable to add author to affiliation: " + affiliation.format();
+                self.setError("Error", "Unable to add author to affiliation: " + affiliation.format(), true);
             }
 
         };
@@ -499,8 +495,6 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
 
             while (affiliations.indexOf(affiliationPos) >= 0) {
                 affiliations.splice(affiliations.indexOf(affiliationPos), 1);
-                console.log("Remove affiliation '" + affiliation.format() +
-                            "' from author '" + author.formatName() + "'");
             }
 
             author.affiliations(affiliations);
