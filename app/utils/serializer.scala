@@ -8,7 +8,7 @@ import play.api.libs.functional.syntax._
 
 import models._
 import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
 import play.api.data.validation.ValidationError
 
 package object serializer {
@@ -33,8 +33,7 @@ package object serializer {
   }
 
   private implicit val dateFormat = new Format[DateTime] {
-    private val datePattern = "MM/dd/yyyy HH:mm a"
-    private val dateFormatter = DateTimeFormat.forPattern(datePattern)
+    private val dateFormatter = ISODateTimeFormat.dateTime()
     
     def writes(date: DateTime) = {
       Json.toJson(dateFormatter.print(date))
@@ -44,7 +43,7 @@ package object serializer {
       json match {
         case JsString(s) => JsSuccess(dateFormatter.parseDateTime(s))
         case JsNumber(n) => JsSuccess(new DateTime(n.toLong))
-        case _ => JsError(Seq(JsPath() -> Seq(ValidationError("error.expected.jodadate.format", datePattern))))
+        case _ => JsError(Seq(JsPath() -> Seq(ValidationError("error.expected.jodadate.format.iso8601"))))
       }
     }
 
