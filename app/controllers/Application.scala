@@ -75,19 +75,14 @@ object Application extends Controller with GCAAuth {
   }
 
   def contact = AccountAwareAction { implicit request =>
-    val conference = ConferenceService().list()(0)
-
-    Ok(views.html.contact(request.user, conference))
+    Ok(views.html.contact(request.user))
   }
 
   def impressum = AccountAwareAction { implicit request =>
-    val conference = ConferenceService().list()(0)
-
-    Ok(views.html.impressum(request.user, conference))
+    Ok(views.html.impressum(request.user))
   }
 
   def about = AccountAwareAction { implicit request =>
-
     Ok(views.html.about(request.user))
   }
 
