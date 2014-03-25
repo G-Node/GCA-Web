@@ -33,7 +33,7 @@ package object serializer {
   }
 
   private implicit val dateFormat = new Format[DateTime] {
-    private val dateFormatter = ISODateTimeFormat.dateTime()
+    private val dateFormatter = ISODateTimeFormat.dateTime().withZoneUTC()
     
     def writes(date: DateTime) = {
       Json.toJson(dateFormatter.print(date))
@@ -323,5 +323,4 @@ package object serializer {
       )
     }
   }
-
 }
