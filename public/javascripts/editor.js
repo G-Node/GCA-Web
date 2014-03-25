@@ -1,4 +1,4 @@
-require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi) {
+require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
     "use strict";
 
     /**
@@ -17,7 +17,7 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
             return new EditorViewModel(confId, abstrId);
         }
 
-        var self = this;
+        var self = tools.inherit(this, msg.MessageVM);
 
         self.textCharacterLimit = 2000;
         self.ackCharacterLimit = 200;
