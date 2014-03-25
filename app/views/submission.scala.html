@@ -592,7 +592,12 @@
                                     Remove
                                 </button>
                                 <div class="figure-box">
-                                    <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
+                                    <img class="figure-image" src="" data-bind="attr: {src: editedAbstract().figures()[0].URL}">
+                                    <div class="figure-caption">
+                                        <span data-bind="text: editedAbstract().figures()[0].name"></span>
+                                        <span>: </span>
+                                        <span data-bind="text: editedAbstract().figures()[0].caption"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -619,6 +624,7 @@
                     <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
                     <div class="figure-caption">
                         <span data-bind="text: abstract().figures()[0].name"></span>
+                        <span>: </span>
                         <span data-bind="text: abstract().figures()[0].caption"></span>
                     </div>
                 </div>
