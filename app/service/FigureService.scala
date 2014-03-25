@@ -139,6 +139,9 @@ class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUt
       if (file.exists())
         file.delete()
 
+      figChecked.abstr.figures.remove(figChecked)
+      figChecked.abstr = null
+
       em.remove(figChecked)
     }
   }

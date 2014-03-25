@@ -193,21 +193,62 @@ require(["lib/models", "lib/tools", "lib/multi"], function(models, tools, multi)
 
                 $.ajax({
                     url: '/api/abstracts/' + self.abstract().uuid + '/figures',
+                    type: 'POST',
+                    dataType: "json",
                     data: data,
                     processData: false,
                     contentType: false,
-                    type: 'POST',
-                    success: callback,
-                    error: function() { console.log("Error while saving the figure"); }
+                    success: success,
+                    error: fail
                 });
             } else {
                 console.log("No figure data!")
             }
-        }
+
+            function success(obj, stat, xhr) {
+
+                $("#figure-name").val(null);
+                $("#figure-caption").val(null);
+                $("#figure-file").val(null);
+
+                if (callback) {
+                    callback(obj, stat, xhr);
+                }
+            }
+
+            function fail(xhr, stat, msg) {
+                console.log("Error while saving the figure: " + msg);
+            }
+        };
 
 
         self.doRemoveFigure = function() {
+            if (self.hasAbstractFigures()) {
+                var figure = self.abstract().figures()[0];
 
+                $.ajax({
+                    url: '/api/figures/' + figure.uuid,
+                    type: 'DELETE',
+                    dataType: "json",
+                    success: success,
+                    error: fail
+                })
+            } else {
+                console.log("Unable to delete figure: abstract has no figure");
+            }
+
+            function success(obj, stat, xhr) {
+                $("#figure-name").val(null);
+                $("#figure-caption").val(null);
+                $("#figure-file").val(null);
+
+                console.log("Figure deleted: " + JSON.stringify(obj));
+                self.requestAbstract(self.abstract().uuid);
+            }
+
+            function fail(xhr, stat, msg) {
+                console.log("Error while deleting the figure: " + msg);
+            }
         };
 
 

@@ -561,18 +561,19 @@
                                     <input type="file" name="figure-file" id="figure-file"
                                            maxlength="100" class="form-control input-sm">
                                 </div>
-
+                                <div data-bind="ifnot: isAbstractSaved">
+                                    Note: the figure will be uploaded when the abstract is saved for the first time.
+                                </div>
                             </div>
+
                             <div data-bind="if: hasAbstractFigures">
                                 <button type="button" class="btn btn-default btn-sm pull-right"
                                         data-bind="click: $root.doRemoveFigure">
                                     Remove
                                 </button>
-
                                 <div class="figure-box">
                                     <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
                                 </div>
-
                             </div>
                         </div>
 
