@@ -254,6 +254,18 @@ package object serializer {
     }
   }
 
+  class StateLogWrites extends Writes[StateLogEntry] {
+
+    override def writes(l: StateLogEntry): JsValue = {
+      Json.obj(
+        "timestamp" -> l.timestamp,
+        "state" -> l.state,
+        "editor" -> l.editor,
+        "note" -> l.note
+      )
+    }
+  }
+
   /**
    * Abstract serializer.
    *
