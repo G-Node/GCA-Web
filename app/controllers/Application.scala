@@ -86,6 +86,11 @@ object Application extends Controller with GCAAuth {
     Ok(views.html.impressum(request.user, conference))
   }
 
+  def about = AccountAwareAction { implicit request =>
+
+    Ok(views.html.about(request.user))
+  }
+
   def createConference() = AuthenticatedAction { implicit request =>
 
     if (!request.user.isAdmin) {

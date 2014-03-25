@@ -1,0 +1,29 @@
+@(account: Option[Account])
+
+@template(account, None, "About") {
+
+    <!-- The contact info -->
+    <div class="page-header">
+        <h1>About</h1>
+    </div>
+    <div>
+        <div class="row">
+            <div class="col-sm-7">
+                <p>This Conference Site is designed, implemented and hosted by the
+                    <a href="http://www.g-node.org">German Neuroinformatics Node</a> (G-Node).
+                    Find out more about its mission <a href="http://www.g-node.org/about"> here</a>.</p>
+                <p>You can follow us on <a href="https://twitter.com/gnode">twitter</a>. </p>
+
+
+                <p class="lead">Open Source</p>
+                <p>The software underlying this site is free and open. Its source code can be found on
+                    <a href="https://github.com/G-Node/GCA-Web">Github</a>.
+                </p>
+            </div>
+            <div class="col-sm-4">
+                <img class="img-responsive" src="@routes.Assets.at("images/gnode_logo.png")">
+            </div>
+        </div>
+
+    </div>
+}

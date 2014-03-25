@@ -4,6 +4,7 @@
 GET           /                                               controllers.Application.index
 GET           /contact                                        controllers.Application.contact
 GET           /impressum                                      controllers.Application.impressum
+GET           /about                                          controllers.Application.about
 
 GET           /dashboard/conference                           controllers.Application.createConference()
 GET           /dashboard/conference/:id                       controllers.Application.adminConference(id: String)
