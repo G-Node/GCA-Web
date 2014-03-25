@@ -41,6 +41,10 @@
 
     <div id="abstract">
 
+        <div class="notice">
+            <p>Submitted abstracts can be modified until the deadline.</p>
+        </div>
+
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal"
@@ -597,15 +601,15 @@
             
             <div class="figure">
                 <h4>Figure</h4>
+                <div data-bind="ifnot: hasAbstractFigures">
+                    You have the option to include one image with your abstract. This image should be in one of the formats GIF, JPG, or PNG and should be at least 700 pixels wide and no larger than 5MB.
+                </div>
                 <div data-bind="if: hasAbstractFigures" class="figure-box">
                     <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
                     <div class="figure-caption">
                         <span data-bind="text: abstract().figures()[0].name"></span>
                         <span data-bind="text: abstract().figures()[0].caption"></span>
                     </div>
-                </div>
-                <div data-bind="ifnot: hasAbstractFigures">
-                    No figure uploaded.
                 </div>
             </div>
 
