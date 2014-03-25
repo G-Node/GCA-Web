@@ -22,6 +22,7 @@ class Abstract extends Model with Owned {
 
   var title: String = _
   var topic: String = _
+  @Column(length = 2500)
   var text:  String = _
   var doi:   String = _
   var conflictOfInterest: String = _

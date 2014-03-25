@@ -10,11 +10,27 @@
     <script data-main="@routes.Assets.at("javascripts/editor.js")"
             src="@routes.Assets.at("javascripts/require.js")"></script>
 
+    <!-- Loading box -->
+    <div data-bind="if: message">
+            <!-- ko with: message -->
+        <div class="alert alert-info fade in out" data-bind="css: level">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h4 data-bind="text: message">Loading data</h4>
+            <p data-bind="html: desc">Please wait...</p>
+        </div>
+            <!-- /ko -->
+    </div>
+
     <div class="header">
         <div class="pull-right state-btn-group">
             <span data-bind="if: showButtonSave">
                 <button type="button" class="btn btn-success" data-bind="click: doSaveAbstract">
                     Save
+                </button>
+            </span>
+            <span data-bind="if: showButtonReactivate">
+                <button type="button" class="btn btn-success" data-bind="click: doReactivateAbstract">
+                    Reactivate
                 </button>
             </span>
             <span data-bind="if: showButtonSubmit">
@@ -36,7 +52,11 @@
 
     <div id="abstract">
 
-        <div class="editor-box">
+        <div class="notice">
+            <p>Submitted abstracts can be modified until the deadline.</p>
+        </div>
+
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal"
                         data-bind="click: doStartEdit.bind($root, '#title-editor')">
@@ -53,7 +73,8 @@
 
                         <div class="modal-body">
                             <label for="title"></label>
-                            <input type="text" class="form-control" id="title" data-bind="value: editedAbstract().title" />
+                            <input type="text" class="form-control" id="title" maxlength="100"
+                                   data-bind="value: editedAbstract().title" />
                         </div>
 
                         <div class="modal-footer">
@@ -74,7 +95,7 @@
             </div>
         </div>
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
 
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal"
@@ -101,19 +122,19 @@
                                     <tr>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="First Name"
-                                                   data-bind="value: person.firstName" />
+                                                   maxlength="100" data-bind="value: person.firstName" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Middle Name"
-                                                   data-bind="value: person.middleName" />
+                                                   maxlength="100" data-bind="value: person.middleName" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Last Name"
-                                                   data-bind="value: person.lastName" />
+                                                   maxlength="100" data-bind="value: person.lastName" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Mail"
-                                                   data-bind="value: person.mail" />
+                                                   maxlength="100" data-bind="value: person.mail" />
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
@@ -150,7 +171,7 @@
             </div>
         </div>
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
@@ -176,23 +197,23 @@
                                     <tr class="affiliation-form">
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Name"
-                                                   data-bind="value: affiliation.name" />
+                                                   maxlength="100" data-bind="value: affiliation.name" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Section"
-                                                   data-bind="value: affiliation.section" />
+                                                   maxlength="100" data-bind="value: affiliation.section" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Department"
-                                                   data-bind="value: affiliation.department" />
+                                                   maxlength="100" data-bind="value: affiliation.department" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Address"
-                                                   data-bind="value: affiliation.address" />
+                                                   maxlength="100" data-bind="value: affiliation.address" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Country"
-                                                   data-bind="value: affiliation.country" />
+                                                   maxlength="100" data-bind="value: affiliation.country" />
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
@@ -262,7 +283,7 @@
 
         </div>
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#abstract-text-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
@@ -278,7 +299,7 @@
                         </div>
 
                         <div class="modal-body">
-                            <textarea rows="10" class="form-control" id="text"
+                            <textarea rows="10" class="form-control" id="text" maxlength="2000"
                                       data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'">
                             </textarea>
                             <div>
@@ -308,7 +329,7 @@
         </div>
 
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#acknowledgements-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
@@ -324,7 +345,7 @@
                         </div>
 
                         <div class="modal-body">
-                            <textarea rows="10" class="form-control" id="text"
+                            <textarea rows="10" class="form-control" id="text" maxlength="200"
                                       data-bind="value: editedAbstract().acknowledgements, valueUpdate: 'afterkeydown'">
                             </textarea>
                             <div>
@@ -352,7 +373,7 @@
         </div>
 
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#references-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
@@ -379,19 +400,19 @@
                                     <tr>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Authors"
-                                            data-bind="value: reference.authors" />
+                                                   maxlength="100" data-bind="value: reference.authors" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Title"
-                                            data-bind="value: reference.title" />
+                                                   maxlength="100" data-bind="value: reference.title" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Year"
-                                            data-bind="value: reference.year" />
+                                                   maxlength="100" data-bind="value: reference.year" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="DOI"
-                                            data-bind="value: reference.doi" />
+                                                   maxlength="100" data-bind="value: reference.doi" />
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
@@ -428,7 +449,7 @@
         </div>
 
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
                 data-toggle="modal" data-bind="click: doStartEdit">
@@ -469,7 +490,7 @@
             </div>
         </div>
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#is-talk-editor"
                 data-toggle="modal" data-bind="click: doStartEdit">
@@ -501,7 +522,7 @@
                             </div>
                             <div data-bind="if: editedAbstract().isTalk">
                                 <input type="text" class="form-control" placeholder="Reason for a Talk"
-                                       data-bind="value: editedAbstract().reasonForTalk">
+                                       maxlength="100" data-bind="value: editedAbstract().reasonForTalk">
                             </div>
                         </div>
 
@@ -530,7 +551,7 @@
             </div>
         </div>
 
-        <div class="editor-box">
+        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
 
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#figure-editor"
@@ -550,28 +571,29 @@
                             <div data-bind="ifnot: hasAbstractFigures">
                                 <div class="form-group">
                                     <input type="text" name="figure-name" id="figure-name" class="form-control input-sm"
-                                           placeholder="Figure Name">
+                                           maxlength="100" placeholder="Figure Name">
                                 </div>
                                 <div class="form-group">
                                     <input type="text" name="figure-caption" id="figure-caption"
-                                           class="form-control input-sm" placeholder="Figure Caption">
+                                           maxlength="100" class="form-control input-sm" placeholder="Figure Caption">
                                 </div>
                                 <div class="form-group">
                                     <input type="file" name="figure-file" id="figure-file"
-                                           class="form-control input-sm">
+                                           maxlength="100" class="form-control input-sm">
                                 </div>
-
+                                <div data-bind="ifnot: isAbstractSaved">
+                                    Note: the figure will be uploaded when the abstract is saved for the first time.
+                                </div>
                             </div>
+
                             <div data-bind="if: hasAbstractFigures">
                                 <button type="button" class="btn btn-default btn-sm pull-right"
                                         data-bind="click: $root.doRemoveFigure">
                                     Remove
                                 </button>
-
                                 <div class="figure-box">
                                     <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
                                 </div>
-
                             </div>
                         </div>
 
@@ -590,15 +612,15 @@
             
             <div class="figure">
                 <h4>Figure</h4>
+                <div data-bind="ifnot: hasAbstractFigures">
+                    You have the option to include one image with your abstract. This image should be in one of the formats GIF, JPG, or PNG and should be at least 700 pixels wide and no larger than 5MB.
+                </div>
                 <div data-bind="if: hasAbstractFigures" class="figure-box">
                     <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
                     <div class="figure-caption">
                         <span data-bind="text: abstract().figures()[0].name"></span>
                         <span data-bind="text: abstract().figures()[0].caption"></span>
                     </div>
-                </div>
-                <div data-bind="ifnot: hasAbstractFigures">
-                    No figure uploaded.
                 </div>
             </div>
 
