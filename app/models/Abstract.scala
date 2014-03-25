@@ -11,7 +11,8 @@ package models
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
-
+import models.util.DateTimeConverter
+import org.joda.time.{DateTimeZone, DateTime}
 
 
 /**
@@ -33,8 +34,14 @@ class Abstract extends Model with Owned {
 
   var sortId: Int = _
 
+  @Convert(converter = classOf[DateTimeConverter])
+  var mtime: DateTime = _
+
   @Convert(converter = classOf[AbstractStateConverter])
   var state: AbstractState.State = AbstractState.InPreparation
+
+  @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
+  var stateLog: JSet[StateLogEntry] = new JTreeSet[StateLogEntry]()
 
   @ManyToOne
   var conference : Conference = _
@@ -93,6 +100,8 @@ object Abstract {
     abstr.authors     = toJSet(authors)
     abstr.affiliations = toJSet(affiliations)
     abstr.references  = toJSet(references)
+
+    abstr.mtime = new DateTime(DateTimeZone.UTC)
 
     abstr
   }

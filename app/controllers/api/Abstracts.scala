@@ -3,11 +3,12 @@ package controllers.api
 import play.api._
 import play.api.mvc._
 import service._
-import utils.serializer.{AccountFormat, AbstractFormat}
+import utils.serializer.{StateLogWrites, AccountFormat, AbstractFormat}
 import play.api.libs.json.{JsArray, JsObject, Json}
 import utils.GCAAuth
 import models.Abstract
 import utils.DefaultRoutesResolver._
+import org.joda.time.format.DateTimeFormat
 
 /**
  * Abstracts controller.
@@ -17,6 +18,9 @@ object Abstracts extends Controller with  GCAAuth {
 
   implicit val absFormat = new AbstractFormat()
   val accountFormat = new AccountFormat()
+
+  //RFC 1123
+  val rfcDateFormatter = DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'").withZoneUTC()
 
   /**
    * Create a new abstract.
@@ -119,7 +123,7 @@ object Abstracts extends Controller with  GCAAuth {
       case _          => abstracts.get(id)
     }
 
-    Ok(Json.toJson(abs))
+    Ok(Json.toJson(abs)).withHeaders(LAST_MODIFIED -> rfcDateFormatter.print(abs.mtime))
   }
 
   /**
@@ -193,5 +197,11 @@ object Abstracts extends Controller with  GCAAuth {
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
     ))
+  }
+
+  def listState(id: String) = AuthenticatedAction(isREST = true) { request =>
+    implicit val logWrites = new StateLogWrites()
+    val srv = AbstractService()
+    Ok(Json.toJson(srv.listStates(id, request.user)))
   }
 }

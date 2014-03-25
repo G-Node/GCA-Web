@@ -265,6 +265,17 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
           reference.abstr = abstr
         }
 
+        abstr.stateLog.add(StateLogEntry(abstr, AbstractState.InPreparation,
+          alice, ?("Initial Creation"), ?(new DateTime(1394898814000L))))
+        if(abstr.state != AbstractState.InPreparation) {
+          abstr.stateLog.add(StateLogEntry(abstr, AbstractState.Submitted,
+            bob, None, ?(new DateTime(1395146554000L))))
+          if (abstr.state != AbstractState.Submitted) {
+            abstr.stateLog.add(StateLogEntry(abstr, AbstractState.InReview, alice,
+              None,  ?(new DateTime(1395753822000L))))
+          }
+        }
+
         em.merge(abstr)
       }
 
@@ -296,6 +307,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
     }
 
     dbTransaction { (em, tx) =>
+      em.createQuery("DELETE FROM StateLogEntry").executeUpdate()
       em.createQuery("DELETE FROM AbstractGroup").executeUpdate()
       em.createQuery("DELETE FROM Affiliation").executeUpdate()
       em.createQuery("DELETE FROM Author").executeUpdate()

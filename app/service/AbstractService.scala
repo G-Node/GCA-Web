@@ -238,6 +238,9 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
         reference.abstr = abstr
       }
 
+      abstr.stateLog.add(StateLogEntry(abstr, AbstractState.InPreparation,
+        account, Some("Initial abstract creation")))
+
       em.merge(abstr)
     }
 
@@ -269,6 +272,16 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
 
       if (!abstrChecked.owners.contains(accountChecked))
         throw new IllegalAccessException("No permissions for abstract with uuid = " + abstr.uuid)
+
+      abstr.stateLog = abstrChecked.stateLog
+      if(abstr.state != abstrChecked.state) {
+
+        //TODO: reject all state changes if abstr.state != InPreparation,
+        //TODO:   except for Submitted && Withdrawn
+
+        //state changed, add a log entry
+        abstr.stateLog.add(StateLogEntry(abstr, abstr.state, account))
+      }
 
       abstr.authors.foreach { author =>
         author.abstr = abstr
@@ -360,6 +373,32 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
     }
   }
 
+  /**
+   * List all state logs of a given abstract
+   * @param id       abstract id
+   * @param account  account (for permission)
+   * @return         Sorted sequence of log entries (newest first)
+   */
+  def listStates(id: String, account: Account) : Seq[StateLogEntry] = {
+    dbTransaction { (em, tx) =>
+
+      val queryStr =
+        """SELECT DISTINCT a FROM Abstract a
+           LEFT JOIN FETCH a.owners o
+           LEFT JOIN FETCH a.stateLog
+           WHERE a.uuid = :uuid"""
+
+      val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
+      query.setParameter("uuid", id)
+      val abstr = query.getSingleResult
+
+      if (!(account.isAdmin || abstr.owners.contains(account))) {
+        throw new IllegalAccessException("No permissions for abstract with uuid = " + id)
+      }
+
+      abstr.stateLog.toSeq.sortWith (_.timestamp.getMillis > _.timestamp.getMillis)
+    }
+  }
 }
 
 
