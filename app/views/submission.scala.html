@@ -53,7 +53,8 @@
 
                         <div class="modal-body">
                             <label for="title"></label>
-                            <input type="text" class="form-control" id="title" data-bind="value: editedAbstract().title" />
+                            <input type="text" class="form-control" id="title" maxlength="100"
+                                   data-bind="value: editedAbstract().title" />
                         </div>
 
                         <div class="modal-footer">
@@ -101,19 +102,19 @@
                                     <tr>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="First Name"
-                                                   data-bind="value: person.firstName" />
+                                                   maxlength="100" data-bind="value: person.firstName" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Middle Name"
-                                                   data-bind="value: person.middleName" />
+                                                   maxlength="100" data-bind="value: person.middleName" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Last Name"
-                                                   data-bind="value: person.lastName" />
+                                                   maxlength="100" data-bind="value: person.lastName" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Mail"
-                                                   data-bind="value: person.mail" />
+                                                   maxlength="100" data-bind="value: person.mail" />
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
@@ -176,23 +177,23 @@
                                     <tr class="affiliation-form">
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Name"
-                                                   data-bind="value: affiliation.name" />
+                                                   maxlength="100" data-bind="value: affiliation.name" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Section"
-                                                   data-bind="value: affiliation.section" />
+                                                   maxlength="100" data-bind="value: affiliation.section" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Department"
-                                                   data-bind="value: affiliation.department" />
+                                                   maxlength="100" data-bind="value: affiliation.department" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Address"
-                                                   data-bind="value: affiliation.address" />
+                                                   maxlength="100" data-bind="value: affiliation.address" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Country"
-                                                   data-bind="value: affiliation.country" />
+                                                   maxlength="100" data-bind="value: affiliation.country" />
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
@@ -278,7 +279,7 @@
                         </div>
 
                         <div class="modal-body">
-                            <textarea rows="10" class="form-control" id="text"
+                            <textarea rows="10" class="form-control" id="text" maxlength="2000"
                                       data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'">
                             </textarea>
                             <div>
@@ -324,7 +325,7 @@
                         </div>
 
                         <div class="modal-body">
-                            <textarea rows="10" class="form-control" id="text"
+                            <textarea rows="10" class="form-control" id="text" maxlength="200"
                                       data-bind="value: editedAbstract().acknowledgements, valueUpdate: 'afterkeydown'">
                             </textarea>
                             <div>
@@ -379,19 +380,19 @@
                                     <tr>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Authors"
-                                            data-bind="value: reference.authors" />
+                                                   maxlength="100" data-bind="value: reference.authors" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Title"
-                                            data-bind="value: reference.title" />
+                                                   maxlength="100" data-bind="value: reference.title" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Year"
-                                            data-bind="value: reference.year" />
+                                                   maxlength="100" data-bind="value: reference.year" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="DOI"
-                                            data-bind="value: reference.doi" />
+                                                   maxlength="100" data-bind="value: reference.doi" />
                                         </td>
                                         <td>
                                             <div class="btn-group pull-right">
@@ -501,7 +502,7 @@
                             </div>
                             <div data-bind="if: editedAbstract().isTalk">
                                 <input type="text" class="form-control" placeholder="Reason for a Talk"
-                                       data-bind="value: editedAbstract().reasonForTalk">
+                                       maxlength="100" data-bind="value: editedAbstract().reasonForTalk">
                             </div>
                         </div>
 
@@ -550,15 +551,15 @@
                             <div data-bind="ifnot: hasAbstractFigures">
                                 <div class="form-group">
                                     <input type="text" name="figure-name" id="figure-name" class="form-control input-sm"
-                                           placeholder="Figure Name">
+                                           maxlength="100" placeholder="Figure Name">
                                 </div>
                                 <div class="form-group">
                                     <input type="text" name="figure-caption" id="figure-caption"
-                                           class="form-control input-sm" placeholder="Figure Caption">
+                                           maxlength="100" class="form-control input-sm" placeholder="Figure Caption">
                                 </div>
                                 <div class="form-group">
                                     <input type="file" name="figure-file" id="figure-file"
-                                           class="form-control input-sm">
+                                           maxlength="100" class="form-control input-sm">
                                 </div>
 
                             </div>
