@@ -5,13 +5,15 @@ import play.api.mvc._
 import utils.GCAAuth
 import models._
 import service.{AbstractService, ConferenceService}
+import java.net._
 
 object Application extends Controller with GCAAuth {
 
   def index = AccountAwareAction { implicit request =>
     val conference = ConferenceService().list()(0)
 
-    Redirect(routes.Application.conference(conference.uuid))
+    val link = URLEncoder.encode(conference.short, "UTF-8")
+    Redirect(routes.Application.conference(link))
   }
 
   def showUserInfo = AccountAwareAction { implicit request =>
