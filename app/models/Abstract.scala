@@ -12,6 +12,8 @@ import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
 
+import models.util.DateTimeConverter
+import org.joda.time.{DateTimeZone, DateTime}
 
 
 /**
@@ -31,6 +33,9 @@ class Abstract extends Model with Owned {
   var reasonForTalk : String = _
 
   var sortId: Int = _
+
+  @Convert(converter = classOf[DateTimeConverter])
+  var mtime: DateTime = _
 
   @Convert(converter = classOf[AbstractStateConverter])
   var state: AbstractState.State = AbstractState.InPreparation
@@ -92,6 +97,8 @@ object Abstract {
     abstr.authors     = toJSet(authors)
     abstr.affiliations = toJSet(affiliations)
     abstr.references  = toJSet(references)
+
+    abstr.mtime = new DateTime(DateTimeZone.UTC)
 
     abstr
   }
