@@ -476,7 +476,7 @@
                                 Cancel
                             </button>
                             <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
-                            data-bind="click: doEndEdit">
+                                    data-bind="click: doEndEdit">
                                 Ok
                             </button>
                         </div>
@@ -502,7 +502,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h3>Poster or Talk</h3>
+                            <h3>Presentation Preference</h3>
                         </div>
 
                         <div class="modal-body">
@@ -510,18 +510,18 @@
                                 <label>
                                     <input type="radio" name="optionsRadios" id="optionsRadios1" value="false"
                                            data-bind="checked: editedAbstract().isTalk.computed">
-                                    This abstract is for a poster only
+                                    Poster
                                 </label>
                             </div>
                             <div class="radio">
                                 <label>
                                     <input type="radio" name="optionsRadios" id="optionsRadios2" value="true"
                                            data-bind="checked: editedAbstract().isTalk.computed">
-                                    This abstract is a poster and a talk
+                                    Talk or Poster
                                 </label>
                             </div>
                             <div data-bind="if: editedAbstract().isTalk">
-                                <input type="text" class="form-control" placeholder="Reason for a Talk"
+                                <input type="text" class="form-control" placeholder="Why should this contribution be selected for an oral presentation?"
                                        maxlength="100" data-bind="value: editedAbstract().reasonForTalk">
                             </div>
                         </div>
@@ -540,13 +540,13 @@
             </div>
 
             <div class="poster-or-talk">
-                <h4>Poster or Talk</h4>
+                <h4>Presentation Preference</h4>
                 <div data-bind="if: abstract().isTalk">
-                    <p>This abstract could be a talk</p>
+                    <p>Talk or Poster</p>
                     <p>Reason: <span data-bind="text: abstract().reasonForTalk"></span></p>
                 </div>
                 <div data-bind="ifnot: abstract().isTalk">
-                    <p>This is an abstract for a poster</p>
+                    <p>Poster</p>
                 </div>
             </div>
         </div>
