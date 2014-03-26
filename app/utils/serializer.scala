@@ -13,6 +13,15 @@ import play.api.data.validation.ValidationError
 
 package object serializer {
 
+  implicit class PositionedListReads[A <: PositionedModel](r: Reads[List[A]]) {
+    def addPosition(): Reads[List[A]] = { r.map { l =>
+        for { (element, i) <- l.zipWithIndex } yield {
+          element.position = i; element
+        }
+      }
+    }
+  }
+
   private implicit val urlWrites = new Writes[URL] {
     def writes(url: URL) = {
       if (url == null) {
