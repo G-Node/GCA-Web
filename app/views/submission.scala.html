@@ -444,7 +444,7 @@
             <div class="references">
                 <h4>References</h4>
                 <ol data-bind="foreach: {data: abstract().references, as: 'reference'}">
-                    <li data-bind="text: reference.format()"></li>
+                    <li data-bind="html: reference.format()"></li>
                 </ol>
             </div>
         </div>

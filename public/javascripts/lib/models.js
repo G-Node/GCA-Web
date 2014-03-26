@@ -662,7 +662,15 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.doi = doi || null;
 
         self.format = function() {
-            return (self.text || "").concat(self.doi ? ", " + self.doi : "");
+            var text = self.text || self.link;
+            var html = self.link ? '<a target="_blank" href="' + self.link  + '"' + '>' + text + '</a>' : text;
+
+            if (self.doi) {
+                var dx = self.doi;
+                html += ', <a target="_blank" href="http://dx.doi.org/' + dx + '">' + dx + '</a>';
+            }
+
+            return html;
         };
 
     }
@@ -701,9 +709,17 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.doi = ko.observable(doi || null);
 
         self.format = function() {
-            return (self.text() || "").concat(self.doi() ? ", " + self.doi() : "");
-        };
 
+            var text = self.text() || self.link();
+            var html = self.link() ? '<a target="_blank" href="' + self.link()  + '"' + '>' + text + '</a>' : text;
+
+            if (self.doi()) {
+                var dx = self.doi();
+                html += ', <a target="_blank" href="http://dx.doi.org/' + dx + '">' + dx + '</a>';
+            }
+
+            return html;
+        };
     }
 
     ObservableReference.fromObject = function(obj) {
