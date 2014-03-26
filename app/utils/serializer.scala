@@ -132,7 +132,7 @@ package object serializer {
         "thumbnail" -> c.thumbnail,
         "abstracts" -> routesResolver.abstractsUrl(c.uuid),
         "allAbstracts" -> routesResolver.allAbstractsUrl(c.uuid),
-        "topics" -> JsArray(for (topic <- c.topics.toSeq) yield tf.writes(topic))
+        "topics" -> c.topics.toSeq.sorted[Model]
       )
     }
   }
