@@ -327,9 +327,6 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                     case "groups":
                         target.groups = AbstractGroup.fromArray(value);
                         break;
-                    case "topics":
-                        target.topics = value ? value.sort() : value;
-                        break;
                     default:
                         if (tools.type(target[prop]) !== "function") {
                             target[prop] = value;
