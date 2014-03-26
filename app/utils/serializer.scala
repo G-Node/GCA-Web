@@ -169,9 +169,8 @@ package object serializer {
       (__ \ "firstName").readNullable[String] and
       (__ \ "middleName").readNullable[String] and
       (__ \ "lastName").readNullable[String] and
-      (__ \ "position").readNullable[Int] and
       (__ \ "affiliations").read[Seq[Int]]
-    )(Author(_, _, _, _, _, _, None, Nil, _)).reads(json)
+    )(Author(_, _, _, _, _, None, Nil, _)).reads(json)
 
     override def writes(a: Author): JsValue = {
       Json.obj(
@@ -280,7 +279,7 @@ package object serializer {
    */
   class AbstractFormat(implicit routesResolver: RoutesResolver) extends Format[Abstract] with ConstraintReads {
 
-    val authorF = new AuthorFormat()
+    implicit val authorF = new AuthorFormat()
     val affiliationF = new AffiliationFormat()
     val referenceF = new ReferenceFormat()
     val figureF = new FigureFormat()
@@ -297,18 +296,12 @@ package object serializer {
       (__ \ "reasonForTalk").readNullable[String] and
       (__ \ "sortId").readNullable[Int] and
       (__ \ "state").readNullable[AbstractState.State] and
-      (__ \ "authors").lazyRead( list[Author](authorF) ) and
+      (__ \ "authors").read[List[Author]].addPosition and
       (__ \ "affiliations").lazyRead( list[Affiliation](affiliationF) ) and
       (__ \ "references").lazyRead( list[Reference](referenceF) )
     )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
-
-      implicit object AuthorOrder extends Ordering[Author] {
-        override def compare(x: Author, y: Author): Int = if (x.position < y.position) {  -1 }
-                                                          else if (x.position > y.position) { 1 }
-                                                          else { 0 }
-      }
 
       implicit object AffOrder extends Ordering[Affiliation] {
         override def compare(x: Affiliation, y: Affiliation): Int = if (x.position < y.position) {  -1 }
@@ -317,7 +310,6 @@ package object serializer {
       }
 
       val figures: Seq[Figure] = asScalaSet(a.figures).toSeq
-      val authors: Seq[Author] = asScalaSet(a.authors).toSeq.sorted
       val affiliations: Seq[Affiliation] = asScalaSet(a.affiliations).toSeq.sorted
       val references: Seq[Reference] = asScalaSet(a.references).toSeq
       Json.obj(
@@ -336,7 +328,7 @@ package object serializer {
         "conference" -> a.conference.uuid,
         "figures" -> JsArray( for (auth <- figures) yield figureF.writes(auth) ),
         "owners" -> routesResolver.ownersUrl(a.uuid),
-        "authors" -> JsArray( for (auth <- authors) yield authorF.writes(auth) ),
+        "authors" -> asScalaSet(a.authors).toSeq.sorted[Model],
         "affiliations" -> JsArray( for (auth <- affiliations) yield affiliationF.writes(auth) ),
         "references" -> JsArray( for (auth <- references) yield referenceF.writes(auth) )
       )

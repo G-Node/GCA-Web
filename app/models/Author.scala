@@ -17,13 +17,12 @@ import javax.persistence._
  * Model class for abstract authors
  */
 @Entity
-class Author extends Model {
+class Author extends PositionedModel {
 
   var mail: String = _
   var firstName: String = _
   var middleName: String = _
   var lastName: String = _
-  var position: Int = _
 
   @ManyToOne
   var abstr: Abstract = _
@@ -44,7 +43,6 @@ object Author {
             firstName: Option[String],
             middleName: Option[String],
             lastName: Option[String],
-            position: Option[Int],
             abstr: Option[Abstract] = None,
             affiliations: Seq[Affiliation] = Nil,
             affiliationPositions: Seq[Int] = Nil) : Author = {
@@ -56,7 +54,6 @@ object Author {
     author.firstName    = unwrapRef(firstName)
     author.middleName   = unwrapRef(middleName)
     author.lastName     = unwrapRef(lastName)
-    author.position     = unwrapVal(position)
 
     author.abstr        = unwrapRef(abstr)
     author.affiliations = toJSet(affiliations)
