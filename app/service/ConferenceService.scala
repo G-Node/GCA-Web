@@ -141,6 +141,9 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
       if (conference.uuid != null)
         throw new IllegalArgumentException("Unable to create conference with not null uuid")
 
+      if (!accountChecked.isAdmin)
+        throw new IllegalAccessException("No permissions for creating a conference")
+
       conference.owners.add(account)
 
       conference.groups.foreach { group =>
