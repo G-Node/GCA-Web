@@ -360,7 +360,10 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
                 self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract());
 
-                if (! self.hasAbstractFigures()) {
+                var hasNoFig = !self.hasAbstractFigures(),
+                    hasFigData = $("#figure-file").val() ? true : false;
+
+                if (hasNoFig && hasFigData) {
                     self.figureUpload(successFig);
                 } else {
                     self.setOk("Ok", "Abstract saved.", true);
