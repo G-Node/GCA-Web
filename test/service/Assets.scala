@@ -207,11 +207,11 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
     Array(alice, bob, eve)
   }
 
-  def createTopics : Array[Topic] = Array(
+  def createTopics : Seq[Topic] = Seq(
     Topic("topic one", None),
     Topic("topic two", None),
     Topic("topic three", None)
-  )
+  ).addPosition()
 
   var bcDesc = "The Bernstein Conference is the Bernstein Network's central forum that has developed over time into the biggest European Computational Neuroscience conference"
 
