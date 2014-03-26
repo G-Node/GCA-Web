@@ -110,7 +110,7 @@ package object serializer {
       (__ \ "thumbnail").readNullable[String] and
 
       (__ \ "groups").read[List[AbstractGroup]] and
-      (__ \ "topics").read[List[Topic]]
+      (__ \ "topics").read[List[Topic]].addPosition
     )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
