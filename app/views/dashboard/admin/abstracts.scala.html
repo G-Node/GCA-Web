@@ -28,16 +28,24 @@
         </div>
 
         <!-- The abstract list -->
-        <ul id="abstract-list" class="list-group" data-bind="foreach: abstracts">
-            <li id="abstract-list-item" class="list-group-item abstract">
-                <a data-bind="attr: { href: $root.makeAbstractLink($data, $parent) }">
-                    <span data-bind="text: $root.mkAuthorList($data)"></span>
-                    <b><span data-bind="text: title"> </span></b>
-                    <span class="badge pull-right" data-bind="text: state"></span>
-                </a>
-            </li>
-        </ul>
-        </div>
+        <table class="table .table-condensed">
+            <thead>
+                <tr>
+                    <th>Authors</th>
+                    <th>Title</th>
+                    <th>State</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: abstracts">
+                <tr>
+                    <td><span data-bind="text: $root.mkAuthorList($data)"></span></td>
+                    <td><b><span data-bind="text: title"> </span></b></td>
+                    <td><span class="badge" data-bind="text: state"></span></td>
+                    <td><a class="btn btn-xs btn-danger" data-bind="attr: { href: $root.makeAbstractLink($data, $parent) }">Edit</a></td>
+                </tr>
+            </tbody>
+        </table>
 
     </div> <!-- KO !flickerbox -->
 
