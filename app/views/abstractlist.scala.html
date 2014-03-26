@@ -96,8 +96,8 @@
 
         <div class="references">
             <h4>References</h4>
-            <ol>
-                <li></li>
+            <ol data-bind="foreach: references">
+                <li data-bind="html: $data.format()"></li>
             </ol>
         </div>
 
