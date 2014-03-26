@@ -243,8 +243,9 @@ package object serializer {
 
     override def reads(json: JsValue): JsResult[Figure] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "caption").readNullable[String]
-    )(Figure(_, _)).reads(json)
+      (__ \ "caption").readNullable[String] and
+      (__ \ "position").readNullable[Int]
+    )(Figure(_, _, _)).reads(json)
 
     override def writes(a: Figure): JsValue = {
       if (a == null) {
@@ -253,6 +254,7 @@ package object serializer {
         Json.obj(
           "uuid" -> a.uuid,
           "caption" -> a.caption,
+          "position" -> a.position,
           "URL" -> routesResolver.figureFileUrl(a.uuid)
         )
       }
@@ -281,7 +283,7 @@ package object serializer {
     implicit val authorF = new AuthorFormat()
     implicit val affiliationF = new AffiliationFormat()
     val referenceF = new ReferenceFormat()
-    val figureF = new FigureFormat()
+    implicit val figureF = new FigureFormat()
 
     override def reads(json: JsValue): JsResult[Abstract] = (
       (__ \ "uuid").readNullable[String] and
@@ -302,7 +304,6 @@ package object serializer {
 
     override def writes(a: Abstract): JsValue = {
 
-      val figures: Seq[Figure] = asScalaSet(a.figures).toSeq
       val references: Seq[Reference] = asScalaSet(a.references).toSeq
       Json.obj(
         "uuid" -> a.uuid,
@@ -318,7 +319,7 @@ package object serializer {
         "state" -> a.state,
         "mtime" -> a.mtime,
         "conference" -> a.conference.uuid,
-        "figures" -> JsArray( for (auth <- figures) yield figureF.writes(auth) ),
+        "figures" -> asScalaSet(a.figures).toSeq.sorted[Model],
         "owners" -> routesResolver.ownersUrl(a.uuid),
         "authors" -> asScalaSet(a.authors).toSeq.sorted[Model],
         "affiliations" -> asScalaSet(a.affiliations).toSeq.sorted[Model],

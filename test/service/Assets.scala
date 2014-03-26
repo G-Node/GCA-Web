@@ -290,6 +290,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       figures = 0.until(figures.length).toArray.map { i: Int =>
         val fig = figures(i)
         val abstr = abstracts(i)
+        fig.position = i
         fig.abstr = abstr
         abstr.figures.add(fig)
 
