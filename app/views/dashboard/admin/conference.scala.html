@@ -142,7 +142,7 @@
 
                 <div class="form-group">
                     <div class="col-sm-2 text-right"><b>Topics</b></div>
-                    <ul class="col-sm-10 list-inline" data-bind="foreach: topics">
+                    <ul class="col-sm-10 list-inline" data-bind="sortable: topics">
                         <li><span class="label label-default" data-bind="text: $data"></span>
                             <a data-bind="click: $root.removeTopic"><span class="glyphicon glyphicon-remove"></span></a>
                         </li>
@@ -154,7 +154,8 @@
                         <input class="form-control" type="text" placeholder="topic" id="addTopic">
                     </div>
                     <div class="col-sm-1">
-                        <a class="btn btn-default" data-bind="click: $root.addTopic"><span class="glyphicon glyphicon-plus"></span> Add Topic</a>
+                        <a class="btn btn-default" data-bind="click: $root.addTopic">
+                            <span class="glyphicon glyphicon-plus"></span> Add Topic</a>
                     </div>
                 </div>
 

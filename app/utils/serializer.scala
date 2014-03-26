@@ -13,6 +13,15 @@ import play.api.data.validation.ValidationError
 
 package object serializer {
 
+  implicit class PositionedListReads[A <: PositionedModel](r: Reads[List[A]]) {
+    def addPosition(): Reads[List[A]] = { r.map { l =>
+        for { (element, i) <- l.zipWithIndex } yield {
+          element.position = i; element
+        }
+      }
+    }
+  }
+
   private implicit val urlWrites = new Writes[URL] {
     def writes(url: URL) = {
       if (url == null) {
@@ -101,7 +110,7 @@ package object serializer {
       (__ \ "thumbnail").readNullable[String] and
 
       (__ \ "groups").read[List[AbstractGroup]] and
-      (__ \ "topics").read[List[Topic]]
+      (__ \ "topics").read[List[Topic]].addPosition
     )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
@@ -123,7 +132,7 @@ package object serializer {
         "thumbnail" -> c.thumbnail,
         "abstracts" -> routesResolver.abstractsUrl(c.uuid),
         "allAbstracts" -> routesResolver.allAbstractsUrl(c.uuid),
-        "topics" -> JsArray(for (topic <- c.topics.toSeq) yield tf.writes(topic))
+        "topics" -> c.topics.toSeq.sorted[Model]
       )
     }
   }
