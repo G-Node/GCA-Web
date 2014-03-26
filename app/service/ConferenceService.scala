@@ -141,6 +141,9 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
       if (conference.uuid != null)
         throw new IllegalArgumentException("Unable to create conference with not null uuid")
 
+      if (!accountChecked.isAdmin)
+        throw new IllegalAccessException("No permissions for creating a conference")
+
       conference.owners.add(account)
 
       conference.groups.foreach { group =>
@@ -185,7 +188,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
       if (confChecked == null)
         throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
 
-      if (!confChecked.owners.contains(accountChecked))
+      if (! (confChecked.owners.contains(accountChecked) || accountChecked.isAdmin))
         throw new IllegalAccessException("No permissions for conference with uuid = " + conference.uuid)
 
       conference.owners = confChecked.owners
@@ -246,7 +249,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
       if (confChecked == null)
         throw new EntityNotFoundException("Unable to find conference with uuid = " + id)
 
-      if (!confChecked.owners.contains(accountChecked))
+      if (! (confChecked.owners.contains(accountChecked) || accountChecked.isAdmin))
         throw new IllegalAccessException("No permissions for conference with uuid = " + id)
 
       confChecked.groups.foreach(em.remove(_))
