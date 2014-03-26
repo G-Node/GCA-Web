@@ -395,12 +395,16 @@
                         </div>
 
                         <div class="modal-body">
+
                             <table class="table">
-                                <tbody data-bind="foreach: {data: editedAbstract().references, as: 'reference'}">
+                                <tbody data-bind="sortable: {data: editedAbstract().references, as: 'reference'}">
                                     <tr>
                                         <td>
+                                            <span class="drag-handle-icon glyphicon glyphicon-align-justify"></span>
+                                        </td>
+                                        <td>
                                             <input type="text" class="form-control input-sm" placeholder="Authors"
-                                                   maxlength="100" data-bind="value: reference.authors" />
+                                                   maxlength="10in0" data-bind="value: reference.authors" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Title"
@@ -425,6 +429,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <div><small> Use the drag handle  <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder references</small></div>
                         </div>
 
                         <div class="modal-footer">
