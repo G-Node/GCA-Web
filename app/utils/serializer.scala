@@ -219,18 +219,16 @@ package object serializer {
 
     override def reads(json: JsValue): JsResult[Reference] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "authors").readNullable[String] and
-      (__ \ "title").readNullable[String] and
-      (__ \ "year").readNullable[Int] and
+      (__ \ "text").readNullable[String] and
+      (__ \ "link").readNullable[String] and
       (__ \ "doi").readNullable[String]
-    )(Reference(_, _, _, _, _)).reads(json)
+    )(Reference(_, _, _, _)).reads(json)
 
     override def writes(a: Reference): JsValue = {
       Json.obj(
         "uuid" -> a.uuid,
-        "authors" -> a.authors,
-        "title" -> a.title,
-        "year" -> a.year,
+        "text" -> a.text,
+        "link" -> a.link,
         "doi" -> a.doi
       )
     }

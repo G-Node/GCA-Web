@@ -59,9 +59,9 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
         Affiliation(None, ?("Two address"), ?("Andorra"), ?("Two department"), None, None)
       ).addPosition(),
       references = Seq(
-        Reference(None, ?("Authorone et al."), ?("Title One"), ?(2000), None),
-        Reference(None, ?("Authortwo et al."), ?("Title Two"), ?(1999), None),
-        Reference(None, ?("Authortwo et al."), ?("Title Three"), ?(2006), None)
+        Reference(None, ?("Authorone et al. Title One"), None, None),
+        Reference(None, ?("Authortwo et al. Title Two"), None, None),
+        Reference(None, ?("Authortwo et al. Title Three"), None, None)
       ).addPosition()
     ),
     Abstract(
@@ -86,9 +86,9 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
         Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None)
       ).addPosition(),
       references = Seq(
-        Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Seven"), ?(1998), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Nine"), ?(2009), None)
+        Reference(None, ?("Authorfour et al. Title Four"), None, None),
+        Reference(None, ?("Authorfive et al. Title Five"), None, None),
+        Reference(None, ?("Authorfive et al. Title Six"), None, None)
       ).addPosition()
     ),
     Abstract(
@@ -113,9 +113,9 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
         Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None)
       ).addPosition(),
       references = Seq(
-        Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Seven"), ?(1998), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Nine"), ?(2009), None)
+        Reference(None, ?("Authorfour et al. Title Six"), None, None),
+        Reference(None, ?("Authorfive et al. Title Seven"), None, None),
+        Reference(None, ?("Authorfive et al. Title Nine"), None, None)
       ).addPosition()
     ),
     Abstract(
@@ -140,9 +140,9 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
         Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None)
       ).addPosition(),
       references = Seq(
-        Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Seven"), ?(1998), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Nine"), ?(2009), None)
+        Reference(None, ?("Authorfour et al. Title Six"), None, None),
+        Reference(None, ?("Authorfive et al. Title Seven"), None, None),
+        Reference(None, ?("Authorfive et al. Title Nine"), None, None)
       ).addPosition()
     )
   )
@@ -168,7 +168,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
         Affiliation(None, ?("New Street 5"), ?("New York"), ?("New Department"), None, None)
       ).addPosition(),
       references = Seq(
-        Reference(None, ?("E. Albert et al."), ?("New is always better"), ?(2000), None)
+        Reference(None, ?("E. Albert et al. New is always better"), None, None)
       ).addPosition()
     )
   }

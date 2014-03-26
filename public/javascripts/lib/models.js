@@ -649,7 +649,7 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @constructor
      * @public
      */
-    function Reference(uuid, authors, title, year, doi) {
+    function Reference(uuid, text, link, doi) {
 
         if (! (this instanceof Reference)) {
             return new Reference();
@@ -657,10 +657,13 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
 
         var self = tools.inherit(this, Model, uuid);
 
-        self.authors = authors || null;
-        self.title = title || null;
-        self.year = year || null;
+        self.text = text || null;
+        self.link = link || null;
         self.doi = doi || null;
+
+        self.format = function() {
+            return (self.text || "").concat(self.doi ? ", " + self.doi : "");
+        };
 
     }
 
@@ -677,16 +680,15 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * Observable model for reference.
      *
      * @param {string} [uuid]
-     * @param {string} [authors]
-     * @param {string} [title]
-     * @param {string} [year]
+     * @param {string} [text]
+     * @param {string} [link]
      * @param {string} [doi]
      *
      * @returns {ObservableReference}
      * @constructor
      * @public
      */
-    function ObservableReference(uuid, authors, title, year, doi) {
+    function ObservableReference(uuid, text, link, doi) {
 
         if (! (this instanceof ObservableReference)) {
             return new ObservableReference();
@@ -694,16 +696,12 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
 
         var self = tools.inherit(this, Model, uuid);
 
-        self.authors = ko.observable(authors || null);
-        self.title = ko.observable(title || null);
-        self.year = ko.observable(year || null);
+        self.text = ko.observable(text || null);
+        self.link = ko.observable(link || null);
         self.doi = ko.observable(doi || null);
 
         self.format = function() {
-            return (self.authors() || "")
-                .concat(self.title() ? " " + self.title() : "")
-                .concat(self.year() ? " (" + self.year() + ")" : "")
-                .concat(self.doi() ? ", " + self.doi() : "");
+            return (self.text() || "").concat(self.doi() ? ", " + self.doi() : "");
         };
 
     }
