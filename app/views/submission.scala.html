@@ -570,10 +570,6 @@
                         <div class="modal-body">
                             <div data-bind="ifnot: hasAbstractFigures">
                                 <div class="form-group">
-                                    <input type="text" name="figure-name" id="figure-name" class="form-control input-sm"
-                                           maxlength="100" placeholder="Figure Name">
-                                </div>
-                                <div class="form-group">
                                     <input type="text" name="figure-caption" id="figure-caption"
                                            maxlength="100" class="form-control input-sm" placeholder="Figure Caption">
                                 </div>
@@ -594,8 +590,7 @@
                                 <div class="figure-box">
                                     <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
                                     <div class="figure-caption">
-                                        <span data-bind="text: abstract().figures()[0].name"></span>
-                                        <span>: </span>
+                                        <span>Figure 1: </span>
                                         <span data-bind="text: abstract().figures()[0].caption"></span>
                                     </div>
                                 </div>
@@ -623,8 +618,7 @@
                 <div data-bind="if: hasAbstractFigures" class="figure-box">
                     <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
                     <div class="figure-caption">
-                        <span data-bind="text: abstract().figures()[0].name"></span>
-                        <span>: </span>
+                        <span>Figure 1: </span>
                         <span data-bind="text: abstract().figures()[0].caption"></span>
                     </div>
                 </div>

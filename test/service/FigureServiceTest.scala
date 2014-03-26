@@ -50,11 +50,10 @@ class FigureServiceTest extends JUnitSuite with DBUtil {
     val file = new File("tmp")
     file.createNewFile()
     val tmp = new TemporaryFile(file)
-    val figOrig = Figure(None, Some("name"), Some("caption"))
+    val figOrig = Figure(None, Some("caption"))
     val fig = srv.create(figOrig, tmp, assets.abstracts(3), assets.alice)
 
     assert(fig.uuid != null)
-    assert(fig.name == "name")
     assert(fig.caption == "caption")
   }
 
@@ -62,10 +61,8 @@ class FigureServiceTest extends JUnitSuite with DBUtil {
   def testUpdate(): Unit = {
     val fig = assets.figures(0)
     fig.caption = "foo caption"
-    fig.name = "foo name"
     val figUpdated = srv.update(fig, assets.alice)
     assert(figUpdated.caption == "foo caption")
-    assert(figUpdated.name == "foo name")
   }
 
   @Test

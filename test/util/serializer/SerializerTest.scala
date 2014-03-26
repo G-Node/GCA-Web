@@ -22,7 +22,7 @@ class SerializerTest extends JUnitSuite {
     Option("department"), Option("name"), Option("section"), Option(1))
   val sampleReference: Reference = Reference(Option("someuuid"), Option("authors"), Option("title"),
     Option(2013), Option("doi"))
-  val sampleFigure: Figure = Figure(Option("someuuid"), Option("name"), Option("caption"))
+  val sampleFigure: Figure = Figure(Option("someuuid"), Option("caption"))
   val sampleAbstract = Abstract(Option("someuuid"), Option("title"), Option("topic"),
       Option("text"), Option("doi"), Option("conflictOfInterest"), Option("acknowledgements"), Option(true), Option("reason"),
         Some(0), Some(AbstractState.InPreparation), Option(sampleConference), Seq(sampleFigure), Nil, Seq(sampleAuthor),
@@ -105,7 +105,7 @@ class SerializerTest extends JUnitSuite {
   def testFigure(): Unit = {
     val jsFormat = new FigureFormat()
 
-    val original = Figure(Option("someuuid"), Option("name"), Option("caption"))
+    val original = Figure(Option("someuuid"), Option("caption"))
     val json = jsFormat.writes(original)
 
     jsFormat.reads(json).fold(

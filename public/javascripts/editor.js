@@ -225,7 +225,7 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
 
         self.figureUpload = function(callback) {
 
-            var json = { name: $("#figure-name").val(), caption: $("#figure-caption").val() },
+            var json = { caption: $("#figure-caption").val() },
                 files = $("#figure-file").get(0).files,
                 data = new FormData();
 
@@ -262,7 +262,6 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
 
             function success(obj, stat, xhr) {
 
-                $("#figure-name").val(null);
                 $("#figure-caption").val(null);
                 $("#figure-file").val(null);
 
@@ -299,7 +298,6 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
             }
 
             function success() {
-                $("#figure-name").val(null);
                 $("#figure-caption").val(null);
                 $("#figure-file").val(null);
 

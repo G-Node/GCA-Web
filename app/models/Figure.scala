@@ -10,7 +10,7 @@
 package models
 
 import models.Model._
-import javax.persistence.{ManyToOne, JoinColumn, OneToOne, Entity}
+import javax.persistence.{ManyToOne, Entity}
 
 /**
  * A model for figures.
@@ -18,7 +18,6 @@ import javax.persistence.{ManyToOne, JoinColumn, OneToOne, Entity}
 @Entity
 class Figure extends Model {
 
-  var name: String = _
   var caption: String = _
 
   @ManyToOne
@@ -29,14 +28,12 @@ class Figure extends Model {
 object Figure {
 
   def apply(uuid: Option[String],
-            name: Option[String],
             caption: Option[String],
             abstr: Option[Abstract] = None) : Figure = {
 
     val figure = new Figure()
 
     figure.uuid     = unwrapRef(uuid)
-    figure.name     = unwrapRef(name)
     figure.caption  = unwrapRef(caption)
 
     figure.abstr    = unwrapRef(abstr)
