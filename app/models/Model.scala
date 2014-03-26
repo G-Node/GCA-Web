@@ -99,3 +99,19 @@ object Model {
 
 
 }
+
+/**
+ * A base class that defines a pos field for sorting
+ */
+@MappedSuperclass
+class PositionedModel extends Model {
+
+  var position: Int = _
+
+  override def compare(that: Model): Int = {
+    that match {
+      case sm: PositionedModel => this.position - sm.position
+      case _ => super.compare(that)
+    }
+  }
+}
