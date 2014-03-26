@@ -327,6 +327,35 @@ body {
   display: none;
 }
 
+.gray-icon {
+  color: @color-dark-gray;
+}
+
+.icon-no-gap {
+  .no-gap;
+}
+
+.drag-handle-icon {
+
+  .gray-icon;
+
+  text-align: center;
+  vertical-align: middle;
+
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+
+  &:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+  }
+
+}
+
+
+
 // admin area related things
 .admin-form {
   max-width: 600px;
