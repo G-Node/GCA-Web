@@ -16,7 +16,7 @@ import javax.persistence._
  * Model for a conference topic
  */
 @Entity
-class Topic extends Model {
+class Topic extends PositionedModel {
 
   @Basic(optional = false)
   var topic: String = _
