@@ -166,9 +166,9 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
   }
 
   var figures : Array[Figure] = Array(
-    Figure(None, ?("fig1"), ?("This is the super nice figure one.")),
-    Figure(None, ?("fig2"), ?("This is the super nice figure two.")),
-    Figure(None, ?("fig3"), ?("This is the super nice figure three."))
+    Figure(None, ?("This is the super nice figure one.")),
+    Figure(None, ?("This is the super nice figure two.")),
+    Figure(None, ?("This is the super nice figure three."))
   )
 
   var alice : Account = createAccount("Alice", "Goodchild", "alice@foo.com")

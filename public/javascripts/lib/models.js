@@ -579,7 +579,6 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * Model for figure.
      *
      * @param {string} [uuid]
-     * @param {string} [name]
      * @param {string} [caption]
      * @param {string} [URL]       URL to the image URL.
      *
@@ -587,15 +586,14 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @constructor
      * @public
      */
-    function Figure(uuid, name, caption, URL) {
+    function Figure(uuid, caption, URL) {
 
         if (! (this instanceof Figure)) {
-            return new Figure(uuid, name, caption, URL);
+            return new Figure(uuid, caption, URL);
         }
 
         var self = tools.inherit(this, Model, uuid);
 
-        self.name = name || null;
         self.caption = caption || null;
         self.URL = caption || null;
 
@@ -613,7 +611,6 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * Observable model for figure.
      *
      * @param {string} [uuid]
-     * @param {string} [name]
      * @param {string} [caption]
      * @param {string} [URL]       URL to the image URL.
      *
@@ -621,15 +618,14 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @constructor
      * @public
      */
-    function ObservableFigure(uuid, name, caption, URL) {
+    function ObservableFigure(uuid, caption, URL) {
 
         if (! (this instanceof ObservableFigure)) {
-            return new ObservableFigure(uuid, name, caption, URL);
+            return new ObservableFigure(uuid, caption, URL);
         }
 
         var self = tools.inherit(this, Model, uuid);
 
-        self.name = ko.observable(name || null);
         self.caption = ko.observable(caption || null);
         self.URL = ko.observable(URL || null);
 

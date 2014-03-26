@@ -8,7 +8,7 @@ import play.api.libs.functional.syntax._
 
 import models._
 import org.joda.time.DateTime
-import org.joda.time.format.{ISODateTimeFormat, DateTimeFormat}
+import org.joda.time.format.ISODateTimeFormat
 import play.api.data.validation.ValidationError
 
 package object serializer {
@@ -236,9 +236,8 @@ package object serializer {
 
     override def reads(json: JsValue): JsResult[Figure] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "name").readNullable[String] and
       (__ \ "caption").readNullable[String]
-    )(Figure(_, _, _)).reads(json)
+    )(Figure(_, _)).reads(json)
 
     override def writes(a: Figure): JsValue = {
       if (a == null) {
@@ -246,7 +245,6 @@ package object serializer {
       } else {
         Json.obj(
           "uuid" -> a.uuid,
-          "name" -> a.name,
           "caption" -> a.caption,
           "URL" -> routesResolver.figureFileUrl(a.uuid)
         )
