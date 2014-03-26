@@ -196,9 +196,8 @@ package object serializer {
       (__ \ "country").readNullable[String] and
       (__ \ "department").readNullable[String] and
       (__ \ "name").readNullable[String] and
-      (__ \ "section").readNullable[String] and
-      (__ \ "position").readNullable[Int]
-    )(Affiliation(_, _, _, _, _, _, _)).reads(json)
+      (__ \ "section").readNullable[String]
+    )(Affiliation(_, _, _, _, _, _)).reads(json)
 
     override def writes(a: Affiliation): JsValue = {
       Json.obj(
@@ -280,7 +279,7 @@ package object serializer {
   class AbstractFormat(implicit routesResolver: RoutesResolver) extends Format[Abstract] with ConstraintReads {
 
     implicit val authorF = new AuthorFormat()
-    val affiliationF = new AffiliationFormat()
+    implicit val affiliationF = new AffiliationFormat()
     val referenceF = new ReferenceFormat()
     val figureF = new FigureFormat()
 
@@ -297,20 +296,13 @@ package object serializer {
       (__ \ "sortId").readNullable[Int] and
       (__ \ "state").readNullable[AbstractState.State] and
       (__ \ "authors").read[List[Author]].addPosition and
-      (__ \ "affiliations").lazyRead( list[Affiliation](affiliationF) ) and
+      (__ \ "affiliations").read[List[Affiliation]].addPosition and
       (__ \ "references").lazyRead( list[Reference](referenceF) )
     )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
 
-      implicit object AffOrder extends Ordering[Affiliation] {
-        override def compare(x: Affiliation, y: Affiliation): Int = if (x.position < y.position) {  -1 }
-                                                                    else if (x.position > y.position) { 1 }
-                                                                    else { 0 }
-      }
-
       val figures: Seq[Figure] = asScalaSet(a.figures).toSeq
-      val affiliations: Seq[Affiliation] = asScalaSet(a.affiliations).toSeq.sorted
       val references: Seq[Reference] = asScalaSet(a.references).toSeq
       Json.obj(
         "uuid" -> a.uuid,
@@ -329,7 +321,7 @@ package object serializer {
         "figures" -> JsArray( for (auth <- figures) yield figureF.writes(auth) ),
         "owners" -> routesResolver.ownersUrl(a.uuid),
         "authors" -> asScalaSet(a.authors).toSeq.sorted[Model],
-        "affiliations" -> JsArray( for (auth <- affiliations) yield affiliationF.writes(auth) ),
+        "affiliations" -> asScalaSet(a.affiliations).toSeq.sorted[Model],
         "references" -> JsArray( for (auth <- references) yield referenceF.writes(auth) )
       )
     }
