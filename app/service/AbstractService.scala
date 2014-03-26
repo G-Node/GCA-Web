@@ -270,7 +270,10 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
       if (accountChecked == null)
         throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
 
-      if (!abstrChecked.owners.contains(accountChecked))
+      val isOwner = abstrChecked.owners.contains(accountChecked)
+      val isConfOwner = abstrChecked.conference.owners.contains(accountChecked)
+      val isAdmin = accountChecked.isAdmin
+      if (! (isOwner || isConfOwner || isAdmin))
         throw new IllegalAccessException("No permissions for abstract with uuid = " + abstr.uuid)
 
       abstr.stateLog = abstrChecked.stateLog
@@ -353,7 +356,10 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
       if (abstrChecked == null)
         throw new EntityNotFoundException("Unable to find abstract with uuid = " + id)
 
-      if (!abstrChecked.owners.contains(accountChecked))
+      val isOwner = abstrChecked.owners.contains(accountChecked)
+      val isConfOwner = abstrChecked.conference.owners.contains(accountChecked)
+      val isAdmin = accountChecked.isAdmin
+      if (! (isOwner || isConfOwner || isAdmin))
         throw new IllegalAccessException("No permissions for abstract with uuid = " + id)
 
       abstrChecked.figures.foreach( fig => {
