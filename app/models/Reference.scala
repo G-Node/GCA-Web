@@ -16,7 +16,7 @@ import javax.persistence.{ManyToOne, Entity}
  * Very simple model for referenced literature.
  */
 @Entity
-class Reference extends Model {
+class Reference extends PositionedModel {
 
   var authors: String = _
   var title: String = _

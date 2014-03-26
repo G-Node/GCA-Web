@@ -282,7 +282,7 @@ package object serializer {
 
     implicit val authorF = new AuthorFormat()
     implicit val affiliationF = new AffiliationFormat()
-    val referenceF = new ReferenceFormat()
+    implicit val referenceF = new ReferenceFormat()
     implicit val figureF = new FigureFormat()
 
     override def reads(json: JsValue): JsResult[Abstract] = (
@@ -299,7 +299,7 @@ package object serializer {
       (__ \ "state").readNullable[AbstractState.State] and
       (__ \ "authors").read[List[Author]].addPosition and
       (__ \ "affiliations").read[List[Affiliation]].addPosition and
-      (__ \ "references").lazyRead( list[Reference](referenceF) )
+      (__ \ "references").read[List[Reference]].addPosition
     )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
@@ -323,7 +323,7 @@ package object serializer {
         "owners" -> routesResolver.ownersUrl(a.uuid),
         "authors" -> asScalaSet(a.authors).toSeq.sorted[Model],
         "affiliations" -> asScalaSet(a.affiliations).toSeq.sorted[Model],
-        "references" -> JsArray( for (auth <- references) yield referenceF.writes(auth) )
+        "references" -> asScalaSet(a.references).toSeq.sorted[Model]
       )
     }
   }

@@ -62,7 +62,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
         Reference(None, ?("Authorone et al."), ?("Title One"), ?(2000), None),
         Reference(None, ?("Authortwo et al."), ?("Title Two"), ?(1999), None),
         Reference(None, ?("Authortwo et al."), ?("Title Three"), ?(2006), None)
-      )
+      ).addPosition()
     ),
     Abstract(
       None,
@@ -89,7 +89,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
         Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
         Reference(None, ?("Authorfive et al."), ?("Title Seven"), ?(1998), None),
         Reference(None, ?("Authorfive et al."), ?("Title Nine"), ?(2009), None)
-      )
+      ).addPosition()
     ),
     Abstract(
       None,
@@ -116,7 +116,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
         Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
         Reference(None, ?("Authorfive et al."), ?("Title Seven"), ?(1998), None),
         Reference(None, ?("Authorfive et al."), ?("Title Nine"), ?(2009), None)
-      )
+      ).addPosition()
     ),
     Abstract(
       None,
@@ -143,7 +143,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
         Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
         Reference(None, ?("Authorfive et al."), ?("Title Seven"), ?(1998), None),
         Reference(None, ?("Authorfive et al."), ?("Title Nine"), ?(2009), None)
-      )
+      ).addPosition()
     )
   )
 
@@ -169,7 +169,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       ).addPosition(),
       references = Seq(
         Reference(None, ?("E. Albert et al."), ?("New is always better"), ?(2000), None)
-      )
+      ).addPosition()
     )
   }
 
