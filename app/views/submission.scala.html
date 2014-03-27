@@ -118,8 +118,11 @@
 
                         <div class="modal-body">
                             <table class="table">
-                                <tbody data-bind="foreach: {data: editedAbstract().authors, as: 'person'}">
+                                <tbody data-bind="sortable: {data: editedAbstract().authors, as: 'person'}">
                                     <tr>
+                                        <td>
+                                            <span class="drag-handle-icon glyphicon glyphicon-align-justify"></span>
+                                        </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="First Name"
                                                    maxlength="100" data-bind="value: person.firstName" />
@@ -139,7 +142,7 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doEditRemoveAuthor.bind(person)">
+                                                        data-bind="click: $root.doEditRemoveAuthor.bind($root, $index(), person)">
                                                     Remove
                                                     <span class="glyphicon glyphicon-user"></span>
                                                 </button>
@@ -148,6 +151,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <div><small> Use the drag handle  <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder autohrs</small></div>
                         </div>
 
                         <div class="modal-footer">
@@ -218,20 +222,20 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doEditRemoveAffiliation.bind($root, affiliation)">
+                                                        data-bind="click: $root.doEditRemoveAffiliation.bind($root, $index(), affiliation)">
                                                     Remove
                                                     <span class="glyphicon glyphicon-envelope"></span>
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
-                                    <!-- ko foreach: {data: $root.getEditorAuthorsForAffiliation(affiliation), as: 'author'} -->
+                                    <!-- ko foreach: {data: $root.getEditorAuthorsForAffiliation($index(), affiliation), as: 'author'} -->
                                     <tr>
                                         <td colspan="5" data-bind="text: author.formatName()"></td>
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doEditRemoveAffiliationFromAuthor.bind($root, affiliation, author)">
+                                                        data-bind="click: $root.doEditRemoveAffiliationFromAuthor.bind($root, $index(), author)">
                                                     Remove
                                                     <span class="glyphicon glyphicon-user"></span>
                                                 </button>
@@ -240,7 +244,7 @@
                                     </tr>
                                     <!-- /ko -->
                                     <tr>
-                                        <td colspan="5" data-bind="attr: {id: 'author-select-' + affiliation.position()}">
+                                        <td colspan="5" data-bind="attr: {id: 'author-select-' + $index()}">
                                             <select class="form-control"
                                                     data-bind="options: $root.editedAbstract().authors,
                                                                optionsText: function(e) { return e.formatName(); },
@@ -250,7 +254,7 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doEditAddAuthorToAffiliation.bind($root, affiliation)">
+                                                        data-bind="click: $root.doEditAddAuthorToAffiliation.bind($root, $index(), affiliation)">
                                                     Add
                                                     <span class="glyphicon glyphicon-user"></span>
                                                 </button>
@@ -453,7 +457,7 @@
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
                 <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
-                data-toggle="modal" data-bind="click: doStartEdit">
+                        data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
                 </button>
             </div>
