@@ -11,6 +11,9 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
         var self = tools.inherit(this, msg.MessageVM);
 
         self.accounts = ko.observableArray(null);
+        self.noAccounts = ko.computed(function() {
+            return self.accounts().length;
+        });
 
         self.init = function() {
             ko.applyBindings(window.dashboard);
