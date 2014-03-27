@@ -78,13 +78,13 @@
 
                         @if(conf.isPublished) {
                             <li class=@if(active.toLowerCase == "abstracts") {"active"} else {""}>
-                                <a href="@routes.Application.abstractsPublic(conf.uuid)">Abstracts</a>
+                                <a href="@routes.Application.abstractsPublic(conf.short)">Abstracts</a>
                             </li>
                         }
 
                         @if(conference.get.isOpen && account.isDefined) {
                             <li class=@if(active.toLowerCase == "submission") {"active"} else {""}>
-                                <a href="@routes.Application.submission(conf.uuid)">Submission</a>
+                                <a href="@routes.Application.submission(conf.short)">Submission</a>
                             </li>
                         }
 
