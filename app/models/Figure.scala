@@ -16,7 +16,7 @@ import javax.persistence.{ManyToOne, Entity}
  * A model for figures.
  */
 @Entity
-class Figure extends Model {
+class Figure extends PositionedModel {
 
   var caption: String = _
 
@@ -29,12 +29,14 @@ object Figure {
 
   def apply(uuid: Option[String],
             caption: Option[String],
+            position: Option[Int] = None,
             abstr: Option[Abstract] = None) : Figure = {
 
     val figure = new Figure()
 
     figure.uuid     = unwrapRef(uuid)
     figure.caption  = unwrapRef(caption)
+    figure.position = unwrapVal(position)
 
     figure.abstr    = unwrapRef(abstr)
 

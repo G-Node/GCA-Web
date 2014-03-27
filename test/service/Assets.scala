@@ -21,6 +21,14 @@ import org.joda.time.DateTime
 
 class Assets(val emf: EntityManagerFactory) extends DBUtil {
 
+  implicit class PositionedLSeq[A <: PositionedModel](l: Seq[A]) {
+    def addPosition():Seq[A] = {
+      for { (element, i) <- l.zipWithIndex } yield {
+        element.position = i; element
+      }
+    }
+  }
+
   val figPath = Play.application().configuration().getString("file.fig_path", "./figures")
 
   def makeSortId(group: Int, seqid: Int) : Option[Int] = {
@@ -42,19 +50,19 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       makeSortId(1, 1),
       state = ?(AbstractState.Published),
       authors = Seq(
-        Author(None, ?("one@foo.bar"), ?("One"), ?("Middle"), ?("Name"), ?(0)),
-        Author(None, ?("two@foo.bar"), ?("Two"), ?("Middle"), ?("Name"), ?(1)),
-        Author(None, ?("three@foo.bar"), ?("The"), None, ?("Name"), ?(2))
-      ),
+        Author(None, ?("one@foo.bar"), ?("One"), ?("Middle"), ?("Name")),
+        Author(None, ?("two@foo.bar"), ?("Two"), ?("Middle"), ?("Name")),
+        Author(None, ?("three@foo.bar"), ?("The"), None, ?("Name"))
+      ).addPosition(),
       affiliations = Seq(
-        Affiliation(None, ?("One address"), ?("Andorra"), ?("One department"), None,None, ?(0)),
-        Affiliation(None, ?("Two address"), ?("Andorra"), ?("Two department"), None, None, ?(1))
-      ),
+        Affiliation(None, ?("One address"), ?("Andorra"), ?("One department"), None,None),
+        Affiliation(None, ?("Two address"), ?("Andorra"), ?("Two department"), None, None)
+      ).addPosition(),
       references = Seq(
-        Reference(None, ?("Authorone et al."), ?("Title One"), ?(2000), None),
-        Reference(None, ?("Authortwo et al."), ?("Title Two"), ?(1999), None),
-        Reference(None, ?("Authortwo et al."), ?("Title Three"), ?(2006), None)
-      )
+        Reference(None, ?("Authorone et al. Title One"), None, None),
+        Reference(None, ?("Authortwo et al. Title Two"), None, None),
+        Reference(None, ?("Authortwo et al. Title Three"), None, None)
+      ).addPosition()
     ),
     Abstract(
       None,
@@ -69,19 +77,19 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       makeSortId(1, 2),
       ?(AbstractState.InReview),
       authors = Seq(
-        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name"), ?(0)),
-        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name"), ?(1)),
-        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"), ?(2))
-      ),
+        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name")),
+        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name")),
+        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"))
+      ).addPosition(),
       affiliations = Seq(
-        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None, ?(0)),
-        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None, ?(1))
-      ),
+        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None),
+        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None)
+      ).addPosition(),
       references = Seq(
-        Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Seven"), ?(1998), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Nine"), ?(2009), None)
-      )
+        Reference(None, ?("Authorfour et al. Title Four"), None, None),
+        Reference(None, ?("Authorfive et al. Title Five"), None, None),
+        Reference(None, ?("Authorfive et al. Title Six"), None, None)
+      ).addPosition()
     ),
     Abstract(
       None,
@@ -96,19 +104,19 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       makeSortId(2, 1),
       ?(AbstractState.Submitted),
       authors = Seq(
-        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name"), ?(0)),
-        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name"), ?(1)),
-        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"), ?(2))
-      ),
+        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name")),
+        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name")),
+        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"))
+      ).addPosition(),
       affiliations = Seq(
-        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None, ?(0)),
-        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None, ?(1))
-      ),
+        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None),
+        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None)
+      ).addPosition(),
       references = Seq(
-        Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Seven"), ?(1998), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Nine"), ?(2009), None)
-      )
+        Reference(None, ?("Authorfour et al. Title Six"), None, None),
+        Reference(None, ?("Authorfive et al. Title Seven"), None, None),
+        Reference(None, ?("Authorfive et al. Title Nine"), None, None)
+      ).addPosition()
     ),
     Abstract(
       None,
@@ -123,19 +131,19 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       makeSortId(2, 2),
       ?(AbstractState.InPreparation),
       authors = Seq(
-        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name"), ?(0)),
-        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name"), ?(1)),
-        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"), ?(2))
-      ),
+        Author(None, ?("four@foo.bar"), ?("Four"), ?("Middle"), ?("Name")),
+        Author(None, ?("five@foo.bar"), ?("Five"), ?("Middle"), ?("Name")),
+        Author(None, ?("six@foo.bar"), ?("The"), None, ?("Name"))
+      ).addPosition(),
       affiliations = Seq(
-        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None, ?(0)),
-        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None, ?(1))
-      ),
+        Affiliation(None, ?("Four address"), ?("Andorra"), ?("Four department"), None, None),
+        Affiliation(None, ?("Five address"), ?("Andorra"), ?("Five department"), None, None)
+      ).addPosition(),
       references = Seq(
-        Reference(None, ?("Authorfour et al."), ?("Title Six"), ?(2000), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Seven"), ?(1998), None),
-        Reference(None, ?("Authorfive et al."), ?("Title Nine"), ?(2009), None)
-      )
+        Reference(None, ?("Authorfour et al. Title Six"), None, None),
+        Reference(None, ?("Authorfive et al. Title Seven"), None, None),
+        Reference(None, ?("Authorfive et al. Title Nine"), None, None)
+      ).addPosition()
     )
   )
 
@@ -153,15 +161,15 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       makeSortId(1, 42),
       ?(AbstractState.InReview),
       authors = Seq(
-        Author(None, ?("new@mail.bar"), ?("New"), ?("Cool"), ?("Author"), ?(0)),
-        Author(None, ?("foo@mail.bar"), ?("Second"), None, ?("Author"), ?(1))
-      ),
+        Author(None, ?("new@mail.bar"), ?("New"), ?("Cool"), ?("Author")),
+        Author(None, ?("foo@mail.bar"), ?("Second"), None, ?("Author"))
+      ).addPosition(),
       affiliations = Seq(
-        Affiliation(None, ?("New Street 5"), ?("New York"), ?("New Department"), None, None, ?(0))
-      ),
+        Affiliation(None, ?("New Street 5"), ?("New York"), ?("New Department"), None, None)
+      ).addPosition(),
       references = Seq(
-        Reference(None, ?("E. Albert et al."), ?("New is always better"), ?(2000), None)
-      )
+        Reference(None, ?("E. Albert et al. New is always better"), None, None)
+      ).addPosition()
     )
   }
 
@@ -199,11 +207,11 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
     Array(alice, bob, eve)
   }
 
-  def createTopics : Array[Topic] = Array(
+  def createTopics : Seq[Topic] = Seq(
     Topic("topic one", None),
     Topic("topic two", None),
     Topic("topic three", None)
-  )
+  ).addPosition()
 
   var bcDesc = "The Bernstein Conference is the Bernstein Network's central forum that has developed over time into the biggest European Computational Neuroscience conference"
 
@@ -282,6 +290,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       figures = 0.until(figures.length).toArray.map { i: Int =>
         val fig = figures(i)
         val abstr = abstracts(i)
+        fig.position = i
         fig.abstr = abstr
         abstr.figures.add(fig)
 

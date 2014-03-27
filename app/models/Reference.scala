@@ -16,11 +16,10 @@ import javax.persistence.{ManyToOne, Entity}
  * Very simple model for referenced literature.
  */
 @Entity
-class Reference extends Model {
+class Reference extends PositionedModel {
 
-  var authors: String = _
-  var title: String = _
-  var year: Int = _
+  var text: String = _
+  var link: String = _
   var doi: String = _
 
   @ManyToOne
@@ -32,19 +31,17 @@ class Reference extends Model {
 object Reference {
 
   def apply(uuid: Option[String],
-            authors: Option[String],
-            title: Option[String],
-            year: Option[Int],
+            text: Option[String],
+            link: Option[String],
             doi: Option[String],
             abstr: Option[Abstract] = None) : Reference = {
 
     val ref     = new Reference()
 
-    ref.uuid    = unwrapRef(uuid)
-    ref.authors = unwrapRef(authors)
-    ref.title   = unwrapRef(title)
-    ref.year    = unwrapVal(year)
-    ref.doi     = unwrapRef(doi)
+    ref.uuid = unwrapRef(uuid)
+    ref.text = unwrapRef(text)
+    ref.link = unwrapRef(link)
+    ref.doi  = unwrapRef(doi)
 
     ref.abstr   = unwrapRef(abstr)
 

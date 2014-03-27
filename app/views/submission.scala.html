@@ -395,20 +395,20 @@
                         </div>
 
                         <div class="modal-body">
+
                             <table class="table">
-                                <tbody data-bind="foreach: {data: editedAbstract().references, as: 'reference'}">
+                                <tbody data-bind="sortable: {data: editedAbstract().references, as: 'reference'}">
                                     <tr>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Authors"
-                                                   maxlength="100" data-bind="value: reference.authors" />
+                                            <span class="drag-handle-icon glyphicon glyphicon-align-justify"></span>
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Title"
-                                                   maxlength="100" data-bind="value: reference.title" />
+                                            <input type="text" class="form-control input-sm" placeholder="Text"
+                                                   maxlength="200" data-bind="value: reference.text" />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Year"
-                                                   maxlength="100" data-bind="value: reference.year" />
+                                            <input type="text" class="form-control input-sm" placeholder="link"
+                                                   maxlength="100" data-bind="value: reference.link" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="DOI"
@@ -425,6 +425,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <div><small> Use the drag handle  <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder references</small></div>
                         </div>
 
                         <div class="modal-footer">
@@ -443,7 +444,7 @@
             <div class="references">
                 <h4>References</h4>
                 <ol data-bind="foreach: {data: abstract().references, as: 'reference'}">
-                    <li data-bind="text: reference.format()"></li>
+                    <li data-bind="html: reference.format()"></li>
                 </ol>
             </div>
         </div>
