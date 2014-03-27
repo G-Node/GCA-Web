@@ -161,14 +161,11 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
         };
 
 
-        self.getEditorAuthorsForAffiliation = function(affiliation) {
+        self.getEditorAuthorsForAffiliation = function(index) {
             var authors = [];
 
             self.editedAbstract().authors().forEach(function(author) {
-                var aff = author.affiliations(),
-                    pos = affiliation.position(),
-                    found = aff.indexOf(pos);
-                if (found >= 0) {
+                if (author.affiliations().indexOf(index) >= 0) {
                     authors.push(author);
                 }
             });
@@ -369,7 +366,7 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
             }
 
             function successFig() {
-                self.requestAbstract(self.abstract().uuid)
+                self.requestAbstract(self.abstract().uuid);
                 self.setOk("Ok", "Abstract and figure saved.", true);
             }
 
@@ -420,56 +417,39 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
 
         self.doEditAddAuthor = function() {
             var author = models.ObservableAuthor();
-            author.position(self.editedAbstract().authors().length);
             self.editedAbstract().authors.push(author);
         };
 
 
-        self.doEditRemoveAuthor = function(author) {
-            var position = author.position(),
-                authors = self.editedAbstract().authors();
-
-            authors.splice(position, 1);
-            authors.forEach(function(a, i) {
-                a.position(i);
-            });
-
+        self.doEditRemoveAuthor = function(index) {
+            var authors = self.editedAbstract().authors();
+            authors.splice(index, 1);
             self.editedAbstract().authors(authors);
         };
 
 
         self.doEditAddAffiliation = function() {
             var affiliation = models.ObservableAffiliation();
-            affiliation.position(self.editedAbstract().affiliations().length);
             self.editedAbstract().affiliations.push(affiliation);
         };
 
 
-        self.doEditRemoveAffiliation = function(affiliation) {
-            var position = affiliation.position(),
-                affiliations = self.editedAbstract().affiliations(),
+        self.doEditRemoveAffiliation = function(index) {
+            var affiliations = self.editedAbstract().affiliations(),
                 authors = self.editedAbstract().authors();
 
-            affiliations.splice(position, 1);
-            affiliations.forEach(function(a, i) {
-                a.position(i);
-            });
+            affiliations.splice(index, 1);
+
 
             authors.forEach(function(author) {
-                var affiliationPositions = author.affiliations(),
-                    removePos = affiliationPositions.indexOf(position);
+                var positions = author.affiliations(),
+                    removePos = positions.indexOf(index);
 
                 if (removePos >= 0) {
-                    affiliationPositions.splice(removePos, 1);
+                    positions.splice(removePos, 1);
                 }
 
-                for (var i = 0; i < affiliationPositions.length; i++) {
-                    if (affiliationPositions[i] >= removePos) {
-                        affiliationPositions[i] = affiliationPositions[i] - 1;
-                    }
-                }
-
-                author.affiliations(affiliationPositions);
+                author.affiliations(positions);
             });
 
             self.editedAbstract().affiliations(affiliations);
@@ -480,41 +460,45 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
          * Add an affiliation position to an author.
          * The author information is determined through jQuery by the respective select element.
          *
-         * @param affiliation   The affiliation that is added to the author.
+         * @param index   The index of the affiliation that is added to the author.
          */
-        self.doEditAddAuthorToAffiliation = function(affiliation) {
-            var authorPosition = $("#author-select-" + affiliation.position()).find("select").val(),
+        self.doEditAddAuthorToAffiliation = function(index) {
+            var authorIndex = $("#author-select-" + index).find("select").val(),
                 authors = self.editedAbstract().authors();
 
-            if (authorPosition >= 0 && authorPosition < authors.length) {
-                var author = authors[authorPosition],
-                    affiliationPosition = affiliation.position();
-
-                if (author.affiliations().indexOf(affiliationPosition) < 0) {
-                    author.affiliations.push(affiliation.position());
-                }
-            } else {
-                self.setError("Error", "Unable to add author to affiliation: " + affiliation.format());
+            if (authorIndex < 0 || authorIndex >= authors.length) {
+                self.setError("Error", "Unable to add author to affiliation: invalid index");
+                return;
             }
 
+            var author = authors[authorIndex],
+                affiliations = author.affiliations();
+
+            if (affiliations.indexOf(index) < 0) {
+                affiliations.push(index);
+                affiliations.sort();
+                author.affiliations(affiliations);
+            } else {
+                self.setInfo("Hint", "This author is assigned to this affiliation.");
+            }
         };
 
 
         /**
          * Remove all affiliation positions for the authors affiliations array.
          *
-         * @param affiliation   The affiliation to remove.
+         * @param index         The index of the affiliation to remove.
          * @param author        The author from which to remove the affiliation.
          */
-        self.doEditRemoveAffiliationFromAuthor = function(affiliation, author) {
-            var affiliationPos = affiliation.position(),
-                affiliations = author.affiliations();
+        self.doEditRemoveAffiliationFromAuthor = function(index, author) {
+            var positions = author.affiliations(),
+                removePos = positions.indexOf(index);
 
-            while (affiliations.indexOf(affiliationPos) >= 0) {
-                affiliations.splice(affiliations.indexOf(affiliationPos), 1);
+            if (removePos >= 0) {
+                positions.splice(removePos, 1);
             }
 
-            author.affiliations(affiliations);
+            author.affiliations(positions);
         };
 
 
