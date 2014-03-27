@@ -184,6 +184,8 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
 
   var eve: Account = createAccount("Eve", "Sarevok", "eve@evil.com")
 
+  var admin: Account = createAccount("Thomas", "Anderson", "neo@matrix.com")
+
   def createAccount(firstName: String, lastName: String, mail: String) = {
     val account = new Account()
 
@@ -203,7 +205,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
   }
 
   def accounts : Array[Account] = {
-    Array(alice, bob, eve)
+    Array(alice, bob, eve, admin)
   }
 
   def createTopics : Seq[Topic] = Seq(
@@ -237,6 +239,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       alice = em.merge(alice)
       bob = em.merge(bob)
       eve = em.merge(eve)
+      admin = em.merge(admin)
 
       // add alice to conference owners and merge conferences
       conferences = conferences.map { conf =>

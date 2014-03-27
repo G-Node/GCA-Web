@@ -61,12 +61,6 @@ class Conference extends Model with Owned {
   var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
   @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var topics: JSet[Topic] = new JTreeSet[Topic]()
-
-  def isOwner(account: Account) = {
-    val ownersList: Seq[Account] = asScalaSet(owners).toSeq
-    ownersList.contains(account)
-  }
-
 }
 
 object Conference {
