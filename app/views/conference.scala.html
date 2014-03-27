@@ -60,8 +60,8 @@
 
     @if(account.isDefined) {
         <hr>
-        <h3>Administration</h3>
         @if(conference.isOwner(account.get) || account.get.isAdmin) {
+            <h3>Administration</h3>
             <ul class="list-inline">
             <li><a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">Conference Settings</a></li>
             <li><a href="@routes.Application.adminAbstracts(conference.uuid)" class="btn btn-danger">Abstracts</a></li>
