@@ -246,9 +246,9 @@
                                     <tr>
                                         <td colspan="5" data-bind="attr: {id: 'author-select-' + $index()}">
                                             <select class="form-control"
-                                                    data-bind="options: $root.editedAbstract().authors,
-                                                               optionsText: function(e) { return e.formatName(); },
-                                                               optionsValue: 'position'">
+                                                    data-bind="options: $root.editedAbstract().indexedAuthors,
+                                                               optionsText: function(e) { return e.author.formatName(); },
+                                                               optionsValue: 'index'">
                                             </select>
                                         </td>
                                         <td>
