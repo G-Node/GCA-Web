@@ -459,17 +459,16 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @param {string} [address]
      * @param {string} [country]
      * @param {string} [department]
-     * @param {string} [name]
      * @param {string} [section]
      *
      * @returns {Affiliation}
      * @constructor
      * @public
      */
-    function Affiliation(uuid, address, country, department, name, section) {
+    function Affiliation(uuid, address, country, department, section) {
 
         if (! (this instanceof  Affiliation)) {
-            return new Affiliation(uuid, address, country, department, name, section);
+            return new Affiliation(uuid, address, country, department, section);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -477,12 +476,10 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.address = address || null;
         self.country = country || null;
         self.department = department || null;
-        self.name = name || null;
         self.section = section || null;
 
         self.format = function() {
-            var str =(self.name || "")
-                .concat(self.section ? ", " + self.section : "")
+            var str =(self.section || "")
                 .concat(self.department ? ", " + self.department : "")
                 .concat(self.address ? ", " + self.address : "")
                 .concat(self.country ? ", " + self.country : "");
@@ -512,18 +509,16 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
      * @param {string} [address]
      * @param {string} [country]
      * @param {string} [department]
-     * @param {string} [name]
      * @param {string} [section]
      *
      * @returns {ObservableAffiliation}
      * @constructor
      * @public
      */
-    function ObservableAffiliation(uuid, address, country, department, name, section) {
+    function ObservableAffiliation(uuid, address, country, department, section) {
 
         if (! (this instanceof  ObservableAffiliation)) {
-            return new ObservableAffiliation(uuid, address, country, department,
-                                             name, section);
+            return new ObservableAffiliation(uuid, address, country, department, section);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -531,12 +526,10 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.address = ko.observable(address || null);
         self.country = ko.observable(country || null);
         self.department = ko.observable(department || null);
-        self.name = ko.observable(name || null);
         self.section = ko.observable(section || null);
 
         self.format = function() {
-            var str =(self.name() || "")
-                .concat(self.section() ? ", " + self.section() : "")
+            var str =(self.section() || "")
                 .concat(self.department() ? ", " + self.department() : "")
                 .concat(self.address() ? ", " + self.address() : "")
                 .concat(self.country() ? ", " + self.country() : "");
@@ -924,10 +917,10 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.references = ko.observableArray(references || []);
 
         this.isTalk.computed = ko.computed({
-            read: function() {
+            'read': function() {
                 return self.isTalk().toString();
             },
-            write: function(val) {
+            'write': function(val) {
                 val = (val === "true");
                 if (!val) {
                     self.reasonForTalk(null);

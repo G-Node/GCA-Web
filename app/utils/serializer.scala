@@ -195,9 +195,8 @@ package object serializer {
       (__ \ "address").readNullable[String] and
       (__ \ "country").readNullable[String] and
       (__ \ "department").readNullable[String] and
-      (__ \ "name").readNullable[String] and
       (__ \ "section").readNullable[String]
-    )(Affiliation(_, _, _, _, _, _)).reads(json)
+    )(Affiliation(_, _, _, _, _)).reads(json)
 
     override def writes(a: Affiliation): JsValue = {
       Json.obj(
@@ -205,7 +204,6 @@ package object serializer {
         "address" -> a.address,
         "country" -> a.country,
         "department" -> a.department,
-        "name" -> a.name,
         "section" -> a.section,
         "position" -> a.position
       )

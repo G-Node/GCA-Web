@@ -19,7 +19,7 @@ class SerializerTest extends JUnitSuite {
   val sampleAuthor: Author = Author(Option("someuuid"), Option("email"), Option("first"),
     Option("middle"), Option("last"))
   val sampleAffiliation: Affiliation = Affiliation(Option("someuuid"), Option("address"), Option("country"),
-    Option("department"), Option("name"), Option("section"))
+    Option("department"), Option("section"))
   val sampleReference: Reference = Reference(Option("someuuid"), Option("authors, title"),
     Option("http://www.someink.com"), Option("doi"))
   val sampleFigure: Figure = Figure(Option("someuuid"), Option("caption"))
@@ -78,7 +78,7 @@ class SerializerTest extends JUnitSuite {
     val jsFormat = new AffiliationFormat()
 
     val original = Affiliation(Option("someuuid"), Option("address"), Option("country"),
-      Option("department"), Option("name"), Option("section"))
+      Option("department"), Option("section"))
     val json = jsFormat.writes(original)
 
     jsFormat.reads(json).fold(

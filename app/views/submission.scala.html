@@ -200,11 +200,7 @@
                                 <tbody data-bind="foreach: {data: editedAbstract().affiliations, as: 'affiliation'}">
                                     <tr class="affiliation-form">
                                         <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Name"
-                                                   maxlength="100" data-bind="value: affiliation.name" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Section"
+                                            <input type="text" class="form-control input-sm" placeholder="Institute"
                                                    maxlength="100" data-bind="value: affiliation.section" />
                                         </td>
                                         <td>
@@ -231,7 +227,7 @@
                                     </tr>
                                     <!-- ko foreach: {data: $root.getEditorAuthorsForAffiliation($index(), affiliation), as: 'author'} -->
                                     <tr>
-                                        <td colspan="5" data-bind="text: author.formatName()"></td>
+                                        <td colspan="4" data-bind="text: author.formatName()"></td>
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
@@ -244,7 +240,7 @@
                                     </tr>
                                     <!-- /ko -->
                                     <tr>
-                                        <td colspan="5" data-bind="attr: {id: 'author-select-' + $index()}">
+                                        <td colspan="4" data-bind="attr: {id: 'author-select-' + $index()}">
                                             <select class="form-control"
                                                     data-bind="options: $root.editedAbstract().indexedAuthors,
                                                                optionsText: function(e) { return e.author.formatName(); },

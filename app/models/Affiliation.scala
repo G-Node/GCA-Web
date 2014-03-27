@@ -22,7 +22,6 @@ class Affiliation extends PositionedModel {
   var address: String = _
   var country: String = _
   var department: String = _
-  var name: String = _
   var section: String = _
 
   @ManyToOne
@@ -39,7 +38,6 @@ object Affiliation {
             address: Option[String],
             country: Option[String],
             department: Option[String],
-            name: Option[String],
             section: Option[String],
             abstr: Option[Abstract] = None,
             authors: List[Author] = Nil) : Affiliation = {
@@ -50,7 +48,6 @@ object Affiliation {
     affiliation.address     = unwrapRef(address)
     affiliation.country     = unwrapRef(country)
     affiliation.department  = unwrapRef(department)
-    affiliation.name        = unwrapRef(name)
     affiliation.section     = unwrapRef(section)
 
     affiliation.abstr       = unwrapRef(abstr)
