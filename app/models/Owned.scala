@@ -1,6 +1,7 @@
 package models
 
 import java.util.{Set => JSet}
+import scala.collection.JavaConversions._
 
 /**
  * Interface that defines ownership.
@@ -11,4 +12,8 @@ trait Owned {
   var uuid: String
   var owners: JSet[Account]
 
+  def isOwner(account: Account) = {
+    val ownersList: Seq[Account] = asScalaSet(owners).toSeq
+    ownersList.contains(account)
+  }
 }

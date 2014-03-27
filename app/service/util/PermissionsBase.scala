@@ -8,37 +8,41 @@ trait PermissionsBase extends DBUtil  {
 
   /**
    * Validates, that given:
-   * - object has uuid and is real
-   * - account is real
-   * - account owns the object.
+   * - account owns the object if modify = true.
+   * - account is admin or an owner of the object if modify if false.
+   *
+   * Returns true/false.
+   *
+   * @param obj The Owned-type object to check.
+   * @param account    The account who wants to (later) update the object.
+   */
+  def isAllowed(obj: Owned, account: Account, modify: Boolean): Boolean = {
+    if (modify)
+      obj.isOwner(account)
+    else
+      obj.isOwner(account) || account.isAdmin
+  }
+
+  /**
+   * Validates, that given object has uuid and is real
    *
    * Returns the refreshed object from the database.
    *
    * @param obj The Owned-type object to update.
-   * @param account    The account who wants to update the object.
    *
    * @throws IllegalArgumentException If the object has no uuid
    * @throws EntityNotFoundException If the object or the user does not exist
-   * @throws IllegalAccessException If account is not an owner.
    */
-  def validate(obj: Owned, account: Account) = {
+  def validate(obj: Owned) = {
 
     dbTransaction { (em, tx) =>
 
       if (obj.uuid == null)
         throw new IllegalArgumentException("Unable to update an object without uuid")
 
-      val accountChecked = em.find(classOf[Account], account.uuid) match {
-        case null => throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
-        case a => a
-      }
-
       val objChecked = em.find(obj.getClass, obj.uuid)
       if (objChecked == null)
         throw new EntityNotFoundException("Unable to find conference with uuid = " + obj.uuid)
-
-      if (!objChecked.owners.toList.contains(accountChecked))
-        throw new IllegalAccessException("No permissions for object with uuid = " + obj.uuid)
 
       objChecked
     }
@@ -66,7 +70,10 @@ trait PermissionsBase extends DBUtil  {
         }
       }
 
-      val objChecked = validate(obj, account)
+      val objChecked = validate(obj)
+
+      if (!isAllowed(objChecked, account, modify=true))
+        throw new IllegalAccessException("No permissions for object with uuid = " + obj.uuid)
 
       objChecked.owners.toList.foreach { owner =>
         objChecked.owners.remove(owner)
@@ -90,6 +97,12 @@ trait PermissionsBase extends DBUtil  {
    * @param account    The account who wants to access permissions.
    */
   def getPermissions(obj: Owned, account: Account) : List[Account] = {
-    validate(obj, account).owners.toList
+
+    val objChecked = validate(obj)
+
+    if (!isAllowed(objChecked, account, modify=false))
+      throw new IllegalAccessException("No permissions for object with uuid = " + obj.uuid)
+
+    objChecked.owners.toList
   }
 }
