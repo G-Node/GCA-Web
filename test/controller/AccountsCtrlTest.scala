@@ -10,6 +10,10 @@ import scala.Some
 import play.api.libs.json.JsObject
 import utils.DefaultRoutesResolver._
 import play.api.Play
+import play.api.test.FakeApplication
+import play.api.libs.json.JsObject
+import play.api.mvc.Cookie
+import scala.Some
 
 /**
  * Test
@@ -37,6 +41,22 @@ class AccountsCtrlTest extends BaseCtrlTest {
     for (jconf <- contentAsJson(result).as[List[JsObject]])
       assert(assets.bob.uuid == formatter.reads(jconf).get.uuid)
   }
+
+
+  @Test
+  def testListAccounts() {
+    val reqNoAuth = FakeRequest(GET, "/api/user/list")
+
+    val reqNoAuthResult = route(AccountsCtrlTest.app, reqNoAuth).get
+    assert(status(reqNoAuthResult) == UNAUTHORIZED)
+
+    val reqAuth = reqNoAuth.withCookies(cookie)
+
+    val reqAuthResult = route(AccountsCtrlTest.app, reqAuth).get
+    assert(status(reqAuthResult) == OK)
+    assert(contentType(reqAuthResult) == Some("application/json"))
+  }
+
 }
 
 

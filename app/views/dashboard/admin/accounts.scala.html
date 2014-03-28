@@ -1,0 +1,41 @@
+@(account: Account)
+
+@template(Some(account), None, "Accounts") {
+
+    <script data-main="@routes.Assets.at("javascripts/adminAccounts.js")"
+                  src="@routes.Assets.at("javascripts/require.js")"></script>
+
+    <!-- Loading box -->
+    <div data-bind="if: message">
+            <!-- ko with: message -->
+        <div class="alert alert-info fade in out" data-bind="css: level">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h4 data-bind="text: message">Loading data</h4>
+            <p data-bind="html: desc">Please wait...</p>
+        </div>
+            <!-- /ko -->
+    </div>
+
+
+    <!-- Knockout non-flicker  -->
+    <div style="display: none" data-bind="visible: true">
+        <h5>Number of total accounts: <span data-bind="text: noAccounts"></span></h5>
+        <!-- The account table -->
+        <table class="table .table-condensed">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>uuid</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: accounts">
+                <tr>
+                    <td><span data-bind="text: mail"></span></td>
+                    <td><span data-bind="text: uuid"></span></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div> <!-- KO !flickerbox -->
+
+}

@@ -120,4 +120,11 @@ object Application extends Controller with GCAAuth {
     }
   }
 
+  def adminAccounts() = AuthenticatedAction { implicit request =>
+    if (!request.user.isAdmin) {
+      Unauthorized("Only site administrators are allowed!")
+    } else {
+      Ok(views.html.dashboard.admin.accounts(request.user))
+    }
+  }
 }

@@ -9,7 +9,6 @@ import javax.persistence.{Persistence, EntityManagerFactory}
 import securesocial.core.IdentityId
 import models.Account
 
-
 class UserStoreTest extends JUnitSuite with DBUtil {
 
   var emf: EntityManagerFactory = _
@@ -22,7 +21,8 @@ class UserStoreTest extends JUnitSuite with DBUtil {
     new IdentityId("Alice@foo.com", "userpass"), //test if email matching is case insensitive
     new IdentityId("BOB@bar.com", "userpass"),
     new IdentityId("EVE@EVIL.COM", "userpass"))
-  
+
+
   @Before
   def before() : Unit = {
     emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
@@ -32,6 +32,17 @@ class UserStoreTest extends JUnitSuite with DBUtil {
     store = new UserStore(UserStoreTest.app)
   }
 
+  @Test
+  def testList() {
+
+    val l = store.list()
+
+    assert(l.size == assets.accounts.size)
+
+    for(acc <- assets.accounts) {
+      assert(l.contains(acc))
+    }
+  }
 
   @Test
   def testFindById() {

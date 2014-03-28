@@ -15,6 +15,7 @@ import service.util.DBUtil
 import javax.persistence.{TypedQuery, Persistence, EntityManagerFactory}
 import models.Account
 import collection.JavaConversions._
+import javax.persistence.criteria.{CriteriaQuery, CriteriaBuilder}
 
 
 class UserStore(application: Application) extends UserServicePlugin(application) with DBUtil {
@@ -30,6 +31,16 @@ class UserStore(application: Application) extends UserServicePlugin(application)
       case 0 => None
       case 1 => Some(result.get(0))
       case _ => throw new RuntimeException("42. 31337. Should not happen!")
+    }
+  }
+
+  def list() : Seq[Account] = {
+    dbQuery { em =>
+      val builder = em.getCriteriaBuilder
+      val criteria = builder.createQuery(classOf[Account])
+      val query = em.createQuery(criteria)
+
+      asScalaBuffer(query.getResultList)
     }
   }
 

@@ -28,4 +28,14 @@ object Accounts extends Controller with GCAAuth {
       for (acc <- accounts) yield accountFormat.writes(acc)
     ))
   }
+
+  def listAccounts() = AuthenticatedAction(isREST = true) { request =>
+
+    if(! request.user.isAdmin) {
+      throw new IllegalAccessException("Need to be a site admin to obtain account list!")
+    }
+
+    val accounts = getUserStore.list()
+    Ok(Json.toJson(accounts))
+  }
 }
