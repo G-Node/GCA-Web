@@ -57,6 +57,10 @@ class Abstract extends Model with Owned {
   var affiliations: JSet[Affiliation] = new JTreeSet[Affiliation]()
   @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var references: JSet[Reference] = new JTreeSet[Reference]()
+
+  override def canRead(account: Account): Boolean = {
+    isOwner(account) || account.isAdmin || conference.isOwner(account)
+  }
 }
 
 

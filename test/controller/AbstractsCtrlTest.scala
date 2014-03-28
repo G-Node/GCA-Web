@@ -158,7 +158,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     assert(parseOwners(contentAsJson(response)).contains(assets.alice.uuid))
 
     val body = JsArray(for (acc <- List(assets.bob, assets.eve)) yield accountFormat.writes(acc))
-    val postR = FakeRequest(PUT, s"/api/abstracts/$abstrid/owners").withCookies(cookie).withJsonBody(body)
+    var postR = FakeRequest(PUT, s"/api/abstracts/$abstrid/owners").withCookies(cookie).withJsonBody(body)
     response = route(AbstractsCtrlTest.app, postR).get
 
     assert(status(response) == OK)
@@ -170,6 +170,17 @@ class AbstractsCtrlTest extends BaseCtrlTest {
 
     assert(status(response) == OK)
     assert(!parseOwners(contentAsJson(response)).contains(assets.alice.uuid))
+
+    val adminCookie = getCookie(assets.admin.identityId, "testtest")
+    getR = FakeRequest(GET, s"/api/abstracts/$abstrid/owners").withCookies(adminCookie)
+    response = route(AbstractsCtrlTest.app, getR).get
+
+    assert(status(response) == OK)
+
+    postR = FakeRequest(PUT, s"/api/abstracts/$abstrid/owners").withCookies(adminCookie).withJsonBody(body)
+    response = route(AbstractsCtrlTest.app, postR).get
+
+    assert(status(response) == FORBIDDEN)
   }
 
 }

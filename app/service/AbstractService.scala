@@ -11,7 +11,7 @@ package service
 
 import models._
 import javax.persistence.{EntityNotFoundException, TypedQuery, Persistence, EntityManagerFactory}
-import service.util.{PermissionsBase, DBUtil}
+import service.util.PermissionsBase
 import scala.collection.JavaConversions._
 import java.io.File
 import play.Play
