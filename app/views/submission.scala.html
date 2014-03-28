@@ -231,7 +231,7 @@
                                         <td>
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doEditRemoveAffiliationFromAuthor.bind($root, $index(), author)">
+                                                        data-bind="click: $root.doEditRemoveAffiliationFromAuthor.bind($root, $parentContext.$index, author)">
                                                     Remove
                                                     <span class="glyphicon glyphicon-user"></span>
                                                 </button>

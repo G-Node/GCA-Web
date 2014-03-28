@@ -518,6 +518,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models,
          * @param author        The author from which to remove the affiliation.
          */
         self.doEditRemoveAffiliationFromAuthor = function(index, author) {
+            index = index();
             var positions = author.affiliations(),
                 removePos = positions.indexOf(index);
 
