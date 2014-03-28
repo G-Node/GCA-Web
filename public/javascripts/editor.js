@@ -1,4 +1,4 @@
-require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
+require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models, tools, msg, validate) {
     "use strict";
 
     /**
@@ -320,6 +320,12 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
                 abstract = self.abstract();
             }
 
+            var result = validate.abstract(abstract)
+
+            if (result.hasErrors()) {
+                self.setError("Error", "Unable to save abstract: " + result.errors[0]);
+            }
+
             if (self.isAbstractSaved()) {
 
                 $.ajax({
@@ -361,13 +367,21 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
                 if (hasNoFig && hasFigData) {
                     self.figureUpload(successFig);
                 } else {
-                    self.setOk("Ok", "Abstract saved.", true);
+                    if (result.hasWarnings()) {
+                        self.setInfo("Note", "The abstract was saved but still has issues: " + result.warnings[0]);
+                    } else {
+                        self.setOk("Ok", "Abstract saved.", true);
+                    }
                 }
             }
 
             function successFig() {
                 self.requestAbstract(self.abstract().uuid);
-                self.setOk("Ok", "Abstract and figure saved.", true);
+                if (result.hasWarnings()) {
+                    self.setInfo("Note", "The abstract and figure was saved but still has issues: " + result.warnings[0]);
+                } else {
+                    self.setOk("Ok", "Abstract and figure saved.", true);
+                }
             }
 
             function fail() {
@@ -404,9 +418,18 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
 
 
         self.doEndEdit = function() {
+
             if (self.isAbstractSaved()) {
                 self.doSaveAbstract(self.editedAbstract())
             } else {
+                var result = validate.abstract(self.editedAbstract());
+                if (result.hasErrors()) {
+                    self.setWarning("Warning", result.errors[0]);
+                } else if (result.hasWarnings()) {
+                    self.setInfo("Note", result.warnings[0]);
+                } else {
+                    self.clearMessage();
+                }
                 self.abstract(self.editedAbstract());
             }
 
