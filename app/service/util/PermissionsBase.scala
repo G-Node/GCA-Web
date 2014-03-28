@@ -7,23 +7,6 @@ import collection.JavaConversions._
 trait PermissionsBase extends DBUtil  {
 
   /**
-   * Validates, that given:
-   * - account owns the object if modify = true.
-   * - account is admin or an owner of the object if modify if false.
-   *
-   * Returns true/false.
-   *
-   * @param obj The Owned-type object to check.
-   * @param account    The account who wants to (later) update the object.
-   */
-  def isAllowed(obj: Owned, account: Account, modify: Boolean): Boolean = {
-    if (modify)
-      obj.isOwner(account)
-    else
-      obj.isOwner(account) || account.isAdmin
-  }
-
-  /**
    * Validates, that given object has uuid and is real
    *
    * Returns the refreshed object from the database.
@@ -72,7 +55,7 @@ trait PermissionsBase extends DBUtil  {
 
       val objChecked = validate(obj)
 
-      if (!isAllowed(objChecked, account, modify=true))
+      if (!objChecked.canWrite(account))
         throw new IllegalAccessException("No permissions for object with uuid = " + obj.uuid)
 
       objChecked.owners.toList.foreach { owner =>
@@ -100,7 +83,7 @@ trait PermissionsBase extends DBUtil  {
 
     val objChecked = validate(obj)
 
-    if (!isAllowed(objChecked, account, modify=false))
+    if (!objChecked.canRead(account))
       throw new IllegalAccessException("No permissions for object with uuid = " + obj.uuid)
 
     objChecked.owners.toList

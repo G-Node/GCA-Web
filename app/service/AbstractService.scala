@@ -405,23 +405,6 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
       abstr.stateLog.toSeq.sortWith (_.timestamp.getMillis > _.timestamp.getMillis)
     }
   }
-
-  /**
-   * Extends the subclassed isAllowed method by adding conference
-   * owners access to related abstracts
-   */
-  override def isAllowed(obj: Owned, account: Account, modify: Boolean): Boolean = {
-    obj match {
-      case a: Abstract =>
-
-        if (modify)
-          a.isOwner(account)
-        else
-          a.isOwner(account) || account.isAdmin || a.conference.isOwner(account)
-
-      case _ => throw new IllegalArgumentException("Invalid object to check for permissions")
-    }
-  }
 }
 
 
