@@ -1,11 +1,11 @@
 require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
     "use strict";
 
-    function adminAccountsViewModel() {
+    function AdminAccountsViewModel() {
 
 
-        if (!(this instanceof adminAccountsViewModel)) {
-            return new adminAccountsViewModel();
+        if (!(this instanceof AdminAccountsViewModel)) {
+            return new AdminAccountsViewModel();
         }
 
         var self = tools.inherit(this, msg.MessageVM);
@@ -37,7 +37,7 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
     // the show begins
     $(document).ready(function() {
 
-        window.dashboard = adminAccountsViewModel();
+        window.dashboard = AdminAccountsViewModel();
         window.dashboard.init();
     });
 
