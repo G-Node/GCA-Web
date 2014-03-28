@@ -258,7 +258,6 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
       em.remove(confChecked)
     }
   }
-
 }
 
 
