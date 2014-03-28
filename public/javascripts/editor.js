@@ -446,6 +446,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models,
 
 
         self.doEditRemoveAuthor = function(index) {
+            index = index();
             var authors = self.editedAbstract().authors();
             authors.splice(index, 1);
             self.editedAbstract().authors(authors);
@@ -459,6 +460,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models,
 
 
         self.doEditRemoveAffiliation = function(index) {
+            index = index();
             var affiliations = self.editedAbstract().affiliations(),
                 authors = self.editedAbstract().authors();
 
@@ -487,6 +489,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models,
          * @param index   The index of the affiliation that is added to the author.
          */
         self.doEditAddAuthorToAffiliation = function(index) {
+            index = index();
             var authorIndex = $("#author-select-" + index).find("select").val(),
                 authors = self.editedAbstract().authors();
 
@@ -532,6 +535,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models,
 
 
         self.doEditRemoveReference = function(index) {
+            index = index();
             var references = self.editedAbstract().references();
 
             references.splice(index, 1);
