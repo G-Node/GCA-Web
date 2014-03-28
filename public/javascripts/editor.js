@@ -114,35 +114,6 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models,
         );
 
 
-        self.isChangeOk = ko.computed(
-            function() {
-                var saved = self.isAbstractSaved(),
-                    oldState = self.originalState(),
-                    newState = self.abstract() ? self.abstract().state() : null,
-                    isOk = false;
-
-                if (!saved) {
-                    isOk = (newState === 'InPreparation' || newState === 'Submitted');
-                } else {
-                    switch(oldState) {
-                        case 'InPreparation':
-                            isOk = (newState === 'InPreparation' || newState === 'Submitted');
-                            break;
-                        case 'Submitted':
-                            isOk = (newState === 'Withdrawn');
-                            break;
-                        case 'Withdrawn':
-                            isOk = (newState === 'InPreparation');
-                            break;
-                    }
-                }
-
-                return isOk;
-            },
-            self
-        );
-
-
         self.init = function() {
 
             if (confId) {
@@ -158,6 +129,35 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models,
 
             ko.applyBindings(window.editor);
             MathJax.Hub.Configured(); //start MathJax
+        };
+
+
+        self.isChangeOk = function(abstract) {
+
+            abstract = abstract || self.abstract()
+
+            var saved = self.isAbstractSaved(),
+                oldState = self.originalState(),
+                newState = abstract ? abstract.state() : null,
+                isOk = false;
+
+            if (!saved) {
+                isOk = (newState === 'InPreparation' || newState === 'Submitted');
+            } else {
+                switch(oldState) {
+                    case 'InPreparation':
+                        isOk = (newState === 'InPreparation' || newState === 'Submitted');
+                        break;
+                    case 'Submitted':
+                        isOk = (newState === 'Withdrawn');
+                        break;
+                    case 'Withdrawn':
+                        isOk = (newState === 'InPreparation');
+                        break;
+                }
+            }
+
+            return isOk;
         };
 
 
@@ -311,19 +311,20 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models,
 
         self.doSaveAbstract = function(abstract) {
 
-            if (! self.isChangeOk()) {
-                self.setError("Error", "Unable to save abstract: illegal state");
-                return;
-            }
-
             if (! (abstract instanceof models.ObservableAbstract)) {
                 abstract = self.abstract();
+            }
+
+            if (! self.isChangeOk(abstract)) {
+                self.setError("Error", "Unable to save abstract: illegal state");
+                return;
             }
 
             var result = validate.abstract(abstract)
 
             if (result.hasErrors()) {
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
+                return;
             }
 
             if (self.isAbstractSaved()) {
