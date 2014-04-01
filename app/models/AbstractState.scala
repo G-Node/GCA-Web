@@ -4,7 +4,7 @@ import javax.persistence.{Converter, AttributeConverter}
 
 object AbstractState extends Enumeration {
   type State = Value
-  val InPreparation, Submitted, InReview, Accepted, Rejected, Published, Withdrawn, Deleted = Value
+  val InPreparation, Submitted, InReview, Accepted, Rejected, Published, Withdrawn, InRevision = Value
 }
 
 @Converter
