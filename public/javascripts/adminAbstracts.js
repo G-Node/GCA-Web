@@ -25,6 +25,7 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
 
         //state related things
         self.stateHelper = new astate.StateChangeHelper();
+        self.selectedAbstract = ko.observable(null);
 
         self.init = function() {
             self.ensureData();
@@ -49,16 +50,21 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
 
 
         //helper functions
-        self.makeAbstractLink = function(abstract, conference) {
+        self.makeAbstractLink = function(abstract) {
             return "/myabstracts/" + abstract.uuid + "/edit";
         };
 
-        self.setState = function(abstract, state) {
+        self.setState = function(abstract, state, note) {
             var oldState = abstract.state();
+
+            var data = {state: state};
+            if (note) {
+                data.note = note;
+            }
 
             abstract.state("Saving...");
             $.ajax("/api/abstracts/" + abstract.uuid + '/state', {
-                data: JSON.stringify({state: state, note: ""}),
+                data: JSON.stringify(data),
                 type: "PUT",
                 contentType: "application/json",
                 success: function(result) {
@@ -69,6 +75,20 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
                     self.setError("danger", "Error while updating the state", error);
                 }
             });
+        };
+
+        self.beginStateChange = function(abstract) {
+            $('#note').val(""); //reset the message box
+            $('#state-dialog').modal('show');
+            self.selectedAbstract(abstract);
+        };
+
+        self.finishStateChange = function() {
+            var note = $('#note').val();
+            var state = $('#state-dialog').find('select').val();
+
+            self.setState(self.selectedAbstract(), state, note);
+            self.selectedAbstract();
         };
 
         self.mkAuthorList = function(abstract) {
