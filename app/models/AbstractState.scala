@@ -23,6 +23,24 @@ object AbstractState extends Enumeration {
                         Accepted   -> (InRevision :: Withdrawn :: Nil),
                         Rejected   -> (InRevision :: Withdrawn :: Nil),
                         InRevision -> (InReview :: Nil))
+
+  implicit class StateMethods(from: Value) {
+    def canTransitionTo(to: Value, isAdmin: Boolean, isOpen: Boolean): Boolean = {
+
+      val transitionMap = (isAdmin, isOpen) match {
+        case (false, true)  => ownerStates.get("isOpen")
+        case (false, false) => ownerStates.get("isClosed")
+        case (true,  _)     => Some(adminStates)
+      }
+
+      val canTransition = for {
+        theMap <- transitionMap
+        possibleStates <- theMap.get(from)
+      } yield possibleStates.contains(to)
+
+      canTransition.getOrElse(false)
+    }
+  }
 }
 
 @Converter
