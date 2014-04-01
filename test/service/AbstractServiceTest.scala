@@ -195,6 +195,28 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
     assert(state.size > 0)
     assert(state.exists(p => p.state == AbstractState.InPreparation))
   }
+
+  @Test
+  def testSetState() {
+    val abstr = assets.abstracts(0)
+    val oldState = abstr.state
+
+    val stateLog = srv.setState(abstr, AbstractState.Accepted, assets.alice, Some("ServiceTest: Abstract accepted"))
+    assert(stateLog.head.state == AbstractState.Accepted)
+
+    val statesFromService = srv.listStates(abstr.uuid, assets.alice)
+    assert(statesFromService.length == stateLog.length)
+
+    //both must be sorted and contain the same entries
+    for ((a, b) <- statesFromService.zip(stateLog)) {
+      assert(a.uuid == b.uuid)
+    }
+
+    //Set abstract back to old state
+    srv.setState(abstr, oldState, assets.alice, Some("ServiceTest: Abstract published again"))
+
+  }
+
 }
 
 
