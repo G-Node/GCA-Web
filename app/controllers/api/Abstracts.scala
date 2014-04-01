@@ -6,9 +6,11 @@ import service._
 import utils.serializer.{StateLogWrites, AccountFormat, AbstractFormat}
 import play.api.libs.json.{JsArray, JsObject, Json}
 import utils.GCAAuth
-import models.Abstract
+import models.{StateLogEntry, AbstractState, Abstract}
 import utils.DefaultRoutesResolver._
 import org.joda.time.format.DateTimeFormat
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 /**
  * Abstracts controller.
@@ -203,5 +205,37 @@ object Abstracts extends Controller with  GCAAuth {
     implicit val logWrites = new StateLogWrites()
     val srv = AbstractService()
     Ok(Json.toJson(srv.listStates(id, request.user)))
+  }
+
+
+  def setState(id: String) = AuthenticatedAction(parse.json, isREST = true) { request =>
+    implicit val logWrites = new StateLogWrites()
+    val changeReads = ((__ \ "state").read[String] and (__ \ "note").readNullable[String]).tupled
+
+    val account = request.user
+    val srv = AbstractService()
+    val abstr = srv.getOwn(id, account) // TODO: will not work for admin (GitHub issue, #155)
+    val conference = abstr.conference
+
+    val (toState, msg): (AbstractState.State, Option[String]) = changeReads.reads(request.body).fold (
+      invalid = {errors => throw new IllegalArgumentException("Invalid state change object") },
+      valid = { case(s, m) => (AbstractState.withName(s), m) }
+    )
+
+    val fromState = abstr.state
+
+    val isAdmin = account.isAdmin || conference.owners.contains(account)
+    val isOwner = abstr.isOwner(account)
+
+    val canTransitionAdmin = isAdmin && fromState.canTransitionTo(toState, isAdmin=true, conference.isOpen)
+    val canTransitionOwner = isOwner && fromState.canTransitionTo(toState, isAdmin=false, conference.isOpen)
+
+    if (!(canTransitionAdmin || canTransitionOwner)) {
+      throw new IllegalAccessException(s"No permission to set state to $toState")
+    }
+
+    val stateLog = srv.setState(abstr, toState, account, msg)
+
+    Ok(Json.toJson(stateLog))
   }
 }
