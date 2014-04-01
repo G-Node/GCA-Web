@@ -41,12 +41,22 @@
                 <tr>
                     <td><span data-bind="text: $root.mkAuthorList($data)"></span></td>
                     <td><b><span data-bind="text: title"> </span></b></td>
-                    <td><span class="badge" data-bind="text: state"></span></td>
+                    <td><div class="dropdown">
+                        <button id="statemenu" type="button" class="btn btn-xs btn-default dropdown-toggle"
+                                data-toggle="dropdown" data-bind="enable: possibleStates().length">
+                            <span data-bind="text: state"></span> <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="statemenu" >
+                            <!-- ko foreach: possibleStates -->
+                            <li><a href="#" data-bind="text: $data, click: $root.setState.bind($root, $parent, $data)"></a></li>
+                            <!-- /ko -->
+                        </ul>
+                    </div></td>
+
                     <td><a class="btn btn-xs btn-danger" data-bind="attr: { href: $root.makeAbstractLink($data, $parent) }">Edit</a></td>
                 </tr>
             </tbody>
         </table>
 
     </div> <!-- KO !flickerbox -->
-
 }
