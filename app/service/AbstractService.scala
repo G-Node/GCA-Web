@@ -152,21 +152,21 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
   }
 
   /**
-   * Return an abstract with a certain id, that is owned by an account.
-   * The abstract doesnt need to be published if the account is an owner
-   * of the abstract.
+   * Return an abstract with a certain id, that is accessible for an account.
+   * The abstract doesnt need to be published if the account has appropriate
+   * access.
    *
    * @param id      The id of the abstract.
    * @param account The account who wants to request the abstract.
    *
    * @return The abstract with the specified id.
    *
-   * @throws EntityNotFoundException If the account does not exist.
-   *
-   * @throws NoResultException If the conference was not found
+   * @throws EntityNotFoundException If the account does not exist
+   * @throws IllegalAccessException if not accessible
+   * @throws NoResultException If was not found
    */
   def getOwn(id: String, account: Account) : Abstract = {
-    dbQuery { em =>
+    val abstr = dbQuery { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
            LEFT JOIN FETCH a.owners o
@@ -176,17 +176,21 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
            LEFT JOIN       c.owners co
            LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
-           WHERE (o.uuid = :owneruuid OR co.uuid = :owneruuid) AND a.uuid = :uuid"""
+           WHERE a.uuid = :uuid"""
 
       val accountChecked = em.find(classOf[Account], account.uuid)
       if (accountChecked == null)
         throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
 
       val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
-      query.setParameter("owneruuid", account.uuid)
       query.setParameter("uuid", id)
       query.getSingleResult
     }
+
+    if (!(abstr.isOwner(account) || abstr.conference.isOwner(account) || account.isAdmin))
+      throw new IllegalAccessException("No permissions for abstract with uuid = " + abstr.uuid)
+
+    abstr
   }
 
   /**
