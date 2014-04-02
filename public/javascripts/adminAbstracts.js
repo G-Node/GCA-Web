@@ -1,4 +1,4 @@
-require(["lib/models", "lib/tools"], function(models, tools) {
+require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astate) {
     "use strict";
 
 
@@ -17,10 +17,15 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         }
 
         var self = this;
+
         self.message = ko.observable(null);
         self.abstractsData = null;
         self.conference = ko.observable(null);
         self.abstracts = ko.observableArray(null);
+
+        //state related things
+        self.stateHelper = new astate.StateChangeHelper();
+        self.selectedAbstract = ko.observable(null);
 
         self.init = function() {
             self.ensureData();
@@ -45,8 +50,45 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
 
         //helper functions
-        self.makeAbstractLink = function(abstract, conference) {
+        self.makeAbstractLink = function(abstract) {
             return "/myabstracts/" + abstract.uuid + "/edit";
+        };
+
+        self.setState = function(abstract, state, note) {
+            var oldState = abstract.state();
+
+            var data = {state: state};
+            if (note) {
+                data.note = note;
+            }
+
+            abstract.state("Saving...");
+            $.ajax("/api/abstracts/" + abstract.uuid + '/state', {
+                data: JSON.stringify(data),
+                type: "PUT",
+                contentType: "application/json",
+                success: function(result) {
+                    abstract.state(state);
+                },
+                error: function(jqxhr, textStatus, error) {
+                    abstract.state(oldState);
+                    self.setError("danger", "Error while updating the state", error);
+                }
+            });
+        };
+
+        self.beginStateChange = function(abstract) {
+            $('#note').val(""); //reset the message box
+            $('#state-dialog').modal('show');
+            self.selectedAbstract(abstract);
+        };
+
+        self.finishStateChange = function() {
+            var note = $('#note').val();
+            var state = $('#state-dialog').find('select').val();
+
+            self.setState(self.selectedAbstract(), state, note);
+            self.selectedAbstract();
         };
 
         self.mkAuthorList = function(abstract) {
@@ -94,6 +136,21 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             //abstract data
             function onAbstractData(absArray) {
                 var absList = models.Abstract.fromArray(absArray);
+
+                absList.forEach(function (abstr) {
+
+                    abstr.makeObservable('state');
+                    abstr.possibleStates = ko.computed(function() {
+                        var fromState = abstr.state();
+
+                        if (fromState === 'Saving...') {
+                            return [];
+                        }
+
+                        return self.stateHelper.getPossibleStatesFor(fromState, true, self.conference().isOpen);
+                    });
+                });
+
                 self.abstractsData = absList;
                 self.abstracts(absList);
 

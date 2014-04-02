@@ -41,12 +41,67 @@
                 <tr>
                     <td><span data-bind="text: $root.mkAuthorList($data)"></span></td>
                     <td><b><span data-bind="text: title"> </span></b></td>
-                    <td><span class="badge" data-bind="text: state"></span></td>
-                    <td><a class="btn btn-xs btn-danger" data-bind="attr: { href: $root.makeAbstractLink($data, $parent) }">Edit</a></td>
+                    <td><div class="dropdown">
+                        <button id="statemenu" type="button" class="btn btn-xs btn-default dropdown-toggle"
+                                data-toggle="dropdown" data-bind="enable: possibleStates().length">
+                            <span data-bind="text: state"></span> <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="statemenu" >
+
+                            <li><a data-bind="click: $root.beginStateChange.bind($root, $data)">Set with note...</a></li>
+                            <li class="divider"></li>
+
+                            <!-- ko foreach: possibleStates -->
+                            <li><a href="#" data-bind="text: $data, click: $root.setState.bind($root, $parent, $data)"></a></li>
+                            <!-- /ko -->
+
+                        </ul>
+                    </div></td>
+
+                    <td><a class="btn btn-xs btn-danger" data-bind="attr: { href: $root.makeAbstractLink($data) }">Edit</a></td>
                 </tr>
             </tbody>
         </table>
 
-    </div> <!-- KO !flickerbox -->
+        <!-- Dialog for state change note -->
+        <div class="modal" id="state-dialog" tabindex="-1" data-bind="with: selectedAbstract">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Change abstract state</h3>
+                    </div>
 
+                    <div class="modal-body">
+                        <div>
+                            <span data-bind="text: $root.mkAuthorList($data)"></span>
+                            <br>
+                            <b><span data-bind="text: title"> </span></b>
+                        </div>
+                        <hr>
+                        <label for="oldState">Old state:</label>
+                        <input class="form-control" type="text" readonly data-bind="value: state" id="oldState">
+
+                        <label for="state-dialog-states">New state:</label>
+                        <select id="state-dialog-states" class="form-control" data-bind="foreach: possibleStates()">
+                            <option data-bind="value: $data, text: $data"></option>
+                        </select>
+
+                        <label for="note">Message:</label>
+                        <textarea class="form-control" id="note" cols="80" rows="3"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal"
+                                data-bind="click: $root.finishStateChange">
+                            Set state!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- KO !flickerbox -->
 }

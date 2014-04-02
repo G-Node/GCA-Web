@@ -405,6 +405,19 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
       abstr.stateLog.toSeq.sortWith (_.timestamp.getMillis > _.timestamp.getMillis)
     }
   }
+
+  def setState(abstr: Abstract, state: AbstractState.State, editor: Account, message: Option[String]) = {
+    dbTransaction { (em, tx) =>
+      val logEntry = StateLogEntry(abstr, state, editor, message)
+
+      abstr.state = state
+      abstr.stateLog.add(logEntry)
+
+      val merged = em.merge(abstr)
+      merged.stateLog.toSeq.sortWith(_.timestamp.getMillis > _.timestamp.getMillis)
+    }
+  }
+
 }
 
 
