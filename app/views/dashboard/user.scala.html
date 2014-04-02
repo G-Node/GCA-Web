@@ -41,7 +41,7 @@
                     <span data-bind="text: cite"></span>
                 </div>
                 <ul id="abstract-list" class="list-group" data-bind="foreach: abstracts">
-                    <a data-bind="attr: { href: $root.makeAbstractLink($data, $parent) }">
+                    <a data-bind="attr: { href: viewEditCtx().link }">
                         <li id="abstract-list-item" class="list-group-item abstract">
                             <span data-bind="text: title"> </span>
                             <span class="badge" data-bind="text: state"></span>
