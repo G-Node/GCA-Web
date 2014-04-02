@@ -24,7 +24,7 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
         self.abstracts = ko.observableArray(null);
 
         //state related things
-        self.stateHelper = new astate.StateChangeHelper();
+        self.stateHelper = astate.changeHelper;
         self.selectedAbstract = ko.observable(null);
 
         self.init = function() {
@@ -136,7 +136,6 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
             //abstract data
             function onAbstractData(absArray) {
                 var absList = models.Abstract.fromArray(absArray);
-
 
                 absList.forEach(function (abstr) {
 

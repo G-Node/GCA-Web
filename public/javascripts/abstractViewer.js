@@ -1,12 +1,5 @@
-require.config({
-    baseUrl: '/assets/javascripts/',
-    paths: {
-        'moment': ['//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min']
-    },
-    noGlobal: true
-});
 
-require(["lib/models", "lib/tools", "lib/msg", "moment"], function(models, tools, msg, moment) {
+require(["lib/models", "lib/tools", "lib/msg", "lib/astate"], function(models, tools, msg, astate) {
     "use strict";
 
     function AbstractViewerViewModel(confId, abstrId, isAdmin, isOwner) {
@@ -51,11 +44,7 @@ require(["lib/models", "lib/tools", "lib/msg", "moment"], function(models, tools
             }
 
             function onLogData(logData) {
-
-                logData.forEach(function (elm){
-                    elm.formattedDate = moment(elm.timestamp).format('MMMM Do YYYY, HH:mm');
-                });
-
+                astate.logHelper.formatDate(logData);
                 self.stateLog(logData);
                 self.isLoading(false);
             }
