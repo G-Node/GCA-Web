@@ -1,0 +1,56 @@
+@(account: Option[Account], conference: Conference, abstr: Abstract)
+
+@template(account, Some(conference), "Abstract") {
+
+    <div class="hidden-data">
+        <div id="conference-uuid">@conference.uuid</div>
+        <div id="abstract-uuid">@abstr.uuid</div>
+        <div id="is-admin">@account.exists(account => account.isAdmin || abstr.conference.isOwner(account))</div>
+        <div id="is-owner">@account.exists(account => abstr.isOwner(account) )</div>
+    </div>
+
+    <script data-main="@routes.Assets.at("javascripts/abstractViewer.js")"
+                  src="@routes.Assets.at("javascripts/require.js")"></script>
+
+    <!-- Loading box -->
+    <div data-bind="if: message">
+            <!-- ko with: message -->
+        <div class="alert alert-info fade in out" data-bind="css: level">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h4 data-bind="text: message">Loading data</h4>
+            <p data-bind="html: desc">Please wait...</p>
+        </div>
+            <!-- /ko -->
+    </div>
+
+    <!-- Knockout non-flicker  -->
+    <div style="display: none" data-bind="visible: true">
+
+    @components.singleabstract("selectedAbstract"){ <!-- header --> }{  <!-- footer --> }
+
+    <hr>
+    <p class="lead">State Log</p>
+    <div data-bind="if: stateLog">
+        <table class="table .table-condensed">
+            <tr>
+                <th>Date</th>
+                <th>State</th>
+                <th>Message</th>
+                <th>Editor</th>
+            </tr>
+            <tbody data-bind="foreach: stateLog">
+            <tr>
+                <td> <span data-bind="text: formattedDate"></span></td>
+                <td> <span data-bind="text: state"></span></td>
+                <td> <span data-bind="text: note"></span></td>
+                <td> <span data-bind="text: editor"></span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    </div> <!-- KO !flickerbox -->
+
+}
+
+
