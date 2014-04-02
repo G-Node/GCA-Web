@@ -28,26 +28,10 @@
 
     @components.singleabstract("selectedAbstract"){ <!-- header --> }{  <!-- footer --> }
 
-    <hr>
-    <p class="lead">State Log</p>
-    <div data-bind="if: stateLog">
-        <table class="table .table-condensed">
-            <tr>
-                <th>Date</th>
-                <th>State</th>
-                <th>Message</th>
-                <th>Editor</th>
-            </tr>
-            <tbody data-bind="foreach: stateLog">
-            <tr>
-                <td> <span data-bind="text: formattedDate"></span></td>
-                <td> <span data-bind="text: state"></span></td>
-                <td> <span data-bind="text: note"></span></td>
-                <td> <span data-bind="text: editor"></span></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+    @components.statelog("stateLog") {
+        <hr>
+        <p class="lead">State Log</p>
+    }
 
     </div> <!-- KO !flickerbox -->
 
