@@ -79,6 +79,8 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
   def testGetOwn() : Unit = {
     srv.getOwn(assets.abstracts(0).uuid, assets.alice)
 
+    srv.getOwn(assets.abstracts(0).uuid, assets.admin)
+
     intercept[EntityNotFoundException] {
       srv.getOwn(
         assets.abstracts(0).uuid,
@@ -87,6 +89,10 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
     }
 
     intercept[NoResultException] {
+      srv.getOwn("NONEXISTENT", assets.eve)
+    }
+
+    intercept[IllegalAccessException] {
       srv.getOwn(assets.abstracts(1).uuid, assets.eve)
     }
   }
