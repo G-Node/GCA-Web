@@ -127,4 +127,16 @@ object Application extends Controller with GCAAuth {
       Ok(views.html.dashboard.admin.accounts(request.user))
     }
   }
+
+
+  def viewAbstract(id: String) = AccountAwareAction { request =>
+    val abstrService = AbstractService()
+    val abstr = request.user match {
+      case Some(account) => abstrService.getOwn(id, account)
+      case _             => abstrService.get(id)
+    }
+
+    Ok(views.html.abstractviewer(request.user, abstr.conference, abstr))
+  }
+
 }

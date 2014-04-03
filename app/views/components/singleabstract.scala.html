@@ -1,0 +1,42 @@
+@(koAbstractName: String)(header: Html)(footer: Html)
+
+<!-- The abstract viewer -->
+<div id="abstract" data-bind="with: @koAbstractName">
+
+    @header
+
+    <div class="title">
+        <h2 data-bind="text: title"></h2>
+    </div>
+
+    <div class="authors">
+        <ul data-bind="foreach: authors">
+            <li><span data-bind="text: formatName()"></span><sup data-bind="text: formatAffiliations()"></sup></li>
+        </ul>
+    </div>
+
+    <div class="affiliations">
+        <ol data-bind="foreach: affiliations">
+            <li><span data-bind="text: format()"></span></li>
+        </ol>
+    </div>
+
+    <div class="abstract-text" data-bind="foreach: paragraphs()">
+        <p data-bind="text: $data"></p>
+    </div>
+
+    <div class="acknowledgements">
+        <h4>Acknowledgements</h4>
+        <p data-bind="text: acknowledgements"></p>
+    </div>
+
+    <div class="references">
+        <h4>References</h4>
+        <ol data-bind="foreach: references">
+            <li data-bind="html: $data.format()"></li>
+        </ol>
+    </div>
+
+    @footer
+
+</div>

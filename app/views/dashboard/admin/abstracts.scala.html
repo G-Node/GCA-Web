@@ -41,24 +41,27 @@
                 <tr>
                     <td><span data-bind="text: $root.mkAuthorList($data)"></span></td>
                     <td><b><span data-bind="text: title"> </span></b></td>
-                    <td><div class="dropdown">
-                        <button id="statemenu" type="button" class="btn btn-xs btn-default dropdown-toggle"
-                                data-toggle="dropdown" data-bind="enable: possibleStates().length">
-                            <span data-bind="text: state"></span> <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu" aria-labelledby="statemenu" >
+                    <td>
+                        <div class="dropdown">
+                            <button id="statemenu" type="button" class="btn btn-xs btn-default dropdown-toggle"
+                                    data-toggle="dropdown" data-bind="enable: possibleStates().length">
+                                <span data-bind="text: state"></span> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="statemenu" >
 
-                            <li><a data-bind="click: $root.beginStateChange.bind($root, $data)">Set with note...</a></li>
-                            <li class="divider"></li>
+                                <li><a data-bind="click: $root.beginStateChange.bind($root, $data)">Set with note...</a></li>
+                                <li class="divider"></li>
 
-                            <!-- ko foreach: possibleStates -->
-                            <li><a href="#" data-bind="text: $data, click: $root.setState.bind($root, $parent, $data)"></a></li>
-                            <!-- /ko -->
+                                <!-- ko foreach: possibleStates -->
+                                <li><a href="#" data-bind="text: $data, click: $root.setState.bind($root, $parent, $data, null)"></a></li>
+                                <!-- /ko -->
 
-                        </ul>
-                    </div></td>
-
-                    <td><a class="btn btn-xs btn-danger" data-bind="attr: { href: $root.makeAbstractLink($data) }">Edit</a></td>
+                            </ul>
+                        </div>
+                    </td>
+                    <td data-bind="with: viewEditCtx">
+                        <a class="btn btn-xs" data-bind="attr: { href: link }, css: btn, text: label"></a>
+                    </td>
                 </tr>
             </tbody>
         </table>

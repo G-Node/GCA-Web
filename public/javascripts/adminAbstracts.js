@@ -24,7 +24,7 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
         self.abstracts = ko.observableArray(null);
 
         //state related things
-        self.stateHelper = new astate.StateChangeHelper();
+        self.stateHelper = astate.changeHelper;
         self.selectedAbstract = ko.observable(null);
 
         self.init = function() {
@@ -139,8 +139,8 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
 
                 absList.forEach(function (abstr) {
 
-                    abstr.makeObservable('state');
-                    abstr.possibleStates = ko.computed(function() {
+                    abstr.makeObservable(['state']);
+                    abstr.possibleStates = ko.computed(function () {
                         var fromState = abstr.state();
 
                         if (fromState === 'Saving...') {
@@ -148,6 +148,18 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
                         }
 
                         return self.stateHelper.getPossibleStatesFor(fromState, true, self.conference().isOpen);
+                    });
+
+                    abstr.viewEditCtx = ko.computed(function () {
+                        //only time that admins can make changes is in the InRevision state
+                        var canEdit = abstr.state() == "InRevision";
+
+                        return {
+                            link: canEdit ? "/myabstracts/" + abstr.uuid + "/edit" : "/abstracts/" + abstr.uuid,
+                            label: canEdit ? "Edit" : "View",
+                            btn: canEdit ? "btn-danger" : "btn-primary"
+                        };
+
                     });
                 });
 

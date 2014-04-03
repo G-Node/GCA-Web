@@ -77,8 +77,24 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
             function onAbstractData(currentConf) {
                 return function (abstractList) {
-                    var abs = models.Abstract.fromArray(abstractList);
-                    currentConf.abstracts(abs);
+                    var absList = models.Abstract.fromArray(abstractList);
+
+                    absList.forEach(function(abstr) {
+
+                        abstr.viewEditCtx = ko.computed(function() {
+                            var confIsOpen = currentConf.isOpen;
+                            var canEdit = abstr.state == "InRevision" ||
+                                (confIsOpen && (abstr.state == "InPreparation" || abstr.state == "Submitted"));
+
+                            return {
+                                link: canEdit ? "/myabstracts/" + abstr.uuid + "/edit" : "/abstracts/" + abstr.uuid,
+                                label: canEdit ? "Edit" : "View",
+                                btn: canEdit ? "btn-danger" : "btn-primary"
+                            };
+                        });
+                    });
+
+                    currentConf.abstracts(absList);
                 }
             }
         };

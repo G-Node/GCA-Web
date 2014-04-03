@@ -1,12 +1,21 @@
+require.config({
+    baseUrl: '/assets/javascripts/',
+    paths: {
+        'moment': ['//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min']
+    },
+    noGlobal: true
+});
+
 /**
- * Module for state changes
+ * Module for state related things
  * @module {lib/astate}
  */
-define(["lib/tools"], function(tools) {
+define(["lib/tools", "moment"], function(tools, moment) {
+    "use strict";
 
     function StateChangeHelper() {
 
-        if (tools.isGlobalOrUndefined(this)) {
+        if (! (this instanceof StateChangeHelper)) {
             return new StateChangeHelper();
         }
 
@@ -57,11 +66,27 @@ define(["lib/tools"], function(tools) {
             var possibleStates = self.getPossibleStatesFor(fromState, isAdmin, isClosed);
             return toState in possibleStates;
         };
-
     }
 
+    function StateLogHelper() {
+
+        if (tools.isGlobalOrUndefined(this)) {
+            return new StateLogHelper();
+        }
+
+        var self = this;
+
+        self.formatDate = function(stateLog) {
+            stateLog.forEach(function (elm) {
+                elm.formattedDate = moment(elm.timestamp).calendar();
+            });
+        }
+    }
+
+
     return {
-        StateChangeHelper: StateChangeHelper
+        changeHelper: new StateChangeHelper(),
+        logHelper: new StateLogHelper()
     };
 
 });

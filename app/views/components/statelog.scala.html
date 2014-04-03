@@ -1,0 +1,24 @@
+@(koLogVariableName: String)(header: Html)
+
+<!-- State log viewer -->
+<div data-bind="if: @koLogVariableName">
+    @header
+
+    <table class="table .table-condensed">
+        <tr>
+            <th class="col-xs-2">Date</th>
+            <th class="col-xs-1">State</th>
+            <th class="col-xs-2">Editor</th>
+            <th>Message</th>
+        </tr>
+        <tbody data-bind="foreach: @koLogVariableName">
+            <tr>
+                <td> <small><span data-bind="text: formattedDate"></span></small></td>
+                <td> <b><span data-bind="text: state"></span></b></td>
+                <td> <span data-bind="text: editor"></span></td>
+                <td> <span data-bind="text: note"></span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
