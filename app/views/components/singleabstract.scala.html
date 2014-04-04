@@ -25,6 +25,18 @@
         <p data-bind="text: $data"></p>
     </div>
 
+    <div>
+        <div data-bind="foreach: figures">
+            <div class="row">
+                <img class="col-xs-offset-4 col-xs-4 img-responsive" data-bind="attr: {src: URL}">
+                <div class="col-xs-offset-2 col-xs-8">
+                    <span>Figure: </span><span data-bind="text: $index() + 1"></span>
+                    <span data-bind="text: caption"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="acknowledgements">
         <h4>Acknowledgements</h4>
         <p data-bind="text: acknowledgements"></p>
