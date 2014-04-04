@@ -311,6 +311,14 @@ body {
     }
   }
 
+  .figure {
+    div:empty::after {
+      color: @color-fg-light;
+      margin-left: -1.0em;
+      content: "7. You have the option to include one image with your abstract. This image should be in one of the formats GIF, JPG, or PNG and should be at least 700 pixels wide and no larger than 5MB.";
+    }
+  }
+
 }
 
 .editor-box.editable:hover {
