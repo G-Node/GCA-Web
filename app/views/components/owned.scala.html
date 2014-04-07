@@ -13,7 +13,7 @@
     </ul>
 
     <form data-bind="submit: addOwner">
-        Add owner by e-mail: <input data-bind="value: newEmail" placeholder="enter a valid e-mail here" />
+        Add owner by e-mail: <input id="ownedEmail" placeholder="enter a valid e-mail here" />
         <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus icon-no-gap"></span> Add</button>
         and after
         <button data-bind="click: saveOwner" class="btn btn-success">Save changes</button>

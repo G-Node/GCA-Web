@@ -13,8 +13,6 @@ define(["lib/tools", "lib/models"], function(tools, models) {
         var self = this;
 
         self.owners = ko.observableArray([]);
-        self.newEmail = ko.observable(""); //TODO: better name or jQuery
-
         self.ownersURL = null;
 
         self.ownersErrorHandler = function(lvl, txt) {
@@ -52,8 +50,8 @@ define(["lib/tools", "lib/models"], function(tools, models) {
         };
 
         self.addOwner = function() {
-
-            var email = self.newEmail();
+            var mailInput = $('#ownedEmail');
+            var email = mailInput.val();
 
             var ownersLength = self.owners().length;
             for (var i = 0; i < ownersLength; i++) {
@@ -68,7 +66,7 @@ define(["lib/tools", "lib/models"], function(tools, models) {
 
                 if (found.length > 0) {
                     self.owners.push(found[0]);
-                    self.newEmail("");
+                    mailInput.val("");
                 } else {
                     self.ownersErrorHandler("danger", "No user with this email found");
                 }
