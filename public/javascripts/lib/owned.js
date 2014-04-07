@@ -55,7 +55,9 @@ define(["lib/tools", "lib/models"], function(tools, models) {
 
             var ownersLength = self.owners().length;
             for (var i = 0; i < ownersLength; i++) {
-                if (self.owners()[i].mail() == email) return
+                if (self.owners()[i].mail() == email) {
+                    return; // if we want to add an existing one, don't do anything
+                }
             }
 
             var userURL ="/api/users?email=" + email;
