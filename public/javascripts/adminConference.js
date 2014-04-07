@@ -149,7 +149,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
 
         self.updateOwners = function(ownersAsJson) {
-            var owners = $.map(ownersAsJson, function(item) { return models.ObservableAccount.fromObject(item) });
+            var owners = models.ObservableAccount.fromArray(ownersAsJson);
             self.owners(owners);
         };
 
@@ -178,7 +178,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             $.getJSON(userURL, onValidateEmail).fail(self.ioFailHandler);
 
             function onValidateEmail(accountsAsJson) {
-                var found = $.map(accountsAsJson, function(item) { return models.ObservableAccount.fromObject(item) });
+                var found = models.ObservableAccount.fromArray(accountsAsJson);
 
                 if (found.length > 0) {
                     self.owners.push(found[0]);
