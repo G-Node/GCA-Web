@@ -1,4 +1,4 @@
-require(["lib/models", "lib/tools"], function(models, tools) {
+require(["lib/models", "lib/tools", "lib/owned"], function(models, tools, owned) {
     "use strict";
 
 
@@ -16,12 +16,11 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             return new adminConferenceViewModel(confId, accId);
         }
 
-        var self = this;
+        var self = tools.inherit(this, owned.Owned);
+
         self.accId = accId;
         self.isLoading = ko.observable("Loading conference data.");
         self.error = ko.observable(false);
-        self.owners = ko.observableArray([]);
-        self.newEmail = ko.observable();
         self.conference = ko.observable(null);
         self.haveChanges = ko.observable(false);
 
@@ -125,7 +124,10 @@ require(["lib/models", "lib/tools"], function(models, tools) {
             self.conference(conf);
             self.haveChanges(false);
             //now that we have the conference, get the owners
-            self.loadOwnersData();
+            self.setupOwners("/api/conferences/" + self.conference().uuid + "/owners", self.setError);
+            self.loadOwnersData(function() {
+                self.isLoading(false);
+            });
         };
 
         self.saveConference = function() {
@@ -142,65 +144,6 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 success: function(result) {
                     self.onConferenceData(result);
                     self.setError("info", "Changes saved")
-                },
-                error: self.ioFailHandler
-            });
-        };
-
-
-        self.updateOwners = function(ownersAsJson) {
-            var owners = $.map(ownersAsJson, function(item) { return models.ObservableAccount.fromObject(item) });
-            self.owners(owners);
-        };
-
-        self.loadOwnersData = function() {
-            self.isLoading("Loading owner data");
-            if (self.conference().uuid !== null) {
-                console.log("loadOwners::");
-
-                var ownersURL ="/api/conferences/" + self.conference().uuid + '/owners';
-                $.getJSON(ownersURL, self.updateOwners).fail(self.ioFailHandler);
-
-            }
-            self.isLoading(false);
-        };
-
-        self.addOwner = function() {
-
-            var email = this.newEmail();
-
-            var ownersLength = self.owners().length;
-            for (var i = 0; i < ownersLength; i++) {
-                if (self.owners()[i].mail() == email) return
-            }
-
-            var userURL ="/api/users?email=" + email;
-            $.getJSON(userURL, onValidateEmail).fail(self.ioFailHandler);
-
-            function onValidateEmail(accountsAsJson) {
-                var found = $.map(accountsAsJson, function(item) { return models.ObservableAccount.fromObject(item) });
-
-                if (found.length > 0) {
-                    self.owners.push(found[0]);
-                    self.newEmail("");
-                } else {
-                    self.setError("Not found", "No user with this email found");
-                }
-            }
-        };
-
-        self.removeOwner = function(account) { self.owners.remove(account) };
-
-        self.saveOwner = function() {
-
-            var data = $.map(self.owners(), function(item) { return item.toJSON()});
-            $.ajax("/api/conferences/" + self.conference().uuid + '/owners', {
-                data: "[" + data.join(",") + "]",
-                type: "PUT",
-                contentType: "application/json",
-                success: function(result) {
-                    self.updateOwners(result);
-                    self.setError("owners_update", "Changes saved")
                 },
                 error: self.ioFailHandler
             });
