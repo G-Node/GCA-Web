@@ -8,13 +8,13 @@
         <li>
             <strong><span data-bind="text: mail"></span></strong>
             <button data-bind="click: $parent.removeOwner, enable: $parent.owners().length > 1"
-            class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+            class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove icon-no-gap"></span></button>
         </li>
     </ul>
 
     <form data-bind="submit: addOwner">
         Add owner by e-mail: <input data-bind="value: newEmail" placeholder="enter a valid e-mail here" />
-        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add</button>
+        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus icon-no-gap"></span> Add</button>
         and after
         <button data-bind="click: saveOwner" class="btn btn-success">Save changes</button>
     </form>
