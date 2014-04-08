@@ -1,4 +1,5 @@
-require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models, tools, msg, validate) {
+require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
+    function(models, tools, msg, validate, owned) {
     "use strict";
 
     /**
@@ -18,6 +19,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models,
         }
 
         var self = tools.inherit(this, msg.MessageVM);
+        self = tools.inherit(self, owned.Owned);
 
         self.textCharacterLimit = 2000;
         self.ackCharacterLimit = 200;
@@ -210,7 +212,9 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models,
             function success(obj) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
                 self.originalState(self.abstract().state());
-                self.editedAbstract(self.abstract())
+                self.editedAbstract(self.abstract());
+                self.setupOwners("/api/abstracts/" + abstrId + "/owners", self.setError);
+                self.loadOwnersData(null);
             }
 
             function fail() {
@@ -374,6 +378,9 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate"], function(models,
                         self.setOk("Ok", "Abstract saved.", true);
                     }
                 }
+
+                self.setupOwners("/api/abstracts/" + self.abstract().uuid + "/owners", self.setError);
+                self.loadOwnersData(null);
             }
 
             function successFig() {

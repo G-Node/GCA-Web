@@ -179,7 +179,8 @@ object Abstracts extends Controller with  GCAAuth {
       yield accountFormat.reads(acc).get
 
     val srv = AbstractService()
-    val owners = srv.setPermissions(srv.get(id), request.user, to_set)
+    val abstr = srv.getOwn(id, request.user)
+    val owners = srv.setPermissions(abstr, request.user, to_set)
 
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
@@ -194,7 +195,8 @@ object Abstracts extends Controller with  GCAAuth {
   def getPermissions(id: String) = AuthenticatedAction(isREST = true) { request =>
 
     val srv = AbstractService()
-    val owners = srv.getPermissions(srv.get(id), request.user)
+    val abstr = srv.getOwn(id, request.user)
+    val owners = srv.getPermissions(abstr, request.user)
 
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
