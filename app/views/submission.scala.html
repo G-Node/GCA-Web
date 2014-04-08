@@ -629,7 +629,10 @@
             </div>
         </div>
 
-        <hr class="separator">
+        <div data-bind="if: isAbstractSaved">
+            <hr class="separator">
+            @components.owned()
+        </div>
 
     </div>
 
