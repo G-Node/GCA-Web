@@ -1090,6 +1090,8 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         ObservableReference: ObservableReference,
         Abstract: Abstract,
         ObservableAbstract: ObservableAbstract,
-        ObservableAccount: ObservableAccount
+        ObservableAccount: ObservableAccount,
+        AbstractGroup: AbstractGroup
+
     };
 });
