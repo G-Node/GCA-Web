@@ -90,8 +90,41 @@ require(["lib/models", "lib/tools", "lib/owned"], function(models, tools, owned)
             self.haveChanges(true);
         };
 
+        self.makeGroupObservable = function(group) {
+            group.makeObservable(['prefix', 'name', 'short']);
+
+            for(var prop in group) {
+                if (group.hasOwnProperty(prop)) {
+                    var value = group[prop];
+
+                    if (value && value.name === "observable") {
+                        value.subscribe(self.changeHandler);
+                    }
+                }
+            }
+        };
+
+        self.addGroup = function(data) {
+            var name = $("#ngName");
+            var prefix = $("#ngPrefix");
+            var short = $("#ngShort");
+
+            var grp = models.AbstractGroup(null, prefix.val(), name.val(), short.val());
+            self.makeGroupObservable(grp);
+            self.conference().groups.push(grp);
+
+            name.val('');
+            prefix.val('');
+            short.val('');
+        };
+
+        self.removeGroup = function(data) {
+          self.conference().groups.remove(data);
+        };
+
+
         self.makeConferenceObservable = function (conf) {
-            conf.makeObservable(["name", "short", "cite", "description", "start", "end",
+            conf.makeObservable(["name", "short", "cite", "description", "start", "end", "groups",
                 "deadline", "logo", "thumbnail", "link", "isOpen", "isPublished", "topics"]);
 
             for(var prop in conf) {
@@ -103,6 +136,8 @@ require(["lib/models", "lib/tools", "lib/owned"], function(models, tools, owned)
                     }
                 }
             }
+
+            conf.groups().forEach(self.makeGroupObservable);
         };
 
         self.loadConference = function(id) {
