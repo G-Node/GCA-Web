@@ -114,7 +114,7 @@ package object serializer {
     )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
-      val groups: Seq[AbstractGroup] = asScalaSet(c.groups).toSeq
+      val groups: Seq[AbstractGroup] = asScalaSet(c.groups).toSeq.sortBy(x => x.prefix)
       Json.obj(
         "name" -> c.name,
         "uuid" -> c.uuid,
