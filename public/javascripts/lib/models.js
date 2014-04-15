@@ -297,7 +297,11 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
 
                     if (prop === "groups") {
                         obj.groups = [];
-                        self.groups.forEach(appendGroup);
+                        if (value.name === "observable") {
+                            self.groups().forEach(appendGroup);
+                        } else {
+                            self.groups.forEach(appendGroup);
+                        }
                     } else if (tools.type(value) !== "function") {
                         obj[prop] = toType(value);
                     } else if (value.name === "observable") {
@@ -1090,6 +1094,8 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         ObservableReference: ObservableReference,
         Abstract: Abstract,
         ObservableAbstract: ObservableAbstract,
-        ObservableAccount: ObservableAccount
+        ObservableAccount: ObservableAccount,
+        AbstractGroup: AbstractGroup
+
     };
 });

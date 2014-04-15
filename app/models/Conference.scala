@@ -51,7 +51,7 @@ class Conference extends Model with Owned {
   var logo: String = _
   var thumbnail: String = _
 
-  @OneToMany(mappedBy = "conference")
+  @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var groups: JSet[AbstractGroup] = new JTreeSet[AbstractGroup]()
 
   @OneToMany
