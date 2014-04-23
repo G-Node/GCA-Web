@@ -300,7 +300,6 @@ package object serializer {
 
     override def writes(a: Abstract): JsValue = {
 
-      val references: Seq[Reference] = asScalaSet(a.references).toSeq
       Json.obj(
         "uuid" -> a.uuid,
         "title" -> a.title,
@@ -319,7 +318,8 @@ package object serializer {
         "owners" -> routesResolver.ownersUrl(a.uuid),
         "authors" -> asScalaSet(a.authors).toSeq.sorted[Model],
         "affiliations" -> asScalaSet(a.affiliations).toSeq.sorted[Model],
-        "references" -> asScalaSet(a.references).toSeq.sorted[Model]
+        "references" -> asScalaSet(a.references).toSeq.sorted[Model],
+        "stateLog" -> routesResolver.stateLogUrl(a.uuid)
       )
     }
   }
