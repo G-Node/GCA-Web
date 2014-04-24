@@ -50,6 +50,17 @@ class RoutesResolver {
     new URL(baseUrl + s"/api/figures/$id/image")
   }
 
+  /**
+   * Builds an URL to state log of a given abstract.
+   *
+   * @param id an ID of an Abstract object
+   *
+   * @return URL for file, like " /api/abstracts/:id/stateLog"
+   */
+  def stateLogUrl(id: String) = {
+    new URL(baseUrl + s"/api/abstracts/$id/stateLog")
+  }
+
 }
 
 object DefaultRoutesResolver {
