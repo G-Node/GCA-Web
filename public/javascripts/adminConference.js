@@ -97,7 +97,7 @@ require(["lib/models", "lib/tools", "lib/owned"], function(models, tools, owned)
                 if (group.hasOwnProperty(prop)) {
                     var value = group[prop];
 
-                    if (value && value.name === "observable") {
+                    if (value && tools.functionName(value) === "observable") {
                         value.subscribe(self.changeHandler);
                     }
                 }
@@ -131,7 +131,7 @@ require(["lib/models", "lib/tools", "lib/owned"], function(models, tools, owned)
                 if (conf.hasOwnProperty(prop)) {
                     var value = conf[prop];
 
-                    if (value && value.name === "observable") {
+                    if (value && tools.functionName(value) === "observable") {
                         value.subscribe(self.changeHandler);
                     }
                 }

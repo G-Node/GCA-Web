@@ -84,7 +84,7 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                    var value = self[prop];
                    if (tools.type(value) !== "function") {
                        obj[prop] = toType(value);
-                   } else if (value.name === "observable") {
+                   } else if (tools.functionName(value) === "observable") {
                        obj[prop] = toType(self[prop]());
                    }
                }
@@ -108,7 +108,7 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
             for (prop in self) {
                 if (self.hasOwnProperty(prop)) {
                     var value = self[prop],
-                        vname = value ? value.name : null,
+                        vname = value ? tools.functionName(value) : null,
                         convert = false;
 
                     if (properties && properties.indexOf(prop) >= 0) {
@@ -171,7 +171,7 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                 if (value !== null) {
                     if (tools.type(target[prop]) !== "function") {
                         target[prop] = value;
-                    } else if (target[prop].name === "observable") {
+                    } else if (tools.functionName(target[prop]) === "observable") {
                         target[prop](value);
                     }
                 }
@@ -297,14 +297,14 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
 
                     if (prop === "groups") {
                         obj.groups = [];
-                        if (value.name === "observable") {
+                        if (tools.functionName(value) === "observable") {
                             self.groups().forEach(appendGroup);
                         } else {
                             self.groups.forEach(appendGroup);
                         }
                     } else if (tools.type(value) !== "function") {
                         obj[prop] = toType(value);
-                    } else if (value.name === "observable") {
+                    } else if (tools.functionName(value) === "observable") {
                         obj[prop] = toType(self[prop]());
                     }
                 }
@@ -986,7 +986,7 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                         default:
                             if (tools.type(value) !== "function") {
                                 obj[prop] = toType(value);
-                            } else if (value.name === "observable") {
+                            } else if (tools.functionName(value) === "observable") {
                                 obj[prop] = toType(value());
                             }
                     }
@@ -1038,7 +1038,7 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
                     default:
                         if (tools.type(target[prop]) !== "function") {
                             target[prop] = value;
-                        } else if (target[prop].name === "observable") {
+                        } else if (tools.functionName(target[prop]) === "observable") {
                             target[prop](value);
                         }
                 }

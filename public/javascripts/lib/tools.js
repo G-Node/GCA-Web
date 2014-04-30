@@ -220,6 +220,28 @@ define(function() {
         return data;
     }
 
+    /**
+     * Gets the name of a function (also in IE)
+     *
+     * @param fn {Function}     The function to get the name from.
+     *
+     * @returns {string}        The function name or null if fn is not a function.
+     * @public
+     */
+    function functionName(fn) {
+        if (type(fn) !== 'function') {
+            return null;
+        }
+
+        if (fn.hasOwnProperty("name")) {
+            return fn.name;
+        } else {
+            var parsed = /\W*function\s+([\w\$]+)\(/.exec(fn);
+            return parsed && parsed[1] ? parsed[1] : null;
+        }
+    }
+
+
     return {
         isGlobalOrUndefined: isGlobalOrUndefined,
         hiddenData: hiddenData,
@@ -227,7 +249,8 @@ define(function() {
         type: type,
         toUnderscore: toUnderscore,
         toCamelCase: toCamelCase,
-        formParse: formParse
+        formParse: formParse,
+        functionName: functionName
     };
 
 });
