@@ -73,7 +73,7 @@
 
                         <div class="modal-body">
                             <label for="title"></label>
-                            <input type="text" class="form-control" id="title" maxlength="100"
+                            <input type="text" class="form-control" id="title" maxlength="255"
                                    data-bind="value: editedAbstract().title" />
                         </div>
 
@@ -404,11 +404,11 @@
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="Citation"
-                                                   maxlength="200" data-bind="value: reference.text" />
+                                                   maxlength="255" data-bind="value: reference.text" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="link"
-                                                   maxlength="100" data-bind="value: reference.link" />
+                                                   maxlength="255" data-bind="value: reference.link" />
                                         </td>
                                         <td>
                                             <input type="text" class="form-control input-sm" placeholder="DOI"
