@@ -71,7 +71,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
                     var saved = self.isAbstractSaved(),
                         state = self.originalState();
 
-                    return !saved || !state || state === 'InPreparation';
+                    return !saved || !state || state === 'InPreparation' || state === 'InRevision';
                 } else {
                     return false;
                 }
@@ -85,7 +85,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
                     var saved = self.isAbstractSaved(),
                         state = self.originalState();
 
-                    return saved && (!state || state === 'InPreparation');
+                    return saved && (!state || state === 'InPreparation' || state === 'InRevision');
                 } else {
                     return false;
                 }
@@ -136,7 +136,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
 
         self.isChangeOk = function(abstract) {
 
-            abstract = abstract || self.abstract()
+            abstract = abstract || self.abstract();
 
             var saved = self.isAbstractSaved(),
                 oldState = self.originalState(),
@@ -155,6 +155,9 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
                         break;
                     case 'Withdrawn':
                         isOk = (newState === 'InPreparation');
+                        break;
+                    case 'InRevision':
+                        isOk = (newState === 'InRevision' || newState === 'Submitted');
                         break;
                 }
             }
