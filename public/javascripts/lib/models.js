@@ -483,8 +483,8 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.section = section || null;
 
         self.format = function() {
-            var str =(self.section || "")
-                .concat(self.department ? ", " + self.department : "")
+            var str = (self.department || "")
+                .concat(self.section ? ", " + self.section : "")
                 .concat(self.address ? ", " + self.address : "")
                 .concat(self.country ? ", " + self.country : "");
 
@@ -533,8 +533,8 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.section = ko.observable(section || null);
 
         self.format = function() {
-            var str =(self.section() || "")
-                .concat(self.department() ? ", " + self.department() : "")
+            var str =(self.department() || "")
+                .concat(self.section() ? ", " + self.section() : "")
                 .concat(self.address() ? ", " + self.address() : "")
                 .concat(self.country() ? ", " + self.country() : "");
 
