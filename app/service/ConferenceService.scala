@@ -76,10 +76,9 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
     dbQuery { em =>
       val queryStr =
         """SELECT DISTINCT c FROM Conference c
-           INNER JOIN FETCH c.owners o
-           INNER JOIN FETCH c.abstracts a
+           INNER JOIN c.owners o
+           INNER JOIN c.abstracts a
            INNER JOIN a.owners ao
-           LEFT JOIN FETCH c.topics
            WHERE ao.uuid = :uuid
            ORDER BY c.startDate DESC"""
 
