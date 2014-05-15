@@ -84,7 +84,9 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                         abstr.viewEditCtx = ko.computed(function() {
                             var confIsOpen = currentConf.isOpen;
                             var canEdit = abstr.state == "InRevision" ||
-                                (confIsOpen && (abstr.state == "InPreparation" || abstr.state == "Submitted"));
+                                (confIsOpen && (abstr.state == "InPreparation" ||
+                                                abstr.state == "Submitted" ||
+                                                abstr.state == "Withdrawn"));
 
                             return {
                                 link: canEdit ? "/myabstracts/" + abstr.uuid + "/edit" : "/abstracts/" + abstr.uuid,
