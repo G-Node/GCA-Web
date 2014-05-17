@@ -402,8 +402,9 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
       query.setParameter("uuid", id)
       val abstr = query.getSingleResult
 
-      if (!(account.isAdmin || abstr.owners.contains(account))) {
-        throw new IllegalAccessException("No permissions for abstract with uuid = " + id)
+      if (!(account.isAdmin || abstr.isOwner(account))) {
+        throw new IllegalAccessException("No permissions for abstract with uuid = " + id +
+          "for account with uuid = " + account.uuid)
       }
 
       abstr.stateLog.toSeq.sortWith (_.timestamp.getMillis > _.timestamp.getMillis)
