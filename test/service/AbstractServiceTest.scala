@@ -193,13 +193,19 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
     }
   }
 
-  @Test
-  def testStateLog() : Unit = {
+  def testStateLogAs(account: Account) {
     val abstr = assets.abstracts(0)
-    val state = srv.listStates(abstr.uuid, assets.alice)
+    val state = srv.listStates(abstr.uuid, account)
 
     assert(state.size > 0)
     assert(state.exists(p => p.state == AbstractState.InPreparation))
+  }
+
+  @Test
+  def testStateLog() : Unit = {
+    testStateLogAs(assets.alice)
+    testStateLogAs(assets.bob) // bob is abstract owner, but not conf or site admin
+    testStateLogAs(assets.dave) //dave is conf owner, but not site admin or abstract owner
   }
 
   @Test
