@@ -205,6 +205,7 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
   def testStateLog() : Unit = {
     testStateLogAs(assets.alice)
     testStateLogAs(assets.bob) // bob is abstract owner, but not conf or site admin
+    testStateLogAs(assets.dave) //dave is conf owner, but not site admin or abstract owner
   }
 
   @Test
