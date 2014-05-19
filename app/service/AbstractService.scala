@@ -15,6 +15,7 @@ import service.util.PermissionsBase
 import scala.collection.JavaConversions._
 import java.io.File
 import play.Play
+import play.api.mvc.Request
 
 /**
  * Service class that provides data access logic for abstracts and nested
@@ -428,7 +429,7 @@ class AbstractService(val emf: EntityManagerFactory, figPath: String) extends Pe
 
 object AbstractService {
 
-  def apply() : AbstractService = {
+  def apply[A]()(implicit req: Request[A]) = {
     new AbstractService(
       Persistence.createEntityManagerFactory("defaultPersistenceUnit"),
       Play.application().configuration().getString("file.fig_path", "./figures")

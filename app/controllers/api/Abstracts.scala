@@ -173,7 +173,7 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return a list of updated permissions (accounts) as JSON
    */
-  def setPermissions(id: String) = AuthenticatedAction(parse.json, isREST = true) { request =>
+  def setPermissions(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
 
     val to_set = for (acc <- request.body.as[List[JsObject]])
       yield accountFormat.reads(acc).get
@@ -192,7 +192,7 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return a list of updated permissions (accounts) as JSON
    */
-  def getPermissions(id: String) = AuthenticatedAction(isREST = true) { request =>
+  def getPermissions(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
 
     val srv = AbstractService()
     val abstr = srv.getOwn(id, request.user)
@@ -203,14 +203,14 @@ object Abstracts extends Controller with  GCAAuth {
     ))
   }
 
-  def listState(id: String) = AuthenticatedAction(isREST = true) { request =>
+  def listState(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
     implicit val logWrites = new StateLogWrites()
     val srv = AbstractService()
     Ok(Json.toJson(srv.listStates(id, request.user)))
   }
 
 
-  def setState(id: String) = AuthenticatedAction(parse.json, isREST = true) { request =>
+  def setState(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
     implicit val logWrites = new StateLogWrites()
     val changeReads = ((__ \ "state").read[String] and (__ \ "note").readNullable[String]).tupled
 
