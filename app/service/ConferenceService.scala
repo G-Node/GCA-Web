@@ -16,6 +16,7 @@ import models._
 import javax.persistence._
 import service.util.{PermissionsBase, DBUtil}
 import java.net.URLDecoder
+import play.api.mvc.Request
 
 /**
  * Service class for that implements data access logic for conferences.
@@ -260,7 +261,7 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
 
 object ConferenceService {
 
-  def apply() : ConferenceService = {
+  def apply[A]()(implicit req: Request[A]) : ConferenceService = {
     new ConferenceService(
       Persistence.createEntityManagerFactory("defaultPersistenceUnit")
     )
