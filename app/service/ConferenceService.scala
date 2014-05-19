@@ -14,7 +14,7 @@ import collection.JavaConversions._
 import play.api._
 import models._
 import javax.persistence._
-import service.util.{PermissionsBase, DBUtil}
+import service.util.{EntityManagerProvider, PermissionsBase, DBUtil}
 import java.net.URLDecoder
 import play.api.mvc.Request
 
@@ -24,7 +24,7 @@ import play.api.mvc.Request
  * TODO prefetch stuff
  * TODO write test
  */
-class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
+class ConferenceService()(implicit val emp: EntityManagerProvider) extends PermissionsBase {
 
   /**
    * List all available conferences.
@@ -262,9 +262,11 @@ class ConferenceService(val emf: EntityManagerFactory) extends PermissionsBase {
 object ConferenceService {
 
   def apply[A]()(implicit req: Request[A]) : ConferenceService = {
-    new ConferenceService(
-      Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-    )
+    new ConferenceService()(EntityManagerProvider.fromDefaultPersistenceUnit())
+  }
+
+  def apply(emf: EntityManagerFactory) = {
+    new ConferenceService()(EntityManagerProvider.fromFactory(emf))
   }
 
 }

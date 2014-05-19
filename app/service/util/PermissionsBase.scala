@@ -6,6 +6,8 @@ import collection.JavaConversions._
 
 trait PermissionsBase extends DBUtil  {
 
+  implicit val emp: EntityManagerProvider
+
   /**
    * Validates, that given object has uuid and is real
    *

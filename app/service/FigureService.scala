@@ -5,13 +5,13 @@ import java.io.{FileNotFoundException, File}
 import play.api.libs.Files.TemporaryFile
 import play.Play
 import javax.persistence._
-import service.util.DBUtil
+import service.util.{EntityManagerProvider, DBUtil}
 import play.api.mvc.Request
 
 /**
  * Service class for figures.
  */
-class FigureService(val emf: EntityManagerFactory, figPath: String) extends DBUtil {
+class FigureService(figPath: String)(implicit emp: EntityManagerProvider) extends DBUtil {
 
   /**
    * Get a figure by id.
@@ -181,9 +181,12 @@ object FigureService {
    */
   def apply[A]()(implicit req: Request[A]) : FigureService = {
     new FigureService(
-      Persistence.createEntityManagerFactory("defaultPersistenceUnit"),
       Play.application().configuration().getString("file.fig_path", "./figures")
-    )
+    )(EntityManagerProvider.fromDefaultPersistenceUnit())
+  }
+
+  def apply(emf: EntityManagerFactory, figPath: String) = {
+    new FigureService(figPath)(EntityManagerProvider.fromFactory(emf))
   }
 
 }

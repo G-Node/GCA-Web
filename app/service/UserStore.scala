@@ -11,7 +11,7 @@ import play.api.db.DB
 import play.api.Play.current
 import org.joda.time.DateTime
 import utils.AnormExtension._
-import service.util.DBUtil
+import service.util.{EntityManagerProvider, DBUtil}
 import javax.persistence.{TypedQuery, Persistence, EntityManagerFactory}
 import models.Account
 import collection.JavaConversions._
@@ -20,11 +20,7 @@ import javax.persistence.criteria.{CriteriaQuery, CriteriaBuilder}
 
 class UserStore(application: Application) extends UserServicePlugin(application) with DBUtil {
 
-  lazy val myEmf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-
-  def emf: EntityManagerFactory = {
-    myEmf
-  }
+  implicit lazy val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
 
   def resultToAccount(result: JList[Account]) : Option[Account] = {
     result.size() match {

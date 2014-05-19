@@ -11,7 +11,7 @@ package service
 
 import models._
 import javax.persistence.{EntityNotFoundException, TypedQuery, Persistence, EntityManagerFactory}
-import service.util.PermissionsBase
+import service.util.{EntityManagerProvider, PermissionsBase}
 import scala.collection.JavaConversions._
 import java.io.File
 import play.Play
@@ -21,7 +21,7 @@ import play.api.mvc.Request
  * Service class that provides data access logic for abstracts and nested
  * authors and affiliations.
  */
-class AbstractService(val emf: EntityManagerFactory, figPath: String) extends PermissionsBase {
+class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) extends PermissionsBase {
 
   /**
    * List all published abstracts that belong to a conference.
@@ -431,9 +431,12 @@ object AbstractService {
 
   def apply[A]()(implicit req: Request[A]) = {
     new AbstractService(
-      Persistence.createEntityManagerFactory("defaultPersistenceUnit"),
       Play.application().configuration().getString("file.fig_path", "./figures")
-    )
+    )(EntityManagerProvider.fromDefaultPersistenceUnit())
+  }
+
+  def apply(emf: EntityManagerFactory, figPath: String) = {
+    new AbstractService(figPath)(EntityManagerProvider.fromFactory(emf))
   }
 
 }
