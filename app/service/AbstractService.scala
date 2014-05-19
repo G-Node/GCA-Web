@@ -10,7 +10,7 @@
 package service
 
 import models._
-import javax.persistence.{EntityNotFoundException, TypedQuery, Persistence, EntityManagerFactory}
+import javax.persistence.{EntityNotFoundException, TypedQuery, EntityManagerFactory}
 import service.util.{EntityManagerProvider, PermissionsBase}
 import scala.collection.JavaConversions._
 import java.io.File

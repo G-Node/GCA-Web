@@ -14,7 +14,7 @@ import collection.JavaConversions._
 import play.api._
 import models._
 import javax.persistence._
-import service.util.{EntityManagerProvider, PermissionsBase, DBUtil}
+import service.util.{EntityManagerProvider, PermissionsBase}
 import java.net.URLDecoder
 import play.api.mvc.Request
 

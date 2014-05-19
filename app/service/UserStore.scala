@@ -12,10 +12,9 @@ import play.api.Play.current
 import org.joda.time.DateTime
 import utils.AnormExtension._
 import service.util.{EntityManagerProvider, DBUtil}
-import javax.persistence.{TypedQuery, Persistence, EntityManagerFactory}
+import javax.persistence.TypedQuery
 import models.Account
 import collection.JavaConversions._
-import javax.persistence.criteria.{CriteriaQuery, CriteriaBuilder}
 
 
 class UserStore(application: Application) extends UserServicePlugin(application) with DBUtil {
