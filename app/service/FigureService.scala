@@ -6,6 +6,7 @@ import play.api.libs.Files.TemporaryFile
 import play.Play
 import javax.persistence._
 import service.util.DBUtil
+import play.api.mvc.Request
 
 /**
  * Service class for figures.
@@ -178,7 +179,7 @@ object FigureService {
    *
    * @return A new figure service.
    */
-  def apply() : FigureService = {
+  def apply[A]()(implicit req: Request[A]) : FigureService = {
     new FigureService(
       Persistence.createEntityManagerFactory("defaultPersistenceUnit"),
       Play.application().configuration().getString("file.fig_path", "./figures")
