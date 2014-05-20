@@ -27,9 +27,7 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     }
   }
 
-  def list() : Seq[Account] = {
-
-    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
+  def list()(implicit emp: EntityManagerProvider) : Seq[Account] = {
 
     dbQuery { em =>
       val builder = em.getCriteriaBuilder
@@ -63,9 +61,7 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     user
   }
 
-  def findByEmail(email: String): List[Account] = {
-
-    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
+  def findByEmail(email: String)(implicit emp: EntityManagerProvider): List[Account] = {
 
     Logger.debug("findByEmail $email")
 
