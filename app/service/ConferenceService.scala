@@ -262,7 +262,7 @@ class ConferenceService()(implicit val emp: EntityManagerProvider) extends Permi
 object ConferenceService {
 
   def apply[A]()(implicit req: Request[A]) : ConferenceService = {
-    new ConferenceService()(EntityManagerProvider.fromDefaultPersistenceUnit())
+    new ConferenceService()(EntityManagerProvider.fromRequest(req))
   }
 
   def apply(emf: EntityManagerFactory) = {
