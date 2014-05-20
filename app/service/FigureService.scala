@@ -182,7 +182,7 @@ object FigureService {
   def apply[A]()(implicit req: Request[A]) : FigureService = {
     new FigureService(
       Play.application().configuration().getString("file.fig_path", "./figures")
-    )(EntityManagerProvider.fromDefaultPersistenceUnit())
+    )(EntityManagerProvider.fromRequest(req))
   }
 
   def apply(emf: EntityManagerFactory, figPath: String) = {
