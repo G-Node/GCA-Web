@@ -1,7 +1,7 @@
 package service
 
 import org.scalatest.junit.JUnitSuite
-import service.util.DBUtil
+import service.util.{EntityManagerProvider, DBUtil}
 import play.api.test.FakeApplication
 import org.junit.{Test, Before, AfterClass, BeforeClass}
 import play.api.Play
@@ -78,6 +78,7 @@ class UserStoreTest extends JUnitSuite with DBUtil {
 
   @Test
   def testUpdate() {
+    implicit val emp = EntityManagerProvider.fromFactory(emf)
     val acc1Opt = store.findAccount(new IdentityId("alice@foo.com", "userpass"))
     assert(acc1Opt.isDefined)
     val acc1 = acc1Opt.get

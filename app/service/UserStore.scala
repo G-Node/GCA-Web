@@ -40,9 +40,7 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     }
   }
 
-  def findAccount(id: IdentityId) : Option[Account] = {
-
-    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
+  def findAccount(id: IdentityId)(implicit emp: EntityManagerProvider) : Option[Account] = {
 
     val user: Option[Account] = dbTransaction { (em, tx) =>
 
