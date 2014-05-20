@@ -14,6 +14,7 @@ import play.api.mvc.SimpleResult
 import play.api.libs.json.JsResultException
 import service.UserStore
 import service.util.EntityManagerProvider
+import service.util.EMPImplicits.EMPFromEntityManager
 
 //custom request classes
 
@@ -66,7 +67,7 @@ trait GCAAuth extends securesocial.core.SecureSocial {
     protected def invokeBlock[A](request: Request[A],
                                  block: (RequestWithAccount[A]) => Future[SimpleResult]): Future[SimpleResult] = {
 
-      val em = createDefaultEntityManger()
+      implicit val em = createDefaultEntityManger()
       val Account = getAccount(request)
       val res = invokeBlockSafe(resultAsRest = isAjaxCall)(RequestWithAccount(em, Account, request), block)
       if (em.isOpen) {
@@ -81,7 +82,7 @@ trait GCAAuth extends securesocial.core.SecureSocial {
 
     protected def invokeBlock[A](request: Request[A],
                                  block: (RequestAuthenticated[A]) => Future[SimpleResult]): Future[SimpleResult] = {
-      val em = createDefaultEntityManger()
+      implicit val em = createDefaultEntityManger()
       val Account = getAccount(request)
 
       val res = Account.fold({
@@ -118,11 +119,11 @@ trait GCAAuth extends securesocial.core.SecureSocial {
     }
   }
 
-  def getAccount[A](request: Request[A]): Option[Account] = {
+  def getAccount[A](request: Request[A])(implicit emp:EntityManagerProvider) : Option[Account] = {
     implicit val req = request
     for {
       authenticator <- SecureSocial.authenticatorFromRequest
-      user <- UserService.find(authenticator.identityId)
+      user <- getUserStore.findAccount(authenticator.identityId)
       account <- user match {case a: Account => Some(a); case _ => None}
     } yield {
       touch(authenticator)
