@@ -9,6 +9,10 @@ trait EntityManagerProvider {
 
 object EntityManagerProvider {
 
+  def fromEntityManager(em: EntityManager) : EntityManagerProvider = new EntityManagerProvider {
+    override def entityManager(): EntityManager = em
+  }
+
   def fromFactory(emf: EntityManagerFactory) : EntityManagerProvider = new EntityManagerProvider {
     override def entityManager(): EntityManager = emf.createEntityManager()
   }
@@ -23,6 +27,12 @@ object EntityManagerProvider {
       case _ => fromDefaultPersistenceUnit()
     }
   }
+}
+
+object EMPImplicits {
+
+  implicit def EMPFromEntityManager(implicit em: EntityManager) = EntityManagerProvider.fromEntityManager(em)
+
 }
 
 /**
