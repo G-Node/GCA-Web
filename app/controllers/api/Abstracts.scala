@@ -11,6 +11,7 @@ import utils.DefaultRoutesResolver._
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import service.util.EMPImplicits.EMPFromRequest
 
 /**
  * Abstracts controller.

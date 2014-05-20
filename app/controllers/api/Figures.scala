@@ -9,6 +9,7 @@ import play.api.libs.json._
 import scala.collection.JavaConversions._
 import play.api.libs.json.JsArray
 import utils.DefaultRoutesResolver._
+import service.util.EMPImplicits.EMPFromRequest
 
 /**
  * Figures controller.
