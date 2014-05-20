@@ -1,6 +1,7 @@
 package service.util
 
 import javax.persistence.{EntityTransaction, EntityManagerFactory, EntityManager, Persistence}
+import play.api.mvc.Request
 
 trait EntityManagerProvider {
   def entityManager() : EntityManager
@@ -16,6 +17,12 @@ object EntityManagerProvider {
 
   def fromDefaultPersistenceUnit() : EntityManagerProvider = fromPersistenceUnit("defaultPersistenceUnit")
 
+  def fromRequest[A](req: Request[A]) : EntityManagerProvider = {
+    req match {
+      case emp: EntityManagerProvider => emp
+      case _ => fromDefaultPersistenceUnit()
+    }
+  }
 }
 
 /**
