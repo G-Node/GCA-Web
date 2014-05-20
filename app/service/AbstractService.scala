@@ -432,7 +432,7 @@ object AbstractService {
   def apply[A]()(implicit req: Request[A]) = {
     new AbstractService(
       Play.application().configuration().getString("file.fig_path", "./figures")
-    )(EntityManagerProvider.fromDefaultPersistenceUnit())
+    )(EntityManagerProvider.fromRequest[A](req))
   }
 
   def apply(emf: EntityManagerFactory, figPath: String) = {
