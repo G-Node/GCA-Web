@@ -63,6 +63,25 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     user
   }
 
+  def findByEmail(email: String): List[Account] = {
+
+    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
+
+    Logger.debug("findByEmail $email")
+
+    dbTransaction { (em, tx) =>
+      val queryStr =
+        """SELECT a from Account a
+           WHERE LOWER(a.mail) = LOWER(:mail)"""
+
+      val query : TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
+      query.setParameter("mail", email)
+      query.getResultList.toSet.toList
+    }
+  }
+
+  // UserService implements
+
   def find(id: IdentityId): Option[Identity] = {
 
     implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
@@ -88,23 +107,6 @@ class UserStore(application: Application) extends UserServicePlugin(application)
       query.setParameter("mail", email)
       query.setParameter("provider", providerId)
       resultToAccount(query.getResultList)
-    }
-  }
-
-  def findByEmail(email: String): List[Account] = {
-
-    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
-
-    Logger.debug("findByEmail $email")
-
-    dbTransaction { (em, tx) =>
-      val queryStr =
-        """SELECT a from Account a
-           WHERE LOWER(a.mail) = LOWER(:mail)"""
-
-      val query : TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
-      query.setParameter("mail", email)
-      query.getResultList.toSet.toList
     }
   }
 
