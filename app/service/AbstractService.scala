@@ -16,6 +16,7 @@ import scala.collection.JavaConversions._
 import java.io.File
 import play.Play
 import play.api.mvc.Request
+import service.util.EMPImplicits.EMPFromRequest
 
 /**
  * Service class that provides data access logic for abstracts and nested
@@ -430,9 +431,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
 object AbstractService {
 
   def apply[A]()(implicit req: Request[A]) = {
-    new AbstractService(
-      Play.application().configuration().getString("file.fig_path", "./figures")
-    )(EntityManagerProvider.fromRequest[A](req))
+    new AbstractService(Play.application().configuration().getString("file.fig_path", "./figures"))
   }
 
   def apply(emf: EntityManagerFactory, figPath: String) = {
