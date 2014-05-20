@@ -4,7 +4,7 @@ import play.api.mvc._
 import scala.concurrent.Future
 import securesocial.core.{Authenticator, IdentityProvider, UserService, SecureSocial}
 import models.Account
-import javax.persistence.{EntityNotFoundException, NoResultException}
+import javax.persistence.{Persistence, EntityManager, EntityNotFoundException, NoResultException}
 import play.api.libs.json._
 import securesocial.core.providers.utils.RoutesHelper
 import play.api.i18n.Messages
@@ -13,11 +13,19 @@ import scala.Some
 import play.api.mvc.SimpleResult
 import play.api.libs.json.JsResultException
 import service.UserStore
+import service.util.EntityManagerProvider
 
+//custom request classes
 
-case class RequestWithAccount[A](user: Option[Account], request: Request[A]) extends WrappedRequest(request)
-case class RequestAuthenticated[A](user: Account, request: Request[A]) extends WrappedRequest(request)
+case class RequestWithAccount[A](entityManager: EntityManager,
+                                 user: Option[Account],
+                                 req: Request[A]) extends WrappedRequest(req) with EntityManagerProvider
 
+case class RequestAuthenticated[A](entityManager: EntityManager,
+                                   user: Account,
+                                   req: Request[A]) extends WrappedRequest(req) with EntityManagerProvider
+
+//custom actions
 trait GCAAuth extends securesocial.core.SecureSocial {
 
   trait SafeActionBuilder[R[_]] extends ActionBuilder[R] {
@@ -47,13 +55,25 @@ trait GCAAuth extends securesocial.core.SecureSocial {
       isAjaxCall = isREST
       apply(bodyParser)(block)
     }
+
+    def createDefaultEntityManger() = {
+      val emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
+      emf.createEntityManager()
+    }
   }
 
   object AccountAwareAction extends SafeActionBuilder[RequestWithAccount] {
     protected def invokeBlock[A](request: Request[A],
                                  block: (RequestWithAccount[A]) => Future[SimpleResult]): Future[SimpleResult] = {
+
+      val em = createDefaultEntityManger()
       val Account = getAccount(request)
-      invokeBlockSafe(resultAsRest = isAjaxCall)(RequestWithAccount(Account, request), block)
+      val res = invokeBlockSafe(resultAsRest = isAjaxCall)(RequestWithAccount(em, Account, request), block)
+      if (em.isOpen) {
+        em.close()
+      }
+
+      res
     }
   }
 
@@ -61,13 +81,20 @@ trait GCAAuth extends securesocial.core.SecureSocial {
 
     protected def invokeBlock[A](request: Request[A],
                                  block: (RequestAuthenticated[A]) => Future[SimpleResult]): Future[SimpleResult] = {
+      val em = createDefaultEntityManger()
       val Account = getAccount(request)
 
-      Account map { account =>
-        invokeBlockSafe(resultAsRest = isAjaxCall)(RequestAuthenticated(account, request), block)
-      } getOrElse {
+      val res = Account.fold({
         authFailedResponse(request)
+      })({ account =>
+        invokeBlockSafe(resultAsRest = isAjaxCall)(RequestAuthenticated(em, account, request), block)
+      })
+
+      if (em.isOpen) {
+        em.close()
       }
+
+      res
     }
 
     def authFailedResponse[A](implicit request: Request[A]) : Future[SimpleResult] = {
