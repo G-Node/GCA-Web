@@ -56,7 +56,6 @@ trait DBUtil {
       } finally {
 
         if (tx != null && tx.isActive) tx.commit()
-        if (em != null && em.isOpen) em.close()
 
       }
     }
@@ -83,7 +82,7 @@ trait DBUtil {
         func(em)
 
       } finally {
-        if (em != null && em.isOpen) em.close()
+        //no-op
       }
     }
   }
