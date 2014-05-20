@@ -15,9 +15,7 @@ import play.api._
 import models._
 import javax.persistence._
 import service.util.{EntityManagerProvider, PermissionsBase}
-import service.util.EMPImplicits.EMPFromRequest
 import java.net.URLDecoder
-import play.api.mvc.Request
 
 /**
  * Service class for that implements data access logic for conferences.
@@ -262,7 +260,7 @@ class ConferenceService()(implicit val emp: EntityManagerProvider) extends Permi
 
 object ConferenceService {
 
-  def apply[A]()(implicit req: Request[A]) : ConferenceService = {
+  def apply[A]()(implicit emf: EntityManagerProvider) : ConferenceService = {
     new ConferenceService()
   }
 
