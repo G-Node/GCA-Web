@@ -19,8 +19,6 @@ import collection.JavaConversions._
 
 class UserStore(application: Application) extends UserServicePlugin(application) with DBUtil {
 
-  implicit lazy val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
-
   def resultToAccount(result: JList[Account]) : Option[Account] = {
     result.size() match {
       case 0 => None
@@ -30,6 +28,9 @@ class UserStore(application: Application) extends UserServicePlugin(application)
   }
 
   def list() : Seq[Account] = {
+
+    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
+
     dbQuery { em =>
       val builder = em.getCriteriaBuilder
       val criteria = builder.createQuery(classOf[Account])
@@ -40,6 +41,9 @@ class UserStore(application: Application) extends UserServicePlugin(application)
   }
 
   def findAccount(id: IdentityId) : Option[Account] = {
+
+    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
+
     val user: Option[Account] = dbTransaction { (em, tx) =>
 
       //for the userpass provider we want case insensitive lookup
@@ -62,6 +66,9 @@ class UserStore(application: Application) extends UserServicePlugin(application)
   }
 
   def find(id: IdentityId): Option[Identity] = {
+
+    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
+
     Logger.debug("find")
     val account = findAccount(id)
     Logger.debug("found:" + account.toString)
@@ -69,6 +76,9 @@ class UserStore(application: Application) extends UserServicePlugin(application)
   }
 
   def findByEmailAndProvider(email: String, providerId: String): Option[Identity] = {
+
+    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
+
     Logger.debug("findByEmailAndProvider $email, $providerId")
 
     dbTransaction { (em, tx) =>
@@ -84,6 +94,9 @@ class UserStore(application: Application) extends UserServicePlugin(application)
   }
 
   def findByEmail(email: String): List[Account] = {
+
+    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
+
     Logger.debug("findByEmail $email")
 
     dbTransaction { (em, tx) =>
@@ -98,6 +111,8 @@ class UserStore(application: Application) extends UserServicePlugin(application)
   }
 
   def save(user: Identity): Identity = {
+
+    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
 
     val dbUser: Option[Account] = findAccount(user.identityId)
 
