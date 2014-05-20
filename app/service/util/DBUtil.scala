@@ -32,6 +32,7 @@ object EntityManagerProvider {
 object EMPImplicits {
 
   implicit def EMPFromEntityManager(implicit em: EntityManager) = EntityManagerProvider.fromEntityManager(em)
+  implicit def EMPFromRequest[A](implicit req: Request[A]) = EntityManagerProvider.fromRequest(req)
 
 }
 
