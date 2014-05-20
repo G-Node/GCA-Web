@@ -35,12 +35,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
     dbQuery { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
-           LEFT JOIN FETCH a.owners
-           LEFT JOIN FETCH a.authors
-           LEFT JOIN FETCH a.affiliations
            LEFT JOIN FETCH a.conference c
-           LEFT JOIN FETCH a.figures
-           LEFT JOIN FETCH a.references
            WHERE c.uuid = :uuid AND a.state = :state
            ORDER BY a.sortId, a.title"""
 
@@ -63,12 +58,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
     dbQuery { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
-           LEFT JOIN FETCH a.owners
-           LEFT JOIN FETCH a.authors
-           LEFT JOIN FETCH a.affiliations
            LEFT JOIN FETCH a.conference c
-           LEFT JOIN FETCH a.figures
-           LEFT JOIN FETCH a.references
            WHERE c.uuid = :uuid
            ORDER BY a.sortId, a.title"""
 
