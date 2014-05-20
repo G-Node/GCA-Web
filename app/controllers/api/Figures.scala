@@ -9,6 +9,7 @@ import play.api.libs.json._
 import scala.collection.JavaConversions._
 import play.api.libs.json.JsArray
 import utils.DefaultRoutesResolver._
+import service.util.EMPImplicits.EMPFromRequest
 
 /**
  * Figures controller.
@@ -50,7 +51,7 @@ object Figures extends Controller with GCAAuth {
    *
    * @return  OK / Failed
    */
-  def list(id: String) = AccountAwareAction { request =>
+  def list(id: String) = AccountAwareAction { implicit request =>
     Ok(JsArray(
       for (fig <- asScalaSet(
           AbstractService().get(id).figures
@@ -66,7 +67,7 @@ object Figures extends Controller with GCAAuth {
    *
    * @return  OK / Failed
    */
-  def download(id: String) = AccountAwareAction { request =>
+  def download(id: String) = AccountAwareAction { implicit request =>
     Ok.sendFile(FigureService().openFile(
       FigureService().get(id)
     ))

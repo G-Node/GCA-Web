@@ -1,7 +1,7 @@
 package service
 
 import org.scalatest.junit.JUnitSuite
-import service.util.DBUtil
+import service.util.{EntityManagerProvider, DBUtil}
 import play.api.test.FakeApplication
 import org.junit.{Test, Before, AfterClass, BeforeClass}
 import play.api.Play
@@ -14,6 +14,8 @@ class UserStoreTest extends JUnitSuite with DBUtil {
   var emf: EntityManagerFactory = _
   var store: UserStore = _
   var assets: Assets = _
+  implicit var emp: EntityManagerProvider = _
+
   val existingAccountList = List (
     new IdentityId("alice@foo.com", "userpass"),
     new IdentityId("bob@bar.com", "userpass"),
@@ -26,6 +28,7 @@ class UserStoreTest extends JUnitSuite with DBUtil {
   @Before
   def before() : Unit = {
     emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
+    emp = EntityManagerProvider.fromFactory(emf)
     assets = new Assets(emf)
     assets.killDB()
     assets.fillDB()
@@ -78,6 +81,7 @@ class UserStoreTest extends JUnitSuite with DBUtil {
 
   @Test
   def testUpdate() {
+
     val acc1Opt = store.findAccount(new IdentityId("alice@foo.com", "userpass"))
     assert(acc1Opt.isDefined)
     val acc1 = acc1Opt.get

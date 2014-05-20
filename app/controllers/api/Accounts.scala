@@ -5,6 +5,7 @@ import play.api.libs.json._
 import utils.GCAAuth
 import utils.serializer.AccountFormat
 import utils.DefaultRoutesResolver._
+import service.util.EMPImplicits.EMPFromRequest
 
 
 /**
@@ -29,7 +30,7 @@ object Accounts extends Controller with GCAAuth {
     ))
   }
 
-  def listAccounts() = AuthenticatedAction(isREST = true) { request =>
+  def listAccounts() = AuthenticatedAction(isREST = true) { implicit request =>
 
     if(! request.user.isAdmin) {
       throw new IllegalAccessException("Need to be a site admin to obtain account list!")

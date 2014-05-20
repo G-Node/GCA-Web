@@ -33,8 +33,8 @@ class FigureServiceTest extends JUnitSuite with DBUtil {
     assets = new Assets(emf)
     assets.killDB()
     assets.fillDB()
-    srv = new FigureService(emf, "./figures")
-    abstrsrv = new AbstractService(emf, assets.figPath)
+    srv = FigureService(emf, "./figures")
+    abstrsrv = AbstractService(emf, assets.figPath)
   }
 
   @Test

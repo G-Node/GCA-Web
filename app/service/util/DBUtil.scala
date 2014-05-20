@@ -1,13 +1,45 @@
 package service.util
 
-import javax.persistence.{EntityTransaction, EntityManagerFactory, EntityManager}
+import javax.persistence.{EntityTransaction, EntityManagerFactory, EntityManager, Persistence}
+import play.api.mvc.Request
+
+trait EntityManagerProvider {
+  def entityManager() : EntityManager
+}
+
+object EntityManagerProvider {
+
+  def fromEntityManager(em: EntityManager) : EntityManagerProvider = new EntityManagerProvider {
+    override def entityManager(): EntityManager = em
+  }
+
+  def fromFactory(emf: EntityManagerFactory) : EntityManagerProvider = new EntityManagerProvider {
+    override def entityManager(): EntityManager = emf.createEntityManager()
+  }
+
+  def fromPersistenceUnit(pu: String) : EntityManagerProvider = fromFactory(Persistence.createEntityManagerFactory(pu))
+
+  def fromDefaultPersistenceUnit() : EntityManagerProvider = fromPersistenceUnit("defaultPersistenceUnit")
+
+  def fromRequest[A](req: Request[A]) : EntityManagerProvider = {
+    req match {
+      case emp: EntityManagerProvider => emp
+      case _ => fromDefaultPersistenceUnit()
+    }
+  }
+}
+
+object EMPImplicits {
+
+  implicit def EMPFromEntityManager(implicit em: EntityManager) = EntityManagerProvider.fromEntityManager(em)
+  implicit def EMPFromRequest[A](implicit req: Request[A]) = EntityManagerProvider.fromRequest(req)
+
+}
 
 /**
  * Helper for classes using JPA
  */
 trait DBUtil {
-
-  protected def emf: EntityManagerFactory
 
   /**
    * Handles a function call inside a transaction and passes an entity manager to
@@ -18,7 +50,7 @@ trait DBUtil {
    *
    * @return The value returned by func.
    */
-  def dbTransaction[A](func: (EntityManager, EntityTransaction) => A) : A = {
+  def dbTransaction[A](func: (EntityManager, EntityTransaction) => A)(implicit emp: EntityManagerProvider) : A = {
 
     synchronized {
 
@@ -27,7 +59,7 @@ trait DBUtil {
 
       try {
 
-        em = emf.createEntityManager()
+        em = emp.entityManager()
         tx = em.getTransaction
         tx.begin()
 
@@ -42,7 +74,6 @@ trait DBUtil {
       } finally {
 
         if (tx != null && tx.isActive) tx.commit()
-        if (em != null && em.isOpen) em.close()
 
       }
     }
@@ -57,19 +88,19 @@ trait DBUtil {
    *
    * @return The value returned by func.
    */
-  def dbQuery[A](func: (EntityManager) => A) : A = {
+  def dbQuery[A](func: (EntityManager) => A)(implicit emp: EntityManagerProvider) : A = {
 
     synchronized {
 
       var em: EntityManager = null
 
       try {
-        em = emf.createEntityManager()
+        em = emp.entityManager()
 
         func(em)
 
       } finally {
-        if (em != null && em.isOpen) em.close()
+        //no-op
       }
     }
   }

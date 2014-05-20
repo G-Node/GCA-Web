@@ -6,6 +6,8 @@ import collection.JavaConversions._
 
 trait PermissionsBase extends DBUtil  {
 
+  implicit val emp: EntityManagerProvider
+
   /**
    * Validates, that given object has uuid and is real
    *
@@ -53,7 +55,12 @@ trait PermissionsBase extends DBUtil  {
         }
       }
 
-      val objChecked = validate(obj)
+      if (obj.uuid == null)
+        throw new IllegalArgumentException("Unable to update an object without uuid")
+
+      val objChecked = em.find(obj.getClass, obj.uuid)
+      if (objChecked == null)
+        throw new EntityNotFoundException("Unable to find conference with uuid = " + obj.uuid)
 
       if (!objChecked.canWrite(account))
         throw new IllegalAccessException("No permissions for object with uuid = " + obj.uuid)

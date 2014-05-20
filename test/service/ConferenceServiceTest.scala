@@ -33,7 +33,7 @@ class ConferenceServiceTest extends JUnitSuite with DBUtil {
     assets = new Assets(emf)
     assets.killDB()
     assets.fillDB()
-    srv = new ConferenceService(emf)
+    srv = ConferenceService(emf)
   }
 
   @Test

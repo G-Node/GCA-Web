@@ -6,6 +6,7 @@ import utils.GCAAuth
 import models._
 import service.{AbstractService, ConferenceService}
 import java.net._
+import service.util.EMPImplicits.EMPFromRequest
 
 object Application extends Controller with GCAAuth {
 
@@ -97,7 +98,7 @@ object Application extends Controller with GCAAuth {
     }
   }
 
-  def adminConference(confId: String) = AuthenticatedAction { request =>
+  def adminConference(confId: String) = AuthenticatedAction { implicit request =>
     val confServ = ConferenceService()
     val conference = confServ.get(confId)
 
@@ -109,7 +110,7 @@ object Application extends Controller with GCAAuth {
   }
 
 
-  def adminAbstracts(confId: String) = AuthenticatedAction { request =>
+  def adminAbstracts(confId: String) = AuthenticatedAction { implicit request =>
     val confServ = ConferenceService()
     val conference = confServ.get(confId)
 
@@ -129,7 +130,7 @@ object Application extends Controller with GCAAuth {
   }
 
 
-  def viewAbstract(id: String) = AccountAwareAction { request =>
+  def viewAbstract(id: String) = AccountAwareAction { implicit request =>
     val abstrService = AbstractService()
     val abstr = request.user match {
       case Some(account) => abstrService.getOwn(id, account)

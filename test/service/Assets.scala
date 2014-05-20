@@ -13,13 +13,15 @@ import scala.{Option => ?}
 import collection.JavaConversions._
 import models._
 import models.Model._
-import service.util.DBUtil
+import service.util.{EntityManagerProvider, DBUtil}
 import javax.persistence.EntityManagerFactory
 import play.Play
 import java.io.File
 import org.joda.time.DateTime
 
 class Assets(val emf: EntityManagerFactory) extends DBUtil {
+
+  implicit val emp: EntityManagerProvider = EntityManagerProvider.fromFactory(emf)
 
   implicit class PositionedLSeq[A <: PositionedModel](l: Seq[A]) {
     def addPosition():Seq[A] = {

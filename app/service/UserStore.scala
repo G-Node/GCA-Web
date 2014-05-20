@@ -11,20 +11,13 @@ import play.api.db.DB
 import play.api.Play.current
 import org.joda.time.DateTime
 import utils.AnormExtension._
-import service.util.DBUtil
-import javax.persistence.{TypedQuery, Persistence, EntityManagerFactory}
+import service.util.{EntityManagerProvider, DBUtil}
+import javax.persistence.TypedQuery
 import models.Account
 import collection.JavaConversions._
-import javax.persistence.criteria.{CriteriaQuery, CriteriaBuilder}
 
 
 class UserStore(application: Application) extends UserServicePlugin(application) with DBUtil {
-
-  lazy val myEmf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-
-  def emf: EntityManagerFactory = {
-    myEmf
-  }
 
   def resultToAccount(result: JList[Account]) : Option[Account] = {
     result.size() match {
@@ -34,7 +27,8 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     }
   }
 
-  def list() : Seq[Account] = {
+  def list()(implicit emp: EntityManagerProvider) : Seq[Account] = {
+
     dbQuery { em =>
       val builder = em.getCriteriaBuilder
       val criteria = builder.createQuery(classOf[Account])
@@ -44,7 +38,8 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     }
   }
 
-  def findAccount(id: IdentityId) : Option[Account] = {
+  def findAccount(id: IdentityId)(implicit emp: EntityManagerProvider) : Option[Account] = {
+
     val user: Option[Account] = dbTransaction { (em, tx) =>
 
       //for the userpass provider we want case insensitive lookup
@@ -66,7 +61,27 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     user
   }
 
+  def findByEmail(email: String)(implicit emp: EntityManagerProvider): List[Account] = {
+
+    Logger.debug("findByEmail $email")
+
+    dbTransaction { (em, tx) =>
+      val queryStr =
+        """SELECT a from Account a
+           WHERE LOWER(a.mail) = LOWER(:mail)"""
+
+      val query : TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
+      query.setParameter("mail", email)
+      query.getResultList.toSet.toList
+    }
+  }
+
+  // UserService implements
+
   def find(id: IdentityId): Option[Identity] = {
+
+    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
+
     Logger.debug("find")
     val account = findAccount(id)
     Logger.debug("found:" + account.toString)
@@ -74,6 +89,9 @@ class UserStore(application: Application) extends UserServicePlugin(application)
   }
 
   def findByEmailAndProvider(email: String, providerId: String): Option[Identity] = {
+
+    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
+
     Logger.debug("findByEmailAndProvider $email, $providerId")
 
     dbTransaction { (em, tx) =>
@@ -88,21 +106,9 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     }
   }
 
-  def findByEmail(email: String): List[Account] = {
-    Logger.debug("findByEmail $email")
-
-    dbTransaction { (em, tx) =>
-      val queryStr =
-        """SELECT a from Account a
-           WHERE LOWER(a.mail) = LOWER(:mail)"""
-
-      val query : TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
-      query.setParameter("mail", email)
-      query.getResultList.toSet.toList
-    }
-  }
-
   def save(user: Identity): Identity = {
+
+    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
 
     val dbUser: Option[Account] = findAccount(user.identityId)
 

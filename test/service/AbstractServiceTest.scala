@@ -32,7 +32,7 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
     assets = new Assets(emf)
     assets.killDB()
     assets.fillDB()
-    srv = new AbstractService(emf, "./figures")
+    srv = AbstractService(emf, "./figures")
   }
 
   @Test
