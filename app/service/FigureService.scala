@@ -6,8 +6,6 @@ import play.api.libs.Files.TemporaryFile
 import play.Play
 import javax.persistence._
 import service.util.{EntityManagerProvider, DBUtil}
-import service.util.EMPImplicits.EMPFromRequest
-import play.api.mvc.Request
 
 /**
  * Service class for figures.
@@ -180,7 +178,7 @@ object FigureService {
    *
    * @return A new figure service.
    */
-  def apply[A]()(implicit req: Request[A]) : FigureService = {
+  def apply[A]()(implicit emp: EntityManagerProvider) : FigureService = {
     new FigureService(Play.application().configuration().getString("file.fig_path", "./figures"))
   }
 
