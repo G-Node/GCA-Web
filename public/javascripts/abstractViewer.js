@@ -33,6 +33,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate"], function(models, t
             function onAbstractData(abstrObj) {
                 var abstr = models.Abstract.fromObject(abstrObj);
                 self.selectedAbstract(abstr);
+                MathJax.Hub.Queue(["Typeset",MathJax.Hub]); //re-render equations
 
                 if(isAdmin === "true" || isOwner === "true") {
                     var logUrl = "/api/abstracts/" + abstrId + "/stateLog";
