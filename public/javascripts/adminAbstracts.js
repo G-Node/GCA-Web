@@ -22,10 +22,65 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
         self.abstractsData = null;
         self.conference = ko.observable(null);
         self.abstracts = ko.observableArray(null);
+        self.abstractNumbers = ko.observable({ total: 0, active: 0 });
 
         //state related things
         self.stateHelper = astate.changeHelper;
         self.selectedAbstract = ko.observable(null);
+        self.selectableStates = ko.observableArray(['InPreparation', 'Submitted', 'InReview', 'Accepted', 'Rejected', 'InRevision', 'Withdrawn']);
+
+        self.selectedStates = ko.observableArray(['Submitted', 'InReview', 'Accepted', 'Rejected', 'InRevision']);
+
+        ko.bindingHandlers.bsChecked = {
+            init: function(element, valueAccessor) {
+                $(element).change(function() {
+
+                    var value = ko.unwrap(valueAccessor());
+                    var this_val = $(this).val();
+                    var is_active = ! $(this.parentElement).hasClass('active'); //we are doing this before the change
+                    var idx = value.indexOf(this_val);
+
+                    var change = true;
+                    if (!is_active && idx > -1) {
+                        value.splice(idx, 1);
+                    } else if (is_active && idx < 0) {
+                        value.push(this_val);
+                    } else {
+                        change = false;
+                    }
+
+                    if (change) {
+                        //we don't seem to trigger notifications automatically
+                        valueAccessor().notifySubscribers(value, 'arrayChange');
+                    }
+
+                });
+            },
+            update: function(element, valueAccessor, allBindings) {
+                // First get the latest data that we're bound to
+                var value = ko.unwrap(valueAccessor());
+                var myval = $(element).val();
+                var idx = value.indexOf(myval);
+
+                var should_be_active = idx > -1;
+                var is_active = $(element.parentElement).hasClass('active');
+
+                if (should_be_active != is_active) {
+                    $(element.parentElement).toggleClass('active');
+                }
+            }
+        };
+
+        self.showAbstractsWithState = function(visibleStates) {
+            var new_list = self.abstractsData.filter(function(elm) {
+                return visibleStates.indexOf(elm.state()) > -1;
+            });
+
+            self.abstracts(new_list);
+            self.abstractNumbers({ total: self.abstractsData.length, active: new_list.length });
+        };
+
+        self.selectedStates.subscribe(self.showAbstractsWithState, 'null', 'arrayChange');
 
         self.init = function() {
             self.ensureData();
@@ -40,6 +95,11 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
             }
         };
 
+        self.onSelStateClick = function() {
+            console.log('clicked');
+            console.log($(this));
+        };
+
         self.setError = function(level, text, description) {
             if (text === null) {
                 self.message(null);
@@ -47,7 +107,6 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
                 self.message({message: text, level: 'alert-' + level, desc: description});
             }
         };
-
 
         //helper functions
         self.makeAbstractLink = function(abstract) {
@@ -164,8 +223,7 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
                 });
 
                 self.abstractsData = absList;
-                self.abstracts(absList);
-
+                self.showAbstractsWithState(self.selectedStates());
                 self.isLoading(false);
             }
         };

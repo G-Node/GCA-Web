@@ -27,6 +27,18 @@
             <h1>@conference.name <small>Abstracts</small></h1>
         </div>
 
+        <!-- abstract state selector -->
+        <div><p data-bind="with: abstractNumbers">Showing abstracts: <span data-bind="text: active"></span>
+            of <span data-bind="text: total"></span>.</p>
+            <div class="btn-group" data-toggle="buttons" data-bind="foreach: selectableStates">
+                <label class="btn btn-primary btn-xs">
+                    <input type="checkbox" data-bind="checkedValue: $data, bsChecked: $root.selectedStates">
+                    <span data-bind="text: $data"></span>
+                </label>
+            </div>
+        </div>
+        <hr>
+
         <!-- The abstract list -->
         <table class="table .table-condensed">
             <thead>
