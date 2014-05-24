@@ -40,7 +40,7 @@
         <hr>
 
         <!-- The abstract list -->
-        <table class="table .table-condensed">
+        <table class="table table-condensed">
             <thead>
                 <tr>
                     <th>Authors</th>
@@ -52,7 +52,7 @@
             <tbody data-bind="foreach: abstracts">
                 <tr>
                     <td><span data-bind="text: $root.mkAuthorList($data)"></span></td>
-                    <td><b><span data-bind="text: title"> </span></b></td>
+                    <td><span data-bind="text: title"> </span></td>
                     <td>
                         <div class="dropdown">
                             <button id="statemenu" type="button" class="btn btn-xs btn-default dropdown-toggle"
