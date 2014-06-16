@@ -146,6 +146,7 @@ object Abstracts extends Controller with  GCAAuth {
     Logger.debug(s"Updating abstract with uuid: [$id]")
 
     val abstracts = AbstractService()
+    val conferenceService = ConferenceService()
 
     val abs = request.body.as[Abstract]
 
@@ -153,6 +154,13 @@ object Abstracts extends Controller with  GCAAuth {
       //TODO: should that be allowed? I guess not - ck
       throw new RuntimeException("Trying to change the id of an abstract!")
       Logger.debug(s"Updating [$id]: UUID mismatch")
+    }
+
+    val oldAbstract = abstracts.getOwn(abs.uuid, request.user)
+    val conference = oldAbstract.conference
+
+    if(!conference.isOpen && oldAbstract.state != AbstractState.InRevision) {
+      throw new IllegalAccessException("Conference is closed and abstract not in 'InRevision' state!")
     }
 
     val newAbstract = abstracts.update(abs, request.user)
