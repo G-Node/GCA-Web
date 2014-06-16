@@ -66,6 +66,15 @@ class AbstractsCtrlTest extends BaseCtrlTest {
 
     val loadedAbs = contentAsJson(reqAuthResult).as[Abstract]
     assert(loadedAbs.title == oldAbstract.title)
+
+    //make sure we cannot create an abstract if conf is closed
+
+    val bobCookie =  getCookie(assets.bob.identityId, "testtest")
+    val confIdClosed = assets.conferences(1).uuid
+    val rq = FakeRequest(POST, s"/api/conferences/$confIdClosed/abstracts").withJsonBody(body).withCookies(bobCookie)
+    val rqResult = route(AbstractsCtrlTest.app, rq).get
+    assert(status(rqResult) == FORBIDDEN)
+
   }
 
   @Test
