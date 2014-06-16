@@ -39,6 +39,12 @@ object Abstracts extends Controller with  GCAAuth {
     val abs = request.body.as[Abstract]
 
     val conference = conferenceService.get(id)
+
+    if(!conference.isOpen &&
+      !(request.user.isAdmin || conference.isOwner(request.user))) {
+      throw new IllegalAccessException("Conference is closed!")
+    }
+
     val newAbs = abstractSservice.create(abs, conference, request.user)
 
     Created(Json.toJson(newAbs))
