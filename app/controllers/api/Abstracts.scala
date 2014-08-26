@@ -274,8 +274,8 @@ object Abstracts extends Controller with  GCAAuth {
       Logger.debug("Invalid patch description")
       throw new IllegalArgumentException("Invalid patch description")
     }.map {
-      case(a, b, Some(v: JsNumber)) =>  (a, b, Option(v.value.toInt)) //we currently have no double field to patch
-      case(a, b, c) => (a, b, c)
+      case("add", "/sortId", Some(v: JsNumber)) =>  PatchAddSortId(v.value.toInt) //we currently have no double field to patch
+      case _ => throw new IllegalArgumentException("Unsupported patch operation")
     }.toList
 
     val patched = srv.patch(abstr, patches)

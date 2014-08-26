@@ -16,6 +16,10 @@ import scala.collection.JavaConversions._
 import java.io.File
 import play.Play
 
+//for the patch method
+abstract class PatchOp
+case class PatchAddSortId(id: Int) extends PatchOp
+case class PatchAddDOI(doi: String) extends PatchOp
 
 /**
  * Service class that provides data access logic for abstracts and nested
@@ -414,11 +418,11 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
     }
   }
 
-  def patch(abstr: Abstract, patches: List[(String, String, Option[Any])]) = {
+  def patch(abstr: Abstract, patches: List[PatchOp]) = {
     dbTransaction { (em, tx) =>
 
       patches.foreach {
-        case ("add", "/sortId", Some(value: Int)) => abstr.sortId = value
+        case PatchAddSortId(id: Int) => abstr.sortId = id
         case _ => throw new IllegalArgumentException("Invalid value to patch")
       }
 

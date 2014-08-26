@@ -232,14 +232,13 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
   @Test
   def testPatch() {
     val abstr = assets.abstracts(0)
-    val updates = List(("add", "/sortId", Some(1)))
+    val updates = List(PatchAddSortId(1))
     val newAbstr = srv.patch(abstr, updates)
 
     assert(newAbstr.sortId == 1)
 
     intercept[IllegalArgumentException] {
-      srv.patch(abstr,  List(("add", "/sortId", Some("NaN"))))
-      srv.patch(abstr,  List(("add", "/uuid", Some("foo"))))
+      srv.patch(abstr,  List(PatchAddDOI("xx")))
     }
   }
 
