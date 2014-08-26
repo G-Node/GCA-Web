@@ -255,4 +255,30 @@ object Abstracts extends Controller with  GCAAuth {
 
     Ok(Json.toJson(stateLog))
   }
+
+  def patch(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
+    val patchReads = Reads.list(((__ \ "op").read[String] and
+      (__ \ "path").read[String] and (__ \ "value").readNullable[JsValue]).tupled)
+
+    val account = request.user
+    val srv = AbstractService()
+    val abstr = srv.getOwn(id, account)
+    val isAdmin = account.isAdmin || abstr.conference.owners.contains(account)
+
+    if (!isAdmin) {
+      //patching is only for fields which require admin accesss, such as sortId + doi
+      throw new IllegalAccessException(s"No permission to patch the abstract")
+    }
+
+    val patches = patchReads.reads(request.body).getOrElse {
+      Logger.debug("Invalid patch description")
+      throw new IllegalArgumentException("Invalid patch description")
+    }.map {
+      case(a, b, Some(v: JsNumber)) =>  (a, b, Option(v.value.toInt)) //we currently have no double field to patch
+      case(a, b, c) => (a, b, c)
+    }.toList
+
+    val patched = srv.patch(abstr, patches)
+    Ok(Json.toJson(patched))
+  }
 }
