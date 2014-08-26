@@ -414,6 +414,18 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
     }
   }
 
+  def patch(abstr: Abstract, patches: List[(String, String, Option[Any])]) = {
+    dbTransaction { (em, tx) =>
+
+      patches.foreach {
+        case ("add", "/sortId", Some(value: Int)) => abstr.sortId = value
+        case _ => throw new IllegalArgumentException("Invalid value to patch")
+      }
+
+      em.merge(abstr)
+    }
+  }
+
 }
 
 
