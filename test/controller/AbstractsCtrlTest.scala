@@ -226,9 +226,10 @@ class AbstractsCtrlTest extends BaseCtrlTest {
   }
 
   @Test
-  def testPatchAbstract(): Unit = {
+  def testPatchAbstract() {
     val abstr = assets.abstracts(1)
-    val patch = Json.arr(Json.obj("op" -> "add", "path" -> "/sortId", "value" -> 2))
+    val patch = Json.arr(Json.obj("op" -> "add", "path" -> "/sortId", "value" -> 2),
+                         Json.obj("op" -> "add", "path" -> "/doi", "value" -> "10.12751/nncn.test.0042"))
     val absUUID = abstr.uuid
     val reqNoAuth = FakeRequest("PATCH", s"/api/abstracts/$absUUID").withJsonBody(patch)
 
@@ -245,6 +246,10 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     reqAuth = reqAuth.withCookies(cookie)
     reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
     assert(status(reqAuthResult) == OK)
+
+    val loadedAbs = contentAsJson(reqAuthResult).as[Abstract]
+    assert(loadedAbs.sortId == 2)
+    assert(loadedAbs.doi == "10.12751/nncn.test.0042")
   }
 
 }
