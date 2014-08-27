@@ -423,6 +423,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
 
       patches.foreach {
         case PatchAddSortId(id: Int) => abstr.sortId = id
+        case PatchAddDOI(doi: String) => abstr.doi = doi
         case _ => throw new IllegalArgumentException("Invalid value to patch")
       }
 

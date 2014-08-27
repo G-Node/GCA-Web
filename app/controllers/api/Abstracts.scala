@@ -266,7 +266,7 @@ object Abstracts extends Controller with  GCAAuth {
     val isAdmin = account.isAdmin || abstr.conference.owners.contains(account)
 
     if (!isAdmin) {
-      //patching is only for fields which require admin accesss, such as sortId + doi
+      //patching is only for fields which require admin access, such as sortId + doi
       throw new IllegalAccessException(s"No permission to patch the abstract")
     }
 
@@ -274,7 +274,8 @@ object Abstracts extends Controller with  GCAAuth {
       Logger.debug("Invalid patch description")
       throw new IllegalArgumentException("Invalid patch description")
     }.map {
-      case("add", "/sortId", Some(v: JsNumber)) =>  PatchAddSortId(v.value.toInt) //we currently have no double field to patch
+      case("add", "/sortId", Some(v: JsNumber)) =>  PatchAddSortId(v.value.toInt)
+      case("add", "/doi", Some(v: JsString)) => PatchAddDOI(v.value)
       case _ => throw new IllegalArgumentException("Unsupported patch operation")
     }.toList
 
