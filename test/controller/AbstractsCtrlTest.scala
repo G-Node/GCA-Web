@@ -225,6 +225,28 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     assert(status(reqAuthResult) == OK)
   }
 
+  @Test
+  def testPatchAbstract(): Unit = {
+    val abstr = assets.abstracts(1)
+    val patch = Json.arr(Json.obj("op" -> "add", "path" -> "/sortId", "value" -> 2))
+    val absUUID = abstr.uuid
+    val reqNoAuth = FakeRequest("PATCH", s"/api/abstracts/$absUUID").withJsonBody(patch)
+
+    val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
+    assert(status(reqNoAuthResult) == UNAUTHORIZED)
+
+    //bob should not be allowed to do this
+    val bobCookie = getCookie(assets.bob.identityId, "testtest")
+    var reqAuth = reqNoAuth.withCookies(bobCookie)
+    var reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
+    assert(status(reqAuthResult) == FORBIDDEN)
+
+    //now try as alice (who is conference admin)
+    reqAuth = reqAuth.withCookies(cookie)
+    reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
+    assert(status(reqAuthResult) == OK)
+  }
+
 }
 
 object AbstractsCtrlTest {
