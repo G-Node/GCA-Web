@@ -55,12 +55,12 @@
         </div>
     </div>
 
-    <div class="acknowledgements">
+    <div class="acknowledgements" data-bind="if: acknowledgements">
         <h4>Acknowledgements</h4>
         <p data-bind="text: acknowledgements"></p>
     </div>
 
-    <div class="references">
+    <div class="references" data-bind="if: references && references.length">
         <h4>References</h4>
         <ol data-bind="foreach: references">
             <li data-bind="html: $data.format()"></li>
