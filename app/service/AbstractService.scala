@@ -36,6 +36,11 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
    *         certain conference.
    */
   def list(conference: Conference) : Seq[Abstract] = {
+
+    if(!conference.isPublished) {
+      return Seq.empty[Abstract]
+    }
+
     dbQuery { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
@@ -45,7 +50,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
 
       val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
       query.setParameter("uuid", conference.uuid)
-      query.setParameter("state", AbstractState.Published)
+      query.setParameter("state", AbstractState.Accepted)
       asScalaBuffer(query.getResultList)
     }
   }
