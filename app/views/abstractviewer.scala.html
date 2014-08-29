@@ -26,22 +26,7 @@
     <!-- Knockout non-flicker  -->
     <div style="display: none" data-bind="visible: true">
 
-    @components.singleabstract("selectedAbstract"){ <!-- header --> }{
-        <!-- footer -->
-
-        <hr class="separator">
-        <div class="foot-info">
-            <ul>
-                <!-- ko with: $root.conference -->
-                <li><span class="kv-key">Identifier:</span> <span data-bind="html: $data.formatSortId($parent.sortId)"></span></li>
-                <li><span class="kv-key">Conference:</span> <span data-bind="html: cite"></span></li>
-                <li><span class="kv-key">Citation:</span> <span data-bind="html: formatCitation($parent)"></span></li>
-                <!-- /ko -->
-                <li data-bind="if: $data.doi"><span class="kv-key">doi</span>:
-                    <a data-bind="text: $data.doi, attr: {href: $data.doiLink()}"></a></li>
-            </ul>
-        </div>
-    }
+    @components.singleabstract("selectedAbstract", Some("conference")){ <!-- header --> }{ <!-- footer --> }
 
     @components.statelog("stateLog") {
         <hr>
