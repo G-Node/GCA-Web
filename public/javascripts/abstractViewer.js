@@ -11,6 +11,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate"], function(models, t
         var self = tools.inherit(this, msg.MessageVM);
 
         self.selectedAbstract = ko.observable(null);
+        self.conference = ko.observable(null);
         self.stateLog = ko.observable(null);
 
         self.init = function() {
@@ -35,6 +36,8 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate"], function(models, t
                 self.selectedAbstract(abstr);
                 MathJax.Hub.Queue(["Typeset",MathJax.Hub]); //re-render equations
 
+                self.loadConference();
+
                 if(isAdmin === "true" || isOwner === "true") {
                     var logUrl = "/api/abstracts/" + abstrId + "/stateLog";
                     $.getJSON(logUrl, onLogData).fail(self.ioFailHandler);
@@ -49,7 +52,18 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate"], function(models, t
                 self.stateLog(logData);
                 self.isLoading(false);
             }
-        }
+        };
+
+        self.loadConference = function() {
+            var confUrl = "/api/conferences/" + confId; // we should be reading this from the abstract
+            $.getJSON(confUrl, onConferenceData).fail(self.ioFailHandler);
+
+            function onConferenceData(confObj) {
+                var conf = models.Conference.fromObject(confObj);
+                self.conference(conf);
+            }
+
+        };
     }
 
     // start the editor

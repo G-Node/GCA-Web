@@ -1,4 +1,4 @@
-@(koAbstractName: String)(header: Html)(footer: Html)
+@(koAbstractName: String, koConfName: Option[String])(header: Html)(footer: Html)
 
 <!-- The abstract viewer -->
 <div id="abstract" data-bind="with: @koAbstractName">
@@ -55,17 +55,31 @@
         </div>
     </div>
 
-    <div class="acknowledgements">
+    <div class="acknowledgements" data-bind="if: acknowledgements">
         <h4>Acknowledgements</h4>
         <p data-bind="text: acknowledgements"></p>
     </div>
 
-    <div class="references">
+    <div class="references" data-bind="if: references && references.length">
         <h4>References</h4>
         <ol data-bind="foreach: references">
             <li data-bind="html: $data.format()"></li>
         </ol>
     </div>
+
+    @koConfName.map { conference =>
+        <hr class="separator">
+        <div class="foot-info">
+            <ul>
+                <!-- ko with: $root.@conference -->
+                <li><span class="kv-key">Conference:</span> <span data-bind="html: cite"></span></li>
+                <li><span class="kv-key">Citation:</span> <span data-bind="html: formatCitation($parent)"></span></li>
+                <!-- /ko -->
+                <li data-bind="if: $data.doi"><span class="kv-key">doi</span>:
+                    <a data-bind="text: $data.doi, attr: {href: $data.doiLink()}"></a></li>
+            </ul>
+        </div>
+    }
 
     @footer
 

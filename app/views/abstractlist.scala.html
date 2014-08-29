@@ -59,25 +59,23 @@
 
     <!-- The abstract viewer -->
 
-    @components.singleabstract("selectedAbstract") {
+    @components.singleabstract("selectedAbstract", Some("conference")) {
         <!-- the header of the singleabstract viewer -->
         <ul class="pager">
             <li class="previous" data-bind="css: { disabled: $parent.prevAbstract($data) == null }">
                 <a data-bind="attr: {href : $parent.prevAbstract($data)}">&larr; Previous</a>
+            </li>
+            <li>
+               <!-- ko with: $root.conference -->
+               <span data-bind="html: formatSortId($parent.sortId)"></span>
+               <!-- /ko -->
             </li>
             <li class="next" data-bind="css: { disabled: $parent.nextAbstract($data) == null }">
                 <a data-bind="attr: {href : $parent.nextAbstract($data)}">Next &rarr;</a>
             </li>
         </ul>
     } {
-        <!-- the footer of the singleabstract viewer -->
-        <hr class="separator">
-
-        <div class="foot-info">
-            <p><b>Identifier:</b> <span data-bind="html: $parent.makeAbstractID($data)"></span></p>
-            <p data-bind="with: $parent.conference"><b>Conference:</b> <span data-bind="html: cite"></span></p>
-            <p><b>Type:</b> <span data-bind="html: formatType()"></span></p>
-        </div>
+        <!-- footer -->
     }
 
     </div> <!-- KO !flickerbox -->
