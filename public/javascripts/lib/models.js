@@ -287,6 +287,36 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
         self.abstracts = abstracts || [];
         self.topics = topics || [];
 
+        self.getGroupById = function(groupId) {
+            var foundGroup = null;
+            for (var i = 0; i < self.groups.length; i++) {
+                var curGroup = self.groups[i];
+                if (curGroup.prefix === groupId) {
+                    foundGroup = curGroup;
+                    break;
+                }
+            }
+
+            return foundGroup;
+        };
+
+        self.formatSortId = function(sortId) {
+            if (sortId === 0) {
+                return "";
+            }
+
+            var aid =  sortId & 0xFFFF;
+            var gid = (sortId & 0xFFFF0000) >> 16;
+
+            var prefix = "U";
+            var g = self.getGroupById(gid);
+            if (g !== null) {
+                prefix = g.short;
+            }
+
+            return prefix + "&nbsp;" + aid;
+        };
+
         self.toObject = function() {
             var prop,
                 obj = {};
