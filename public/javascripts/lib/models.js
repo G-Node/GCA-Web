@@ -848,7 +848,7 @@ define(["lib/tools", "lib/accessors",  "moment"], function(tools, acc, moment) {
             var res = "";
             for(var i = 0; i < self.authors.length; i++) {
                 if (i != 0) {
-                    res += i+1 < self.authors.length ? ', ' : ' and ';
+                    res += ', ';
                 }
                 res += self.authors[i].formatCitation();
             }
