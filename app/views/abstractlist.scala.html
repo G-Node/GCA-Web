@@ -65,6 +65,11 @@
             <li class="previous" data-bind="css: { disabled: $parent.prevAbstract($data) == null }">
                 <a data-bind="attr: {href : $parent.prevAbstract($data)}">&larr; Previous</a>
             </li>
+            <li>
+               <!-- ko with: $root.conference -->
+               <span data-bind="html: formatSortId($parent.sortId)"></span>
+               <!-- /ko -->
+            </li>
             <li class="next" data-bind="css: { disabled: $parent.nextAbstract($data) == null }">
                 <a data-bind="attr: {href : $parent.nextAbstract($data)}">Next &rarr;</a>
             </li>
