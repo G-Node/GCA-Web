@@ -1,8 +1,16 @@
+require.config({
+    baseUrl: '/assets/javascripts/',
+    paths: {
+        'moment': ['//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min']
+    },
+    noGlobal: true
+});
+
 /**
  * Module for misc utility functions
  * @module {models}
  */
-define(["lib/tools", "lib/accessors"], function(tools, acc) {
+define(["lib/tools", "lib/accessors",  "moment"], function(tools, acc, moment) {
     "use strict";
 
     /**
@@ -317,6 +325,11 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
             return prefix + "&nbsp;" + aid;
         };
 
+        self.formatCitation = function(abstract) {
+            var year = moment(self.start).year();
+            return abstract.formatAuthorsCitation() + " (" + year + ") " + abstract.title + '. ' + self.name + '.';
+        };
+
         self.toObject = function() {
             var prop,
                 obj = {};
@@ -419,6 +432,21 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
 
             return formatted.sort().join(", ");
         };
+
+        self.formatCitation = function() {
+          var res = self.lastName + ' ';
+            res += self.makeInitials(self.firstName);
+            res += self.makeInitials(self.middleName);
+            return res;
+        };
+
+        self.makeInitials = function(name) {
+            if (!name) {
+                return "";
+            }
+
+           return name.split(' ').map(function(x){ return x[0]; }).join('');
+        }
 
     }
 
@@ -814,6 +842,17 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
 
         self.doiLink = function() {
             return self.doi ? 'http://dx.doi.org/' + self.doi : null;
+        };
+
+        self.formatAuthorsCitation = function() {
+            var res = "";
+            for(var i = 0; i < self.authors.length; i++) {
+                if (i != 0) {
+                    res += i+1 < self.authors.length ? ', ' : ' and ';
+                }
+                res += self.authors[i].formatCitation();
+            }
+            return res;
         };
 
         self.toObject = function() {
