@@ -782,6 +782,10 @@ define(["lib/tools", "lib/accessors"], function(tools, acc) {
           return self.isTalk === true ? "Talk" : "Poster";
         };
 
+        self.doiLink = function() {
+            return self.doi ? 'http://dx.doi.org/' + self.doi : null;
+        };
+
         self.toObject = function() {
             var prop,
                 obj = {};
