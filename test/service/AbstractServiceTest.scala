@@ -38,7 +38,7 @@ class AbstractServiceTest extends JUnitSuite with DBUtil {
   @Test
   def testList() : Unit = {
     var abstracts = srv.list(assets.conferences(0))
-    assert(abstracts.size == assets.abstracts.count{ _.state == AbstractState.Published })
+    assert(abstracts.size == assets.abstracts.count{ _.state == AbstractState.Accepted })
 
     abstracts = srv.list(assets.conferences(1))
     assert(abstracts.size == 0)
