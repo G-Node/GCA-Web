@@ -124,7 +124,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
   }
 
   /**
-   * Return a published abstract by id.
+   * Return a published (= Accepted && Conference.isPublished) abstract by id.
    *
    * @param id The id of the abstract.
    *
@@ -139,14 +139,14 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
            LEFT JOIN FETCH a.owners
            LEFT JOIN FETCH a.authors
            LEFT JOIN FETCH a.affiliations
-           LEFT JOIN FETCH a.conference
+           LEFT JOIN FETCH a.conference c
            LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
-           WHERE a.state = :state AND a.uuid = :uuid"""
+           WHERE c.isPublished = TRUE AND a.state = :state AND a.uuid = :uuid"""
 
       val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
       query.setParameter("uuid", id)
-      query.setParameter("state", AbstractState.Published)
+      query.setParameter("state", AbstractState.Accepted)
       query.getSingleResult
     }
   }
