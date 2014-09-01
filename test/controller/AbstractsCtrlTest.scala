@@ -132,7 +132,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     val loadedAbs = contentAsJson(reqAuthResult).as[Seq[Abstract]]
 
     //Assure we have at least one, but none that is not published
-    assert(loadedAbs.length > 0 && loadedAbs.count{ _.state != AbstractState.Published } == 0)
+    assert(loadedAbs.length > 0 && loadedAbs.count{ _.state != AbstractState.Accepted } == 0)
   }
 
   @Test
