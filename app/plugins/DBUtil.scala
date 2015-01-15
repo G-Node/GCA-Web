@@ -3,6 +3,7 @@ package plugins
 import javax.persistence.{EntityTransaction, EntityManager, Persistence}
 
 import play.api._
+import play.api.Logger._
 
 /**
  * Plugin that provides an configured entity manager factory and
@@ -12,6 +13,16 @@ class DBUtil(implicit app: Application) extends Plugin {
 
   private lazy val emf = Persistence.createEntityManagerFactory(DBUtil.DEFAULT_UNIT)
   private lazy val tlem = new ThreadLocalEM
+
+
+  override def onStart(): Unit = {
+    info("DBUtil: activating  plugin")
+  }
+
+
+  override def onStop(): Unit = {
+    info("DBUtil: stopping  plugin")
+  }
 
   /**
    * Get a thread local entity manager.
