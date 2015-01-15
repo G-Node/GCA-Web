@@ -15,7 +15,7 @@ import javax.persistence._
 import play.api._
 import models._
 import plugins.DBUtil._
-import service.util.{EntityManagerProvider, PermissionsBase}
+import service.util.PermissionsBase
 
 import scala.collection.JavaConversions._
 
