@@ -1,14 +1,14 @@
 package controllers.api
 
+import play.api.libs.json.{JsArray, _}
 import play.api.mvc._
-import service.{FigureService, AbstractService}
-import models.Figure
+import service.{AbstractService, FigureService}
+import utils.DefaultRoutesResolver._
 import utils.GCAAuth
 import utils.serializer.FigureFormat
-import play.api.libs.json._
+import models.Figure
+
 import scala.collection.JavaConversions._
-import play.api.libs.json.JsArray
-import utils.DefaultRoutesResolver._
 
 /**
  * Figures controller.
@@ -17,6 +17,8 @@ import utils.DefaultRoutesResolver._
 object Figures extends Controller with GCAAuth {
 
   implicit val figFormat = new FigureFormat()
+  val abstractService = AbstractService()
+  val figureService = FigureService()
 
   /**
    * Upload file with a figure to the specified abstract (id).
@@ -30,7 +32,7 @@ object Figures extends Controller with GCAAuth {
    * @return  OK / Failed
    */
   def upload(id: String) = AuthenticatedAction(parse.multipartFormData, isREST = true) { implicit request =>
-    val abstr = AbstractService().getOwn(id, request.user)
+    val abstr = abstractService.getOwn(id, request.user)
     val tempfile = request.body.file("file").map {
       figure => figure.ref
     }.getOrElse {
@@ -38,7 +40,7 @@ object Figures extends Controller with GCAAuth {
     }
 
     val jsfig = Json.parse(request.body.dataParts("figure")(0)).as[Figure]
-    val figure = FigureService().create(jsfig, tempfile, abstr, request.user)
+    val figure = figureService.create(jsfig, tempfile, abstr, request.user)
 
     Created(figFormat.writes(figure))
   }
@@ -53,7 +55,7 @@ object Figures extends Controller with GCAAuth {
   def list(id: String) = AccountAwareAction { implicit request =>
     Ok(JsArray(
       for (fig <- asScalaSet(
-          AbstractService().get(id).figures
+          abstractService.get(id).figures
         ).toSeq
       ) yield figFormat.writes(fig)
     ))
@@ -67,8 +69,8 @@ object Figures extends Controller with GCAAuth {
    * @return  OK / Failed
    */
   def download(id: String) = AccountAwareAction { implicit request =>
-    Ok.sendFile(FigureService().openFile(
-      FigureService().get(id)
+    Ok.sendFile(figureService.openFile(
+      figureService.get(id)
     ))
   }
 
@@ -80,7 +82,7 @@ object Figures extends Controller with GCAAuth {
    * @return  OK / Failed
    */
   def delete(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
-    FigureService().delete(id, request.user)
+    figureService.delete(id, request.user)
     Ok(Json.obj("error" -> false))
   }
 
