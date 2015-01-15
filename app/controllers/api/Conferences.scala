@@ -18,6 +18,7 @@ object Conferences extends Controller with GCAAuth {
 
   implicit val confFormat = new ConferenceFormat()
   val accountFormat = new AccountFormat()
+  val conferenceService = ConferenceService()
 
   /**
    * Create a new conference.
@@ -26,7 +27,7 @@ object Conferences extends Controller with GCAAuth {
    */
   def create = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
     val conference = request.body.as[Conference]
-    val resp = ConferenceService().create(conference, request.user)
+    val resp = conferenceService.create(conference, request.user)
 
     Created(confFormat.writes(resp))
   }
@@ -38,7 +39,7 @@ object Conferences extends Controller with GCAAuth {
    */
   def list = Action { implicit request =>
     Ok(JsArray(
-      for (conf <- ConferenceService().list()) yield confFormat.writes(conf)
+      for (conf <- conferenceService.list()) yield confFormat.writes(conf)
     ))
   }
 
@@ -49,8 +50,7 @@ object Conferences extends Controller with GCAAuth {
    * @return Ok with all conferences publicly available.
    */
   def listWithOwnAbstracts =  AuthenticatedAction(isREST = true) { implicit request =>
-    val service = ConferenceService()
-    val conferences = service.listWithAbstractsOfAccount(request.user)
+    val conferences = conferenceService.listWithAbstractsOfAccount(request.user)
     Ok(Json.toJson(conferences))
   }
 
@@ -62,7 +62,7 @@ object Conferences extends Controller with GCAAuth {
    * @return OK with conference in JSON / NotFound
    */
   def get(id: String) = Action { implicit request =>
-    Ok(confFormat.writes(ConferenceService().get(id)))
+    Ok(confFormat.writes(conferenceService.get(id)))
   }
 
   /**
@@ -75,7 +75,7 @@ object Conferences extends Controller with GCAAuth {
   def update(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
     val conference = request.body.as[Conference]
     conference.uuid = id
-    val resp = ConferenceService().update(conference, request.user)
+    val resp = conferenceService.update(conference, request.user)
 
     Ok(confFormat.writes(resp))
   }
@@ -88,7 +88,7 @@ object Conferences extends Controller with GCAAuth {
    * @return OK | BadRequest | Forbidden
    */
   def delete(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
-    ConferenceService().delete(id, request.user)
+    conferenceService.delete(id, request.user)
     Ok(Json.obj("error" -> false))
   }
 
@@ -102,8 +102,7 @@ object Conferences extends Controller with GCAAuth {
     val to_set = for (acc <- request.body.as[List[JsObject]])
       yield accountFormat.reads(acc).get
 
-    val srv = ConferenceService()
-    val owners = srv.setPermissions(srv.get(id), request.user, to_set)
+    val owners = conferenceService.setPermissions(conferenceService.get(id), request.user, to_set)
 
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
@@ -117,8 +116,7 @@ object Conferences extends Controller with GCAAuth {
    */
   def getPermissions(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
 
-    val srv = ConferenceService()
-    val owners = srv.getPermissions(srv.get(id), request.user)
+    val owners = conferenceService.getPermissions(conferenceService.get(id), request.user)
 
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
