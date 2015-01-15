@@ -1,17 +1,15 @@
 package controllers.api
 
+import org.joda.time.format.DateTimeFormat
 import play.api._
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsArray, JsObject, Json, _}
 import play.api.mvc._
 import service._
-import utils.serializer.{StateLogWrites, AccountFormat, AbstractFormat}
-import play.api.libs.json.{JsArray, JsObject, Json}
-import utils.GCAAuth
-import models.{StateLogEntry, AbstractState, Abstract}
 import utils.DefaultRoutesResolver._
-import org.joda.time.format.DateTimeFormat
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
-import service.util.EMPImplicits.EMPFromRequest
+import utils.GCAAuth
+import utils.serializer.{AbstractFormat, AccountFormat, StateLogWrites}
+import models.{Abstract, AbstractState}
 
 /**
  * Abstracts controller.

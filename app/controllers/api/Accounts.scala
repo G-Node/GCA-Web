@@ -1,11 +1,10 @@
 package controllers.api
 
-import play.api.mvc._
 import play.api.libs.json._
+import play.api.mvc._
+import utils.DefaultRoutesResolver._
 import utils.GCAAuth
 import utils.serializer.AccountFormat
-import utils.DefaultRoutesResolver._
-import service.util.EMPImplicits.EMPFromRequest
 
 
 /**
