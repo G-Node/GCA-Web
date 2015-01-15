@@ -48,9 +48,9 @@ class AbstractsCtrlTest extends BaseCtrlTest {
   @Test
   def testCreate() {
 
-    val oldAbstract = assets.abstracts(0)
+    val oldAbstract = assets.createAbstract()
     oldAbstract.title = "Cool new Method to do cool new stuff"
-    oldAbstract.uuid = null //we want a new one
+    oldAbstract.conference = assets.conferences(0)
 
     val body = Json.toJson(oldAbstract)
     val confId = assets.conferences(0).uuid
@@ -74,7 +74,6 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     val rq = FakeRequest(POST, s"/api/conferences/$confIdClosed/abstracts").withJsonBody(body).withCookies(bobCookie)
     val rqResult = route(AbstractsCtrlTest.app, rq).get
     assert(status(rqResult) == FORBIDDEN)
-
   }
 
   @Test
