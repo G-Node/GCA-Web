@@ -9,12 +9,15 @@
 
 package service
 
-import models._
-import javax.persistence.{EntityNotFoundException, TypedQuery, EntityManagerFactory}
-import service.util.{EntityManagerProvider, PermissionsBase}
-import scala.collection.JavaConversions._
 import java.io.File
+import javax.persistence.{EntityNotFoundException, TypedQuery}
+
 import play.Play
+import models._
+import plugins.DBUtil._
+import service.util.{EntityManagerProvider, PermissionsBase}
+
+import scala.collection.JavaConversions._
 
 //for the patch method
 abstract class PatchOp
@@ -25,7 +28,9 @@ case class PatchAddDOI(doi: String) extends PatchOp
  * Service class that provides data access logic for abstracts and nested
  * authors and affiliations.
  */
-class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) extends PermissionsBase {
+class AbstractService(figPath: String) extends PermissionsBase {
+
+  implicit val emp: EntityManagerProvider = null // TODO remove
 
   /**
    * List all published abstracts that belong to a conference.
@@ -41,7 +46,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
       return Seq.empty[Abstract]
     }
 
-    dbQuery { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
            LEFT JOIN FETCH a.conference c
@@ -64,7 +69,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
   *         certain conference.
     */
   def listAll(conference: Conference) : Seq[Abstract] = {
-    dbQuery { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
            LEFT JOIN FETCH a.conference c
@@ -85,7 +90,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
    * @return All abstracts that belong to an account.
    */
   def listOwn(account: Account) : Seq[Abstract] = {
-    dbQuery { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
            LEFT JOIN FETCH a.owners o
@@ -104,7 +109,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
   }
 
   def listOwn(conference: Conference, account: Account) : Seq[Abstract] = {
-    dbQuery { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
            LEFT JOIN FETCH a.owners o
@@ -133,7 +138,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
    * @throws NoResultException If the conference was not found
    */
   def get(id: String) : Abstract= {
-    dbQuery { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
            LEFT JOIN FETCH a.owners
@@ -166,7 +171,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
    * @throws NoResultException If was not found
    */
   def getOwn(id: String, account: Account) : Abstract = {
-    val abstr = dbQuery { em =>
+    val abstr = query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
            LEFT JOIN FETCH a.owners o
@@ -205,7 +210,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
    * @return The created and persisted abstract.
    */
   def create(abstr : Abstract, conference: Conference, account: Account) : Abstract = {
-    val abstrCreated = dbTransaction { (em, tx) =>
+    val abstrCreated = transaction { (em, tx) =>
 
       val accountChecked = em.find(classOf[Account], account.uuid)
       if (accountChecked == null)
@@ -261,7 +266,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
    * @return The updated and persisted abstract.
    */
   def update(abstr : Abstract, account: Account) : Abstract = {
-    val abstrUpdated = dbTransaction { (em, tx) =>
+    val abstrUpdated = transaction { (em, tx) =>
 
       if (abstr.uuid == null)
         throw new IllegalArgumentException("Unable to update an abstract with null uuid")
@@ -350,7 +355,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
    * @throws IllegalAccessException If account is not an owner.
    */
   def delete(id: String, account: Account) : Unit = {
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
 
       val accountChecked = em.find(classOf[Account], account.uuid)
       if (accountChecked == null)
@@ -390,7 +395,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
    * @return         Sorted sequence of log entries (newest first)
    */
   def listStates(id: String, account: Account) : Seq[StateLogEntry] = {
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
 
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
@@ -412,7 +417,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
   }
 
   def setState(abstr: Abstract, state: AbstractState.State, editor: Account, message: Option[String]) = {
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
       val logEntry = StateLogEntry(abstr, state, editor, message)
 
       abstr.state = state
@@ -424,7 +429,7 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
   }
 
   def patch(abstr: Abstract, patches: List[PatchOp]) = {
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
 
       patches.foreach {
         case PatchAddSortId(id: Int) => abstr.sortId = id
@@ -441,12 +446,12 @@ class AbstractService(figPath: String)(implicit val emp: EntityManagerProvider) 
 
 object AbstractService {
 
-  def apply[A]()(implicit emf: EntityManagerProvider) = {
+  def apply[A]() = {
     new AbstractService(Play.application().configuration().getString("file.fig_path", "./figures"))
   }
 
-  def apply(emf: EntityManagerFactory, figPath: String) = {
-    new AbstractService(figPath)(EntityManagerProvider.fromFactory(emf))
+  def apply(figPath: String) = {
+    new AbstractService(figPath)
   }
 
 }
