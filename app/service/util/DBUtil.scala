@@ -1,12 +1,16 @@
 package service.util
 
-import javax.persistence.{EntityTransaction, EntityManagerFactory, EntityManager, Persistence}
-import play.api.mvc.Request
+import javax.persistence.{EntityManager, EntityManagerFactory, EntityTransaction, Persistence}
 
+import play.api.mvc.Request
+import plugins.DBUtil._
+
+@Deprecated
 trait EntityManagerProvider {
   def entityManager() : EntityManager
 }
 
+@Deprecated
 object EntityManagerProvider {
 
   def fromEntityManager(em: EntityManager) : EntityManagerProvider = new EntityManagerProvider {
@@ -29,6 +33,7 @@ object EntityManagerProvider {
   }
 }
 
+@Deprecated
 object EMPImplicits {
 
   implicit def EMPFromEntityManager(implicit em: EntityManager) = EntityManagerProvider.fromEntityManager(em)
@@ -39,6 +44,7 @@ object EMPImplicits {
 /**
  * Helper for classes using JPA
  */
+@Deprecated
 trait DBUtil {
 
   /**
@@ -50,34 +56,7 @@ trait DBUtil {
    *
    * @return The value returned by func.
    */
-  def dbTransaction[A](func: (EntityManager, EntityTransaction) => A)(implicit emp: EntityManagerProvider) : A = {
-
-    synchronized {
-
-      var em: EntityManager = null
-      var tx: EntityTransaction = null
-
-      try {
-
-        em = emp.entityManager()
-        tx = em.getTransaction
-        tx.begin()
-
-        func(em, tx)
-
-      } catch {
-
-        case ex: Exception =>
-          if (tx != null && tx.isActive) tx.rollback()
-          throw ex
-
-      } finally {
-
-        if (tx != null && tx.isActive) tx.commit()
-
-      }
-    }
-  }
+  def dbTransaction[A](func: (EntityManager, EntityTransaction) => A) = transaction(func)
 
   /**
    * Calls a function and provides an entity manager that can be used inside the function.
@@ -88,22 +67,7 @@ trait DBUtil {
    *
    * @return The value returned by func.
    */
-  def dbQuery[A](func: (EntityManager) => A)(implicit emp: EntityManagerProvider) : A = {
-
-    synchronized {
-
-      var em: EntityManager = null
-
-      try {
-        em = emp.entityManager()
-
-        func(em)
-
-      } finally {
-        //no-op
-      }
-    }
-  }
+  def dbQuery[A](func: (EntityManager) => A) = query(func)
 
 
 }
