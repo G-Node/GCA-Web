@@ -9,32 +9,30 @@
 
 package service
 
+import java.io.File
 import javax.persistence._
+
 import org.junit._
 import org.scalatest.junit.JUnitSuite
 import play.api.Play
-import play.api.test.FakeApplication
-import service.util.DBUtil
 import play.api.libs.Files.TemporaryFile
-import java.io.File
+import play.api.test.FakeApplication
 import models.Figure
 
 
-class FigureServiceTest extends JUnitSuite with DBUtil {
+class FigureServiceTest extends JUnitSuite {
 
-  var emf: EntityManagerFactory = _
   var srv: FigureService = _
   var assets: Assets = _
   var abstrsrv: AbstractService = _
 
   @Before
   def before(): Unit = {
-    emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-    assets = new Assets(emf)
+    assets = new Assets()
     assets.killDB()
     assets.fillDB()
-    srv = FigureService(emf, "./figures")
-    abstrsrv = AbstractService(emf, assets.figPath)
+    srv = FigureService("./figures")
+    abstrsrv = AbstractService(assets.figPath)
   }
 
   @Test

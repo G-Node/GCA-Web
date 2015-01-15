@@ -9,19 +9,19 @@
 
 package service
 
-import scala.{Option => ?}
-import collection.JavaConversions._
-import models._
-import models.Model._
-import service.util.{EntityManagerProvider, DBUtil}
-import javax.persistence.EntityManagerFactory
-import play.Play
 import java.io.File
+
 import org.joda.time.DateTime
+import play.Play
+import models.Model._
+import models._
+import plugins.DBUtil._
 
-class Assets(val emf: EntityManagerFactory) extends DBUtil {
+import scala.collection.JavaConversions._
+import scala.{Option => ?}
 
-  implicit val emp: EntityManagerProvider = EntityManagerProvider.fromFactory(emf)
+
+class Assets() {
 
   implicit class PositionedLSeq[A <: PositionedModel](l: Seq[A]) {
     def addPosition():Seq[A] = {
@@ -238,7 +238,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
   )
 
   def fillDB() : Unit = {
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
       // merge accounts
       alice = em.merge(alice)
       bob = em.merge(bob)
@@ -323,7 +323,7 @@ class Assets(val emf: EntityManagerFactory) extends DBUtil {
       }
     }
 
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
       em.createQuery("DELETE FROM StateLogEntry").executeUpdate()
       em.createQuery("DELETE FROM AbstractGroup").executeUpdate()
       em.createQuery("DELETE FROM Affiliation").executeUpdate()

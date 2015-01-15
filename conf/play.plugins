@@ -6,3 +6,4 @@
 9998:service.UserStore
 9999:securesocial.core.providers.utils.BCryptPasswordHasher
 10001:securesocial.core.providers.UsernamePasswordProvider
+10002:plugins.DBUtil

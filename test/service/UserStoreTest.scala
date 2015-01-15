@@ -1,20 +1,17 @@
 package service
 
+import org.junit.{AfterClass, Before, BeforeClass, Test}
 import org.scalatest.junit.JUnitSuite
-import service.util.{EntityManagerProvider, DBUtil}
-import play.api.test.FakeApplication
-import org.junit.{Test, Before, AfterClass, BeforeClass}
 import play.api.Play
-import javax.persistence.{Persistence, EntityManagerFactory}
+import play.api.test.FakeApplication
 import securesocial.core.IdentityId
 import models.Account
 
-class UserStoreTest extends JUnitSuite with DBUtil {
 
-  var emf: EntityManagerFactory = _
+class UserStoreTest extends JUnitSuite {
+
   var store: UserStore = _
   var assets: Assets = _
-  implicit var emp: EntityManagerProvider = _
 
   val existingAccountList = List (
     new IdentityId("alice@foo.com", "userpass"),
@@ -27,9 +24,7 @@ class UserStoreTest extends JUnitSuite with DBUtil {
 
   @Before
   def before() : Unit = {
-    emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-    emp = EntityManagerProvider.fromFactory(emf)
-    assets = new Assets(emf)
+    assets = new Assets()
     assets.killDB()
     assets.fillDB()
     store = new UserStore(UserStoreTest.app)
@@ -52,7 +47,7 @@ class UserStoreTest extends JUnitSuite with DBUtil {
 
     for (id <- existingAccountList) {
       val account = store.find(id)
-      assert(!account.isEmpty)
+      assert(account.nonEmpty)
     }
 
     assert(store.find(new IdentityId("notindb@forsure.com", "userpass")).isEmpty)

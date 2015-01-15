@@ -9,31 +9,30 @@
 
 package service
 
-import org.scalatest.junit.JUnitSuite
-import org.junit._
-import collection.JavaConversions._
-import play.api.test.FakeApplication
-import play.api.Play
 import javax.persistence._
+
+import org.junit._
+import org.scalatest.junit.JUnitSuite
+import play.api.Play
+import play.api.test.FakeApplication
 import models._
-import service.util.DBUtil
+
+import scala.collection.JavaConversions._
 
 /**
  * Test
  */
-class ConferenceServiceTest extends JUnitSuite with DBUtil {
+class ConferenceServiceTest extends JUnitSuite {
 
-  var emf : EntityManagerFactory = _
   var srv : ConferenceService = _
   var assets : Assets = _
 
   @Before
   def before() : Unit = {
-    emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-    assets = new Assets(emf)
+    assets = new Assets()
     assets.killDB()
     assets.fillDB()
-    srv = ConferenceService(emf)
+    srv = ConferenceService()
   }
 
   @Test

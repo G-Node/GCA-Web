@@ -1,17 +1,15 @@
 package controllers.api
 
+import org.joda.time.format.DateTimeFormat
 import play.api._
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsArray, JsObject, Json, _}
 import play.api.mvc._
 import service._
-import utils.serializer.{StateLogWrites, AccountFormat, AbstractFormat}
-import play.api.libs.json.{JsArray, JsObject, Json}
-import utils.GCAAuth
-import models.{StateLogEntry, AbstractState, Abstract}
 import utils.DefaultRoutesResolver._
-import org.joda.time.format.DateTimeFormat
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
-import service.util.EMPImplicits.EMPFromRequest
+import utils.GCAAuth
+import utils.serializer.{AbstractFormat, AccountFormat, StateLogWrites}
+import models._
 
 /**
  * Abstracts controller.
@@ -21,6 +19,8 @@ object Abstracts extends Controller with  GCAAuth {
 
   implicit val absFormat = new AbstractFormat()
   val accountFormat = new AccountFormat()
+  val abstractService = AbstractService()
+  val conferenceService = ConferenceService()
 
   //RFC 1123
   val rfcDateFormatter = DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'").withZoneUTC()
@@ -32,12 +32,7 @@ object Abstracts extends Controller with  GCAAuth {
    */
   def create(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
 
-
-    val conferenceService = ConferenceService()
-    val abstractSservice = AbstractService()
-
     val abs = request.body.as[Abstract]
-
     val conference = conferenceService.get(id)
 
     if(!conference.isOpen &&
@@ -45,7 +40,7 @@ object Abstracts extends Controller with  GCAAuth {
       throw new IllegalAccessException("Conference is closed!")
     }
 
-    val newAbs = abstractSservice.create(abs, conference, request.user)
+    val newAbs = abstractService.create(abs, conference, request.user)
 
     Created(Json.toJson(newAbs))
   }
@@ -57,11 +52,7 @@ object Abstracts extends Controller with  GCAAuth {
    */
   def listByConference(id: String) = AccountAwareAction(isREST = true) {  implicit request =>
 
-    val conferenceService = ConferenceService()
-    val abstractService = AbstractService()
-
     val conference = conferenceService.get(id)
-
     val abstracts = abstractService.list(conference)
 
     Ok(Json.toJson(abstracts))
@@ -73,9 +64,6 @@ object Abstracts extends Controller with  GCAAuth {
    * @return All abstracts publicly available.
    */
   def listAllByConference(id: String) = AuthenticatedAction(isREST = true) {  implicit request =>
-
-    val conferenceService = ConferenceService()
-    val abstractService = AbstractService()
 
     val conference = conferenceService.get(id)
 
@@ -93,8 +81,8 @@ object Abstracts extends Controller with  GCAAuth {
    * @return All (accessible) abstracts for a given user.
    */
   def listByAccount(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
-    val abstracts = AbstractService()
-    val ownAbstracts = abstracts.listOwn(request.user)
+    val ownAbstracts = abstractService.listOwn(request.user)
+
     Ok(Json.toJson(ownAbstracts))
   }
 
@@ -105,9 +93,6 @@ object Abstracts extends Controller with  GCAAuth {
    * @return All (accessible) abstracts for a given user.
    */
   def listOwn(conferenceId: String) = AuthenticatedAction(isREST = true) { implicit request =>
-
-  val conferenceService = ConferenceService()
-  val abstractService = AbstractService()
 
   val conference = conferenceService.get(conferenceId)
   val abstracts = abstractService.listOwn(conference, request.user)
@@ -125,11 +110,9 @@ object Abstracts extends Controller with  GCAAuth {
   def get(id: String) = AccountAwareAction(isREST = true) { implicit request =>
     Logger.debug(s"Getting abstract with uuid: [$id]")
 
-    val abstracts = AbstractService()
-
     val abs = request.user match {
-      case Some(user) => abstracts.getOwn(id, user)
-      case _          => abstracts.get(id)
+      case Some(user) => abstractService.getOwn(id, user)
+      case _          => abstractService.get(id)
     }
 
     Ok(Json.toJson(abs)).withHeaders(LAST_MODIFIED -> rfcDateFormatter.print(abs.mtime))
@@ -145,9 +128,6 @@ object Abstracts extends Controller with  GCAAuth {
   def update(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
     Logger.debug(s"Updating abstract with uuid: [$id]")
 
-    val abstracts = AbstractService()
-    val conferenceService = ConferenceService()
-
     val abs = request.body.as[Abstract]
 
     if (abs.uuid != null && abs.uuid != id) {
@@ -156,14 +136,14 @@ object Abstracts extends Controller with  GCAAuth {
       Logger.debug(s"Updating [$id]: UUID mismatch")
     }
 
-    val oldAbstract = abstracts.getOwn(abs.uuid, request.user)
+    val oldAbstract = abstractService.getOwn(abs.uuid, request.user)
     val conference = oldAbstract.conference
 
     if(!conference.isOpen && oldAbstract.state != AbstractState.InRevision) {
       throw new IllegalAccessException("Conference is closed and abstract not in 'InRevision' state!")
     }
 
-    val newAbstract = abstracts.update(abs, request.user)
+    val newAbstract = abstractService.update(abs, request.user)
 
     Ok(Json.toJson(newAbstract))
   }
@@ -178,8 +158,8 @@ object Abstracts extends Controller with  GCAAuth {
   def delete(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
     Logger.debug(s"Deleting abstract with uuid: [$id]")
 
-    val abstracts = AbstractService()
-    abstracts.delete(id, request.user)
+    abstractService.delete(id, request.user)
+
     Ok("Abstract Deleted") //FIXME: JSON
   }
 
@@ -193,9 +173,8 @@ object Abstracts extends Controller with  GCAAuth {
     val to_set = for (acc <- request.body.as[List[JsObject]])
       yield accountFormat.reads(acc).get
 
-    val srv = AbstractService()
-    val abstr = srv.getOwn(id, request.user)
-    val owners = srv.setPermissions(abstr, request.user, to_set)
+    val abstr = abstractService.getOwn(id, request.user)
+    val owners = abstractService.setPermissions(abstr, request.user, to_set)
 
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
@@ -209,9 +188,8 @@ object Abstracts extends Controller with  GCAAuth {
    */
   def getPermissions(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
 
-    val srv = AbstractService()
-    val abstr = srv.getOwn(id, request.user)
-    val owners = srv.getPermissions(abstr, request.user)
+    val abstr = abstractService.getOwn(id, request.user)
+    val owners = abstractService.getPermissions(abstr, request.user)
 
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
@@ -220,8 +198,8 @@ object Abstracts extends Controller with  GCAAuth {
 
   def listState(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
     implicit val logWrites = new StateLogWrites()
-    val srv = AbstractService()
-    Ok(Json.toJson(srv.listStates(id, request.user)))
+
+    Ok(Json.toJson(abstractService.listStates(id, request.user)))
   }
 
 
@@ -230,8 +208,7 @@ object Abstracts extends Controller with  GCAAuth {
     val changeReads = ((__ \ "state").read[String] and (__ \ "note").readNullable[String]).tupled
 
     val account = request.user
-    val srv = AbstractService()
-    val abstr = srv.getOwn(id, account) // TODO: will not work for admin (GitHub issue, #155)
+    val abstr = abstractService.getOwn(id, account) // TODO: will not work for admin (GitHub issue, #155)
     val conference = abstr.conference
 
     val (toState, msg): (AbstractState.State, Option[String]) = changeReads.reads(request.body).fold (
@@ -251,7 +228,7 @@ object Abstracts extends Controller with  GCAAuth {
       throw new IllegalAccessException(s"No permission to set state to $toState")
     }
 
-    val stateLog = srv.setState(abstr, toState, account, msg)
+    val stateLog = abstractService.setState(abstr, toState, account, msg)
 
     Ok(Json.toJson(stateLog))
   }
@@ -261,8 +238,7 @@ object Abstracts extends Controller with  GCAAuth {
       (__ \ "path").read[String] and (__ \ "value").readNullable[JsValue]).tupled)
 
     val account = request.user
-    val srv = AbstractService()
-    val abstr = srv.getOwn(id, account)
+    val abstr = abstractService.getOwn(id, account)
     val isAdmin = account.isAdmin || abstr.conference.owners.contains(account)
 
     if (!isAdmin) {
@@ -279,7 +255,7 @@ object Abstracts extends Controller with  GCAAuth {
       case _ => throw new IllegalArgumentException("Unsupported patch operation")
     }.toList
 
-    val patched = srv.patch(abstr, patches)
+    val patched = abstractService.patch(abstr, patches)
     Ok(Json.toJson(patched))
   }
 }

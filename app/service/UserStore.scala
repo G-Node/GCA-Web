@@ -1,23 +1,24 @@
 package service
 
 import java.util.{List => JList}
-import play.api.{Logger, Application}
-import securesocial.core._
-import securesocial.core.providers.Token
-import securesocial.core.IdentityId
-import anorm._
-import anorm.SqlParser._
-import play.api.db.DB
-import play.api.Play.current
-import org.joda.time.DateTime
-import utils.AnormExtension._
-import service.util.{EntityManagerProvider, DBUtil}
 import javax.persistence.TypedQuery
+
+import anorm.SqlParser._
+import anorm._
+import org.joda.time.DateTime
+import play.api.Play.current
+import play.api.db.DB
+import play.api.{Application, Logger}
+import securesocial.core.providers.Token
+import securesocial.core.{IdentityId, _}
+import utils.AnormExtension._
+import plugins.DBUtil._
 import models.Account
-import collection.JavaConversions._
+
+import scala.collection.JavaConversions._
 
 
-class UserStore(application: Application) extends UserServicePlugin(application) with DBUtil {
+class UserStore(application: Application) extends UserServicePlugin(application) {
 
   def resultToAccount(result: JList[Account]) : Option[Account] = {
     result.size() match {
@@ -27,9 +28,9 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     }
   }
 
-  def list()(implicit emp: EntityManagerProvider) : Seq[Account] = {
+  def list() : Seq[Account] = {
 
-    dbQuery { em =>
+    query { em =>
       val builder = em.getCriteriaBuilder
       val criteria = builder.createQuery(classOf[Account])
       val query = em.createQuery(criteria)
@@ -38,9 +39,9 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     }
   }
 
-  def findAccount(id: IdentityId)(implicit emp: EntityManagerProvider) : Option[Account] = {
+  def findAccount(id: IdentityId) : Option[Account] = {
 
-    val user: Option[Account] = dbTransaction { (em, tx) =>
+    val user: Option[Account] = transaction { (em, tx) =>
 
       //for the userpass provider we want case insensitive lookup
       val queryStr = id.providerId match {
@@ -61,11 +62,10 @@ class UserStore(application: Application) extends UserServicePlugin(application)
     user
   }
 
-  def findByEmail(email: String)(implicit emp: EntityManagerProvider): List[Account] = {
-
+  def findByEmail(email: String): List[Account] = {
     Logger.debug("findByEmail $email")
 
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
       val queryStr =
         """SELECT a from Account a
            WHERE LOWER(a.mail) = LOWER(:mail)"""
@@ -79,22 +79,18 @@ class UserStore(application: Application) extends UserServicePlugin(application)
   // UserService implements
 
   def find(id: IdentityId): Option[Identity] = {
-
-    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
-
     Logger.debug("find")
+
     val account = findAccount(id)
     Logger.debug("found:" + account.toString)
+
     account
   }
 
   def findByEmailAndProvider(email: String, providerId: String): Option[Identity] = {
-
-    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
-
     Logger.debug("findByEmailAndProvider $email, $providerId")
 
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
       val queryStr =
         """SELECT a from Account a
            WHERE LOWER(a.mail) = LOWER(:mail) AND a.provider = :provider"""
@@ -107,12 +103,9 @@ class UserStore(application: Application) extends UserServicePlugin(application)
   }
 
   def save(user: Identity): Identity = {
-
-    implicit val emp = EntityManagerProvider.fromDefaultPersistenceUnit()
-
     val dbUser: Option[Account] = findAccount(user.identityId)
 
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
 
       Logger.debug(dbUser.toString)
 

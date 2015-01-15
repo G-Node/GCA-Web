@@ -1,16 +1,17 @@
 package service
 
-import models._
-import java.io.{FileNotFoundException, File}
-import play.api.libs.Files.TemporaryFile
-import play.Play
+import java.io.{File, FileNotFoundException}
 import javax.persistence._
-import service.util.{EntityManagerProvider, DBUtil}
+
+import play.Play
+import play.api.libs.Files.TemporaryFile
+import models._
+import plugins.DBUtil._
 
 /**
  * Service class for figures.
  */
-class FigureService(figPath: String)(implicit emp: EntityManagerProvider) extends DBUtil {
+class FigureService(figPath: String) {
 
   /**
    * Get a figure by id.
@@ -22,7 +23,7 @@ class FigureService(figPath: String)(implicit emp: EntityManagerProvider) extend
    * @throws NoResultException If the conference was not found
    */
   def get(id: String) : Figure = {
-    dbQuery { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT f FROM Figure f
            LEFT JOIN FETCH f.abstr
@@ -51,7 +52,7 @@ class FigureService(figPath: String)(implicit emp: EntityManagerProvider) extend
    * @throws IllegalArgumentException If the abstract has no uuid
    */
   def create(fig: Figure, data: TemporaryFile, abstr: Abstract, account: Account) : Figure = {
-    val figCreated = dbTransaction { (em, tx) =>
+    val figCreated = transaction { (em, tx) =>
 
       val accountChecked = em.find(classOf[Account], account.uuid)
       if (accountChecked == null)
@@ -92,7 +93,7 @@ class FigureService(figPath: String)(implicit emp: EntityManagerProvider) extend
    * @return The created figure.
    */
   def update(fig: Figure, account: Account) : Figure = {
-    val figUpdated = dbTransaction { (em, tx) =>
+    val figUpdated = transaction { (em, tx) =>
 
       val accountChecked = em.find(classOf[Account], account.uuid)
       if (accountChecked == null)
@@ -122,7 +123,7 @@ class FigureService(figPath: String)(implicit emp: EntityManagerProvider) extend
    * @return True if the figure was deleted, false otherwise.
    */
   def delete(id: String, account: Account) : Unit = {
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
 
       val accountChecked = em.find(classOf[Account], account.uuid)
       if (accountChecked == null)
@@ -178,12 +179,12 @@ object FigureService {
    *
    * @return A new figure service.
    */
-  def apply[A]()(implicit emp: EntityManagerProvider) : FigureService = {
+  def apply[A]() : FigureService = {
     new FigureService(Play.application().configuration().getString("file.fig_path", "./figures"))
   }
 
-  def apply(emf: EntityManagerFactory, figPath: String) = {
-    new FigureService(figPath)(EntityManagerProvider.fromFactory(emf))
+  def apply(figPath: String) = {
+    new FigureService(figPath)
   }
 
 }

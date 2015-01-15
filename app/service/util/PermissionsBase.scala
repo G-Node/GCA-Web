@@ -1,12 +1,14 @@
 package service.util
 
 import javax.persistence.EntityNotFoundException
-import models.{Owned, Account}
-import collection.JavaConversions._
 
-trait PermissionsBase extends DBUtil  {
+import models.{Account, Owned}
+import plugins.DBUtil._
 
-  implicit val emp: EntityManagerProvider
+import scala.collection.JavaConversions._
+
+
+trait PermissionsBase  {
 
   /**
    * Validates, that given object has uuid and is real
@@ -20,7 +22,7 @@ trait PermissionsBase extends DBUtil  {
    */
   def validate(obj: Owned) = {
 
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
 
       if (obj.uuid == null)
         throw new IllegalArgumentException("Unable to update an object without uuid")
@@ -46,7 +48,7 @@ trait PermissionsBase extends DBUtil  {
     if (owners.isEmpty)
       throw new IllegalArgumentException("Owners list cannot be empty")
 
-    val updated = dbTransaction { (em, tx) =>
+    val updated = transaction { (em, tx) =>
 
       val verified = for (user <- owners) yield {
         em.find(classOf[Account], user.uuid) match {
