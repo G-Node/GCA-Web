@@ -10,7 +10,6 @@
 package service
 
 import java.io.File
-import javax.persistence.EntityManagerFactory
 
 import org.joda.time.DateTime
 import play.Play
@@ -22,7 +21,7 @@ import scala.collection.JavaConversions._
 import scala.{Option => ?}
 
 
-class Assets(val emf: EntityManagerFactory) {
+class Assets() {
 
   implicit class PositionedLSeq[A <: PositionedModel](l: Seq[A]) {
     def addPosition():Seq[A] = {

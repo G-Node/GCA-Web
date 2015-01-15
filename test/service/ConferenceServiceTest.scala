@@ -24,14 +24,12 @@ import scala.collection.JavaConversions._
  */
 class ConferenceServiceTest extends JUnitSuite {
 
-  var emf : EntityManagerFactory = _
   var srv : ConferenceService = _
   var assets : Assets = _
 
   @Before
   def before() : Unit = {
-    emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-    assets = new Assets(emf)
+    assets = new Assets()
     assets.killDB()
     assets.fillDB()
     srv = ConferenceService()

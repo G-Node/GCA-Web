@@ -9,27 +9,25 @@
 
 package service
 
-import org.scalatest.junit.JUnitSuite
+import javax.persistence.{EntityManagerFactory, EntityNotFoundException, NoResultException, Persistence}
+
 import org.junit._
-import play.api.test.FakeApplication
+import org.scalatest.junit.JUnitSuite
 import play.api.Play
-import javax.persistence.{EntityNotFoundException, NoResultException, EntityManagerFactory, Persistence}
-import service.util.DBUtil
+import play.api.test.FakeApplication
 import models.{AbstractState, Account}
 
 /**
  * Test for the abstracts service layer
  */
-class AbstractServiceTest extends JUnitSuite with DBUtil {
+class AbstractServiceTest extends JUnitSuite {
 
-  var emf : EntityManagerFactory = _
   var srv : AbstractService = _
   var assets: Assets = _
 
   @Before
   def before() : Unit = {
-    emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-    assets = new Assets(emf)
+    assets = new Assets()
     assets.killDB()
     assets.fillDB()
     srv = AbstractService("./figures")

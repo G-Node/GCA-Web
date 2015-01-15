@@ -1,19 +1,16 @@
 package controller
 
-import javax.persistence.{Persistence, EntityManagerFactory}
-import service.Assets
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import org.junit.Before
 import org.scalatest.junit.JUnitSuite
-import service.util.DBUtil
-import securesocial.core.IdentityId
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import securesocial.controllers.ProviderController.authenticateByPost
+import securesocial.core.IdentityId
+import service.Assets
 
 
-trait BaseCtrlTest extends JUnitSuite with DBUtil  {
+trait BaseCtrlTest extends JUnitSuite {
 
-  var emf : EntityManagerFactory = _
   var assets : Assets = _
 
   /**
@@ -32,8 +29,7 @@ trait BaseCtrlTest extends JUnitSuite with DBUtil  {
 
   @Before
   def before() : Unit = {
-    emf = Persistence.createEntityManagerFactory("defaultPersistenceUnit")
-    assets = new Assets(emf)
+    assets = new Assets()
     assets.killDB()
     assets.fillDB()
   }
