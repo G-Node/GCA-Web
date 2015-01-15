@@ -27,8 +27,6 @@ import scala.collection.JavaConversions._
  */
 class ConferenceService() extends PermissionsBase {
 
-  implicit val emp: EntityManagerProvider = null // TODO remove
-
   /**
    * List all available conferences.
    *

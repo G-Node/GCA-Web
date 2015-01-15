@@ -30,8 +30,6 @@ case class PatchAddDOI(doi: String) extends PatchOp
  */
 class AbstractService(figPath: String) extends PermissionsBase {
 
-  implicit val emp: EntityManagerProvider = null // TODO remove
-
   /**
    * List all published abstracts that belong to a conference.
    *
