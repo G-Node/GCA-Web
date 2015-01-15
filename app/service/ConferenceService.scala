@@ -9,13 +9,15 @@
 
 package service
 
-import collection.JavaConversions._
+import java.net.URLDecoder
+import javax.persistence._
 
 import play.api._
 import models._
-import javax.persistence._
+import plugins.DBUtil._
 import service.util.{EntityManagerProvider, PermissionsBase}
-import java.net.URLDecoder
+
+import scala.collection.JavaConversions._
 
 /**
  * Service class for that implements data access logic for conferences.
@@ -23,7 +25,9 @@ import java.net.URLDecoder
  * TODO prefetch stuff
  * TODO write test
  */
-class ConferenceService()(implicit val emp: EntityManagerProvider) extends PermissionsBase {
+class ConferenceService() extends PermissionsBase {
+
+  implicit val emp: EntityManagerProvider = null // TODO remove
 
   /**
    * List all available conferences.
@@ -31,7 +35,7 @@ class ConferenceService()(implicit val emp: EntityManagerProvider) extends Permi
    * @return All conferences.
    */
   def list() : Seq[Conference] = {
-    dbQuery { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT c FROM Conference c
            LEFT JOIN FETCH c.groups
@@ -53,7 +57,7 @@ class ConferenceService()(implicit val emp: EntityManagerProvider) extends Permi
    * @return All conferences that belong tho the account.
    */
   def listOwn(account: Account) : Seq[Conference] = {
-    dbQuery { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT c FROM Conference c
            LEFT JOIN FETCH c.groups
@@ -71,7 +75,7 @@ class ConferenceService()(implicit val emp: EntityManagerProvider) extends Permi
   }
 
   def listWithAbstractsOfAccount(account: Account) : Seq[Conference] = {
-    dbQuery { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT c FROM Conference c
            INNER JOIN c.owners o
@@ -97,7 +101,7 @@ class ConferenceService()(implicit val emp: EntityManagerProvider) extends Permi
    * @throws NoResultException If the conference was not found
    */
   def get(id: String) : Conference = {
-    dbQuery { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT c FROM Conference c
            LEFT JOIN FETCH c.groups
@@ -129,7 +133,7 @@ class ConferenceService()(implicit val emp: EntityManagerProvider) extends Permi
    */
   def create(conference: Conference, account: Account) : Conference = {
 
-    val conf = dbTransaction { (em, tx) =>
+    val conf = transaction { (em, tx) =>
 
       val accountChecked = em.find(classOf[Account], account.uuid)
       if (accountChecked == null)
@@ -172,7 +176,7 @@ class ConferenceService()(implicit val emp: EntityManagerProvider) extends Permi
    * @throws IllegalAccessException If account is not an owner.
    */
   def update(conference: Conference, account: Account) : Conference = {
-    val conf = dbTransaction { (em, tx) =>
+    val conf = transaction { (em, tx) =>
 
       if (conference.uuid == null)
         throw new IllegalArgumentException("Unable to update a conference without uuid")
@@ -236,7 +240,7 @@ class ConferenceService()(implicit val emp: EntityManagerProvider) extends Permi
    * @throws IllegalAccessException If account is not an owner.
    */
   def delete(id: String, account: Account) : Unit = {
-    dbTransaction { (em, tx) =>
+    transaction { (em, tx) =>
 
       val accountChecked = em.find(classOf[Account], account.uuid)
       if (accountChecked == null)
@@ -260,12 +264,8 @@ class ConferenceService()(implicit val emp: EntityManagerProvider) extends Permi
 
 object ConferenceService {
 
-  def apply[A]()(implicit emf: EntityManagerProvider) : ConferenceService = {
+  def apply() = {
     new ConferenceService()
-  }
-
-  def apply(emf: EntityManagerFactory) = {
-    new ConferenceService()(EntityManagerProvider.fromFactory(emf))
   }
 
 }
