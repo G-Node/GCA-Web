@@ -9,8 +9,11 @@ import java.net._
 
 object Application extends Controller with GCAAuth {
 
+  val abstractService = AbstractService()
+  val conferenceService = ConferenceService()
+  
   def index = AccountAwareAction { implicit request =>
-    val conference = ConferenceService().list()(0)
+    val conference = conferenceService.list()(0)
 
     val link = URLEncoder.encode(conference.short, "UTF-8")
     Redirect(routes.Application.conference(link))
@@ -40,20 +43,18 @@ object Application extends Controller with GCAAuth {
       case _                   => null
     }
 
-    val srv = ConferenceService()
-    val conf = srv.get(id)
+    val conf = conferenceService.get(id)
     Ok(views.html.submission(user, conf, None))
   }
 
   def edit(id: String) = AuthenticatedAction(isREST = false) { implicit request =>
-    val abstr = AbstractService().getOwn(id, request.user)
+    val abstr = abstractService.getOwn(id, request.user)
 
     Ok(views.html.submission(request.user, abstr.conference, Option(abstr)))
   }
 
   def abstractsPublic(confId: String) = AccountAwareAction { implicit request =>
-    val confServ = ConferenceService()
-    val conference = confServ.get(confId)
+    val conference = conferenceService.get(confId)
 
     Ok(views.html.abstractlist(request.user, conference))
   }
@@ -64,14 +65,14 @@ object Application extends Controller with GCAAuth {
   }
 
   def abstractsPending = AuthenticatedAction(isREST = false) { implicit request =>
-    val conference = ConferenceService().list()(0)
+    val conference = conferenceService.list()(0)
 
     // TODO all abstracts for reviewers
     Ok(views.html.abstractlist(Some(request.user), conference))
   }
 
   def conference(confId: String) = AccountAwareAction { implicit request =>
-    val conference = ConferenceService().get(confId)
+    val conference = conferenceService.get(confId)
 
     Ok(views.html.conference(request.user, conference))
   }
@@ -98,8 +99,7 @@ object Application extends Controller with GCAAuth {
   }
 
   def adminConference(confId: String) = AuthenticatedAction { implicit request =>
-    val confServ = ConferenceService()
-    val conference = confServ.get(confId)
+    val conference = conferenceService.get(confId)
 
     if (!(conference.isOwner(request.user) || request.user.isAdmin)) {
       Unauthorized("Not allowed!")
@@ -110,8 +110,7 @@ object Application extends Controller with GCAAuth {
 
 
   def adminAbstracts(confId: String) = AuthenticatedAction { implicit request =>
-    val confServ = ConferenceService()
-    val conference = confServ.get(confId)
+    val conference = conferenceService.get(confId)
 
     if (!(conference.isOwner(request.user) || request.user.isAdmin)) {
       Unauthorized("Not allowed!")
@@ -128,12 +127,10 @@ object Application extends Controller with GCAAuth {
     }
   }
 
-
   def viewAbstract(id: String) = AccountAwareAction { implicit request =>
-    val abstrService = AbstractService()
     val abstr = request.user match {
-      case Some(account) => abstrService.getOwn(id, account)
-      case _             => abstrService.get(id)
+      case Some(account) => abstractService.getOwn(id, account)
+      case _             => abstractService.get(id)
     }
 
     Ok(views.html.abstractviewer(request.user, abstr.conference, abstr))
