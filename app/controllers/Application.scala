@@ -6,7 +6,6 @@ import utils.GCAAuth
 import models._
 import service.{AbstractService, ConferenceService}
 import java.net._
-import service.util.EMPImplicits.EMPFromRequest
 
 object Application extends Controller with GCAAuth {
 

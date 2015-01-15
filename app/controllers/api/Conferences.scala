@@ -9,7 +9,6 @@ import utils.DefaultRoutesResolver._
 import models.Conference
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
-import service.util.EMPImplicits.EMPFromRequest
 
 /**
  * Conferences controller.
