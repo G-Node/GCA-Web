@@ -1,14 +1,12 @@
 package utils
 
-import javax.persistence.{EntityNotFoundException, NoResultException}
-
+import models.Account
 import play.api.i18n.Messages
-import play.api.libs.json.{JsResultException, _}
+import play.api.libs.json._
 import play.api.mvc.{SimpleResult, _}
 import securesocial.core.providers.utils.RoutesHelper
 import securesocial.core.{Authenticator, IdentityProvider, SecureSocial, UserService}
 import service.UserStore
-import models.Account
 
 import scala.concurrent.Future
 import scala.language.higherKinds
@@ -28,20 +26,6 @@ trait GCAAuth extends securesocial.core.SecureSocial {
 
     var isAjaxCall = false
 
-    def invokeBlockSafe[A](resultAsRest: Boolean)(request: R[A],
-                                                block: (R[A]) => Future[SimpleResult]): Future[SimpleResult] = {
-      try {
-        block(request)
-      } catch (if(resultAsRest) {
-        exHandlerJSON()
-      } else {
-        exHandlerHTML()
-      }) andThen {
-        result => Future.successful(result)
-      }
-
-    }
-
     final def apply(isREST: Boolean)(block: R[AnyContent] => Result): Action[AnyContent] = {
       isAjaxCall = isREST
       apply(BodyParsers.parse.anyContent)(block)
@@ -58,7 +42,8 @@ trait GCAAuth extends securesocial.core.SecureSocial {
                                  block: (RequestWithAccount[A]) => Future[SimpleResult]): Future[SimpleResult] = {
 
       val Account = getAccount(request)
-      invokeBlockSafe(resultAsRest = isAjaxCall)(RequestWithAccount(Account, request), block)
+      val requestAcc = RequestWithAccount(Account, request)
+      block(requestAcc)
     }
   }
 
@@ -71,15 +56,16 @@ trait GCAAuth extends securesocial.core.SecureSocial {
       val res = Account.fold({
         authFailedResponse(request)
       })({ account =>
-        invokeBlockSafe(resultAsRest = isAjaxCall)(RequestAuthenticated(account, request), block)
+        val requestAuth = RequestAuthenticated(account, request)
+        block(requestAuth)
       })
 
       res
     }
 
-    def authFailedResponse[A](implicit request: Request[A]) : Future[SimpleResult] = {
+    def authFailedResponse[A](implicit request: Request[A]): Future[SimpleResult] = {
       val response = if (isAjaxCall) {
-        Unauthorized(Json.toJson(Map("error"->"Credentials required"))).as(JSON)
+        Unauthorized(Json.toJson(Map("error" -> "Credentials required"))).as(JSON)
       } else {
         Redirect(RoutesHelper.login().absoluteURL(IdentityProvider.sslEnabled))
           .flashing("error" -> Messages("securesocial.loginRequired"))
@@ -98,29 +84,19 @@ trait GCAAuth extends securesocial.core.SecureSocial {
     }
   }
 
-  def getAccount[A](request: Request[A]) : Option[Account] = {
+  def getAccount[A](request: Request[A]): Option[Account] = {
     implicit val req = request
     for {
       authenticator <- SecureSocial.authenticatorFromRequest
       user <- getUserStore.findAccount(authenticator.identityId)
-      account <- user match {case a: Account => Some(a); case _ => None}
+      account <- user match {
+        case a: Account => Some(a);
+        case _ => None
+      }
     } yield {
       touch(authenticator)
       account
     }
   }
-
-  def exHandlerHTML() : PartialFunction[Throwable, SimpleResult] = {
-    case e: NoResultException => NotFound(views.html.error.NotFound())
-    case e: Exception => InternalServerError(views.html.error.InternalServerError(e))
-  }
-
-  def exHandlerJSON() : PartialFunction[Throwable, SimpleResult] = {
-    case e: NoResultException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
-    case e: EntityNotFoundException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
-    case e: IllegalArgumentException => BadRequest(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
-    case e: JsResultException => BadRequest(Json.obj("error" -> true, "causes" -> JsError.toFlatJson(e.errors)))
-    case e: IllegalAccessException => Forbidden(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
-    case e: Exception => InternalServerError(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
-  }
+  
 }
