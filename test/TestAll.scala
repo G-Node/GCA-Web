@@ -10,7 +10,7 @@
 import org.scalatest.Suites
 import service.{FigureServiceTest, UserStoreTest, ConferenceServiceTest, AbstractServiceTest}
 import util.serializer.SerializerTest
-import controller.{AbstractsCtrlTest, ConferenceCtrlTest}
+import controller.{FigureCtrlTest, AbstractsCtrlTest, ConferenceCtrlTest}
 
 
 /**
@@ -24,6 +24,7 @@ class TestAll extends Suites(
   new FigureServiceTest,
   new UserStoreTest,
   new ConferenceCtrlTest,
-  new AbstractsCtrlTest
+  new AbstractsCtrlTest,
+  new FigureCtrlTest
 
 )
