@@ -1,18 +1,13 @@
 package controller
 
-import scala.concurrent.Future
 import org.junit._
-import play.api.test._
 import play.api.Play
-import play.api.test.Helpers._
-
-import utils.serializer.{AccountFormat, ConferenceFormat}
-import play.api.libs.json.{JsValue, JsArray, JsObject}
-import utils.DefaultRoutesResolver._
-import scala.Some
-import play.api.test.FakeApplication
+import play.api.libs.json.{JsArray, JsObject, JsValue}
 import play.api.mvc.Cookie
-import play.mvc.SimpleResult
+import play.api.test.Helpers._
+import play.api.test._
+import utils.DefaultRoutesResolver._
+import utils.serializer.{AccountFormat, ConferenceFormat}
 
 
 /**
@@ -82,7 +77,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
 
     val bobCookie = getCookie(assets.bob.identityId, "testtest")
     val updateUnauth = updateAuth.withCookies(bobCookie)
-    val failed = route(ConferenceCtrlTest.app, updateUnauth).get
+    val failed = routeWithErrors(ConferenceCtrlTest.app, updateUnauth).get
     assert(status(failed) == FORBIDDEN)
   }
 
@@ -95,7 +90,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
 
     val id = "NOTEXISTANT"
     val bad = FakeRequest(DELETE, s"/api/conferences/$id").withCookies(cookie)
-    val failed = route(ConferenceCtrlTest.app, bad).get
+    val failed = routeWithErrors(ConferenceCtrlTest.app, bad).get
     assert(status(failed) == NOT_FOUND)
   }
 
@@ -138,7 +133,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     assert(status(response) == OK)
 
     postR = FakeRequest(PUT, s"/api/conferences/$confid/owners").withCookies(adminCookie).withJsonBody(body)
-    response = route(ConferenceCtrlTest.app, postR).get
+    response = routeWithErrors(ConferenceCtrlTest.app, postR).get
 
     assert(status(response) == FORBIDDEN)
   }

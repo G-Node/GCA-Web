@@ -29,7 +29,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     var id = "NOTEXISTANT"
     var req = FakeRequest(GET, s"/api/abstracts/$id")
 
-    var result = route(AbstractsCtrlTest.app, req).get
+    var result = routeWithErrors(AbstractsCtrlTest.app, req).get
     assert(status(result) == NOT_FOUND)
 
     id = assets.abstracts(0).uuid //is published
@@ -56,7 +56,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     val confId = assets.conferences(0).uuid
     val reqNoAuth = FakeRequest(POST, s"/api/conferences/$confId/abstracts").withJsonBody(body)
 
-    val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
+    val reqNoAuthResult = routeWithErrors(AbstractsCtrlTest.app, reqNoAuth).get
     assert(status(reqNoAuthResult) == UNAUTHORIZED)
 
     val reqAuth = reqNoAuth.withCookies(cookie)
@@ -72,7 +72,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     val bobCookie =  getCookie(assets.bob.identityId, "testtest")
     val confIdClosed = assets.conferences(1).uuid
     val rq = FakeRequest(POST, s"/api/conferences/$confIdClosed/abstracts").withJsonBody(body).withCookies(bobCookie)
-    val rqResult = route(AbstractsCtrlTest.app, rq).get
+    val rqResult = routeWithErrors(AbstractsCtrlTest.app, rq).get
     assert(status(rqResult) == FORBIDDEN)
   }
 
@@ -186,7 +186,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     assert(status(response) == OK)
 
     postR = FakeRequest(PUT, s"/api/abstracts/$abstrid/owners").withCookies(adminCookie).withJsonBody(body)
-    response = route(AbstractsCtrlTest.app, postR).get
+    response = routeWithErrors(AbstractsCtrlTest.app, postR).get
 
     assert(status(response) == FORBIDDEN)
   }
@@ -201,7 +201,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     var stateChange = Json.obj("state" -> "Submitted", "note" -> "")
     val reqNoAuth = FakeRequest(PUT, s"/api/abstracts/$absUUID/state").withJsonBody(stateChange)
 
-    val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
+    val reqNoAuthResult = routeWithErrors(AbstractsCtrlTest.app, reqNoAuth).get
     assert(status(reqNoAuthResult) == UNAUTHORIZED)
 
     //try as bob, who is one of the owners, so should be OK
@@ -214,7 +214,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     //try to change a state that we are not allowed to as owner
     stateChange = Json.obj("state" -> "InReview", "note" -> "")
     reqAuth = reqAuth.withJsonBody(stateChange)
-    reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
+    reqAuthResult = routeWithErrors(AbstractsCtrlTest.app, reqAuth).get
 
     assert(status(reqAuthResult) == FORBIDDEN)
 
@@ -232,13 +232,13 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     val absUUID = abstr.uuid
     val reqNoAuth = FakeRequest("PATCH", s"/api/abstracts/$absUUID").withJsonBody(patch)
 
-    val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
+    val reqNoAuthResult = routeWithErrors(AbstractsCtrlTest.app, reqNoAuth).get
     assert(status(reqNoAuthResult) == UNAUTHORIZED)
 
     //bob should not be allowed to do this
     val bobCookie = getCookie(assets.bob.identityId, "testtest")
     var reqAuth = reqNoAuth.withCookies(bobCookie)
-    var reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
+    var reqAuthResult = routeWithErrors(AbstractsCtrlTest.app, reqAuth).get
     assert(status(reqAuthResult) == FORBIDDEN)
 
     //now try as alice (who is conference admin)

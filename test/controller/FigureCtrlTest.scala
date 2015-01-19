@@ -129,7 +129,7 @@ class FigureCtrlTest extends BaseCtrlTest {
 
     val id = "NOTEXISTANT"
     val bad = FakeRequest(DELETE, s"/api/figures/$id").withCookies(cookie)
-    val failed = route(FigureCtrlTest.app, bad).get
+    val failed = routeWithErrors(FigureCtrlTest.app, bad).get
     assert(status(failed) == NOT_FOUND)
   }
 }
