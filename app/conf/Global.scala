@@ -1,3 +1,5 @@
+package conf
+
 import javax.persistence.{EntityNotFoundException, NoResultException}
 
 import play.api._
