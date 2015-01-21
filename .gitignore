@@ -20,3 +20,6 @@ figures
 # makes auto completion available
 bootstrap.css
 
+# local settings
+application_local.conf
+persistence_local.xml
