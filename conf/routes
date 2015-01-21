@@ -50,8 +50,8 @@ GET           /api/abstracts/:id/stateLog                     @controllers.api.A
 PUT           /api/abstracts/:id/state                        @controllers.api.Abstracts.setState(id: String)
 
 # Figure interface
-GET           /api/figures/:id/image                          controllers.api.Figures.download(id: String)
-DELETE        /api/figures/:id                                controllers.api.Figures.delete(id: String)
+GET           /api/figures/:id/image                          @controllers.api.Figures.download(id: String)
+DELETE        /api/figures/:id                                @controllers.api.Figures.delete(id: String)
 
 # [...] maybe add more figure functions
 
