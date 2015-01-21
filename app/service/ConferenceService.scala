@@ -102,7 +102,6 @@ class ConferenceService()(implicit val emp: EntityManagerProvider) extends Permi
         """SELECT DISTINCT c FROM Conference c
            LEFT JOIN FETCH c.groups
            LEFT JOIN FETCH c.owners
-           LEFT JOIN FETCH c.abstracts
            LEFT JOIN FETCH c.topics
            WHERE c.uuid = :uuid or c.short = :short"""
 
