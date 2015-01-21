@@ -7,15 +7,18 @@ import play.api.libs.json.{JsArray, JsObject, Json, _}
 import play.api.mvc._
 import service._
 import utils.DefaultRoutesResolver._
-import utils.GCAAuth
 import utils.serializer.{AbstractFormat, AccountFormat, StateLogWrites}
 import models._
+
+import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
+import com.mohiva.play.silhouette.core.{Silhouette, Environment}
 
 /**
  * Abstracts controller.
  * Manages HTTP request logic for abstracts.
  */
-object Abstracts extends Controller with  GCAAuth {
+class Abstracts(implicit val env: Environment[Login, CachedCookieAuthenticator])
+extends Silhouette[Login, CachedCookieAuthenticator] {
 
   implicit val absFormat = new AbstractFormat()
   val accountFormat = new AccountFormat()
@@ -30,17 +33,17 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return new abstract in JSON / Redirect to the abstract page
    */
-  def create(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
+  def create(id: String) = SecuredAction(parse.json) { implicit request =>
 
     val abs = request.body.as[Abstract]
     val conference = conferenceService.get(id)
 
     if(!conference.isOpen &&
-      !(request.user.isAdmin || conference.isOwner(request.user))) {
+      !(request.identity.account.isAdmin || conference.isOwner(request.identity.account))) {
       throw new IllegalAccessException("Conference is closed!")
     }
 
-    val newAbs = abstractService.create(abs, conference, request.user)
+    val newAbs = abstractService.create(abs, conference, request.identity.account)
 
     Created(Json.toJson(newAbs))
   }
@@ -50,7 +53,7 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return All abstracts publicly available.
    */
-  def listByConference(id: String) = AccountAwareAction(isREST = true) {  implicit request =>
+  def listByConference(id: String) = UserAwareAction { implicit request =>
 
     val conference = conferenceService.get(id)
     val abstracts = abstractService.list(conference)
@@ -63,11 +66,11 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return All abstracts publicly available.
    */
-  def listAllByConference(id: String) = AuthenticatedAction(isREST = true) {  implicit request =>
+  def listAllByConference(id: String) = SecuredAction {  implicit request =>
 
     val conference = conferenceService.get(id)
 
-    if (!(request.user.isAdmin || conference.isOwner(request.user))) {
+    if (!(request.identity.account.isAdmin || conference.isOwner(request.identity.account))) {
       throw new IllegalAccessException("Not allowed")
     }
 
@@ -80,8 +83,8 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return All (accessible) abstracts for a given user.
    */
-  def listByAccount(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
-    val ownAbstracts = abstractService.listOwn(request.user)
+  def listByAccount(id: String) = SecuredAction { implicit request =>
+    val ownAbstracts = abstractService.listOwn(request.identity.account)
 
     Ok(Json.toJson(ownAbstracts))
   }
@@ -92,10 +95,10 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return All (accessible) abstracts for a given user.
    */
-  def listOwn(conferenceId: String) = AuthenticatedAction(isREST = true) { implicit request =>
+  def listOwn(conferenceId: String) = SecuredAction { implicit request =>
 
   val conference = conferenceService.get(conferenceId)
-  val abstracts = abstractService.listOwn(conference, request.user)
+  val abstracts = abstractService.listOwn(conference, request.identity.account)
 
   Ok(Json.toJson(abstracts))
 }
@@ -107,10 +110,10 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return An abstract as JSON / abstract page.
    */
-  def get(id: String) = AccountAwareAction(isREST = true) { implicit request =>
+  def get(id: String) = UserAwareAction { implicit request =>
     Logger.debug(s"Getting abstract with uuid: [$id]")
 
-    val abs = request.user match {
+    val abs = request.identity.map { _.account } match {
       case Some(user) => abstractService.getOwn(id, user)
       case _          => abstractService.get(id)
     }
@@ -125,7 +128,7 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return abstract in JSON / abstract page
    */
-  def update(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
+  def update(id: String) = SecuredAction(parse.json) { implicit request =>
     Logger.debug(s"Updating abstract with uuid: [$id]")
 
     val abs = request.body.as[Abstract]
@@ -136,14 +139,14 @@ object Abstracts extends Controller with  GCAAuth {
       Logger.debug(s"Updating [$id]: UUID mismatch")
     }
 
-    val oldAbstract = abstractService.getOwn(abs.uuid, request.user)
+    val oldAbstract = abstractService.getOwn(abs.uuid, request.identity.account)
     val conference = oldAbstract.conference
 
     if(!conference.isOpen && oldAbstract.state != AbstractState.InRevision) {
       throw new IllegalAccessException("Conference is closed and abstract not in 'InRevision' state!")
     }
 
-    val newAbstract = abstractService.update(abs, request.user)
+    val newAbstract = abstractService.update(abs, request.identity.account)
 
     Ok(Json.toJson(newAbstract))
   }
@@ -155,10 +158,10 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return OK or Failed / Redirect to the abstract list page
    */
-  def delete(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
+  def delete(id: String) = SecuredAction { implicit request =>
     Logger.debug(s"Deleting abstract with uuid: [$id]")
 
-    abstractService.delete(id, request.user)
+    abstractService.delete(id, request.identity.account)
 
     Ok("Abstract Deleted") //FIXME: JSON
   }
@@ -168,13 +171,13 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return a list of updated permissions (accounts) as JSON
    */
-  def setPermissions(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
+  def setPermissions(id: String) = SecuredAction(parse.json) { implicit request =>
 
     val to_set = for (acc <- request.body.as[List[JsObject]])
       yield accountFormat.reads(acc).get
 
-    val abstr = abstractService.getOwn(id, request.user)
-    val owners = abstractService.setPermissions(abstr, request.user, to_set)
+    val abstr = abstractService.getOwn(id, request.identity.account)
+    val owners = abstractService.setPermissions(abstr, request.identity.account, to_set)
 
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
@@ -186,28 +189,28 @@ object Abstracts extends Controller with  GCAAuth {
    *
    * @return a list of updated permissions (accounts) as JSON
    */
-  def getPermissions(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
+  def getPermissions(id: String) = SecuredAction { implicit request =>
 
-    val abstr = abstractService.getOwn(id, request.user)
-    val owners = abstractService.getPermissions(abstr, request.user)
+    val abstr = abstractService.getOwn(id, request.identity.account)
+    val owners = abstractService.getPermissions(abstr, request.identity.account)
 
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
     ))
   }
 
-  def listState(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
+  def listState(id: String) = SecuredAction { implicit request =>
     implicit val logWrites = new StateLogWrites()
 
-    Ok(Json.toJson(abstractService.listStates(id, request.user)))
+    Ok(Json.toJson(abstractService.listStates(id, request.identity.account)))
   }
 
 
-  def setState(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
+  def setState(id: String) = SecuredAction(parse.json) { implicit request =>
     implicit val logWrites = new StateLogWrites()
     val changeReads = ((__ \ "state").read[String] and (__ \ "note").readNullable[String]).tupled
 
-    val account = request.user
+    val account = request.identity.account
     val abstr = abstractService.getOwn(id, account) // TODO: will not work for admin (GitHub issue, #155)
     val conference = abstr.conference
 
@@ -233,11 +236,11 @@ object Abstracts extends Controller with  GCAAuth {
     Ok(Json.toJson(stateLog))
   }
 
-  def patch(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
+  def patch(id: String) = SecuredAction(parse.json) { implicit request =>
     val patchReads = Reads.list(((__ \ "op").read[String] and
       (__ \ "path").read[String] and (__ \ "value").readNullable[JsValue]).tupled)
 
-    val account = request.user
+    val account = request.identity.account
     val abstr = abstractService.getOwn(id, account)
     val isAdmin = account.isAdmin || abstr.conference.owners.contains(account)
 

@@ -38,16 +38,16 @@ PUT           /api/conferences/:id/owners                     controllers.api.Co
 GET           /api/conferences/:id/owners                     controllers.api.Conferences.getPermissions(id: String)
 
 # Abstract interface
-GET           /api/abstracts/:id                              controllers.api.Abstracts.get(id: String)
-PUT           /api/abstracts/:id                              controllers.api.Abstracts.update(id: String)
-DELETE        /api/abstracts/:id                              controllers.api.Abstracts.delete(id: String)
-PATCH         /api/abstracts/:id                              controllers.api.Abstracts.patch(id: String)
-POST          /api/abstracts/:id/figures                      controllers.api.Figures.upload(id: String)
-GET           /api/abstracts/:id/figures                      controllers.api.Figures.list(id: String)
-PUT           /api/abstracts/:id/owners                       controllers.api.Abstracts.setPermissions(id: String)
-GET           /api/abstracts/:id/owners                       controllers.api.Abstracts.getPermissions(id: String)
-GET           /api/abstracts/:id/stateLog                     controllers.api.Abstracts.listState(id: String)
-PUT           /api/abstracts/:id/state                        controllers.api.Abstracts.setState(id: String)
+GET           /api/abstracts/:id                              @controllers.api.Abstracts.get(id: String)
+PUT           /api/abstracts/:id                              @controllers.api.Abstracts.update(id: String)
+DELETE        /api/abstracts/:id                              @controllers.api.Abstracts.delete(id: String)
+PATCH         /api/abstracts/:id                              @controllers.api.Abstracts.patch(id: String)
+POST          /api/abstracts/:id/figures                      @controllers.api.Figures.upload(id: String)
+GET           /api/abstracts/:id/figures                      @controllers.api.Figures.list(id: String)
+PUT           /api/abstracts/:id/owners                       @controllers.api.Abstracts.setPermissions(id: String)
+GET           /api/abstracts/:id/owners                       @controllers.api.Abstracts.getPermissions(id: String)
+GET           /api/abstracts/:id/stateLog                     @controllers.api.Abstracts.listState(id: String)
+PUT           /api/abstracts/:id/state                        @controllers.api.Abstracts.setState(id: String)
 
 # Figure interface
 GET           /api/figures/:id/image                          controllers.api.Figures.download(id: String)
