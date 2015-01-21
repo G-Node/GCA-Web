@@ -57,11 +57,11 @@ DELETE        /api/figures/:id                                controllers.api.Fi
 
 # Account interface
 
-GET           /api/users                                      controllers.api.Accounts.accountsByEmail(email: String)
-GET           /api/user/list                                  controllers.api.Accounts.listAccounts()
-GET           /api/user/:id/abstracts                         controllers.api.Abstracts.listByAccount(id: String)
-GET           /api/user/self/conferences/:id/abstracts        controllers.api.Abstracts.listOwn(id: String)
-GET           /api/user/self/conferences                      controllers.api.Conferences.listWithOwnAbstracts
+GET           /api/users                                      @controllers.api.Accounts.accountsByEmail(email: String)
+GET           /api/user/list                                  @controllers.api.Accounts.listAccounts()
+GET           /api/user/:id/abstracts                         @controllers.api.Abstracts.listByAccount(id: String)
+GET           /api/user/self/conferences/:id/abstracts        @controllers.api.Abstracts.listOwn(id: String)
+GET           /api/user/self/conferences                      @controllers.api.Conferences.listWithOwnAbstracts
 
 
 # Auth -----------------------------------------------------------------------------------------------------------------
