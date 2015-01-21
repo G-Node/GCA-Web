@@ -13,5 +13,6 @@ libraryDependencies ++= Seq(
   ws,
   "org.scalatest" %% "scalatest" % "2.2.1",
   "org.eclipse.persistence" % "org.eclipse.persistence.jpa" % "2.5.2",
+  "com.mohiva" %% "play-silhouette" % "1.0",
   "org.postgresql" % "postgresql" % "9.3-1100-jdbc4"
 )
