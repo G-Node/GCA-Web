@@ -13,13 +13,17 @@ import play.api.db.DB
 import play.api.{Application, Logger}
 import utils.AnormExtension._
 import plugins.DBUtil._
-import models.Account
+import models.{Account, Login}
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
 
+class AccountStore {
+  def findByEmail(mail: String): List[Account] = ???
+  def list(): List[Account] = ???
+}
 
-class AccountStore extends IdentityService[Account]  {
-  override def retrieve(loginInfo: LoginInfo): Future[Option[Account]] = ???
+class LoginStore extends IdentityService[Login]  {
+  override def retrieve(loginInfo: LoginInfo): Future[Option[Login]] = ???
 }
 
