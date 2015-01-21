@@ -26,16 +26,16 @@ GET           /assets/*file                                   controllers.Assets
 
 # API ------------------------------------------------------------------------------------------------------------------
 # Conference interface
-POST          /api/conferences                                controllers.api.Conferences.create
-GET           /api/conferences                                controllers.api.Conferences.list()
-GET           /api/conferences/:id                            controllers.api.Conferences.get(id: String)
-PUT           /api/conferences/:id                            controllers.api.Conferences.update(id: String)
-DELETE        /api/conferences/:id                            controllers.api.Conferences.delete(id: String)
-POST          /api/conferences/:id/abstracts                  controllers.api.Abstracts.create(id: String)
-GET           /api/conferences/:id/abstracts                  controllers.api.Abstracts.listByConference(id: String)
-GET           /api/conferences/:id/allAbstracts               controllers.api.Abstracts.listAllByConference(id: String)
-PUT           /api/conferences/:id/owners                     controllers.api.Conferences.setPermissions(id: String)
-GET           /api/conferences/:id/owners                     controllers.api.Conferences.getPermissions(id: String)
+POST          /api/conferences                                @controllers.api.Conferences.create
+GET           /api/conferences                                @controllers.api.Conferences.list()
+GET           /api/conferences/:id                            @controllers.api.Conferences.get(id: String)
+PUT           /api/conferences/:id                            @controllers.api.Conferences.update(id: String)
+DELETE        /api/conferences/:id                            @controllers.api.Conferences.delete(id: String)
+POST          /api/conferences/:id/abstracts                  @controllers.api.Abstracts.create(id: String)
+GET           /api/conferences/:id/abstracts                  @controllers.api.Abstracts.listByConference(id: String)
+GET           /api/conferences/:id/allAbstracts               @controllers.api.Abstracts.listAllByConference(id: String)
+PUT           /api/conferences/:id/owners                     @controllers.api.Conferences.setPermissions(id: String)
+GET           /api/conferences/:id/owners                     @controllers.api.Conferences.getPermissions(id: String)
 
 # Abstract interface
 GET           /api/abstracts/:id                              @controllers.api.Abstracts.get(id: String)
