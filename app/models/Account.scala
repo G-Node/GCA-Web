@@ -97,7 +97,7 @@ class Account extends Model {
   @ManyToMany(mappedBy = "owners")
   var conferences: JSet[Conference] = new JTreeSet[Conference]()
 
-  @OneToMany(mappedBy = "logins", cascade = Array(CascadeType.ALL), orphanRemoval = true)
+  @OneToMany
   var logins: JSet[Login] = new JTreeSet[Login]()
 
   def isAdmin = {
@@ -129,6 +129,10 @@ object Account {
 
 
 @Entity
+@Table(name="Login")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="TYPE", discriminatorType=DiscriminatorType.STRING,length=20)
+@DiscriminatorValue("Base")
 abstract class Login extends Model with Identity {
 
   @ManyToOne
@@ -137,6 +141,7 @@ abstract class Login extends Model with Identity {
 
 
 @Entity
+@DiscriminatorValue("Credentials")
 class CredentialsLogin extends Login {
 
   override def loginInfo: LoginInfo = new LoginInfo("credentials", account.mail)
