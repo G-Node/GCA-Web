@@ -196,14 +196,6 @@ class Assets() {
     account.firstName = firstName
     account.lastName = lastName
     account.mail = mail
-    account.userid = mail
-    account.authenticationMethod = "userPassword"
-    account.provider = "userpass"
-    account.pwInfo = PwInfo(
-      "bcrypt",
-      "$2a$10$iMoFsVr468/5JJkq0YLRruEMpleTNXMo/rdkm5aOqnuq83t5DwUvW",
-      None
-    )
 
     account
   }

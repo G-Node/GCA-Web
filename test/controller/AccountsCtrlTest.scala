@@ -26,13 +26,13 @@ class AccountsCtrlTest extends BaseCtrlTest {
   @Before
   override def before() : Unit = {
     super.before()
-    cookie = getCookie(assets.alice.identityId, "testtest")
+    cookie = getCookie(assets.alice, "testtest")
   }
 
   @Test
   def testListByEmail(): Unit = {
     val request = FakeRequest(
-      GET, "/api/users?email=" + assets.bob.email.get
+      GET, "/api/users?email=" + assets.bob.mail
     ).withCookies(cookie)
     val result = route(AccountsCtrlTest.app, request).get
     assert(status(result) == OK)
