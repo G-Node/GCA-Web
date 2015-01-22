@@ -11,6 +11,7 @@ GET           /dashboard/conference/:id                       controllers.Applic
 GET           /dashboard/conference/:id/abstracts             controllers.Application.adminAbstracts(id: String)
 GET           /dashboard/accounts                             controllers.Application.adminAccounts()
 
+GET           /conferences                                    controllers.Application.conferences()
 GET           /conference/:id                                 controllers.Application.conference(id: String)
 GET           /conference/:id/submission                      controllers.Application.submission(id: String)
 GET           /conference/:id/abstracts                       controllers.Application.abstractsPublic(id: String)

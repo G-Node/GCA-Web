@@ -13,10 +13,7 @@ object Application extends Controller with GCAAuth {
   val conferenceService = ConferenceService()
   
   def index = AccountAwareAction { implicit request =>
-    val conference = conferenceService.list()(0)
-
-    val link = URLEncoder.encode(conference.short, "UTF-8")
-    Redirect(routes.Application.conference(link))
+    Redirect(routes.Application.conferences())
   }
 
   def showUserInfo = AccountAwareAction { implicit request =>
@@ -69,6 +66,18 @@ object Application extends Controller with GCAAuth {
 
     // TODO all abstracts for reviewers
     Ok(views.html.abstractlist(Some(request.user), conference))
+  }
+
+  def conferences = AccountAwareAction { implicit request =>
+    var conferences = conferenceService.list()
+
+    // TODO assign active conference properly
+    val current = conferences.lift(0)
+
+    if (current.isDefined)
+      conferences = conferences.filter(conf => conf.uuid != current.get.uuid)
+
+    Ok(views.html.conferencelist(request.user, conferences, current))
   }
 
   def conference(confId: String) = AccountAwareAction { implicit request =>
