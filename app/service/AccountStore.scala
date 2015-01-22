@@ -19,8 +19,26 @@ class AccountStore {
   def list(): List[Account] = ???
 }
 
-class LoginStore extends IdentityService[Login]  {
-  override def retrieve(loginInfo: LoginInfo): Future[Option[Login]] = ???
+class LoginStore extends IdentityService[Login] {
+  override def retrieve(loginInfo: LoginInfo): Future[Option[Login]] = {
+
+    val login = query { em =>
+      val queryStr =
+        """SELECT DISTINCT l FROM Login l
+           LEFT JOIN FETCH l.account a
+           WHERE a.mail = :email"""
+
+      val query: TypedQuery[CredentialsLogin] = em.createQuery(queryStr, classOf[CredentialsLogin])
+      query.setParameter("email", loginInfo.providerKey)
+
+      Try(query.getSingleResult)
+    } match {
+      case Success(l) => Some(l)
+      case Failure(e) => None
+    }
+
+    Future.successful(login)
+  }
 }
 
 
