@@ -19,7 +19,7 @@ class AccountStore {
     query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Account a
-           WHERE a.mail = :email"""
+           WHERE LOWER(a.mail) = LOWER(:email)"""
 
       val query: TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
       query.setParameter("email", mail)
@@ -47,7 +47,7 @@ class LoginStore extends IdentityService[Login] {
       val queryStr =
         """SELECT DISTINCT l FROM Login l
            LEFT JOIN FETCH l.account a
-           WHERE a.mail = :email"""
+           WHERE LOWER(a.mail) = LOWER(:email)"""
 
       val query: TypedQuery[CredentialsLogin] = em.createQuery(queryStr, classOf[CredentialsLogin])
       query.setParameter("email", loginInfo.providerKey)
@@ -72,7 +72,7 @@ class CredentialsStore extends DelegableAuthInfoDAO[PasswordInfo] {
       val queryStr =
         """SELECT DISTINCT l FROM Login l
            LEFT JOIN FETCH l.account a
-           WHERE a.mail = :email"""
+           WHERE LOWER(a.mail) = LOWER(:email)"""
 
       val query : TypedQuery[CredentialsLogin] = em.createQuery(queryStr, classOf[CredentialsLogin])
       query.setParameter("email", loginInfo.providerKey)
