@@ -73,7 +73,10 @@ class DBUtil(implicit app: Application) extends Plugin {
 
 object DBUtil {
 
-  val DEFAULT_UNIT = "defaultPersistenceUnit"
+  val DEFAULT_UNIT = Play.current.configuration.getString("jpa.default") match {
+    case Some(unit) => unit
+    case None => "defaultPersistenceUnit"
+  }
 
   /**
    * Get the plugin instance from the play runtime
