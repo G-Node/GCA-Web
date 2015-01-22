@@ -9,7 +9,7 @@
 
 package models
 
-import com.mohiva.play.silhouette.core.providers.CredentialsProvider
+import com.mohiva.play.silhouette.core.providers.{PasswordInfo, CredentialsProvider}
 import play.api.Play.current
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
@@ -150,5 +150,20 @@ class CredentialsLogin extends Login {
   var hasher: String = _
   var password: String = _
   var salt: String = _
+
+}
+
+
+object CredentialsLogin {
+
+  def apply(passwordInfo: PasswordInfo): CredentialsLogin = {
+    val login = new CredentialsLogin()
+
+    login.hasher = passwordInfo.hasher
+    login.password = passwordInfo.password
+    login.salt = unwrapRef(passwordInfo.salt)
+
+    login
+  }
 
 }
