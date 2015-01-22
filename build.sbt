@@ -17,3 +17,7 @@ libraryDependencies ++= Seq(
   "com.mohiva" %% "play-silhouette" % "1.0",
   "org.postgresql" % "postgresql" % "9.3-1100-jdbc4"
 )
+
+includeFilter in (Assets, LessKeys.less) := "*.less"
+
+excludeFilter in (Assets, LessKeys.less) := "_*.less"
