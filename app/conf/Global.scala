@@ -3,8 +3,9 @@ package conf
 import java.lang.reflect.Constructor
 import javax.persistence.{EntityNotFoundException, NoResultException}
 
-import com.mohiva.play.silhouette.contrib.services.{CachedCookieAuthenticatorSettings, CachedCookieAuthenticatorService, CachedCookieAuthenticator}
-import com.mohiva.play.silhouette.contrib.utils.{PlayCacheLayer, SecureRandomIDGenerator}
+import com.mohiva.play.silhouette.contrib.services.{DelegableAuthInfoService, CachedCookieAuthenticatorSettings, CachedCookieAuthenticatorService, CachedCookieAuthenticator}
+import com.mohiva.play.silhouette.contrib.utils.{BCryptPasswordHasher, PlayCacheLayer, SecureRandomIDGenerator}
+import com.mohiva.play.silhouette.core.providers.CredentialsProvider
 import com.mohiva.play.silhouette.core.{SecuredSettings, EventBus, Provider, Environment}
 import com.mohiva.play.silhouette.core.services.{AuthenticatorService, IdentityService}
 import com.mohiva.play.silhouette.core.utils.Clock
@@ -13,7 +14,7 @@ import play.api._
 import play.api.libs.json.{JsError, JsResultException, Json}
 import play.api.mvc.Results._
 import play.api.mvc._
-import service.LoginStore
+import service.{CredentialsStore, LoginStore}
 
 import scala.concurrent.Future
 
@@ -58,6 +59,9 @@ object Global extends GlobalSettings with SecuredSettings {
 
   lazy val idGenerator = new SecureRandomIDGenerator()
   lazy val cacheLayer = new PlayCacheLayer
+  lazy val authInfoService = new DelegableAuthInfoService(new CredentialsStore())
+  lazy val pwHasher = new BCryptPasswordHasher()
+  lazy val credentialsProvider = new CredentialsProvider(authInfoService, pwHasher, Seq(pwHasher))
 
   object GlobalEnv extends Environment[Login, CachedCookieAuthenticator] {
     override lazy val identityService: IdentityService[Login] = new LoginStore
@@ -75,7 +79,7 @@ object Global extends GlobalSettings with SecuredSettings {
       ), cacheLayer, idGenerator, Clock())
     }
 
-    override lazy val providers: Map[String, Provider] = Map[String, Provider]()
+    override lazy val providers: Map[String, Provider] = Map(credentialsProvider.id -> credentialsProvider)
     override lazy val eventBus: EventBus = new EventBus
   }
 
