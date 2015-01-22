@@ -159,7 +159,7 @@
                     }
 
                     @if(account.isEmpty && !("login" :: "register" :: Nil).contains(active.toLowerCase)) {
-                        <li><a href="FIXME:login">Login</a></li>
+                        <li><a href="@routes.Accounts.logIn()">Login</a></li>
                     }
                 </ul>
             </div><!--/.nav-collapse -->
