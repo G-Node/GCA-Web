@@ -65,4 +65,11 @@ GET           /api/user/self/conferences                      @controllers.api.C
 
 
 # Auth -----------------------------------------------------------------------------------------------------------------
-# Login page
+
+GET           /authenticate/:provider                         @controllers.Authentication.authenticate(provider: String)
+
+GET           /login                                          @controllers.Accounts.logIn
+GET           /signup                                         @controllers.Accounts.signUp
+POST          /signup                                         @controllers.Accounts.create
+GET           /logout                                         @controllers.Accounts.logOut
+GET           /notauthenticated                               @controllers.Accounts.notAuthenticated
