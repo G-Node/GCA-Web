@@ -9,7 +9,7 @@
 
 package models
 
-import com.mohiva.play.silhouette.core.providers.CredentialsProvider
+import com.mohiva.play.silhouette.core.providers.{PasswordInfo, CredentialsProvider}
 import play.api.Play.current
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
@@ -97,7 +97,8 @@ class Account extends Model {
   @ManyToMany(mappedBy = "owners")
   var conferences: JSet[Conference] = new JTreeSet[Conference]()
 
-  @OneToMany
+  @OneToMany(cascade = Array(CascadeType.ALL), fetch = FetchType.LAZY)
+  @JoinColumn(name= "account_uuid")
   var logins: JSet[Login] = new JTreeSet[Login]()
 
   def isAdmin = {
@@ -145,5 +146,24 @@ abstract class Login extends Model with Identity {
 class CredentialsLogin extends Login {
 
   override def loginInfo: LoginInfo = new LoginInfo("credentials", account.mail)
+
+  var hasher: String = _
+  var password: String = _
+  var salt: String = _
+
+}
+
+
+object CredentialsLogin {
+
+  def apply(passwordInfo: PasswordInfo): CredentialsLogin = {
+    val login = new CredentialsLogin()
+
+    login.hasher = passwordInfo.hasher
+    login.password = passwordInfo.password
+    login.salt = unwrapRef(passwordInfo.salt)
+
+    login
+  }
 
 }
