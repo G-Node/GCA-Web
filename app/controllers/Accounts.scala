@@ -1,8 +1,9 @@
 package controllers
 
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
-import com.mohiva.play.silhouette.core.{Silhouette, Environment}
-import models.Login
+import com.mohiva.play.silhouette.core.{Environment, Silhouette}
+import forms.SignInForm
+import models._
 import play.api.mvc.Action
 
 /**
@@ -12,7 +13,11 @@ class Accounts(implicit val env: Environment[Login, CachedCookieAuthenticator])
   extends Silhouette[Login, CachedCookieAuthenticator] {
 
   def logIn = UserAwareAction { implicit request =>
-    Ok("log in form");
+
+    request.identity match {
+      case Some(user) => Redirect(routes.Application.index())
+      case _ => Ok(views.html.login(SignInForm.form))
+    }
   }
 
   def signUp = UserAwareAction { implicit request =>
