@@ -15,8 +15,29 @@ import scala.concurrent.Future
 import scala.util.{Success, Failure, Try}
 
 class AccountStore {
-  def findByEmail(mail: String): List[Account] = ???
-  def list(): List[Account] = ???
+  def findByEmail(mail: String): Seq[Account] = {
+    query { em =>
+      val queryStr =
+        """SELECT DISTINCT a FROM Account a
+           WHERE a.mail = :email"""
+
+      val query: TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
+      query.setParameter("email", mail)
+
+      asScalaBuffer(query.getResultList)
+    }
+  }
+
+  def list(): Seq[Account] = {
+    query { em =>
+      val builder = em.getCriteriaBuilder
+      val criteria = builder.createQuery(classOf[Account])
+      val query = em.createQuery(criteria)
+
+      asScalaBuffer(query.getResultList)
+    }
+
+  }
 }
 
 class LoginStore extends IdentityService[Login] {
