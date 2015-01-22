@@ -13,6 +13,7 @@ import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
 import org.joda.time.DateTime
+import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import scala.Some
 import models.util.DateTimeConverter
 import scala.collection.JavaConversions._
@@ -28,6 +29,8 @@ import scala.Some
  */
 @Entity
 class Conference extends Model with Owned {
+
+  def dateFormatter = DateTimeFormat.forPattern("d MMMM, yyyy")
 
   var name: String = _
   var short: String = _
