@@ -20,3 +20,6 @@ figures
 # makes auto completion available
 bootstrap.css
 
+# local settings
+conf/application.dev.conf
+conf/application.prod.conf
