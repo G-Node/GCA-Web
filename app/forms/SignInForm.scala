@@ -1,5 +1,6 @@
 package forms
 
+import com.mohiva.play.silhouette.core.providers.Credentials
 import play.api.data.Form
 import play.api.data.Forms._
 
@@ -9,10 +10,7 @@ object SignInForm {
     mapping(
       "identifier" -> email,
       "password" -> nonEmptyText
-    )(Data.apply)(Data.unapply)
+    )(Credentials.apply)(Credentials.unapply)
   )
 
-  case class Data(
-    identifier: String, password: String
-  )
 }
