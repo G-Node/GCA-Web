@@ -147,4 +147,8 @@ class CredentialsLogin extends Login {
 
   override def loginInfo: LoginInfo = new LoginInfo("credentials", account.mail)
 
+  var hasher: String = _
+  var password: String = _
+  var salt: String = _
+
 }
