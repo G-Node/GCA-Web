@@ -15,10 +15,7 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
   val conferenceService = ConferenceService()
   
   def index = UserAwareAction { implicit request =>
-    val conference = conferenceService.list()(0)
-
-    val link = URLEncoder.encode(conference.short, "UTF-8")
-    Redirect(routes.Application.conference(link))
+    Redirect(routes.Application.conferences())
   }
 
   def showUserInfo = UserAwareAction { implicit request =>
@@ -67,6 +64,18 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
 
     // TODO all abstracts for reviewers
     Ok(views.html.abstractlist(Some(request.identity.account), conference))
+  }
+
+  def conferences = UserAwareAction { implicit request =>
+    var conferences = conferenceService.list()
+
+    // TODO assign active conference properly
+    val current = conferences.lift(0)
+
+    if (current.isDefined)
+      conferences = conferences.filter(conf => conf.uuid != current.get.uuid)
+
+    Ok(views.html.conferencelist(request.identity.map{ _.account }, conferences, current))
   }
 
   def conference(confId: String) = UserAwareAction { implicit request =>

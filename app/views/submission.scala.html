@@ -230,6 +230,15 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    <!-- ko if: $root.getEditorAuthorsForAffiliation($index(), affiliation).length < 1 -->
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="affiliations-no-author">
+                                                <span>No author assigned</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- /ko -->
                                     <!-- ko foreach: {data: $root.getEditorAuthorsForAffiliation($index(), affiliation), as: 'author'} -->
                                     <tr>
                                         <td colspan="4" data-bind="text: author.formatName()"></td>
@@ -245,7 +254,8 @@
                                     </tr>
                                     <!-- /ko -->
                                     <tr>
-                                        <td colspan="4" data-bind="attr: {id: 'author-select-' + $index()}">
+                                        <td></td>
+                                        <td colspan="3" data-bind="attr: {id: 'author-select-' + $index()}">
                                             <select class="form-control"
                                                     data-bind="options: $root.editedAbstract().indexedAuthors,
                                                                optionsText: function(e) { return e.author.formatName(); },
@@ -256,7 +266,7 @@
                                             <div class="btn-group pull-right">
                                                 <button type="button" class="btn btn-default btn-sm"
                                                         data-bind="click: $root.doEditAddAuthorToAffiliation.bind($root, $index, affiliation)">
-                                                    Add
+                                                    Assign
                                                     <span class="glyphicon glyphicon-user"></span>
                                                 </button>
                                             </div>

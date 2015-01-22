@@ -2,7 +2,7 @@ package controllers
 
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.core.{Environment, Silhouette}
-import forms.{SignUpForm, SignInForm}
+import forms.{SignInForm, SignUpForm}
 import models._
 import play.api.mvc.Action
 
@@ -28,7 +28,8 @@ class Accounts(implicit val env: Environment[Login, CachedCookieAuthenticator])
   }
 
   def logOut = SecuredAction { implicit request =>
-    Ok("logout");
+    val result = Redirect(routes.Application.index)
+    env.authenticatorService.discard(result);
   }
 
   def notAuthenticated = Action { implicit request =>
