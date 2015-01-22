@@ -97,7 +97,8 @@ class Account extends Model {
   @ManyToMany(mappedBy = "owners")
   var conferences: JSet[Conference] = new JTreeSet[Conference]()
 
-  @OneToMany
+  @OneToMany(cascade = Array(CascadeType.ALL), fetch = FetchType.LAZY)
+  @JoinColumn(name= "account_uuid")
   var logins: JSet[Login] = new JTreeSet[Login]()
 
   def isAdmin = {
