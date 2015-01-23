@@ -2,11 +2,11 @@ language: scala
 jdk:
   - oraclejdk7
 env:
-  - PLAY_VERSION=2.2.0
+  - ACTIVATOR_VERSION=1.2.12
 before_script:
-  - wget http://downloads.typesafe.com/play/${PLAY_VERSION}/play-${PLAY_VERSION}.zip
-  - unzip -q play-${PLAY_VERSION}.zip
-script: play-${PLAY_VERSION}/play test
+  - wget http://downloads.typesafe.com/typesafe-activator/${ACTIVATOR_VERSION}/typesafe-activator-${ACTIVATOR_VERSION}.zip
+  - unzip -q typesafe-activator-${ACTIVATOR_VERSION}.zip
+script: activator-${ACTIVATOR_VERSION}/activator test
 notifications:
   email: false
   irc: "chat.freenode.net#gnode"
