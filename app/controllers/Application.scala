@@ -1,24 +1,27 @@
 package controllers
 
+import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
+import com.mohiva.play.silhouette.core.{Silhouette, Environment}
 import play.api._
 import play.api.mvc._
-import utils.GCAAuth
 import models._
 import service.{AbstractService, ConferenceService}
 import java.net._
 
-object Application extends Controller with GCAAuth {
+class Application(implicit val env: Environment[Login, CachedCookieAuthenticator])
+  extends Silhouette[Login, CachedCookieAuthenticator] {
 
   val abstractService = AbstractService()
   val conferenceService = ConferenceService()
   
-  def index = AccountAwareAction { implicit request =>
+  def index = UserAwareAction { implicit request =>
     Redirect(routes.Application.conferences())
   }
 
-  def showUserInfo = AccountAwareAction { implicit request =>
-    val userName = request.user match {
-      case Some(account: Account) => account.fullName + " [" + account.firstName + " " + account.lastName + "]"
+  def showUserInfo = UserAwareAction { implicit request =>
+
+    val userName = request.identity match {
+      case Some(id: Login) => id.account.fullName + " [" + id.account.firstName + " " + id.account.lastName + "]"
       case _ => "guest"
     }
 
@@ -28,47 +31,42 @@ object Application extends Controller with GCAAuth {
     Ok("Hello %s".format(userName))
   }
 
-  def showSecret = AuthenticatedAction { implicit request =>
-    Logger.debug(request.user.toString)
-
-    Ok("The answer is 42.")
-  }
 
   def submission(id: String) = UserAwareAction { implicit request => // TODO should be a secure action
-    val user: Account = request.user match {
-      case Some(user: Account) => user
-      case _                   => null
+    val user: Account = request.identity match {
+      case Some(id: Login) => id.account
+      case _               => null
     }
 
     val conf = conferenceService.get(id)
     Ok(views.html.submission(user, conf, None))
   }
 
-  def edit(id: String) = AuthenticatedAction(isREST = false) { implicit request =>
-    val abstr = abstractService.getOwn(id, request.user)
+  def edit(id: String) = SecuredAction { implicit request =>
+    val abstr = abstractService.getOwn(id, request.identity.account)
 
-    Ok(views.html.submission(request.user, abstr.conference, Option(abstr)))
+    Ok(views.html.submission(request.identity.account, abstr.conference, Option(abstr)))
   }
 
-  def abstractsPublic(confId: String) = AccountAwareAction { implicit request =>
+  def abstractsPublic(confId: String) = UserAwareAction { implicit request =>
     val conference = conferenceService.get(confId)
 
-    Ok(views.html.abstractlist(request.user, conference))
+    Ok(views.html.abstractlist(request.identity.map{ _.account }, conference))
   }
 
-  def abstractsPrivate = AuthenticatedAction(isREST = false) { implicit request =>
+  def abstractsPrivate = SecuredAction { implicit request =>
 
-    Ok(views.html.dashboard.user(request.user))
+    Ok(views.html.dashboard.user(request.identity.account))
   }
 
-  def abstractsPending = AuthenticatedAction(isREST = false) { implicit request =>
+  def abstractsPending = SecuredAction { implicit request =>
     val conference = conferenceService.list()(0)
 
     // TODO all abstracts for reviewers
-    Ok(views.html.abstractlist(Some(request.user), conference))
+    Ok(views.html.abstractlist(Some(request.identity.account), conference))
   }
 
-  def conferences = AccountAwareAction { implicit request =>
+  def conferences = UserAwareAction { implicit request =>
     var conferences = conferenceService.list()
 
     // TODO assign active conference properly
@@ -77,72 +75,72 @@ object Application extends Controller with GCAAuth {
     if (current.isDefined)
       conferences = conferences.filter(conf => conf.uuid != current.get.uuid)
 
-    Ok(views.html.conferencelist(request.user, conferences, current))
+    Ok(views.html.conferencelist(request.identity.map{ _.account }, conferences, current))
   }
 
-  def conference(confId: String) = AccountAwareAction { implicit request =>
+  def conference(confId: String) = UserAwareAction { implicit request =>
     val conference = conferenceService.get(confId)
 
-    Ok(views.html.conference(request.user, conference))
+    Ok(views.html.conference(request.identity.map{ _.account }, conference))
   }
 
-  def contact = AccountAwareAction { implicit request =>
-    Ok(views.html.contact(request.user))
+  def contact = UserAwareAction { implicit request =>
+    Ok(views.html.contact(request.identity.map{ _.account }))
   }
 
-  def impressum = AccountAwareAction { implicit request =>
-    Ok(views.html.impressum(request.user))
+  def impressum = UserAwareAction { implicit request =>
+    Ok(views.html.impressum(request.identity.map{ _.account }))
   }
 
-  def about = AccountAwareAction { implicit request =>
-    Ok(views.html.about(request.user))
+  def about = UserAwareAction { implicit request =>
+    Ok(views.html.about(request.identity.map{ _.account }))
   }
 
-  def createConference() = AuthenticatedAction { implicit request =>
+  def createConference() = SecuredAction { implicit request =>
 
-    if (!request.user.isAdmin) {
+    if (!request.identity.account.isAdmin) {
       Unauthorized(views.html.error.NotAuthorized())
     } else {
-      Ok(views.html.dashboard.admin.conference(request.user, None))
+      Ok(views.html.dashboard.admin.conference(request.identity.account, None))
     }
   }
 
-  def adminConference(confId: String) = AuthenticatedAction { implicit request =>
+  def adminConference(confId: String) = SecuredAction { implicit request =>
     val conference = conferenceService.get(confId)
 
-    if (!(conference.isOwner(request.user) || request.user.isAdmin)) {
+    if (!(conference.isOwner(request.identity.account) || request.identity.account.isAdmin)) {
       Unauthorized("Not allowed!")
     } else {
-      Ok(views.html.dashboard.admin.conference(request.user, Some(conference)))
+      Ok(views.html.dashboard.admin.conference(request.identity.account, Some(conference)))
     }
   }
 
 
-  def adminAbstracts(confId: String) = AuthenticatedAction { implicit request =>
+  def adminAbstracts(confId: String) = SecuredAction { implicit request =>
     val conference = conferenceService.get(confId)
 
-    if (!(conference.isOwner(request.user) || request.user.isAdmin)) {
+    if (!(conference.isOwner(request.identity.account) || request.identity.account.isAdmin)) {
       Unauthorized("Not allowed!")
     } else {
-      Ok(views.html.dashboard.admin.abstracts(request.user, conference))
+      Ok(views.html.dashboard.admin.abstracts(request.identity.account, conference))
     }
   }
 
-  def adminAccounts() = AuthenticatedAction { implicit request =>
-    if (!request.user.isAdmin) {
+  def adminAccounts() = SecuredAction { implicit request =>
+    if (!request.identity.account.isAdmin) {
       Unauthorized("Only site administrators are allowed!")
     } else {
-      Ok(views.html.dashboard.admin.accounts(request.user))
+      Ok(views.html.dashboard.admin.accounts(request.identity.account))
     }
   }
 
-  def viewAbstract(id: String) = AccountAwareAction { implicit request =>
-    val abstr = request.user match {
-      case Some(account) => abstractService.getOwn(id, account)
-      case _             => abstractService.get(id)
+  def viewAbstract(id: String) = UserAwareAction { implicit request =>
+    val abstr = request.identity match {
+      case Some(uid) => abstractService.getOwn(id, uid.account)
+      case _         => abstractService.get(id)
     }
 
-    Ok(views.html.abstractviewer(request.user, abstr.conference, abstr))
+    Ok(views.html.abstractviewer(request.identity.map{ _.account }, abstr.conference, abstr))
   }
 
 }

@@ -2,7 +2,6 @@ package controllers.api
 
 import play.api.mvc._
 import play.api.libs.json._
-import utils.GCAAuth
 import utils.serializer.{AccountFormat, ConferenceFormat}
 import service.ConferenceService
 import utils.DefaultRoutesResolver._
@@ -10,11 +9,17 @@ import models.Conference
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
 
+import models._
+
+import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
+import com.mohiva.play.silhouette.core.{Silhouette, Environment}
+
 /**
  * Conferences controller.
  * Manages HTTP request logic for conferences.
  */
-object Conferences extends Controller with GCAAuth {
+class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator])
+  extends Silhouette[Login, CachedCookieAuthenticator] {
 
   implicit val confFormat = new ConferenceFormat()
   val accountFormat = new AccountFormat()
@@ -25,9 +30,9 @@ object Conferences extends Controller with GCAAuth {
    *
    * @return Created with conference in JSON / BadRequest
    */
-  def create = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
+  def create = SecuredAction(parse.json) { implicit request =>
     val conference = request.body.as[Conference]
-    val resp = conferenceService.create(conference, request.user)
+    val resp = conferenceService.create(conference, request.identity.account)
 
     Created(confFormat.writes(resp))
   }
@@ -49,8 +54,8 @@ object Conferences extends Controller with GCAAuth {
    *
    * @return Ok with all conferences publicly available.
    */
-  def listWithOwnAbstracts =  AuthenticatedAction(isREST = true) { implicit request =>
-    val conferences = conferenceService.listWithAbstractsOfAccount(request.user)
+  def listWithOwnAbstracts =  SecuredAction { implicit request =>
+    val conferences = conferenceService.listWithAbstractsOfAccount(request.identity.account)
     Ok(Json.toJson(conferences))
   }
 
@@ -72,10 +77,10 @@ object Conferences extends Controller with GCAAuth {
    *
    * @return OK with conference in JSON / BadRequest / Forbidden
    */
-  def update(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
+  def update(id: String) = SecuredAction(parse.json) { implicit request =>
     val conference = request.body.as[Conference]
     conference.uuid = id
-    val resp = conferenceService.update(conference, request.user)
+    val resp = conferenceService.update(conference, request.identity.account)
 
     Ok(confFormat.writes(resp))
   }
@@ -87,8 +92,8 @@ object Conferences extends Controller with GCAAuth {
    *
    * @return OK | BadRequest | Forbidden
    */
-  def delete(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
-    conferenceService.delete(id, request.user)
+  def delete(id: String) = SecuredAction { implicit request =>
+    conferenceService.delete(id, request.identity.account)
     Ok(Json.obj("error" -> false))
   }
 
@@ -97,12 +102,12 @@ object Conferences extends Controller with GCAAuth {
    *
    * @return a list of updated permissions (accounts) as JSON
    */
-  def setPermissions(id: String) = AuthenticatedAction(parse.json, isREST = true) { implicit request =>
+  def setPermissions(id: String) = SecuredAction(parse.json) { implicit request =>
 
     val to_set = for (acc <- request.body.as[List[JsObject]])
       yield accountFormat.reads(acc).get
 
-    val owners = conferenceService.setPermissions(conferenceService.get(id), request.user, to_set)
+    val owners = conferenceService.setPermissions(conferenceService.get(id), request.identity.account, to_set)
 
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
@@ -114,9 +119,9 @@ object Conferences extends Controller with GCAAuth {
    *
    * @return a list of updated permissions (accounts) as JSON
    */
-  def getPermissions(id: String) = AuthenticatedAction(isREST = true) { implicit request =>
+  def getPermissions(id: String) = SecuredAction { implicit request =>
 
-    val owners = conferenceService.getPermissions(conferenceService.get(id), request.user)
+    val owners = conferenceService.getPermissions(conferenceService.get(id), request.identity.account)
 
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)

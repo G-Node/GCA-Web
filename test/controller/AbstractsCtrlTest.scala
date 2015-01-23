@@ -20,7 +20,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     super.before()
 
     //auth only once
-    cookie = getCookie(assets.alice.identityId, "testtest")
+    cookie = getCookie(assets.alice, "testtest")
   }
 
   @Test
@@ -69,7 +69,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
 
     //make sure we cannot create an abstract if conf is closed
 
-    val bobCookie =  getCookie(assets.bob.identityId, "testtest")
+    val bobCookie =  getCookie(assets.bob, "testtest")
     val confIdClosed = assets.conferences(1).uuid
     val rq = FakeRequest(POST, s"/api/conferences/$confIdClosed/abstracts").withJsonBody(body).withCookies(bobCookie)
     val rqResult = routeWithErrors(AbstractsCtrlTest.app, rq).get
@@ -172,14 +172,14 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     assert(status(response) == OK)
     assert(parseOwners(contentAsJson(response)).contains(assets.eve.uuid))
 
-    val bobCookie = getCookie(assets.bob.identityId, "testtest")
+    val bobCookie = getCookie(assets.bob, "testtest")
     getR = FakeRequest(GET, s"/api/abstracts/$abstrid/owners").withCookies(bobCookie)
     response = route(AbstractsCtrlTest.app, getR).get
 
     assert(status(response) == OK)
     assert(!parseOwners(contentAsJson(response)).contains(assets.alice.uuid))
 
-    val adminCookie = getCookie(assets.admin.identityId, "testtest")
+    val adminCookie = getCookie(assets.admin, "testtest")
     getR = FakeRequest(GET, s"/api/abstracts/$abstrid/owners").withCookies(adminCookie)
     response = route(AbstractsCtrlTest.app, getR).get
 
@@ -205,7 +205,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     assert(status(reqNoAuthResult) == UNAUTHORIZED)
 
     //try as bob, who is one of the owners, so should be OK
-    val bobCookie = getCookie(assets.bob.identityId, "testtest")
+    val bobCookie = getCookie(assets.bob, "testtest")
 
     var reqAuth = reqNoAuth.withCookies(bobCookie)
     var reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
@@ -236,7 +236,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     assert(status(reqNoAuthResult) == UNAUTHORIZED)
 
     //bob should not be allowed to do this
-    val bobCookie = getCookie(assets.bob.identityId, "testtest")
+    val bobCookie = getCookie(assets.bob, "testtest")
     var reqAuth = reqNoAuth.withCookies(bobCookie)
     var reqAuthResult = routeWithErrors(AbstractsCtrlTest.app, reqAuth).get
     assert(status(reqAuthResult) == FORBIDDEN)

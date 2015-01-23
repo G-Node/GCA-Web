@@ -9,13 +9,12 @@
 
 package models
 
+import com.mohiva.play.silhouette.core.providers.{PasswordInfo, CredentialsProvider}
 import play.api.Play.current
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
-import javax.persistence.{Embedded, Embeddable, ManyToMany, Entity}
-import securesocial.core._
-import securesocial.core.{IdentityId, OAuth2Info, OAuth1Info}
-
+import javax.persistence._
+import com.mohiva.play.silhouette.core.{LoginInfo, Identity}
 
 @Embeddable
 class PwInfo {
@@ -84,7 +83,7 @@ object OpenAuth2Info {
  * Model class for accounts.
  */
 @Entity
-class Account extends Model with Identity {
+class Account extends Model {
 
   var mail: String = _
   var firstName: String = _
@@ -93,118 +92,20 @@ class Account extends Model with Identity {
 
   var avatar: String = _
 
-  //IdendityId class
-  var provider: String = _
-  var userid: String = _
-
-  //AuthenticationMethod class
-  var authenticationMethod: String = _
-
-  @Embedded
-  var pwInfo: PwInfo = _
-
-  @Embedded
-  var oa1Info: OpenAuth1Info = _
-
-  @Embedded
-  var oa2Info: OpenAuth2Info = _
-
   @ManyToMany(mappedBy = "owners")
   var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
   @ManyToMany(mappedBy = "owners")
   var conferences: JSet[Conference] = new JTreeSet[Conference]()
 
+  @OneToMany(cascade = Array(CascadeType.ALL), fetch = FetchType.LAZY)
+  @JoinColumn(name= "account_uuid")
+  var logins: JSet[Login] = new JTreeSet[Login]()
 
   def isAdmin = {
     val admins = current.configuration.getStringList("admins").get
-    admins.contains(userid)
+    admins.contains(mail)
   }
 
-  //Identity specific getter
-
-  override def identityId: IdentityId = {
-    new IdentityId(userid, provider)
-  }
-
-
-  override def email: Option[String] = {
-    mail match {
-      case a: String => Some(mail)
-      case _         => None
-    }
-  }
-
-  override def avatarUrl: Option[String] = {
-    avatar match {
-      case s: String => Some(s)
-      case _         => None
-    }
-  }
-
-  override def authMethod: AuthenticationMethod = {
-    new AuthenticationMethod(authenticationMethod)
-  }
-
-  override def oAuth1Info: Option[OAuth1Info]  = {
-    if (oa1Info != null) {
-      Some(new OAuth1Info(oa1Info.token, oa1Info.secret))
-    } else {
-      None
-    }
-  }
-
-  override def oAuth2Info: Option[OAuth2Info] = {
-    if (oa2Info != null) {
-      val tokenType    = oa2Info.tokenType match { case s: String => Some(s); case _ => None }
-      val expiresIn    = oa2Info.expiresIn match { case i: Integer => Some(i.asInstanceOf[Int]); case _ => None }
-      val refreshToken = oa2Info.refreshToken match { case s: String => Some(s); case _ => None }
-
-      Some(new OAuth2Info(oa2Info.accessToken, tokenType, expiresIn, refreshToken))
-    } else {
-      None
-    }
-  }
-
-
-  override def passwordInfo: Option[PasswordInfo] = {
-    if (pwInfo != null) {
-      val salt = pwInfo.salt match {
-        case s: String => Some(s)
-        case _         => None
-      }
-
-      Some(new PasswordInfo(pwInfo.hasher, pwInfo.password, salt))
-    } else {
-      None
-    }
-  }
-
-  def updateFromIdentity(id: Identity) {
-    this.authenticationMethod = id.authMethod.method
-    this.userid    = id.identityId.userId
-    this.provider  = id.identityId.providerId
-    this.firstName = id.firstName
-    this.lastName  = id.lastName
-    this.fullName  = id.fullName
-    this.mail      = unwrapRef(id.email)
-    this.avatar    = unwrapRef(id.avatarUrl)
-
-    this.pwInfo    = id.passwordInfo match {
-      case Some(i) => PwInfo(i.hasher, i.password, i.salt)
-      case _       => null
-    }
-
-    this.oa1Info = id.oAuth1Info match {
-      case Some(i) => OpenAuth1Info(i.token, i.secret)
-      case _       => null
-    }
-
-    this.oa2Info = id.oAuth2Info match {
-      case Some(i) => OpenAuth2Info(i.accessToken, i.tokenType, i.expiresIn, i.refreshToken)
-      case _       => null
-    }
-
-  }
 }
 
 object Account {
@@ -225,10 +126,44 @@ object Account {
     account
   }
 
-  def apply(id: Identity) : Account = {
-    val account = new Account()
-    account.updateFromIdentity(id)
-    account
+}
+
+
+@Entity
+@Table(name="Login")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="TYPE", discriminatorType=DiscriminatorType.STRING,length=20)
+@DiscriminatorValue("Base")
+abstract class Login extends Model with Identity {
+
+  @ManyToOne
+  var account: Account = _
+}
+
+
+@Entity
+@DiscriminatorValue("Credentials")
+class CredentialsLogin extends Login {
+
+  override def loginInfo: LoginInfo = new LoginInfo("credentials", account.mail)
+
+  var hasher: String = _
+  var password: String = _
+  var salt: String = _
+
+}
+
+
+object CredentialsLogin {
+
+  def apply(passwordInfo: PasswordInfo): CredentialsLogin = {
+    val login = new CredentialsLogin()
+
+    login.hasher = passwordInfo.hasher
+    login.password = passwordInfo.password
+    login.salt = unwrapRef(passwordInfo.salt)
+
+    login
   }
 
 }

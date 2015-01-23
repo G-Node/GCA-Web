@@ -21,7 +21,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
   @Before
   override def before() : Unit = {
     super.before()
-    cookie = getCookie(assets.alice.identityId, "testtest")
+    cookie = getCookie(assets.alice, "testtest")
   }
 
   @Test
@@ -75,7 +75,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     val updated = route(ConferenceCtrlTest.app, updateAuth).get
     assert(status(updated) == OK)
 
-    val bobCookie = getCookie(assets.bob.identityId, "testtest")
+    val bobCookie = getCookie(assets.bob, "testtest")
     val updateUnauth = updateAuth.withCookies(bobCookie)
     val failed = routeWithErrors(ConferenceCtrlTest.app, updateUnauth).get
     assert(status(failed) == FORBIDDEN)
@@ -119,14 +119,14 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     assert(status(response) == OK)
     assert(parseOwners(contentAsJson(response)).contains(assets.eve.uuid))
 
-    val bobCookie = getCookie(assets.bob.identityId, "testtest")
+    val bobCookie = getCookie(assets.bob, "testtest")
     getR = FakeRequest(GET, s"/api/conferences/$confid/owners").withCookies(bobCookie)
     response = route(ConferenceCtrlTest.app, getR).get
 
     assert(status(response) == OK)
     assert(!parseOwners(contentAsJson(response)).contains(assets.alice.uuid))
 
-    val adminCookie = getCookie(assets.admin.identityId, "testtest")
+    val adminCookie = getCookie(assets.admin, "testtest")
     getR = FakeRequest(GET, s"/api/conferences/$confid/owners").withCookies(adminCookie)
     response = route(ConferenceCtrlTest.app, getR).get
 

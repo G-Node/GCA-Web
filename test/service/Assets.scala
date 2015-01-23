@@ -11,6 +11,7 @@ package service
 
 import java.io.File
 
+import com.mohiva.play.silhouette.contrib.utils.BCryptPasswordHasher
 import org.joda.time.DateTime
 import play.Play
 import models.Model._
@@ -22,6 +23,8 @@ import scala.{Option => ?}
 
 
 class Assets() {
+
+  val pwHasher = new BCryptPasswordHasher()
 
   implicit class PositionedLSeq[A <: PositionedModel](l: Seq[A]) {
     def addPosition():Seq[A] = {
@@ -191,20 +194,14 @@ class Assets() {
   var dave: Account = createAccount("Dave", "Bowman", "dave@hal9k.com")
 
   def createAccount(firstName: String, lastName: String, mail: String) = {
+
     val account = new Account()
 
     account.firstName = firstName
     account.lastName = lastName
     account.mail = mail
-    account.userid = mail
-    account.authenticationMethod = "userPassword"
-    account.provider = "userpass"
-    account.pwInfo = PwInfo(
-      "bcrypt",
-      "$2a$10$iMoFsVr468/5JJkq0YLRruEMpleTNXMo/rdkm5aOqnuq83t5DwUvW",
-      None
-    )
 
+    account.logins = toJSet(Seq(CredentialsLogin(pwHasher.hash("testtest"))))
     account
   }
 
@@ -245,6 +242,7 @@ class Assets() {
       eve = em.merge(eve)
       admin = em.merge(admin)
       dave = em.merge(dave)
+
 
       // add alice to conference owners and merge conferences
       conferences = conferences.map { conf =>
@@ -333,6 +331,7 @@ class Assets() {
       em.createQuery("DELETE FROM Abstract").executeUpdate()
       em.createQuery("DELETE FROM Topic").executeUpdate()
       em.createQuery("DELETE FROM Conference").executeUpdate()
+      em.createQuery("DELETE FROM Login").executeUpdate()
       em.createQuery("DELETE FROM Account").executeUpdate()
     }
   }

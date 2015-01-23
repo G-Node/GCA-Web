@@ -30,7 +30,7 @@ class FigureCtrlTest extends BaseCtrlTest {
   @Before
   override def before() : Unit = {
     super.before()
-    cookie = getCookie(assets.alice.identityId, "testtest")
+    cookie = getCookie(assets.alice, "testtest")
   }
 
   implicit def writeableOf_AnyContentAsMultipartFormData(implicit codec: Codec):

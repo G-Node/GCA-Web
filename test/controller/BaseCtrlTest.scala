@@ -8,11 +8,13 @@ import play.api.http.Writeable
 import play.api.mvc.{Request, SimpleResult}
 import play.api.test.Helpers._
 import play.api.test._
-import securesocial.controllers.ProviderController.authenticateByPost
-import securesocial.core.IdentityId
+import models.{CredentialsLogin, Account}
+import play.core.Router.Route
 import service.Assets
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits._
+
+import scala.collection.JavaConversions._
 
 import scala.concurrent.Future
 
@@ -24,13 +26,14 @@ trait BaseCtrlTest extends JUnitSuite {
   /**
    * Utility function to get an authenticated Cookie
     */
-  def getCookie (id: IdentityId, password: String) = {
-    val authRequest = FakeRequest().withFormUrlEncodedBody(
-      "username" -> id.userId,
+  def getCookie (id: Account, password: String) = {
+
+    val authRequest = FakeRequest("POST", "/authenticate/credentials").withFormUrlEncodedBody (
+      "identifier" -> id.mail,
       "password" -> password
     )
-    val authResponse = authenticateByPost(id.providerId)(authRequest)
-    cookies(authResponse).get("id").getOrElse {
+
+    route(authRequest).flatMap { result => cookies(result).get("id") }.getOrElse {
       throw new RuntimeException("Could not authenticate successfully")
     }
   }

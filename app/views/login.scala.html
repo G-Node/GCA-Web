@@ -1,0 +1,25 @@
+@(form: Form[com.mohiva.play.silhouette.core.providers.Credentials])(implicit env: com.mohiva.play.silhouette.core.Environment[models.Login, _], request: RequestHeader)
+
+@import views.html.bootstrap._
+
+@template(None, None, "") {
+
+  @flash(request)
+
+  <fieldset class="col-md-6 col-md-offset-3">
+    <legend>Sign in</legend>
+
+    @helper.form(action = routes.Authentication.authenticate("credentials")) {
+
+      @text(form("identifier"), "Email", icon = "at")
+      @password(form("password"), "Password", icon = "key")
+
+      <div class="form-group">
+        <div>
+          <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Submit</button>
+        </div>
+      </div>
+    }
+  </fieldset>
+
+}
