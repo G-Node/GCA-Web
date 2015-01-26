@@ -61,6 +61,16 @@ class RoutesResolver {
     new URL(baseUrl + s"/api/abstracts/$id/stateLog")
   }
 
+  /**
+   * Builds an URL to the Conference page from a given conference UUID.
+   *
+   * @param id an UUID of a Conference object to insert into the URL
+   *
+   * @return URL for the conference, like "/api/conferences/HNOPSADMHV"
+   */
+  def conferenceUrl(id: String) = {
+    new URL(baseUrl + s"/api/conferences/$id")
+  }
 }
 
 object DefaultRoutesResolver {
