@@ -1,7 +1,7 @@
 require.config({
     baseUrl: '/assets/javascripts/',
     paths: {
-        'moment': ['//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min']
+        'moment': ['/assets/lib/momentjs/min/moment.min']
     },
     noGlobal: true
 });
