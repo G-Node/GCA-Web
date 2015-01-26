@@ -31,12 +31,21 @@
         <h5>@conference.description</h5>
     }
 
+    @if(conference.startDate != null && conference.endDate != null) {
+        <p><b>When:</b> @conference.startDate.toString(conference.dateFormatter) - @conference.endDate.toString(conference.dateFormatter)</p>
+    }
+
     <!-- Buttons to register, sign in and submit -->
 
     <h3>Abstract Submission</h3>
     @if(conference.isOpen) {
     <div>
         <p>Submission is currently <span class="text-success"><b>open</b></span>.
+
+        @if(conference.deadline != null) {
+            <p><b>Submission deadline:</b> @conference.deadline.toString(conference.dateFormatter)</p>
+        }
+
         @if(!account.isDefined) {
             In order to submit an abstract please login or register.</p>
 
