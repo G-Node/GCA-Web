@@ -89,4 +89,21 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     Ok(Json.obj("error" -> false))
   }
 
+  /**
+   * Update the caption of an existing figure (id).
+   *
+   * @param id   The id of the figure.
+   *
+   * @return  OK / Failed
+   */
+
+  def updateCaption(id: String) = SecuredAction(parse.multipartFormData) { implicit request =>
+    val figure = Json.parse(request.body.dataParts("figure")(0)).as[Figure]
+    println("ID: "+ figure.uuid)
+    println("Caption: "+ figure.caption)
+
+    figureService.update(figure, request.identity.account)
+    Ok(Json.obj("error" -> false))
+  }
+
 }

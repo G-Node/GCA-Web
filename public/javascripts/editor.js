@@ -279,6 +279,40 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
             }
         };
 
+        self.doUpdateFigureCaption = function () {
+            if (self.hasAbstractFigures()) {
+                var figure = self.abstract().figures()[0],
+                    data = new FormData(),
+                    json = {uuid: figure.uuid,
+                        caption: $("#figure-update-caption").val()};
+
+                self.setOk("Ok", "here:"+ figure.uuid);
+
+                data.append('figure', JSON.stringify(json));
+
+                $.ajax({
+                    url: '/api/figures/' + figure.uuid,
+                    type: 'PUT',
+                    dataType: "json",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: success,
+                    error: fail
+                });
+
+            } else {
+                self.setWarning("Error", "Unable to update caption: figure not found", true);
+            }
+
+            function success() {
+                self.setOk("Ok", "Figure caption updated");
+            }
+
+            function fail() {
+                self.setError("Error", "Unable to update caption");
+            }
+        };
 
         self.doRemoveFigure = function() {
 
