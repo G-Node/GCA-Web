@@ -313,7 +313,7 @@ package object serializer {
         "sortId" -> a.sortId,
         "state" -> a.state,
         "mtime" -> a.mtime,
-        "conference" -> a.conference.uuid,
+        "conference" -> routesResolver.conferenceUrl(a.conference.uuid),
         "figures" -> asScalaSet(a.figures).toSeq.sorted[Model],
         "owners" -> routesResolver.ownersUrl(a.uuid),
         "authors" -> asScalaSet(a.authors).toSeq.sorted[Model],
