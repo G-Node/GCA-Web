@@ -1,5 +1,5 @@
 require(["main"], function () {
-require(["knockout", "lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned", "ko.sortable", "bootstrap"],
+require(["knockout", "lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned", "ko.sortable"],
 function (ko, models, tools, msg, validate, owned) {
     "use strict";
 
