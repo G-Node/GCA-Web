@@ -1,5 +1,6 @@
-require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
-    function(models, tools, msg, validate, owned) {
+require(["main"], function () {
+require(["knockout", "lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned", "ko.sortable", "bootstrap"],
+function (ko, models, tools, msg, validate, owned) {
     "use strict";
 
     /**
@@ -14,7 +15,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
     function EditorViewModel(confId, abstrId) {
 
 
-        if (! (this instanceof EditorViewModel)) {
+        if (!(this instanceof EditorViewModel)) {
             return new EditorViewModel(confId, abstrId);
         }
 
@@ -30,21 +31,21 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         self.originalState = ko.observable(null);
 
         self.isAbstractSaved = ko.computed(
-            function() {
+            function () {
                 return self.abstract() && self.abstract().uuid;
             },
             self
         );
 
         self.hasAbstractFigures = ko.computed(
-            function() {
+            function () {
                 return self.abstract() && self.abstract().figures().length > 0;
             },
             self
         );
 
         self.editorTextCharactersLeft = ko.computed(
-            function() {
+            function () {
                 if (self.editedAbstract() && self.editedAbstract().text()) {
                     return self.textCharacterLimit - self.editedAbstract().text().length;
                 } else {
@@ -55,7 +56,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         );
 
         self.editorAckCharactersLeft = ko.computed(
-            function() {
+            function () {
                 if (self.editedAbstract() && self.editedAbstract().acknowledgements()) {
                     return self.ackCharacterLimit - self.editedAbstract().acknowledgements().length;
                 } else {
@@ -66,7 +67,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         );
 
         self.showButtonSave = ko.computed(
-            function() {
+            function () {
                 if (self.abstract()) {
                     var saved = self.isAbstractSaved(),
                         state = self.originalState();
@@ -80,7 +81,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         );
 
         self.showButtonSubmit = ko.computed(
-            function() {
+            function () {
                 if (self.abstract()) {
                     var saved = self.isAbstractSaved(),
                         state = self.originalState();
@@ -94,7 +95,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         );
 
         self.showButtonWithdraw = ko.computed(
-            function() {
+            function () {
                 if (self.abstract()) {
                     var ok = ['Submitted', 'InReview'];
                     return self.isAbstractSaved() && (ok.indexOf(self.originalState()) >= 0);
@@ -106,7 +107,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         );
 
         self.showButtonReactivate = ko.computed(
-            function() {
+            function () {
                 var saved = self.isAbstractSaved(),
                     state = self.originalState();
 
@@ -116,7 +117,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         );
 
 
-        self.init = function() {
+        self.init = function () {
 
             if (confId) {
                 self.requestConference(confId);
@@ -134,7 +135,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
 
-        self.isChangeOk = function(abstract) {
+        self.isChangeOk = function (abstract) {
 
             abstract = abstract || self.abstract();
 
@@ -146,7 +147,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
             if (!saved) {
                 isOk = (newState === 'InPreparation' || newState === 'Submitted');
             } else {
-                switch(oldState) {
+                switch (oldState) {
                     case 'InPreparation':
                         isOk = (newState === 'InPreparation' || newState === 'Submitted');
                         break;
@@ -166,10 +167,10 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
 
-        self.getEditorAuthorsForAffiliation = function(index) {
+        self.getEditorAuthorsForAffiliation = function (index) {
             var authors = [];
 
-            self.editedAbstract().authors().forEach(function(author) {
+            self.editedAbstract().authors().forEach(function (author) {
                 if (author.affiliations().indexOf(index) >= 0) {
                     authors.push(author);
                 }
@@ -179,7 +180,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
 
-        self.requestConference = function(confId) {
+        self.requestConference = function (confId) {
 
             $.ajax({
                 async: false,
@@ -201,7 +202,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
 
-        self.requestAbstract = function(abstrId) {
+        self.requestAbstract = function (abstrId) {
 
             $.ajax({
                 async: false,
@@ -227,9 +228,9 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
 
-        self.figureUpload = function(callback) {
+        self.figureUpload = function (callback) {
 
-            var json = { caption: $("#figure-caption").val() },
+            var json = {caption: $("#figure-caption").val()},
                 files = $("#figure-file").get(0).files,
                 data = new FormData();
 
@@ -237,7 +238,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
                 var fileName = files[0].name,
                     fileSize = files[0].size,
                     splitted = fileName.split('.'),
-                    ending   = splitted[splitted.length - 1].toLowerCase();
+                    ending = splitted[splitted.length - 1].toLowerCase();
 
                 if (['jpeg', 'jpg', 'gif', 'giff', 'png'].indexOf(ending) < 0) {
                     self.setError("Error", "Figure file format not supported (only jpeg, gif or png is allowed).");
@@ -280,9 +281,9 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
 
-        self.doRemoveFigure = function() {
+        self.doRemoveFigure = function () {
 
-            if (! self.isChangeOk()) {
+            if (!self.isChangeOk()) {
                 self.setError("Error", "Unable to save abstract: illegal state");
                 return;
             }
@@ -316,13 +317,13 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
 
-        self.doSaveAbstract = function(abstract) {
+        self.doSaveAbstract = function (abstract) {
 
-            if (! (abstract instanceof models.ObservableAbstract)) {
+            if (!(abstract instanceof models.ObservableAbstract)) {
                 abstract = self.abstract();
             }
 
-            if (! self.isChangeOk(abstract)) {
+            if (!self.isChangeOk(abstract)) {
                 self.setError("Error", "Unable to save abstract: illegal state");
                 return;
             }
@@ -401,25 +402,25 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
 
-        self.doSubmitAbstract = function() {
+        self.doSubmitAbstract = function () {
             self.abstract().state('Submitted');
             self.doSaveAbstract(self.abstract())
         };
 
 
-        self.doWithdrawAbstract = function() {
+        self.doWithdrawAbstract = function () {
             self.abstract().state('Withdrawn');
             self.doSaveAbstract(self.abstract())
         };
 
 
-        self.doReactivateAbstract = function() {
+        self.doReactivateAbstract = function () {
             self.abstract().state('InPreparation');
             self.doSaveAbstract(self.abstract())
         };
 
 
-        self.doStartEdit = function(editorId) {
+        self.doStartEdit = function (editorId) {
             var ed = $(editorId).find("input").first();
             ed.focus();
 
@@ -428,7 +429,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
 
-        self.doEndEdit = function() {
+        self.doEndEdit = function () {
 
             if (self.isAbstractSaved()) {
                 self.doSaveAbstract(self.editedAbstract())
@@ -445,17 +446,17 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
             }
 
             //re-do Math typesetting, TODO: do this at a more sensible place
-            MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
         };
 
 
-        self.doEditAddAuthor = function() {
+        self.doEditAddAuthor = function () {
             var author = models.ObservableAuthor();
             self.editedAbstract().authors.push(author);
         };
 
 
-        self.doEditRemoveAuthor = function(index) {
+        self.doEditRemoveAuthor = function (index) {
             index = index();
             var authors = self.editedAbstract().authors();
             authors.splice(index, 1);
@@ -463,13 +464,13 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
 
-        self.doEditAddAffiliation = function() {
+        self.doEditAddAffiliation = function () {
             var affiliation = models.ObservableAffiliation();
             self.editedAbstract().affiliations.push(affiliation);
         };
 
 
-        self.doEditRemoveAffiliation = function(index) {
+        self.doEditRemoveAffiliation = function (index) {
             index = index();
             var affiliations = self.editedAbstract().affiliations(),
                 authors = self.editedAbstract().authors();
@@ -477,7 +478,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
             affiliations.splice(index, 1);
 
 
-            authors.forEach(function(author) {
+            authors.forEach(function (author) {
                 var positions = author.affiliations(),
                     removePos = positions.indexOf(index);
 
@@ -498,7 +499,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
          *
          * @param index   The index of the affiliation that is added to the author.
          */
-        self.doEditAddAuthorToAffiliation = function(index) {
+        self.doEditAddAuthorToAffiliation = function (index) {
             index = index();
             var authorIndex = $("#author-select-" + index).find("select").val(),
                 authors = self.editedAbstract().authors();
@@ -527,7 +528,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
          * @param index         The index of the affiliation to remove.
          * @param author        The author from which to remove the affiliation.
          */
-        self.doEditRemoveAffiliationFromAuthor = function(index, author) {
+        self.doEditRemoveAffiliationFromAuthor = function (index, author) {
             index = index();
             var positions = author.affiliations(),
                 removePos = positions.indexOf(index);
@@ -540,12 +541,12 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
 
-        self.doEditAddReference = function() {
+        self.doEditAddReference = function () {
             self.editedAbstract().references.push(models.ObservableReference());
         };
 
 
-        self.doEditRemoveReference = function(index) {
+        self.doEditRemoveReference = function (index) {
             index = index();
             var references = self.editedAbstract().references();
 
@@ -557,7 +558,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
     }
 
     // start the editor
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         var data = tools.hiddenData();
 
@@ -568,4 +569,5 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         window.editor.init();
     });
 
+});
 });

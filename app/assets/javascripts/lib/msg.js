@@ -2,7 +2,7 @@
  * Module for misc utility functions
  * @module {lib/msg}
  */
-define(["lib/tools"], function(tools) {
+define(["lib/tools", "knockout"], function(tools, ko) {
 
     function MessageVM() {
 

@@ -1,3 +1,4 @@
+/*
 require.config({
     baseUrl: '/assets/javascripts/',
     paths: {
@@ -5,6 +6,7 @@ require.config({
     },
     noGlobal: true
 });
+*/
 
 /**
  * Module for state related things

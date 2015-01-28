@@ -1,3 +1,4 @@
+/*
 require.config({
     baseUrl: '/assets/javascripts/',
     paths: {
@@ -5,12 +6,13 @@ require.config({
     },
     noGlobal: true
 });
+/*
 
 /**
  * Module for misc utility functions
  * @module {models}
  */
-define(["lib/tools", "lib/accessors",  "moment"], function(tools, acc, moment) {
+define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, acc, moment, ko) {
     "use strict";
 
     /**
