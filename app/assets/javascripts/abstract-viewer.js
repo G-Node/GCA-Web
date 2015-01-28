@@ -1,5 +1,5 @@
-
-require(["lib/models", "lib/tools", "lib/msg", "lib/astate"], function(models, tools, msg, astate) {
+require(["main"], function () {
+require(["lib/models", "lib/tools", "lib/msg", "lib/astate", "knockout"], function(models, tools, msg, astate, ko) {
     "use strict";
 
     function AbstractViewerViewModel(confId, abstrId, isAdmin, isOwner) {
@@ -81,4 +81,5 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate"], function(models, t
         window.viewer.init();
     });
 
+});
 });
