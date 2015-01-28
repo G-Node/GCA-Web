@@ -1,4 +1,5 @@
-require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
+require(["main"], function () {
+require(["lib/models", "lib/tools", "lib/msg", "knockout"], function(models, tools, msg, ko) {
     "use strict";
 
     function AdminAccountsViewModel() {
@@ -41,4 +42,5 @@ require(["lib/models", "lib/tools", "lib/msg"], function(models, tools, msg) {
         window.dashboard.init();
     });
 
+});
 });
