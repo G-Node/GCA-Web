@@ -10,6 +10,7 @@
 package service
 
 import java.io.File
+import java.util
 import javax.persistence.{EntityNotFoundException, TypedQuery}
 
 import play.Play
@@ -18,6 +19,7 @@ import plugins.DBUtil._
 import service.util.PermissionsBase
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable.{Map => MMap}
 
 //for the patch method
 abstract class PatchOp
@@ -224,22 +226,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
       abstr.conference = conferenceChecked
       abstr.owners.add(accountChecked)
 
-      abstr.authors.foreach { author =>
-        author.abstr = abstr
-
-        for (pos <- author.affiliationPositions) {
-          abstr.affiliations.find(_.position == pos) match {
-            case Some(affiliation) =>
-              affiliation.authors.add(author)
-              author.affiliations.add(affiliation)
-            case _ =>
-          }
-        }
-      }
-
-      abstr.affiliations.foreach { affiliation =>
-        affiliation.abstr = abstr
-      }
+      arrangeAffiliations(abstr)
 
       abstr.references.foreach { reference =>
         reference.abstr = abstr
@@ -293,22 +280,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
         abstr.stateLog.add(StateLogEntry(abstr, abstr.state, account))
       }
 
-      abstr.authors.foreach { author =>
-        author.abstr = abstr
-
-        for (pos <- author.affiliationPositions) {
-          abstr.affiliations.find(_.position == pos) match {
-            case Some(affiliation) =>
-              affiliation.authors.add(author)
-              author.affiliations.add(affiliation)
-            case _ =>
-          }
-        }
-      }
-
-      abstr.affiliations.foreach { affiliation =>
-        affiliation.abstr = abstr
-      }
+      arrangeAffiliations(abstr)
 
       abstr.references.foreach { reference =>
         reference.abstr = abstr
@@ -436,6 +408,45 @@ class AbstractService(figPath: String) extends PermissionsBase {
       }
 
       em.merge(abstr)
+    }
+  }
+
+  private def arrangeAffiliations(abstr: Abstract) = {
+    val transformation = MMap[Int, Int]()
+    var i = 0
+
+    // calculate affiliation positions according to the authors positions
+    val sorted = asScalaSet(abstr.authors).toList.sortBy(_.position)
+    sorted.foreach(author => {
+      for (pos <- author.affiliationPositions) {
+        if (!transformation.keySet.contains(pos)) {
+          transformation.put(pos, i)
+          i += 1
+        }
+      }
+    })
+
+    // re-position affiliations
+    abstr.affiliations.foreach { affiliation =>
+      affiliation.abstr = abstr
+
+      transformation.get(affiliation.position) match {
+        case Some(pos) => affiliation.position = pos
+        case None =>
+      }
+    }
+
+    abstr.authors.foreach { author =>
+      author.abstr = abstr
+
+      for (pos <- author.affiliationPositions) {
+        abstr.affiliations.find(_.position == transformation.get(pos).get) match {
+          case Some(affiliation) =>
+            affiliation.authors.add(author)
+            author.affiliations.add(affiliation)
+          case _ =>
+        }
+      }
     }
   }
 
