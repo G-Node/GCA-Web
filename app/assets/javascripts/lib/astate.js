@@ -1,13 +1,3 @@
-/*
-require.config({
-    baseUrl: '/assets/javascripts/',
-    paths: {
-        'moment': ['/assets/lib/momentjs/min/moment.min']
-    },
-    noGlobal: true
-});
-*/
-
 /**
  * Module for state related things
  * @module {lib/astate}
