@@ -1,4 +1,5 @@
-require(["lib/models", "lib/tools"], function(models, tools) {
+require(["main"], function () {
+require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools, ko, Sammy) {
     "use strict";
 
 
@@ -308,4 +309,5 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         window.abstractList.init();
     });
 
+});
 });
