@@ -1,4 +1,5 @@
-require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astate) {
+require(["main"], function () {
+require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, tools, astate, ko) {
     "use strict";
 
 
@@ -241,4 +242,5 @@ require(["lib/models", "lib/tools", "lib/astate"], function(models, tools, astat
     });
 
 
+});
 });

@@ -2,7 +2,7 @@
  * Module for managing owned objects
  * @module {lib/owned}
  */
-define(["lib/tools", "lib/models"], function(tools, models) {
+define(["lib/tools", "lib/models", "knockout"], function(tools, models, ko) {
 
     function Owned() {
 

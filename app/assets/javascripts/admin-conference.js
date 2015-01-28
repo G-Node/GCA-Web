@@ -1,4 +1,5 @@
-require(["lib/models", "lib/tools", "lib/owned"], function(models, tools, owned) {
+require(["main"], function () {
+require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable"], function(models, tools, owned, ko) {
     "use strict";
 
 
@@ -196,4 +197,5 @@ require(["lib/models", "lib/tools", "lib/owned"], function(models, tools, owned)
         window.dashboard.init();
     });
 
+});
 });

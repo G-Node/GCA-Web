@@ -1,4 +1,5 @@
-require(["lib/models", "lib/tools"], function(models, tools) {
+require(["main"], function () {
+require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tools, ko, Sammy) {
     "use strict";
 
 
@@ -12,7 +13,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
      */
     function UserDashViewModel() {
 
-        if (! (this instanceof UserDashViewModel)) {
+        if (!(this instanceof UserDashViewModel)) {
             return new UserDashViewModel();
         }
 
@@ -23,29 +24,29 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         self.error = ko.observable(false);
 
 
-        self.setError = function(level, text) {
+        self.setError = function (level, text) {
             self.error({message: text, level: 'alert-' + level});
             self.isLoading(false);
         };
 
 
-        self.init = function() {
+        self.init = function () {
             ko.applyBindings(window.dashboard);
         };
 
-        self.makeAbstractLink = function(abstract, conference) {
+        self.makeAbstractLink = function (abstract, conference) {
             return "/myabstracts/" + abstract.uuid + "/edit";
         };
 
 
         //Data IO
-        self.ioFailHandler = function(jqxhr, textStatus, error) {
+        self.ioFailHandler = function (jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
-            console.log( "Request Failed: " + err );
+            console.log("Request Failed: " + err);
             self.setError("danger", "Error while lading data [" + err + "]!");
         };
 
-        self.ensureDataAndThen = function(doAfter) {
+        self.ensureDataAndThen = function (doAfter) {
             console.log("ensureDataAndThen::");
 
             //now load the data from the server
@@ -57,7 +58,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 console.log("+ onConferenceData")
                 var confs = models.Conference.fromArray(confObj);
                 if (confs !== null) {
-                    confs.forEach(function(current){
+                    confs.forEach(function (current) {
                         current.abstracts = ko.observableArray(null);
                     });
 
@@ -66,7 +67,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 self.conferences(confs);
 
                 if (confs !== null) {
-                    confs.forEach(function(current){
+                    confs.forEach(function (current) {
                         var absUrl = "/api/user/self/conferences/" + current.uuid + "/abstracts";
                         $.getJSON(absUrl, onAbstractData(current)).fail(self.ioFailHandler);
                     });
@@ -79,14 +80,14 @@ require(["lib/models", "lib/tools"], function(models, tools) {
                 return function (abstractList) {
                     var absList = models.Abstract.fromArray(abstractList);
 
-                    absList.forEach(function(abstr) {
+                    absList.forEach(function (abstr) {
 
-                        abstr.viewEditCtx = ko.computed(function() {
+                        abstr.viewEditCtx = ko.computed(function () {
                             var confIsOpen = currentConf.isOpen;
                             var canEdit = abstr.state == "InRevision" ||
                                 (confIsOpen && (abstr.state == "InPreparation" ||
-                                                abstr.state == "Submitted" ||
-                                                abstr.state == "Withdrawn"));
+                                abstr.state == "Submitted" ||
+                                abstr.state == "Withdrawn"));
 
                             return {
                                 link: canEdit ? "/myabstracts/" + abstr.uuid + "/edit" : "/abstracts/" + abstr.uuid,
@@ -103,9 +104,9 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
 
         // client-side routes
-        Sammy(function() {
+        Sammy(function () {
 
-            this.get('#/', function() {
+            this.get('#/', function () {
                 console.log('Sammy::get::');
                 self.ensureDataAndThen(function () {
                     self.isLoading(false);
@@ -116,7 +117,7 @@ require(["lib/models", "lib/tools"], function(models, tools) {
 
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         var data = tools.hiddenData();
 
@@ -125,4 +126,5 @@ require(["lib/models", "lib/tools"], function(models, tools) {
         window.dashboard.init();
     });
 
+});
 });
