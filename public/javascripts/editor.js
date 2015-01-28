@@ -13,7 +13,6 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
      */
     function EditorViewModel(confId, abstrId) {
 
-
         if (! (this instanceof EditorViewModel)) {
             return new EditorViewModel(confId, abstrId);
         }
@@ -280,13 +279,12 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
         };
 
         self.doUpdateFigureCaption = function () {
+
             if (self.hasAbstractFigures()) {
                 var figure = self.abstract().figures()[0],
                     data = new FormData(),
                     json = {uuid: figure.uuid,
-                        caption: $("#figure-update-caption").val()};
-
-                self.setOk("Ok", "here:"+ figure.uuid);
+                            caption: $("#figure-update-caption").val()};
 
                 data.append('figure', JSON.stringify(json));
 
@@ -361,7 +359,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
                 return;
             }
 
-            var result = validate.abstract(abstract)
+            var result = validate.abstract(abstract);
 
             if (result.hasErrors()) {
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
@@ -369,6 +367,11 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned"],
             }
 
             if (self.isAbstractSaved()) {
+
+                //update figure caption
+                if (self.hasAbstractFigures()) {
+                    self.doUpdateFigureCaption();
+                }
 
                 $.ajax({
                     async: false,
