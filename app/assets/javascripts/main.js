@@ -6,9 +6,6 @@
 
     requirejs.config({
         shim: {
-            "jquery.ui.sortable": ["jquery"],
-            knockout: ["jquery"],
-            bootstrap: ["jquery"],
             "ko.sortable": ["knockout", "jquery.ui.sortable"]
         },
         paths: {
