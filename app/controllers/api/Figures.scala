@@ -99,8 +99,11 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
 
   def updateCaption(id: String) = SecuredAction(parse.multipartFormData) { implicit request =>
     val figure = Json.parse(request.body.dataParts("figure")(0)).as[Figure]
-    println("ID: "+ figure.uuid)
-    println("Caption: "+ figure.caption)
+    val oldFig = figureService.get(figure.uuid)
+
+    // get abstractID and position from database
+    figure.abstr = abstractService.getOwn(oldFig.abstr.uuid, request.identity.account)
+    figure.position = oldFig.position
 
     figureService.update(figure, request.identity.account)
     Ok(Json.obj("error" -> false))

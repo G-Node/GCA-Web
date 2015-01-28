@@ -14,8 +14,7 @@ function (ko, models, tools, msg, validate, owned) {
      */
     function EditorViewModel(confId, abstrId) {
 
-
-        if (!(this instanceof EditorViewModel)) {
+        if (! (this instanceof EditorViewModel)) {
             return new EditorViewModel(confId, abstrId);
         }
 
@@ -281,13 +280,12 @@ function (ko, models, tools, msg, validate, owned) {
         };
 
         self.doUpdateFigureCaption = function () {
+
             if (self.hasAbstractFigures()) {
                 var figure = self.abstract().figures()[0],
                     data = new FormData(),
                     json = {uuid: figure.uuid,
-                        caption: $("#figure-update-caption").val()};
-
-                self.setOk("Ok", "here:"+ figure.uuid);
+                            caption: $("#figure-update-caption").val()};
 
                 data.append('figure', JSON.stringify(json));
 
@@ -362,7 +360,7 @@ function (ko, models, tools, msg, validate, owned) {
                 return;
             }
 
-            var result = validate.abstract(abstract)
+            var result = validate.abstract(abstract);
 
             if (result.hasErrors()) {
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
@@ -370,6 +368,11 @@ function (ko, models, tools, msg, validate, owned) {
             }
 
             if (self.isAbstractSaved()) {
+
+                //update figure caption
+                if (self.hasAbstractFigures()) {
+                    self.doUpdateFigureCaption();
+                }
 
                 $.ajax({
                     async: false,
