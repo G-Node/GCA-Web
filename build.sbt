@@ -21,8 +21,10 @@ libraryDependencies ++= Seq(
   "org.webjars" % "requirejs" % "2.1.15",
   "org.webjars" % "jquery" % "1.11.2",
   "org.webjars" % "jquery-ui" % "1.11.2",
-  "org.webjars" % "bootstrap" % "3.3.1" exclude("org.webjars", "jquery"),
-  "org.webjars" % "knockout" % "3.2.0" exclude("org.webjars", "jquery"),
+  "org.webjars" % "bootstrap" % "3.1.1" exclude("org.webjars", "jquery"),
+  "org.webjars" % "knockout" % "3.0.0" exclude("org.webjars", "jquery"),
+//  "org.webjars" % "bootstrap" % "3.3.1" exclude("org.webjars", "jquery"),
+//  "org.webjars" % "knockout" % "3.2.0" exclude("org.webjars", "jquery"),
   "org.webjars" % "sammy" % "0.7.4",
   "org.webjars" % "momentjs" % "2.9.0"
 )
