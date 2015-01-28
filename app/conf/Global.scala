@@ -3,12 +3,12 @@ package conf
 import java.lang.reflect.Constructor
 import javax.persistence.{EntityNotFoundException, NoResultException}
 
-import com.mohiva.play.silhouette.contrib.services.{DelegableAuthInfoService, CachedCookieAuthenticatorSettings, CachedCookieAuthenticatorService, CachedCookieAuthenticator}
+import com.mohiva.play.silhouette.contrib.services.{CachedCookieAuthenticator, CachedCookieAuthenticatorService, CachedCookieAuthenticatorSettings, DelegableAuthInfoService}
 import com.mohiva.play.silhouette.contrib.utils.{BCryptPasswordHasher, PlayCacheLayer, SecureRandomIDGenerator}
 import com.mohiva.play.silhouette.core.providers.CredentialsProvider
-import com.mohiva.play.silhouette.core.{SecuredSettings, EventBus, Provider, Environment}
 import com.mohiva.play.silhouette.core.services.{AuthenticatorService, IdentityService}
 import com.mohiva.play.silhouette.core.utils.Clock
+import com.mohiva.play.silhouette.core.{Environment, EventBus, Provider, SecuredSettings}
 import models.Login
 import play.api._
 import play.api.libs.json.{JsError, JsResultException, Json}
@@ -24,7 +24,7 @@ object Global extends GlobalSettings with SecuredSettings {
     Future.successful(NotFound(views.html.error.NotFound()))
   }
 
-  override def onError(request: RequestHeader, ex: Throwable): Future[SimpleResult] = {
+  override def onError(request: RequestHeader, ex: Throwable): Future[Result] = {
     Future.successful {
       if (acceptsJson(request))
         exHandlerJSON(ex)
@@ -37,21 +37,21 @@ object Global extends GlobalSettings with SecuredSettings {
     request.accepts("application/json") || request.accepts("text/json")
   }
 
-  def exHandlerHTML(e: Throwable) : SimpleResult = {
+  def exHandlerHTML(e: Throwable) : Result = {
     e match {
       case e: NoResultException => NotFound(views.html.error.NotFound())
       case e: Exception => InternalServerError(views.html.error.InternalServerError(e))
     }
   }
 
-  def exHandlerJSON(e: Throwable) : SimpleResult = {
+  def exHandlerJSON(e: Throwable) : Result = {
     e match {
-      case e: NoResultException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
-      case e: EntityNotFoundException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
-      case e: IllegalArgumentException => BadRequest(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
+      case e: NoResultException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
+      case e: EntityNotFoundException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
+      case e: IllegalArgumentException => BadRequest(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
       case e: JsResultException => BadRequest(Json.obj("error" -> true, "causes" -> JsError.toFlatJson(e.errors)))
-      case e: IllegalAccessException => Forbidden(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
-      case e: Exception => InternalServerError(Json.obj("error" -> true, e.getMessage -> e.getStackTraceString))
+      case e: IllegalAccessException => Forbidden(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
+      case e: Exception => InternalServerError(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
     }
   }
 

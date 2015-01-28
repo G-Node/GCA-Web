@@ -1,22 +1,18 @@
 package controller
 
 import conf.Global
+import models.Account
 import org.junit.Before
 import org.scalatest.junit.JUnitSuite
 import play.api.Application
 import play.api.http.Writeable
-import play.api.mvc.{Request, SimpleResult}
+import play.api.mvc.{Request, Result}
 import play.api.test.Helpers._
 import play.api.test._
-import models.{CredentialsLogin, Account}
-import play.core.Router.Route
 import service.Assets
-import scala.concurrent.{ExecutionContext, Future}
-import ExecutionContext.Implicits._
 
-import scala.collection.JavaConversions._
-
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.{Future}
 
 
 trait BaseCtrlTest extends JUnitSuite {
@@ -41,7 +37,7 @@ trait BaseCtrlTest extends JUnitSuite {
   /**
    * Call route and handle errors with Global.onError().
    */
-  def routeWithErrors[T](app: Application, req: Request[T])(implicit w: Writeable[T]): Option[Future[SimpleResult]] = {
+  def routeWithErrors[T](app: Application, req: Request[T])(implicit w: Writeable[T]): Option[Future[Result]] = {
     route(req).map { result =>
       result.recoverWith {
         case t: Throwable => Global.onError(req, t)
