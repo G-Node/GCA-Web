@@ -45,21 +45,37 @@
             </span>
         </div>
 
+        <div>
+            Abstract status:
+            <span class="badge" data-bind="text: abstract().state()"></span>
+        </div>
+
         <h2>Abstract submission  <small>@conference.name</small></h2>
     </div>
 
     <hr class="separator">
 
+    <!--
     <div class="alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
         <p>Submitted abstracts can be modified until the deadline. <br>
             To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract.
             Don't forget to submit again after editing.</p>
     </div>
+    -->
+
+    <div class="alert alert-info fade in out">
+        <ul>
+            <li>Click the <b>Save</b> button to save new information or any changes to your abstract.</li>
+            <li>After entering all information, click the <b>Submit</b> button to submit your abstract.</li>
+            <li>Submitted abstracts can be modified until the deadline.<br/>
+                To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract. Don't forget to submit again after editing.</li>
+        </ul>
+    </div>
+
+    <hr class="separator">
 
     <div id="abstract">
-
-
 
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover">
