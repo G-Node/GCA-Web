@@ -1,23 +1,19 @@
 package controller
 
-import scala.io.Source.fromFile
-
 import java.io.File
-import org.junit._
-import play.api.libs.Files.TemporaryFile
-import play.api.mvc._
-import play.api.test._
-import play.api.Play
-import play.api.test.Helpers._
-import play.api.http.Writeable
 
-import utils.serializer.FigureFormat
+import org.junit._
+import play.api.Play
+import play.api.http.Writeable
+import play.api.libs.Files.TemporaryFile
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.{AnyContentAsMultipartFormData, Cookie, _}
+import play.api.test.Helpers._
+import play.api.test.{FakeApplication, _}
 import utils.DefaultRoutesResolver._
-import scala.Some
-import play.api.mvc.AnyContentAsMultipartFormData
-import play.api.test.FakeApplication
-import play.api.libs.json.JsObject
-import play.api.mvc.Cookie
+import utils.serializer.FigureFormat
+
+import scala.io.Source.fromFile
 
 /**
  * Test
@@ -118,6 +114,18 @@ class FigureCtrlTest extends BaseCtrlTest {
     assert(status(result) == OK)
     val file = contentAsBytes(result)
     // TODO here make some file assert
+  }
+
+  @Test
+  def testUpdate(): Unit = {
+    val uuid = assets.figures(0).uuid
+    val figure = assets.figures(0)
+    figure.caption = "update caption"
+
+    val putFigure = formatter.writes(figure).as[JsObject] - "URL"
+    val request = FakeRequest(PUT, s"/api/figures/$uuid").withJsonBody(putFigure).withCookies(cookie)
+    val resultUpdate = route(FigureCtrlTest.app, request).get
+    assert(status(resultUpdate) == OK)
   }
 
   @Test
