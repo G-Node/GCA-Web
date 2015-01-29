@@ -279,23 +279,18 @@ function (ko, models, tools, msg, validate, owned) {
             }
         };
 
-        self.doUpdateFigureCaption = function () {
+        self.doUpdateFigure = function () {
 
             if (self.hasAbstractFigures()) {
-                var figure = self.abstract().figures()[0],
-                    data = new FormData(),
-                    json = {uuid: figure.uuid,
-                            caption: $("#figure-update-caption").val()};
-
-                data.append('figure', JSON.stringify(json));
+                var figure = self.abstract().figures()[0];
 
                 $.ajax({
-                    url: '/api/figures/' + figure.uuid,
-                    type: 'PUT',
+                    url: "/api/figures/" + figure.uuid,
+                    type: "PUT",
+                    contentType: "application/json",
                     dataType: "json",
-                    data: data,
+                    data: figure.toJSON(),
                     processData: false,
-                    contentType: false,
                     success: success,
                     error: fail
                 });
@@ -369,9 +364,8 @@ function (ko, models, tools, msg, validate, owned) {
 
             if (self.isAbstractSaved()) {
 
-                //update figure caption
                 if (self.hasAbstractFigures()) {
-                    self.doUpdateFigureCaption();
+                    self.doUpdateFigure();
                 }
 
                 $.ajax({

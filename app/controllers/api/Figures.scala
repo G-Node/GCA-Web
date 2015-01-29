@@ -1,5 +1,6 @@
 package controllers.api
 
+import play.api._
 import play.api.libs.json.{JsArray, _}
 import play.api.mvc._
 import service.{AbstractService, FigureService}
@@ -90,15 +91,16 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
   }
 
   /**
-   * Update the caption of an existing figure (id).
+   * Update an existing figure (id).
    *
    * @param id   The id of the figure.
    *
    * @return  OK / Failed
    */
 
-  def updateCaption(id: String) = SecuredAction(parse.multipartFormData) { implicit request =>
-    val figure = Json.parse(request.body.dataParts("figure")(0)).as[Figure]
+  def updateFigure(id: String) = SecuredAction(parse.json) { implicit request =>
+
+    val figure = request.body.as[Figure]
     val oldFig = figureService.get(figure.uuid)
 
     // get abstractID and position from database
