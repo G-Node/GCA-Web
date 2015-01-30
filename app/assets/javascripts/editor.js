@@ -279,6 +279,11 @@ function (ko, models, tools, msg, validate, owned) {
             }
         };
 
+        /**
+         * Update an existing figure.
+         * At the moment the figure caption is the only part
+         * where an update actually takes place.
+         */
         self.doUpdateFigure = function () {
 
             if (self.hasAbstractFigures()) {
@@ -291,16 +296,11 @@ function (ko, models, tools, msg, validate, owned) {
                     dataType: "json",
                     data: figure.toJSON(),
                     processData: false,
-                    success: success,
                     error: fail
                 });
 
             } else {
                 self.setWarning("Error", "Unable to update caption: figure not found", true);
-            }
-
-            function success() {
-                self.setOk("Ok", "Figure caption updated");
             }
 
             function fail() {
