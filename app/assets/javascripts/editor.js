@@ -14,8 +14,7 @@ function (ko, models, tools, msg, validate, owned) {
      */
     function EditorViewModel(confId, abstrId) {
 
-
-        if (!(this instanceof EditorViewModel)) {
+        if (! (this instanceof EditorViewModel)) {
             return new EditorViewModel(confId, abstrId);
         }
 
@@ -280,6 +279,34 @@ function (ko, models, tools, msg, validate, owned) {
             }
         };
 
+        /**
+         * Update an existing figure.
+         * At the moment the figure caption is the only part
+         * where an update actually takes place.
+         */
+        self.doUpdateFigure = function () {
+
+            if (self.hasAbstractFigures()) {
+                var figure = self.abstract().figures()[0];
+
+                $.ajax({
+                    url: "/api/figures/" + figure.uuid,
+                    type: "PUT",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: figure.toJSON(),
+                    processData: false,
+                    error: fail
+                });
+
+            } else {
+                self.setWarning("Error", "Unable to update caption: figure not found", true);
+            }
+
+            function fail() {
+                self.setError("Error", "Unable to update caption");
+            }
+        };
 
         self.doRemoveFigure = function () {
 
@@ -328,7 +355,7 @@ function (ko, models, tools, msg, validate, owned) {
                 return;
             }
 
-            var result = validate.abstract(abstract)
+            var result = validate.abstract(abstract);
 
             if (result.hasErrors()) {
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
@@ -336,6 +363,10 @@ function (ko, models, tools, msg, validate, owned) {
             }
 
             if (self.isAbstractSaved()) {
+
+                if (self.hasAbstractFigures()) {
+                    self.doUpdateFigure();
+                }
 
                 $.ajax({
                     async: false,

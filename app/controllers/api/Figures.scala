@@ -1,5 +1,6 @@
 package controllers.api
 
+import play.api._
 import play.api.libs.json.{JsArray, _}
 import play.api.mvc._
 import service.{AbstractService, FigureService}
@@ -86,6 +87,27 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
    */
   def delete(id: String) = SecuredAction { implicit request =>
     figureService.delete(id, request.identity.account)
+    Ok(Json.obj("error" -> false))
+  }
+
+  /**
+   * Update an existing figure (id).
+   *
+   * @param id   The id of the figure.
+   *
+   * @return  OK / Failed
+   */
+
+  def updateFigure(id: String) = SecuredAction(parse.json) { implicit request =>
+
+    val figure = request.body.as[Figure]
+    val oldFig = figureService.get(figure.uuid)
+
+    // get abstractID and position from database
+    figure.abstr = abstractService.getOwn(oldFig.abstr.uuid, request.identity.account)
+    figure.position = oldFig.position
+
+    figureService.update(figure, request.identity.account)
     Ok(Json.obj("error" -> false))
   }
 

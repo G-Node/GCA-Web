@@ -156,7 +156,11 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <div><small> Use the drag handle  <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder autohrs</small></div>
+                            <div>
+                                <small> Use the drag handle
+                                    <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder authors
+                                </small>
+                            </div>
                         </div>
 
                         <div class="modal-footer">
@@ -440,7 +444,11 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <div><small> Use the drag handle  <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder references</small></div>
+                            <div>
+                                <small> Use the drag handle
+                                    <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder references
+                                </small>
+                            </div>
                         </div>
 
                         <div class="modal-footer">
@@ -504,7 +512,9 @@
                                     <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
                                     <div class="figure-caption">
                                         <span>Figure 1: </span>
-                                        <span data-bind="text: abstract().figures()[0].caption"></span>
+                                        <input type="text" name="figure-update-caption" id="figure-update-caption"
+                                            maxlength="250" class="form-control input-sm"
+                                            data-bind="value: abstract().figures()[0].caption, valueUpdate: 'afterkeydown'">
                                     </div>
                                 </div>
                             </div>
