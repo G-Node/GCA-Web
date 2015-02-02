@@ -115,6 +115,17 @@ function (ko, models, tools, msg, validate, owned) {
             self
         );
 
+        // hide edit buttons, if the abstract is in any state other
+        // than "inPreparation" or if its not a new submission
+        self.showEditButton = ko.computed(
+            function () {
+                var saved = self.isAbstractSaved(),
+                    state = self.originalState();
+
+                return !saved || (!state || state === 'InPreparation');
+            },
+            self
+        );
 
         self.init = function () {
 

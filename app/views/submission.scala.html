@@ -45,24 +45,44 @@
             </span>
         </div>
 
+        <!-- display the current abstract status-->
+        <div>
+            Abstract status:
+            <span class="badge" data-bind="text: abstract().state()"></span>
+        </div>
+
         <h2>Abstract submission  <small>@conference.name</small></h2>
     </div>
 
     <hr class="separator">
 
-    <div class="alert-dismissable">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-        <p>Submitted abstracts can be modified until the deadline. <br>
-            To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract.
-            Don't forget to submit again after editing.</p>
-    </div>
+    <!-- display submission information -->
+    <span data-bind="if: showEditButton">
+        <div class="alert alert-info fade in out">
+            <ul>
+                <li>Click the <b>Save</b> button to save new information or any changes to your abstract.</li>
+                <li>After entering all information, click the <b>Submit</b> button to submit your abstract.</li>
+                <li>Submitted abstracts can be modified until the deadline.<br/>
+                    To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract. Don't forget to re-submit after editing.</li>
+            </ul>
+        </div>
+    </span>
+    <span data-bind="ifnot: showEditButton">
+        <div class="alert alert-danger fade in out">
+            <ul>
+                <li>Submitted abstracts can be modified until the deadline.<br/>
+                    To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract. Don't forget to re-submit after editing.</li>
+                <li>This abstract is submitted, changes are deactivated. To add changes, please withdraw and reactivate the abstract.</li>
+            </ul>
+        </div>
+    </span>
+
+    <hr class="separator">
 
     <div id="abstract">
 
-
-
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
-            <div class="btn-group pull-right btn-group-hover">
+            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal"
                         data-bind="click: doStartEdit.bind($root, '#title-editor')">
                     Edit
@@ -102,7 +122,7 @@
 
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
 
-            <div class="btn-group pull-right btn-group-hover">
+            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal"
                         data-bind="click: doStartEdit">
                     Edit
@@ -185,7 +205,7 @@
         </div>
 
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
-            <div class="btn-group pull-right btn-group-hover">
+            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
@@ -303,7 +323,7 @@
         </div>
 
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
-            <div class="btn-group pull-right btn-group-hover">
+            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#abstract-text-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
@@ -349,7 +369,7 @@
 
 
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
-            <div class="btn-group pull-right btn-group-hover">
+            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#acknowledgements-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
@@ -393,7 +413,7 @@
 
 
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
-            <div class="btn-group pull-right btn-group-hover">
+            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#references-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
@@ -474,7 +494,7 @@
 
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
 
-            <div class="btn-group pull-right btn-group-hover">
+            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#figure-editor"
                 data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
@@ -549,7 +569,7 @@
         <hr class="separator">
 
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
-            <div class="btn-group pull-right btn-group-hover">
+            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
                         data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
@@ -594,7 +614,7 @@
         </div>
 
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
-            <div class="btn-group pull-right btn-group-hover">
+            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#is-talk-editor"
                 data-toggle="modal" data-bind="click: doStartEdit">
                     Edit
