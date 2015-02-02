@@ -121,9 +121,6 @@ function (ko, models, tools, msg, validate, owned) {
             function () {
                 var saved = self.isAbstractSaved(),
                     state = self.originalState();
-                console.log("abstract saved: "+ saved);
-                console.log("abstract state: "+ state);
-                console.log("Test logic: "+(!saved || (!state || state === 'InPreparation')));
 
                 return !saved || (!state || state === 'InPreparation');
             },
