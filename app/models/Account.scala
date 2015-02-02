@@ -156,9 +156,10 @@ class CredentialsLogin extends Login {
 
 object CredentialsLogin {
 
-  def apply(passwordInfo: PasswordInfo): CredentialsLogin = {
+  def apply(passwordInfo: PasswordInfo, account: Option[Account]): CredentialsLogin = {
     val login = new CredentialsLogin()
 
+    login.account = unwrapRef(account)
     login.hasher = passwordInfo.hasher
     login.password = passwordInfo.password
     login.salt = unwrapRef(passwordInfo.salt)

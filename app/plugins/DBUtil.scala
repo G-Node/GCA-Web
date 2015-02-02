@@ -99,7 +99,7 @@ object DBUtil {
    */
   def transaction[A](func : (EntityManager, EntityTransaction) => A) : A = {
 
-    val em = instance.threadLocalEM
+    val em = instance.createEM
     val tx = em.getTransaction
 
     try {
@@ -129,7 +129,7 @@ object DBUtil {
    * @return The result of the invoked function.
    */
   def query[A](func : (EntityManager) => A) : A = {
-    func(instance.threadLocalEM)
+    func(instance.createEM)
   }
 
 }
