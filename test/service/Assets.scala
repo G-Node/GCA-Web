@@ -201,7 +201,7 @@ class Assets() {
     account.lastName = lastName
     account.mail = mail
 
-    account.logins = toJSet(Seq(CredentialsLogin(pwHasher.hash("testtest"))))
+    account.logins = toJSet(Seq(CredentialsLogin(pwHasher.hash("testtest"), Some(account))))
     account
   }
 
