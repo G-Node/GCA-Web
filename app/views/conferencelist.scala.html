@@ -18,7 +18,7 @@
             }
 
             @if(current.isOpen) {
-                <div>
+                <p><div>
                     <p>Submission is currently <span class="text-success"><b>open</b></span>.
 
                     @if(current.deadline != null) {
@@ -38,11 +38,11 @@
                             <input class="btn btn-success" type="submit" value="Submit an Abstract">
                         </form>
                     }
-                </div>
+                </div></p>
             } else {
-                <div>
+                <p><div>
                     <p>Abstract submission is currently <span class="text-danger"><b>closed</b></span>.</p>
-                </div>
+                </div></p>
             }
 
             <p><a class="btn btn-primary btn-lg" href="@current.link" role="button">Go to the conference page</a></p>
