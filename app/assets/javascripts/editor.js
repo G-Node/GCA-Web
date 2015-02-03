@@ -28,6 +28,8 @@ function (ko, models, tools, msg, validate, owned) {
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
         self.originalState = ko.observable(null);
+        // set default modals footer template
+        self.modalFooter = ko.observable("generalModalFooter");
 
         self.isAbstractSaved = ko.computed(
             function () {
