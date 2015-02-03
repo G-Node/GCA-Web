@@ -3,7 +3,7 @@ name := "GCA-Web"
 
 version := "1.0"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+lazy val `GCA-Web`: Project = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.11.1"
 
