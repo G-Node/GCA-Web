@@ -492,7 +492,8 @@
                         <select class="form-control"
                         data-bind="options: $root.editedAbstract().indexedAuthors,
                                                                optionsText: function(e) { return e.author.formatName(); },
-                                                               optionsValue: 'index'">
+                                                               optionsValue: 'index',
+                                                               value: $root.selectedAffiliationAuthor">
                         </select>
                     </td>
                     <td>

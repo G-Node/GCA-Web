@@ -40,6 +40,9 @@ function (ko, models, tools, msg, validate, owned) {
             caption: null
         };
 
+        // required to affiliate and author with a department
+        self.selectedAffiliationAuthor = 0;
+
         self.isAbstractSaved = ko.computed(
             function () {
                 return self.abstract() && self.abstract().uuid;
@@ -570,7 +573,7 @@ function (ko, models, tools, msg, validate, owned) {
          */
         self.doEditAddAuthorToAffiliation = function (index) {
             index = index();
-            var authorIndex = $("#author-select-" + index).find("select").val(),
+            var authorIndex = self.selectedAffiliationAuthor,
                 authors = self.editedAbstract().authors();
 
             if (authorIndex < 0 || authorIndex >= authors.length) {
@@ -588,6 +591,9 @@ function (ko, models, tools, msg, validate, owned) {
             } else {
                 self.setInfo("Hint", "This author is assigned to this affiliation.");
             }
+
+            // reset author select index
+            self.selectedAffiliationAuthor = 0;
         };
 
 
