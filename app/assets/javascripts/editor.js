@@ -28,6 +28,8 @@ function (ko, models, tools, msg, validate, owned) {
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
         self.originalState = ko.observable(null);
+
+        self.modalBody = ko.observable(null);
         // set default modals footer template
         self.modalFooter = ko.observable("generalModalFooter");
 
@@ -472,11 +474,15 @@ function (ko, models, tools, msg, validate, owned) {
 
 
         self.doStartEdit = function (editorId) {
+            console.log(editorId);
             var ed = $(editorId).find("input").first();
             ed.focus();
 
             var obj = $.extend(true, {}, self.abstract().toObject());
             self.editedAbstract(models.ObservableAbstract.fromObject(obj));
+
+            // ensure correct script for modal body is loaded
+            self.modalBody("body-"+ editorId.replace('#',''));
         };
 
 

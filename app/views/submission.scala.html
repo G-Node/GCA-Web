@@ -96,11 +96,7 @@
                             <h3>Enter a Title</h3>
                         </div>
 
-                        <div class="modal-body">
-                            <label for="title"></label>
-                            <input type="text" class="form-control" id="title" maxlength="255"
-                                   data-bind="value: editedAbstract().title" placeholder="Title (max. 255 characters)" />
-                        </div>
+                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
 
                         <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
                     </div>
@@ -116,7 +112,7 @@
 
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal"
-                        data-bind="click: doStartEdit">
+                        data-bind="click: doStartEdit.bind($root, '#authors-editor')">
                     Edit
                 </button>
             </div>
@@ -133,47 +129,7 @@
                             <h3>Edit Authors</h3>
                         </div>
 
-                        <div class="modal-body">
-                            <table class="table">
-                                <tbody data-bind="sortable: {data: editedAbstract().authors, as: 'person'}">
-                                    <tr>
-                                        <td>
-                                            <span class="drag-handle-icon glyphicon glyphicon-align-justify"></span>
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="First Name"
-                                                   maxlength="100" data-bind="value: person.firstName" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Middle Name"
-                                                   maxlength="100" data-bind="value: person.middleName" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Last Name"
-                                                   maxlength="100" data-bind="value: person.lastName" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Mail"
-                                                   maxlength="100" data-bind="value: person.mail" />
-                                        </td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doEditRemoveAuthor.bind($root, $index, person)">
-                                                    Remove
-                                                    <span class="glyphicon glyphicon-user"></span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div>
-                                <small> Use the drag handle
-                                    <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder authors
-                                </small>
-                            </div>
-                        </div>
+                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
 
                         <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
 
@@ -191,7 +147,7 @@
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
-                        data-toggle="modal" data-bind="click: doStartEdit">
+                        data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#affiliations-editor')">
                     Edit
                 </button>
             </div>
@@ -208,81 +164,7 @@
                             <h3>Edit Affiliations</h3>
                         </div>
 
-                        <div class="modal-body">
-                            <table class="table">
-                                <tbody data-bind="foreach: {data: editedAbstract().affiliations, as: 'affiliation'}">
-                                    <tr class="affiliation-form">
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Department"
-                                            maxlength="100" data-bind="value: affiliation.department" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Institute"
-                                                   maxlength="100" data-bind="value: affiliation.section" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Address"
-                                                   maxlength="100" data-bind="value: affiliation.address" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Country"
-                                                   maxlength="100" data-bind="value: affiliation.country" />
-                                        </td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doEditRemoveAffiliation.bind($root, $index, affiliation)">
-                                                    Remove
-                                                    <span class="glyphicon glyphicon-envelope"></span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <!-- ko if: $root.getEditorAuthorsForAffiliation($index(), affiliation).length < 1 -->
-                                    <tr>
-                                        <td colspan="5">
-                                            <div class="affiliations-no-author">
-                                                <span>No author assigned</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <!-- /ko -->
-                                    <!-- ko foreach: {data: $root.getEditorAuthorsForAffiliation($index(), affiliation), as: 'author'} -->
-                                    <tr>
-                                        <td colspan="4" data-bind="text: author.formatName()"></td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doEditRemoveAffiliationFromAuthor.bind($root, $parentContext.$index, author)">
-                                                    Remove
-                                                    <span class="glyphicon glyphicon-user"></span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <!-- /ko -->
-                                    <tr>
-                                        <td></td>
-                                        <td colspan="3" data-bind="attr: {id: 'author-select-' + $index()}">
-                                            <select class="form-control"
-                                                    data-bind="options: $root.editedAbstract().indexedAuthors,
-                                                               optionsText: function(e) { return e.author.formatName(); },
-                                                               optionsValue: 'index'">
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doEditAddAuthorToAffiliation.bind($root, $index, affiliation)">
-                                                    Assign
-                                                    <span class="glyphicon glyphicon-user"></span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
 
                         <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
 
@@ -301,7 +183,7 @@
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#abstract-text-editor"
-                        data-toggle="modal" data-bind="click: doStartEdit">
+                        data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#abstract-text-editor')">
                     Edit
                 </button>
             </div>
@@ -313,17 +195,7 @@
                             <h3>Enter the Abstract Text</h3>
                         </div>
 
-                        <div class="modal-body">
-                            <textarea rows="10" class="form-control" id="text" maxlength="2000"
-                                      data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'">
-                            </textarea>
-                            <div>
-                                <span>LaTeX-like equation typesetting is supported via MathJax. Use $$ and $ (inline).
-                                    <a target="_blank" href="http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference">Quick quide</a>
-                                </span><br>
-                                <span>Characters left: </span><span data-bind="text: editorTextCharactersLeft"></span>
-                            </div>
-                        </div>
+                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
 
                         <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
 
@@ -336,11 +208,10 @@
             </div>
         </div>
 
-
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#acknowledgements-editor"
-                        data-toggle="modal" data-bind="click: doStartEdit">
+                        data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#acknowledgements-editor')">
                     Edit
                 </button>
             </div>
@@ -352,14 +223,7 @@
                             <h3>Enter Acknowledgements Text</h3>
                         </div>
 
-                        <div class="modal-body">
-                            <textarea rows="10" class="form-control" id="text" maxlength="200"
-                                      data-bind="value: editedAbstract().acknowledgements, valueUpdate: 'afterkeydown'">
-                            </textarea>
-                            <div>
-                                <span>Characters left: </span><span data-bind="text: editorAckCharactersLeft"></span>
-                            </div>
-                        </div>
+                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
 
                         <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
 
@@ -373,11 +237,10 @@
             </div>
         </div>
 
-
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#references-editor"
-                        data-toggle="modal" data-bind="click: doStartEdit">
+                        data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#references-editor')">
                     Edit
                 </button>
             </div>
@@ -395,43 +258,7 @@
                             <h3>References</h3>
                         </div>
 
-                        <div class="modal-body">
-
-                            <table class="table">
-                                <tbody data-bind="sortable: {data: editedAbstract().references, as: 'reference'}">
-                                    <tr>
-                                        <td>
-                                            <span class="drag-handle-icon glyphicon glyphicon-align-justify"></span>
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="Citation"
-                                                   maxlength="255" data-bind="value: reference.text" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="link"
-                                                   maxlength="255" data-bind="value: reference.link" />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control input-sm" placeholder="DOI"
-                                                   maxlength="100" data-bind="value: reference.doi" />
-                                        </td>
-                                        <td>
-                                            <div class="btn-group pull-right">
-                                                <button type="button" class="btn btn-default btn-sm"
-                                                        data-bind="click: $root.doEditRemoveReference.bind($root, $index, reference)">
-                                                    Remove
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div>
-                                <small> Use the drag handle
-                                    <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder references
-                                </small>
-                            </div>
-                        </div>
+                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
 
                         <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
 
@@ -448,10 +275,9 @@
         </div>
 
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
-
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#figure-editor"
-                data-toggle="modal" data-bind="click: doStartEdit">
+                data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#figure-editor')">
                     Edit
                 </button>
             </div>
@@ -463,37 +289,7 @@
                             <h3>Add a Figure</h3>
                         </div>
 
-                        <div class="modal-body">
-                            <div data-bind="ifnot: hasAbstractFigures">
-                                <div class="form-group">
-                                    <input type="text" name="figure-caption" id="figure-caption"
-                                    maxlength="250" class="form-control input-sm" placeholder="Figure Caption (max. 250 characters)">
-                                </div>
-                                <div class="form-group">
-                                    <input type="file" name="figure-file" id="figure-file"
-                                    maxlength="100" class="form-control input-sm">
-                                </div>
-                                <div data-bind="ifnot: isAbstractSaved">
-                                    Note: the figure will be uploaded when the abstract is saved for the first time.
-                                </div>
-                            </div>
-
-                            <div data-bind="if: hasAbstractFigures">
-                                <button type="button" class="btn btn-default btn-sm pull-right"
-                                data-bind="click: $root.doRemoveFigure">
-                                    Remove
-                                </button>
-                                <div class="figure-box">
-                                    <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
-                                    <div class="figure-caption">
-                                        <span>Figure 1: </span>
-                                        <input type="text" name="figure-update-caption" id="figure-update-caption"
-                                            maxlength="250" class="form-control input-sm"
-                                            data-bind="value: abstract().figures()[0].caption, valueUpdate: 'afterkeydown'">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
 
                         <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
 
@@ -519,7 +315,7 @@
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
-                        data-toggle="modal" data-bind="click: doStartEdit">
+                        data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#topic-editor')">
                     Edit
                 </button>
             </div>
@@ -531,16 +327,7 @@
                             <h3>Set the Abstract Topic</h3>
                         </div>
 
-                        <div class="modal-body" data-bind="foreach: conference().topics">
-
-                            <div class="radio">
-                                <label>
-                                    <input type="radio" data-bind="checked: $root.editedAbstract().topic, value: $data" />
-                                    <span data-bind="text: $data"></span>
-                                </label>
-                            </div>
-
-                        </div>
+                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
 
                         <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
 
@@ -557,7 +344,7 @@
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#is-talk-editor"
-                data-toggle="modal" data-bind="click: doStartEdit">
+                data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#is-talk-editor')">
                     Edit
                 </button>
             </div>
@@ -569,26 +356,7 @@
                             <h3>Presentation Preference</h3>
                         </div>
 
-                        <div class="modal-body">
-                            <div class="radio">
-                                <label>
-                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="false"
-                                           data-bind="checked: editedAbstract().isTalk.computed">
-                                    Poster
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label>
-                                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="true"
-                                           data-bind="checked: editedAbstract().isTalk.computed">
-                                    Talk or Poster
-                                </label>
-                            </div>
-                            <div data-bind="if: editedAbstract().isTalk">
-                                <input type="text" class="form-control" placeholder="Why should this contribution be selected for an oral presentation?"
-                                       maxlength="100" data-bind="value: editedAbstract().reasonForTalk">
-                            </div>
-                        </div>
+                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
 
                         <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
 
@@ -615,6 +383,253 @@
 
     </div>
 
+    <script id="body-title-editor" type="text/html">
+        <label for="title"></label>
+        <input type="text" class="form-control" id="title" maxlength="255"
+            data-bind="value: editedAbstract().title" placeholder="Title (max. 255 characters)" />
+    </script>
+
+    <script id="body-authors-editor" type="text/html">
+        <table class="table">
+            <tbody data-bind="sortable: {data: editedAbstract().authors, as: 'person'}">
+                <tr>
+                    <td>
+                        <span class="drag-handle-icon glyphicon glyphicon-align-justify"></span>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-sm" placeholder="First Name"
+                        maxlength="100" data-bind="value: person.firstName" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-sm" placeholder="Middle Name"
+                        maxlength="100" data-bind="value: person.middleName" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-sm" placeholder="Last Name"
+                        maxlength="100" data-bind="value: person.lastName" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-sm" placeholder="Mail"
+                        maxlength="100" data-bind="value: person.mail" />
+                    </td>
+                    <td>
+                        <div class="btn-group pull-right">
+                            <button type="button" class="btn btn-default btn-sm"
+                            data-bind="click: $root.doEditRemoveAuthor.bind($root, $index, person)">
+                                Remove
+                                <span class="glyphicon glyphicon-user"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <small> Use the drag handle
+                <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder authors
+            </small>
+        </div>
+    </script>
+
+    <script id="body-affiliations-editor" type="text/html">
+        <table class="table">
+            <tbody data-bind="foreach: {data: editedAbstract().affiliations, as: 'affiliation'}">
+                <tr class="affiliation-form">
+                    <td>
+                        <input type="text" class="form-control input-sm" placeholder="Department"
+                        maxlength="100" data-bind="value: affiliation.department" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-sm" placeholder="Institute"
+                        maxlength="100" data-bind="value: affiliation.section" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-sm" placeholder="Address"
+                        maxlength="100" data-bind="value: affiliation.address" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-sm" placeholder="Country"
+                        maxlength="100" data-bind="value: affiliation.country" />
+                    </td>
+                    <td>
+                        <div class="btn-group pull-right">
+                            <button type="button" class="btn btn-default btn-sm"
+                            data-bind="click: $root.doEditRemoveAffiliation.bind($root, $index, affiliation)">
+                                Remove
+                                <span class="glyphicon glyphicon-envelope"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                    <!-- ko if: $root.getEditorAuthorsForAffiliation($index(), affiliation).length < 1 -->
+                <tr>
+                    <td colspan="5">
+                        <div class="affiliations-no-author">
+                            <span>No author assigned</span>
+                        </div>
+                    </td>
+                </tr>
+                    <!-- /ko -->
+                    <!-- ko foreach: {data: $root.getEditorAuthorsForAffiliation($index(), affiliation), as: 'author'} -->
+                <tr>
+                    <td colspan="4" data-bind="text: author.formatName()"></td>
+                    <td>
+                        <div class="btn-group pull-right">
+                            <button type="button" class="btn btn-default btn-sm"
+                            data-bind="click: $root.doEditRemoveAffiliationFromAuthor.bind($root, $parentContext.$index, author)">
+                                Remove
+                                <span class="glyphicon glyphicon-user"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                    <!-- /ko -->
+                <tr>
+                    <td></td>
+                    <td colspan="3" data-bind="attr: {id: 'author-select-' + $index()}">
+                        <select class="form-control"
+                        data-bind="options: $root.editedAbstract().indexedAuthors,
+                                                               optionsText: function(e) { return e.author.formatName(); },
+                                                               optionsValue: 'index'">
+                        </select>
+                    </td>
+                    <td>
+                        <div class="btn-group pull-right">
+                            <button type="button" class="btn btn-default btn-sm"
+                            data-bind="click: $root.doEditAddAuthorToAffiliation.bind($root, $index, affiliation)">
+                                Assign
+                                <span class="glyphicon glyphicon-user"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </script>
+
+    <script id="body-abstract-text-editor" type="text/html">
+        <textarea rows="10" class="form-control" id="text" maxlength="2000"
+        data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'">
+        </textarea>
+        <div>
+            <span>LaTeX-like equation typesetting is supported via MathJax. Use $$ and $ (inline).
+                <a target="_blank" href="http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference">Quick quide</a>
+            </span><br>
+            <span>Characters left: </span><span data-bind="text: editorTextCharactersLeft"></span>
+        </div>
+    </script>
+
+    <script id="body-acknowledgements-editor" type="text/html">
+        <textarea rows="10" class="form-control" id="text" maxlength="200"
+        data-bind="value: editedAbstract().acknowledgements, valueUpdate: 'afterkeydown'">
+        </textarea>
+        <div>
+            <span>Characters left: </span><span data-bind="text: editorAckCharactersLeft"></span>
+        </div>
+    </script>
+
+    <script id="body-references-editor" type="text/html">
+        <table class="table">
+            <tbody data-bind="sortable: {data: editedAbstract().references, as: 'reference'}">
+                <tr>
+                    <td>
+                        <span class="drag-handle-icon glyphicon glyphicon-align-justify"></span>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-sm" placeholder="Citation"
+                        maxlength="255" data-bind="value: reference.text" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-sm" placeholder="link"
+                        maxlength="255" data-bind="value: reference.link" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-sm" placeholder="DOI"
+                        maxlength="100" data-bind="value: reference.doi" />
+                    </td>
+                    <td>
+                        <div class="btn-group pull-right">
+                            <button type="button" class="btn btn-default btn-sm"
+                            data-bind="click: $root.doEditRemoveReference.bind($root, $index, reference)">
+                                Remove
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <small> Use the drag handle
+                <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder references
+            </small>
+        </div>
+    </script>
+
+    <script id="body-figure-editor" type="text/html">
+        <div data-bind="ifnot: hasAbstractFigures">
+            <div class="form-group">
+                <input type="text" name="figure-caption" id="figure-caption"
+                maxlength="250" class="form-control input-sm" placeholder="Figure Caption (max. 250 characters)">
+            </div>
+            <div class="form-group">
+                <input type="file" name="figure-file" id="figure-file"
+                maxlength="100" class="form-control input-sm">
+            </div>
+            <div data-bind="ifnot: isAbstractSaved">
+                Note: the figure will be uploaded when the abstract is saved for the first time.
+            </div>
+        </div>
+
+        <div data-bind="if: hasAbstractFigures">
+            <button type="button" class="btn btn-default btn-sm pull-right"
+            data-bind="click: $root.doRemoveFigure">
+                Remove
+            </button>
+            <div class="figure-box">
+                <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
+                <div class="figure-caption">
+                    <span>Figure 1: </span>
+                    <input type="text" name="figure-update-caption" id="figure-update-caption"
+                    maxlength="250" class="form-control input-sm"
+                    data-bind="value: abstract().figures()[0].caption, valueUpdate: 'afterkeydown'">
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="body-topic-editor" type="text/html">
+        <div data-bind="foreach: conference().topics">
+            <div class="radio">
+                <label>
+                    <input type="radio" data-bind="checked: $root.editedAbstract().topic, value: $data" />
+                    <span data-bind="text: $data"></span>
+                </label>
+            </div>
+        </div>
+    </script>
+
+    <script id="body-is-talk-editor" type="text/html">
+        <div class="radio">
+            <label>
+                <input type="radio" name="optionsRadios" id="optionsRadios1" value="false"
+                data-bind="checked: editedAbstract().isTalk.computed">
+                Poster
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="optionsRadios" id="optionsRadios2" value="true"
+                data-bind="checked: editedAbstract().isTalk.computed">
+                Talk or Poster
+            </label>
+        </div>
+        <div data-bind="if: editedAbstract().isTalk">
+            <input type="text" class="form-control" placeholder="Why should this contribution be selected for an oral presentation?"
+            maxlength="100" data-bind="value: editedAbstract().reasonForTalk">
+        </div>
+    </script>
+
+
     <!-- general footer used with all modals so far -->
     <script id="generalModalFooter" type="text/html">
         <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
@@ -625,5 +640,4 @@
             Ok
         </button>
     </script>
-
 }
