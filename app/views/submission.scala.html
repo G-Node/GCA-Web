@@ -383,6 +383,8 @@
 
     </div>
 
+
+    <!-- modal template section -->
     <script id="body-title-editor" type="text/html">
         <label for="title"></label>
         <input type="text" class="form-control" id="title" maxlength="255"
@@ -568,12 +570,12 @@
     <script id="body-figure-editor" type="text/html">
         <div data-bind="ifnot: hasAbstractFigures">
             <div class="form-group">
-                <input type="text" name="figure-caption" id="figure-caption"
-                maxlength="250" class="form-control input-sm" placeholder="Figure Caption (max. 250 characters)">
+                <input type="text" name="figure-caption" id="figure-caption" data-bind="value: newFigure.caption"
+                    maxlength="250" class="form-control input-sm" placeholder="Figure Caption (max. 250 characters)">
             </div>
             <div class="form-group">
-                <input type="file" name="figure-file" id="figure-file"
-                maxlength="100" class="form-control input-sm">
+                <input type="file" name="figure-file" id="figure-file" data-bind="event: { change: getNewFigure }"
+                    maxlength="100" class="form-control input-sm">
             </div>
             <div data-bind="ifnot: isAbstractSaved">
                 Note: the figure will be uploaded when the abstract is saved for the first time.
@@ -582,7 +584,7 @@
 
         <div data-bind="if: hasAbstractFigures">
             <button type="button" class="btn btn-default btn-sm pull-right"
-            data-bind="click: $root.doRemoveFigure">
+                data-bind="click: $root.doRemoveFigure">
                 Remove
             </button>
             <div class="figure-box">

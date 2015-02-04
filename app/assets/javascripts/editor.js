@@ -29,9 +29,16 @@ function (ko, models, tools, msg, validate, owned) {
         self.editedAbstract = ko.observable(null);
         self.originalState = ko.observable(null);
 
+        // required to set displayed modal body
         self.modalBody = ko.observable(null);
         // set default modals footer template
         self.modalFooter = ko.observable("generalModalFooter");
+
+        // only required when a new figure is added
+        self.newFigure = {
+            file: null,
+            caption: null
+        };
 
         self.isAbstractSaved = ko.computed(
             function () {
@@ -244,15 +251,20 @@ function (ko, models, tools, msg, validate, owned) {
         };
 
 
+        self.getNewFigure = function(data, event) {
+          self.newFigure.file = event.currentTarget.files[0];
+        };
+
+
         self.figureUpload = function (callback) {
 
-            var json = {caption: $("#figure-caption").val()},
-                files = $("#figure-file").get(0).files,
+            var json = {caption: self.newFigure.caption},
+                files = self.newFigure.file,
                 data = new FormData();
 
-            if (files.length > 0) {
-                var fileName = files[0].name,
-                    fileSize = files[0].size,
+            if (files) {
+                var fileName = files.name,
+                    fileSize = files.size,
                     splitted = fileName.split('.'),
                     ending = splitted[splitted.length - 1].toLowerCase();
 
@@ -266,7 +278,7 @@ function (ko, models, tools, msg, validate, owned) {
                     return;
                 }
 
-                data.append('file', files[0]);
+                data.append('file', files);
                 data.append('figure', JSON.stringify(json));
 
                 $.ajax({
@@ -284,8 +296,8 @@ function (ko, models, tools, msg, validate, owned) {
 
             function success(obj, stat, xhr) {
 
-                $("#figure-caption").val(null);
-                $("#figure-file").val(null);
+                self.newFigure.file = null;
+                self.newFigure.caption = null;
 
                 if (callback) {
                     callback(obj, stat, xhr);
@@ -350,8 +362,9 @@ function (ko, models, tools, msg, validate, owned) {
             }
 
             function success() {
-                $("#figure-caption").val(null);
-                $("#figure-file").val(null);
+                $("#figure-update-caption").val(null);
+                self.newFigure.file = null;
+                self.newFigure.caption = null;
 
                 self.requestAbstract(self.abstract().uuid);
 
@@ -424,7 +437,7 @@ function (ko, models, tools, msg, validate, owned) {
                 self.editedAbstract(self.abstract());
 
                 var hasNoFig = !self.hasAbstractFigures(),
-                    hasFigData = $("#figure-file").val() ? true : false;
+                    hasFigData = self.newFigure.file ? true : false;
 
                 if (hasNoFig && hasFigData) {
                     self.figureUpload(successFig);
@@ -474,7 +487,6 @@ function (ko, models, tools, msg, validate, owned) {
 
 
         self.doStartEdit = function (editorId) {
-            console.log(editorId);
             var ed = $(editorId).find("input").first();
             ed.focus();
 
