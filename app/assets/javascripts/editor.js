@@ -29,6 +29,22 @@ function (ko, models, tools, msg, validate, owned) {
         self.editedAbstract = ko.observable(null);
         self.originalState = ko.observable(null);
 
+        // required to set displayed modal header
+        self.modalHeader = ko.observable(null);
+        // required to set displayed modal body
+        self.modalBody = ko.observable(null);
+        // set default modals footer template
+        self.modalFooter = ko.observable("generalModalFooter");
+
+        // only required when a new figure is added
+        self.newFigure = {
+            file: null,
+            caption: null
+        };
+
+        // required to affiliate and author with a department
+        self.selectedAffiliationAuthor = 0;
+
         self.isAbstractSaved = ko.computed(
             function () {
                 return self.abstract() && self.abstract().uuid;
@@ -240,15 +256,20 @@ function (ko, models, tools, msg, validate, owned) {
         };
 
 
+        self.getNewFigure = function(data, event) {
+          self.newFigure.file = event.currentTarget.files[0];
+        };
+
+
         self.figureUpload = function (callback) {
 
-            var json = {caption: $("#figure-caption").val()},
-                files = $("#figure-file").get(0).files,
+            var json = {caption: self.newFigure.caption},
+                files = self.newFigure.file,
                 data = new FormData();
 
-            if (files.length > 0) {
-                var fileName = files[0].name,
-                    fileSize = files[0].size,
+            if (files) {
+                var fileName = files.name,
+                    fileSize = files.size,
                     splitted = fileName.split('.'),
                     ending = splitted[splitted.length - 1].toLowerCase();
 
@@ -262,7 +283,7 @@ function (ko, models, tools, msg, validate, owned) {
                     return;
                 }
 
-                data.append('file', files[0]);
+                data.append('file', files);
                 data.append('figure', JSON.stringify(json));
 
                 $.ajax({
@@ -280,8 +301,8 @@ function (ko, models, tools, msg, validate, owned) {
 
             function success(obj, stat, xhr) {
 
-                $("#figure-caption").val(null);
-                $("#figure-file").val(null);
+                self.newFigure.file = null;
+                self.newFigure.caption = null;
 
                 if (callback) {
                     callback(obj, stat, xhr);
@@ -346,8 +367,9 @@ function (ko, models, tools, msg, validate, owned) {
             }
 
             function success() {
-                $("#figure-caption").val(null);
-                $("#figure-file").val(null);
+                $("#figure-update-caption").val(null);
+                self.newFigure.file = null;
+                self.newFigure.caption = null;
 
                 self.requestAbstract(self.abstract().uuid);
 
@@ -420,7 +442,7 @@ function (ko, models, tools, msg, validate, owned) {
                 self.editedAbstract(self.abstract());
 
                 var hasNoFig = !self.hasAbstractFigures(),
-                    hasFigData = $("#figure-file").val() ? true : false;
+                    hasFigData = self.newFigure.file ? true : false;
 
                 if (hasNoFig && hasFigData) {
                     self.figureUpload(successFig);
@@ -475,6 +497,11 @@ function (ko, models, tools, msg, validate, owned) {
 
             var obj = $.extend(true, {}, self.abstract().toObject());
             self.editedAbstract(models.ObservableAbstract.fromObject(obj));
+
+            // load corresponding script for modal header
+            self.modalHeader("header-"+ editorId.replace('#',''));
+            // load corresponding script for modal body
+            self.modalBody("body-"+ editorId.replace('#',''));
         };
 
 
@@ -550,7 +577,7 @@ function (ko, models, tools, msg, validate, owned) {
          */
         self.doEditAddAuthorToAffiliation = function (index) {
             index = index();
-            var authorIndex = $("#author-select-" + index).find("select").val(),
+            var authorIndex = self.selectedAffiliationAuthor,
                 authors = self.editedAbstract().authors();
 
             if (authorIndex < 0 || authorIndex >= authors.length) {
@@ -568,6 +595,9 @@ function (ko, models, tools, msg, validate, owned) {
             } else {
                 self.setInfo("Hint", "This author is assigned to this affiliation.");
             }
+
+            // reset author select index
+            self.selectedAffiliationAuthor = 0;
         };
 
 
