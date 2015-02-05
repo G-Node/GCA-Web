@@ -1,6 +1,8 @@
-@import "base/_colors";
-@import "base/_font";
-@import "base/_classes";
+@customPath: "customLess/";
+
+@import "@{customPath}_colors";
+@import "@{customPath}_font";
+@import "@{customPath}_classes";
 
 html {
   position: relative;
@@ -8,7 +10,7 @@ html {
 }
 
 body {
-  font-family: @family-sans;
+  font-family: @font-family-sans-serif;
   color: @color-fg;
   background-color: @color-bg;
   padding-top: 20px;
@@ -47,7 +49,6 @@ body {
   background-color: @color-bg;
 }
 
-
 .separator {
   border: none;
   height: 1px;
@@ -55,13 +56,11 @@ body {
   background-color: @color-grey-dark;
 }
 
-
 .header {
   .std-gap;
 }
 
 #abstract-list {
-
   margin-top: 0.5em;
 
   a {
@@ -76,15 +75,11 @@ body {
 }
 
 #abstract-list-item {
-
   a {
     display: block;
   }
 
   .abstract {
-
-
-
     .sortId {
       float: right;
       width: 5em;
@@ -112,8 +107,6 @@ body {
       .enum-with-comma;
     }
   }
-
-
 }
 
 #abstract-list-item:hover {
@@ -123,21 +116,17 @@ body {
 }
 
 #abstract {
-
   .pager {
     .no-gap;
   }
 
   .title {
     .small-gap;
-
   }
 
   .authors {
-
     .small-gap;
     .enum-with-comma;
-
   }
 
   .affiliations {
@@ -159,13 +148,9 @@ body {
     }
   }
 
-  .affiliations-no-author {
-    color: @color-fg-light;
-  }
-
   .abstract-text {
     .std-gap;
-    font-family: @family-serif;
+    font-family: @font-family-serif;
     font-size: 16px;
     text-align: justify;
     min-height: 10em;
@@ -211,6 +196,7 @@ body {
       max-width: 400px;
       max-height: 300px;
     }
+
     .figure-caption {
       margin: 0.5em auto;
       display: block;
@@ -218,8 +204,6 @@ body {
       max-width: 400px;
     }
   }
-
-
 }
 
 .state-btn-group {
@@ -227,7 +211,6 @@ body {
 }
 
 .editor-box {
-
   .no-gap;
   .bordered-round(@color-bg);
 
@@ -239,9 +222,7 @@ body {
     visibility: hidden !important;
   }
 
-
   .modal-header {
-
     h3 {
       margin: 4px 0 0 0;
       padding: 0;
@@ -272,7 +253,6 @@ body {
       margin-right: 6px;
     }
   }
-
 
   .title {
     h2:empty::after {
@@ -332,17 +312,14 @@ body {
       content: "7. You have the option to include one image with your abstract. This image should be in one of the formats GIF, JPG, or PNG and should be at least 700 pixels wide and no larger than 5MB.";
     }
   }
-
 }
 
 .editor-box.editable:hover {
-
   .bordered-round;
 
   .btn-group-hover {
     visibility: visible !important;
   }
-
 }
 
 .hidden-data {
@@ -358,7 +335,6 @@ body {
 }
 
 .drag-handle-icon {
-
   .gray-icon;
 
   text-align: center;
@@ -373,13 +349,8 @@ body {
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
   }
-
 }
 
-.conference-thumbnail {
-  width: 64px;
-  height: 64px;
-}
 
 // admin area related things
 .admin-form {

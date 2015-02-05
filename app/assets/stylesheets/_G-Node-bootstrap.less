@@ -1,0 +1,64 @@
+// file used for local compilation of G-Node-bootstrap.css using e.g. lessc
+
+// adjust this to the path where the original bootstrap less files are located
+@bootPath: "../bootstrap-3.3.1/less/";
+// adjust this to the path where the custom less files are located
+@customPath: "customLess/bootstrap/";
+
+// Core variables and mixins
+@import "@{bootPath}variables.less";
+@import "@{bootPath}mixins.less";
+
+// Custom variables, overwrite existing bootstrap variables
+@import "@{customPath}_custom-colors";
+@import "@{customPath}_custom-vars";
+
+// Reset and dependencies
+@import "@{bootPath}normalize";
+@import "@{bootPath}print";
+@import "@{bootPath}glyphicons";
+
+// Core CSS
+@import "@{bootPath}scaffolding";
+@import "@{bootPath}type";
+@import "@{bootPath}code";
+@import "@{bootPath}grid";
+@import "@{bootPath}tables";
+@import "@{bootPath}forms";
+@import "@{bootPath}buttons";
+
+// Components
+@import "@{bootPath}component-animations";
+@import "@{bootPath}dropdowns";
+@import "@{bootPath}button-groups";
+@import "@{bootPath}input-groups";
+@import "@{bootPath}navs";
+@import "@{bootPath}navbar";
+@import "@{bootPath}breadcrumbs";
+@import "@{bootPath}pagination";
+@import "@{bootPath}pager";
+@import "@{bootPath}labels";
+@import "@{bootPath}badges";
+@import "@{bootPath}jumbotron";
+@import "@{bootPath}thumbnails";
+@import "@{bootPath}alerts";
+@import "@{bootPath}progress-bars";
+@import "@{bootPath}media";
+@import "@{bootPath}list-group";
+@import "@{bootPath}panels";
+@import "@{bootPath}responsive-embed";
+@import "@{bootPath}wells";
+@import "@{bootPath}close";
+
+// Components w/ JavaScript
+@import "@{bootPath}modals";
+@import "@{bootPath}tooltip";
+@import "@{bootPath}popovers";
+@import "@{bootPath}carousel";
+
+// Utility classes
+@import "@{bootPath}utilities";
+@import "@{bootPath}responsive-utilities";
+
+// Custom elements
+@import "@{customPath}_custom-elements";

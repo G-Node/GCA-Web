@@ -1,0 +1,72 @@
+.footer {
+	padding: 15px;
+	padding-top: 25px;
+	margin-top: 15px;
+	margin-bottom: 15px;
+
+	.container & {
+		border-radius: @border-radius-base; // Only round corners at higher resolutions if contained in a container
+	}
+
+	background-color: @color-light-gray;
+	color: @color-dark-gray;
+
+	dt {
+		margin-bottom: @padding-base-vertical;
+	}
+
+	a {
+		color: @color-dark-gray;
+		&:hover,
+		&:focus {
+			color: darken( @color-dark-gray, 13%);
+			text-decoration: none;
+		}
+	}
+}
+
+/* Side notes for calling out things
+-------------------------------------------------- */
+
+/* Base styles (regardless of theme) */
+.callout {
+	margin: 20px 0;
+	padding: 15px 30px 15px 15px;
+	border-left: 5px solid #eee;
+	h1, h2, h3, h4, h5, h6 {
+		margin-top: 0;
+	}
+	p:last-child {
+		margin-bottom: 0;
+	}
+	code, .highlight {
+		background-color: #fff;
+		white-space: pre-wrap;
+	}
+}
+
+/* Themes for different contexts */
+.callout-danger {
+	.callout;
+	background-color: lighten(@color-grapefruit, 30%);
+	border-color: @color-grapefruit-dark;
+}
+
+.callout-warning {
+	.callout;
+	background-color: lighten(@color-sunflower, 30%);
+	border-color: @color-sunflower-dark;
+}
+
+.callout-info {
+	.callout;
+	background-color: lighten(@color-aqua, 30%);
+	border-color: @color-aqua-dark;
+}
+
+.callout-success {
+	.callout;
+	background-color: lighten(@color-grass, 30%);
+	border-color: @color-grass-dark;
+}
+
