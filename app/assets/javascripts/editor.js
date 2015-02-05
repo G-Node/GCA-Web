@@ -81,20 +81,6 @@ function (ko, models, tools, msg, validate, owned) {
             self
         );
 
-        self.showButtonSave = ko.computed(
-            function () {
-                if (self.abstract()) {
-                    var saved = self.isAbstractSaved(),
-                        state = self.originalState();
-
-                    return !saved || !state || state === 'InPreparation' || state === 'InRevision';
-                } else {
-                    return false;
-                }
-            },
-            self
-        );
-
         self.showButtonSubmit = ko.computed(
             function () {
                 if (self.abstract()) {

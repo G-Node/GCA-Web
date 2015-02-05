@@ -23,7 +23,7 @@
 
     <div class="header">
         <div class="pull-right state-btn-group">
-            <span data-bind="if: showButtonSave">
+            <span data-bind="ifnot: isAbstractSaved">
                 <button type="button" class="btn btn-success" data-bind="click: doSaveAbstract">
                     Save
                 </button>
