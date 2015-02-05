@@ -198,7 +198,8 @@ function (ko, models, tools, msg, validate, owned) {
                 type: "GET",
                 success: success,
                 error: fail,
-                dataType: "json"
+                dataType: "json",
+                cache: false
             });
 
             function success(obj) {
@@ -220,7 +221,8 @@ function (ko, models, tools, msg, validate, owned) {
                 type: "GET",
                 success: success,
                 error: fail,
-                dataType: "json"
+                dataType: "json",
+                cache: false
             });
 
             function success(obj) {
@@ -271,7 +273,8 @@ function (ko, models, tools, msg, validate, owned) {
                     processData: false,
                     contentType: false,
                     success: success,
-                    error: fail
+                    error: fail,
+                    cache: false
                 });
             }
 
@@ -307,7 +310,8 @@ function (ko, models, tools, msg, validate, owned) {
                     dataType: "json",
                     data: figure.toJSON(),
                     processData: false,
-                    error: fail
+                    error: fail,
+                    cache: false
                 });
 
             } else {
@@ -334,7 +338,8 @@ function (ko, models, tools, msg, validate, owned) {
                     type: 'DELETE',
                     dataType: "json",
                     success: success,
-                    error: fail
+                    error: fail,
+                    cache: false
                 })
             } else {
                 self.setWarning("Error", "Unable to delete figure: abstract has no figure", true);
@@ -387,7 +392,8 @@ function (ko, models, tools, msg, validate, owned) {
                     error: fail,
                     contentType: "application/json",
                     dataType: "json",
-                    data: abstract.toJSON()
+                    data: abstract.toJSON(),
+                    cache: false
                 });
 
             } else if (confId) {
@@ -400,7 +406,8 @@ function (ko, models, tools, msg, validate, owned) {
                     error: fail,
                     contentType: "application/json",
                     dataType: "json",
-                    data: abstract.toJSON()
+                    data: abstract.toJSON(),
+                    cache: false
                 });
 
             } else {
