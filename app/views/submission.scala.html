@@ -58,7 +58,7 @@
 
     <!-- display submission information -->
     <span data-bind="if: showEditButton">
-        <div class="alert alert-info fade in out">
+        <div class="alert alert-info alert-text-only">
             <ul>
                 <span data-bind="ifnot: isAbstractSaved">
                     <li>Click the <b>Save</b> button once to save your abstract. Subsequent changes are saved automatically.</li>
@@ -73,7 +73,7 @@
         </div>
     </span>
     <span data-bind="ifnot: showEditButton">
-        <div class="alert alert-danger fade in out">
+        <div class="alert alert-danger alert-text-only">
             <ul>
                 <li>Submitted abstracts can be modified until the deadline.<br/>
                     To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract. Don't forget to re-submit after editing.</li>
