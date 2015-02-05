@@ -89,19 +89,7 @@
                 </button>
             </div>
 
-            <div class="modal" id="title-editor" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Enter a Title</h3>
-                        </div>
-
-                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
-
-                        <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
-                    </div>
-                </div>
-            </div>
+            <div class="modal" id="title-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div  class="title">
                 <h2 data-bind="text: abstract().title"></h2>
@@ -109,7 +97,6 @@
         </div>
 
         <div class="editor-box" data-bind="css: {editable: isChangeOk}">
-
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal"
                         data-bind="click: doStartEdit.bind($root, '#authors-editor')">
@@ -117,25 +104,7 @@
                 </button>
             </div>
 
-            <div class="modal" id="authors-editor" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: doEditAddAuthor">
-                                Add
-                                <span class="glyphicon glyphicon-user"></span>
-                            </button>
-
-                            <h3>Edit Authors</h3>
-                        </div>
-
-                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
-
-                        <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
-
-                    </div>
-                </div>
-            </div>
+            <div class="modal" id="authors-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div class="authors">
                 <ul data-bind="foreach: abstract().authors">
@@ -152,25 +121,7 @@
                 </button>
             </div>
 
-            <div class="modal" id="affiliations-editor" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: doEditAddAffiliation">
-                                Add
-                                <span class="glyphicon glyphicon-envelope"></span>
-                            </button>
-
-                            <h3>Edit Affiliations</h3>
-                        </div>
-
-                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
-
-                        <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
-
-                    </div>
-                </div>
-            </div>
+            <div class="modal" id="affiliations-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div class="affiliations">
                 <ol data-bind="foreach: abstract().affiliations">
@@ -188,20 +139,7 @@
                 </button>
             </div>
 
-            <div class="modal" id="abstract-text-editor" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Enter the Abstract Text</h3>
-                        </div>
-
-                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
-
-                        <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
-
-                    </div>
-                </div>
-            </div>
+            <div class="modal" id="abstract-text-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div class="abstract-text" data-bind="foreach: {data: abstract().paragraphs(), as: 'p'}">
                 <p data-bind="text: p"></p>
@@ -216,20 +154,7 @@
                 </button>
             </div>
 
-            <div class="modal" id="acknowledgements-editor" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Enter Acknowledgements Text</h3>
-                        </div>
-
-                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
-
-                        <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
-
-                    </div>
-                </div>
-            </div>
+            <div class="modal" id="acknowledgements-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div class="acknowledgements">
                 <h4>Acknowledgements</h4>
@@ -245,26 +170,7 @@
                 </button>
             </div>
 
-            <div class="modal" id="references-editor" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-
-                        <div class="modal-header">
-                            <button type="button" class="btn btn-default btn-sm pull-right"
-                                    data-bind="click: doEditAddReference">
-                                Add
-                            </button>
-
-                            <h3>References</h3>
-                        </div>
-
-                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
-
-                        <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
-
-                    </div>
-                </div>
-            </div>
+            <div class="modal" id="references-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div class="references">
                 <h4>References</h4>
@@ -282,20 +188,7 @@
                 </button>
             </div>
 
-            <div class="modal" id="figure-editor" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Add a Figure</h3>
-                        </div>
-
-                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
-
-                        <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
-
-                    </div>
-                </div>
-            </div>
+            <div class="modal" id="figure-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div class="figure">
                 <h4>Figure</h4>
@@ -320,20 +213,7 @@
                 </button>
             </div>
 
-            <div class="modal" id="topic-editor" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Set the Abstract Topic</h3>
-                        </div>
-
-                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
-
-                        <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
-
-                    </div>
-                </div>
-            </div>
+            <div class="modal" id="topic-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div class="topic">
                 <h4>Topic</h4>
@@ -349,20 +229,7 @@
                 </button>
             </div>
 
-            <div class="modal" id="is-talk-editor" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Presentation Preference</h3>
-                        </div>
-
-                        <div class="modal-body" data-bind="template: { name: modalBody }"></div>
-
-                        <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
-
-                    </div>
-                </div>
-            </div>
+            <div class="modal" id="is-talk-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div class="poster-or-talk">
                 <h4>Presentation Preference</h4>
@@ -384,13 +251,39 @@
     </div>
 
 
-    <!-- modal template section -->
+    <!-- modal main template -->
+    <script id="modalDialog" type="text/html">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" data-bind="template: { name: modalHeader }"></div>
+
+                <div class="modal-body" data-bind="template: { name: modalBody }"></div>
+
+                <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
+            </div>
+        </div>
+    </script>
+
+    <!-- modal header and body template section -->
+    <!-- title templates -->
+    <script id="header-title-editor" type="text/html">
+        <h3>Enter a Title</h3>
+    </script>
     <script id="body-title-editor" type="text/html">
         <label for="title"></label>
         <input type="text" class="form-control" id="title" maxlength="255"
             data-bind="value: editedAbstract().title" placeholder="Title (max. 255 characters)" />
     </script>
 
+    <!-- authors templates -->
+    <script id="header-authors-editor" type="text/html">
+        <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: doEditAddAuthor">
+            Add
+            <span class="glyphicon glyphicon-user"></span>
+        </button>
+
+        <h3>Edit Authors</h3>
+    </script>
     <script id="body-authors-editor" type="text/html">
         <table class="table">
             <tbody data-bind="sortable: {data: editedAbstract().authors, as: 'person'}">
@@ -433,6 +326,15 @@
         </div>
     </script>
 
+    <!-- affiliations templates -->
+    <script id="header-affiliations-editor" type="text/html">
+        <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: doEditAddAffiliation">
+            Add
+            <span class="glyphicon glyphicon-envelope"></span>
+        </button>
+
+        <h3>Edit Affiliations</h3>
+    </script>
     <script id="body-affiliations-editor" type="text/html">
         <table class="table">
             <tbody data-bind="foreach: {data: editedAbstract().affiliations, as: 'affiliation'}">
@@ -510,6 +412,10 @@
         </table>
     </script>
 
+    <!-- abstract text templates -->
+    <script id="header-abstract-text-editor" type="text/html">
+        <h3>Enter the Abstract Text</h3>
+    </script>
     <script id="body-abstract-text-editor" type="text/html">
         <textarea rows="10" class="form-control" id="text" maxlength="2000"
         data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'">
@@ -522,6 +428,10 @@
         </div>
     </script>
 
+    <!-- acknowledgements templates -->
+    <script id="header-acknowledgements-editor" type="text/html">
+        <h3>Enter Acknowledgements Text</h3>
+    </script>
     <script id="body-acknowledgements-editor" type="text/html">
         <textarea rows="10" class="form-control" id="text" maxlength="200"
         data-bind="value: editedAbstract().acknowledgements, valueUpdate: 'afterkeydown'">
@@ -531,6 +441,15 @@
         </div>
     </script>
 
+    <!-- references templates -->
+    <script id="header-references-editor" type="text/html">
+        <button type="button" class="btn btn-default btn-sm pull-right"
+            data-bind="click: doEditAddReference">
+            Add
+        </button>
+
+        <h3>References</h3>
+    </script>
     <script id="body-references-editor" type="text/html">
         <table class="table">
             <tbody data-bind="sortable: {data: editedAbstract().references, as: 'reference'}">
@@ -568,6 +487,10 @@
         </div>
     </script>
 
+    <!-- figure templates -->
+    <script id="header-figure-editor" type="text/html">
+        <h3>Add a Figure</h3>
+    </script>
     <script id="body-figure-editor" type="text/html">
         <div data-bind="ifnot: hasAbstractFigures">
             <div class="form-group">
@@ -600,6 +523,10 @@
         </div>
     </script>
 
+    <!-- topic templates -->
+    <script id="header-topic-editor" type="text/html">
+        <h3>Set the Abstract Topic</h3>
+    </script>
     <script id="body-topic-editor" type="text/html">
         <div data-bind="foreach: conference().topics">
             <div class="radio">
@@ -611,6 +538,10 @@
         </div>
     </script>
 
+    <!-- poster/talk templates -->
+    <script id="header-is-talk-editor" type="text/html">
+        <h3>Presentation Preference</h3>
+    </script>
     <script id="body-is-talk-editor" type="text/html">
         <div class="radio">
             <label>

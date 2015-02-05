@@ -29,6 +29,8 @@ function (ko, models, tools, msg, validate, owned) {
         self.editedAbstract = ko.observable(null);
         self.originalState = ko.observable(null);
 
+        // required to set displayed modal header
+        self.modalHeader = ko.observable(null);
         // required to set displayed modal body
         self.modalBody = ko.observable(null);
         // set default modals footer template
@@ -496,7 +498,9 @@ function (ko, models, tools, msg, validate, owned) {
             var obj = $.extend(true, {}, self.abstract().toObject());
             self.editedAbstract(models.ObservableAbstract.fromObject(obj));
 
-            // ensure correct script for modal body is loaded
+            // load corresponding script for modal header
+            self.modalHeader("header-"+ editorId.replace('#',''));
+            // load corresponding script for modal body
             self.modalBody("body-"+ editorId.replace('#',''));
         };
 
