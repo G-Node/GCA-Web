@@ -1,0 +1,43 @@
+@import "_custom-fonts.less";
+
+//** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+@font-family-monospace: Menlo, Monaco, Consolas, "Courier New", monospace;
+@font-family-base: @font-family-sans-serif;
+
+//brand colors
+@brand-primary: @color-bccn-3; //@color-blue-sky;
+@brand-success: @color-grass-dark;
+@brand-info: @color-aqua-dark;
+@brand-warning: @color-sunflower-dark;
+@brand-danger: @color-grapefruit-dark;
+
+//container size
+@container-large-desktop: @container-desktop;
+
+//navbar
+@navbar-default-color: #777;
+@navbar-default-bg: @brand-primary;
+@navbar-default-border: darken(@navbar-default-bg, 6.5%);
+
+// Navbar links
+@navbar-default-link-color: @color-light-gray;
+@navbar-default-link-hover-color: @color-light-gray-dark;
+@navbar-default-link-hover-bg: darken(@navbar-default-bg, 6.5%);
+@navbar-default-link-active-color: @color-light-gray-dark;
+@navbar-default-link-active-bg: darken(@navbar-default-bg, 6.5%);
+@navbar-default-link-disabled-color: darken(@navbar-default-bg, 6.5%);
+@navbar-default-link-disabled-bg: transparent;
+
+// Navbar brand label
+@navbar-default-brand-color: @navbar-default-link-color;
+@navbar-default-brand-hover-color: darken(@navbar-default-brand-color, 10%);
+@navbar-default-brand-hover-bg: transparent;
+
+// Navbar toggle
+@navbar-default-toggle-hover-bg: @color-light-gray;
+@navbar-default-toggle-icon-bar-bg: #888;
+@navbar-default-toggle-border-color: @color-light-gray;
+
+//pager
+@pager-border-radius: 0px;
+
