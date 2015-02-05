@@ -60,7 +60,12 @@
     <span data-bind="if: showEditButton">
         <div class="alert alert-info fade in out">
             <ul>
-                <li>Click the <b>Save</b> button to save new information or any changes to your abstract.</li>
+                <span data-bind="ifnot: isAbstractSaved">
+                    <li>Click the <b>Save</b> button once to save your abstract. Subsequent changes are saved automatically.</li>
+                </span>
+                <span data-bind="if: isAbstractSaved">
+                    <li>All changes to the abstract are saved automatically.</li>
+                </span>
                 <li>After entering all information, click the <b>Submit</b> button to submit your abstract.</li>
                 <li>Submitted abstracts can be modified until the deadline.<br/>
                     To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract. Don't forget to re-submit after editing.</li>
