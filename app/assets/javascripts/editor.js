@@ -81,20 +81,6 @@ function (ko, models, tools, msg, validate, owned) {
             self
         );
 
-        self.showButtonSave = ko.computed(
-            function () {
-                if (self.abstract()) {
-                    var saved = self.isAbstractSaved(),
-                        state = self.originalState();
-
-                    return !saved || !state || state === 'InPreparation' || state === 'InRevision';
-                } else {
-                    return false;
-                }
-            },
-            self
-        );
-
         self.showButtonSubmit = ko.computed(
             function () {
                 if (self.abstract()) {
@@ -132,13 +118,13 @@ function (ko, models, tools, msg, validate, owned) {
         );
 
         // hide edit buttons, if the abstract is in any state other
-        // than "inPreparation" or if its not a new submission
+        // than "InPreparation" or "InRevision"
         self.showEditButton = ko.computed(
             function () {
                 var saved = self.isAbstractSaved(),
                     state = self.originalState();
 
-                return !saved || (!state || state === 'InPreparation');
+                return !saved || (!state || state === 'InPreparation' || state === 'InRevision');
             },
             self
         );

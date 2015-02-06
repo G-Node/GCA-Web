@@ -23,7 +23,7 @@
 
     <div class="header">
         <div class="pull-right state-btn-group">
-            <span data-bind="if: showButtonSave">
+            <span data-bind="ifnot: isAbstractSaved">
                 <button type="button" class="btn btn-success" data-bind="click: doSaveAbstract">
                     Save
                 </button>
@@ -58,9 +58,14 @@
 
     <!-- display submission information -->
     <span data-bind="if: showEditButton">
-        <div class="alert alert-info fade in out">
+        <div class="alert alert-info alert-text-only">
             <ul>
-                <li>Click the <b>Save</b> button to save new information or any changes to your abstract.</li>
+                <span data-bind="ifnot: isAbstractSaved">
+                    <li>Click the <b>Save</b> button once to save your abstract. Subsequent changes are saved automatically.</li>
+                </span>
+                <span data-bind="if: isAbstractSaved">
+                    <li>All changes to the abstract are saved automatically.</li>
+                </span>
                 <li>After entering all information, click the <b>Submit</b> button to submit your abstract.</li>
                 <li>Submitted abstracts can be modified until the deadline.<br/>
                     To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract. Don't forget to re-submit after editing.</li>
@@ -68,7 +73,7 @@
         </div>
     </span>
     <span data-bind="ifnot: showEditButton">
-        <div class="alert alert-danger fade in out">
+        <div class="alert alert-danger alert-text-only">
             <ul>
                 <li>Submitted abstracts can be modified until the deadline.<br/>
                     To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract. Don't forget to re-submit after editing.</li>
