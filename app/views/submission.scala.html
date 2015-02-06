@@ -5,6 +5,7 @@
     <div class="hidden-data">
         <div id="conference-uuid">@conference.uuid</div>
         <div id="abstract_uuid">@abstr.map(_.uuid).getOrElse("")</div>
+        <div id="isadmin">@account.isAdmin</div>
     </div>
 
     <script data-main="@routes.Assets.at("javascripts/editor.js")"

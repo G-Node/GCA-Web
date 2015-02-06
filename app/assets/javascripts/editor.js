@@ -9,13 +9,14 @@ function (ko, models, tools, msg, validate, owned) {
      *
      * @param confId
      * @param abstrId
+     * @param isAdmin
      * @returns {EditorViewModel}
      * @constructor
      */
-    function EditorViewModel(confId, abstrId) {
+    function EditorViewModel(confId, abstrId, isAdmin) {
 
         if (! (this instanceof EditorViewModel)) {
-            return new EditorViewModel(confId, abstrId);
+            return new EditorViewModel(confId, abstrId, isAdmin);
         }
 
         var self = tools.inherit(this, msg.MessageVM);
@@ -133,12 +134,14 @@ function (ko, models, tools, msg, validate, owned) {
 
         // hide edit buttons, if the abstract is in any state other
         // than "inPreparation" or if its not a new submission
+        // but enable it for admins when the abstract is in the 'InRevision' state
         self.showEditButton = ko.computed(
             function () {
                 var saved = self.isAbstractSaved(),
                     state = self.originalState();
 
-                return !saved || (!state || state === 'InPreparation');
+                return !saved || (!state || state === 'InPreparation') ||
+                    (!state || state === 'InRevision' && isAdmin === 'true');
             },
             self
         );
@@ -643,8 +646,9 @@ function (ko, models, tools, msg, validate, owned) {
 
         console.log(data["conferenceUuid"]);
         console.log(data["abstractUuid"]);
+        console.log(data["isadmin"]);
 
-        window.editor = EditorViewModel(data["conferenceUuid"], data["abstractUuid"]);
+        window.editor = EditorViewModel(data["conferenceUuid"], data["abstractUuid"], data["isadmin"]);
         window.editor.init();
     });
 
