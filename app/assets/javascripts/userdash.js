@@ -4,17 +4,17 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
 
 
     /**
-     * AbstractList view model.
+     * UserDash view model.
      *
      *
-     * @param confId
-     * @returns {AbstractListViewModel}
+     * @param isAdmin
+     * @returns {UserDashViewModel}
      * @constructor
      */
-    function UserDashViewModel() {
+    function UserDashViewModel(isAdmin) {
 
         if (!(this instanceof UserDashViewModel)) {
-            return new UserDashViewModel();
+            return new UserDashViewModel(isAdmin);
         }
 
         var self = this;
@@ -84,7 +84,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
 
                         abstr.viewEditCtx = ko.computed(function () {
                             var confIsOpen = currentConf.isOpen;
-                            var canEdit = abstr.state == "InRevision" ||
+                            var canEdit = (abstr.state == "InRevision" && isAdmin === 'true') ||
                                 (confIsOpen && (abstr.state == "InPreparation" ||
                                 abstr.state == "Submitted" ||
                                 abstr.state == "Withdrawn"));
@@ -121,8 +121,9 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
 
         var data = tools.hiddenData();
 
+        console.log(data["isadmin"]);
 
-        window.dashboard = UserDashViewModel();
+        window.dashboard = UserDashViewModel(data["isadmin"]);
         window.dashboard.init();
     });
 
