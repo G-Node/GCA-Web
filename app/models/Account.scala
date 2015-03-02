@@ -35,8 +35,8 @@ class Account extends Model {
   @ManyToMany(mappedBy = "owners")
   var conferences: JSet[Conference] = new JTreeSet[Conference]()
 
-  @OneToMany(mappedBy = "account", cascade = Array(CascadeType.ALL), fetch = FetchType.LAZY)
-  var logins: JSet[Login] = new JTreeSet[Login]()
+  @OneToMany(mappedBy = "account", cascade = Array(CascadeType.ALL))
+  var logins: JSet[CredentialsLogin] = new JTreeSet[CredentialsLogin]()
 
   def isAdmin = {
     val admins = current.configuration.getStringList("admins").get
@@ -66,8 +66,7 @@ object Account {
 }
 
 
-@Entity
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@MappedSuperclass
 abstract class Login extends Model with Identity {
 
   @ManyToOne

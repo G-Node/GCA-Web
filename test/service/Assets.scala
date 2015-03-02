@@ -331,7 +331,7 @@ class Assets() {
       em.createQuery("DELETE FROM Abstract").executeUpdate()
       em.createQuery("DELETE FROM Topic").executeUpdate()
       em.createQuery("DELETE FROM Conference").executeUpdate()
-      em.createQuery("DELETE FROM Login").executeUpdate()
+      em.createQuery("DELETE FROM CredentialsLogin").executeUpdate()
       em.createQuery("DELETE FROM Account").executeUpdate()
     }
   }

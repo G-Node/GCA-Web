@@ -45,7 +45,7 @@ class LoginStore extends IdentityService[Login] {
 
     val login = query { em =>
       val queryStr =
-        """SELECT DISTINCT l FROM Login l
+        """SELECT DISTINCT l FROM CredentialsLogin l
            LEFT JOIN FETCH l.account a
            WHERE LOWER(a.mail) = LOWER(:email)"""
 
@@ -70,7 +70,7 @@ class CredentialsStore extends DelegableAuthInfoDAO[PasswordInfo] {
 
     val info = query { em =>
       val queryStr =
-        """SELECT DISTINCT l FROM Login l
+        """SELECT DISTINCT l FROM CredentialsLogin l
            LEFT JOIN FETCH l.account a
            WHERE LOWER(a.mail) = LOWER(:email)"""
 
