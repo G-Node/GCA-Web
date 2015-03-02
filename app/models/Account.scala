@@ -9,75 +9,13 @@
 
 package models
 
-import com.mohiva.play.silhouette.core.providers.{PasswordInfo, CredentialsProvider}
-import play.api.Play.current
-import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
-import com.mohiva.play.silhouette.core.{LoginInfo, Identity}
 
-@Embeddable
-class PwInfo {
-  var hasher: String = _
-  var password: String = _
-  var salt: String = _
-}
-
-object PwInfo {
-
-  def apply(h: String,
-            pw: String,
-            s: Option[String]) : PwInfo = {
-    val info: PwInfo = new PwInfo()
-
-    info.hasher = h
-    info.password = pw
-    info.salt = s match {
-      case Some(saltz) => saltz
-      case _           => null
-    }
-
-    info
-  }
-}
-
-@Embeddable
-class OpenAuth1Info {
-  var token: String = _
-  var secret: String = _
-}
-
-object OpenAuth1Info {
-  def apply(t: String, s: String) : OpenAuth1Info = {
-    val info: OpenAuth1Info = new OpenAuth1Info()
-    info.token  = t
-    info.secret = s
-
-    info
-  }
-}
-
-@Embeddable
-class OpenAuth2Info {
-  var accessToken: String = _
-  var tokenType: String = _
-  var expiresIn: Integer = _
-  var refreshToken: String = _
-}
-
-object OpenAuth2Info {
-  def apply(accessToken: String, tokenType: Option[String],
-            expiresIn: Option[Int], refreshToken: Option[String]) : OpenAuth2Info = {
-    val info: OpenAuth2Info = new OpenAuth2Info()
-    info.accessToken  = accessToken
-    info.tokenType    = Model.unwrapRef(tokenType)
-    info.expiresIn    = expiresIn match { case Some(i) => i; case _ => null }
-    info.refreshToken = Model.unwrapRef(refreshToken)
-
-    info
-  }
-
-}
+import com.mohiva.play.silhouette.core.providers.PasswordInfo
+import com.mohiva.play.silhouette.core.{Identity, LoginInfo}
+import models.Model._
+import play.api.Play.current
 
 /**
  * Model class for accounts.
@@ -97,8 +35,7 @@ class Account extends Model {
   @ManyToMany(mappedBy = "owners")
   var conferences: JSet[Conference] = new JTreeSet[Conference]()
 
-  @OneToMany(cascade = Array(CascadeType.ALL), fetch = FetchType.LAZY)
-  @JoinColumn(name= "account_uuid")
+  @OneToMany(mappedBy = "account", cascade = Array(CascadeType.ALL), fetch = FetchType.LAZY)
   var logins: JSet[Login] = new JTreeSet[Login]()
 
   def isAdmin = {
@@ -130,10 +67,7 @@ object Account {
 
 
 @Entity
-@Table(name="Login")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="TYPE", discriminatorType=DiscriminatorType.STRING,length=20)
-@DiscriminatorValue("Base")
 abstract class Login extends Model with Identity {
 
   @ManyToOne
@@ -142,14 +76,13 @@ abstract class Login extends Model with Identity {
 
 
 @Entity
-@DiscriminatorValue("Credentials")
 class CredentialsLogin extends Login {
-
-  override def loginInfo: LoginInfo = new LoginInfo("credentials", account.mail)
 
   var hasher: String = _
   var password: String = _
   var salt: String = _
+
+  override def loginInfo: LoginInfo = new LoginInfo("credentials", account.mail)
 
 }
 
