@@ -6,6 +6,7 @@ import com.mohiva.play.silhouette.contrib.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.core.LoginInfo
 import com.mohiva.play.silhouette.core.providers.PasswordInfo
 import com.mohiva.play.silhouette.core.services.IdentityService
+import com.mohiva.play.silhouette.core.utils.PasswordHasher
 import models.{Account, CredentialsLogin, Login}
 import plugins.DBUtil._
 
@@ -13,7 +14,7 @@ import scala.collection.JavaConversions._
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
-class AccountStore {
+class AccountStore(val pwHasher: PasswordHasher) {
 
   def get(id: String ) : Account = {
     query { em =>
@@ -54,10 +55,26 @@ class AccountStore {
 
   }
 
-  def create(account: Account): Account = {
+  def create(account: Account, plainPassword : Option[String] = None): Account = {
     val created = transaction { (em, tx) =>
-      // TODO check for existing account
+      val queryStr =
+        """SELECT DISTINCT a FROM Account a
+           LEFT JOIN FETCH a.logins l
+           WHERE LOWER(a.mail) = LOWER(:email)"""
+
+      val query: TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
+      query.setParameter("email", account.mail)
+
+      val existing = query.getResultList
+      if (! existing.isEmpty)
+        throw new RuntimeException(s"An account with '${account.mail}' already exists!")
+
       account.logins.clear()
+
+      plainPassword.foreach { pw =>
+        account.logins.add(CredentialsLogin(pwHasher.hash(pw), Some(account)))
+      }
+
       em.merge(account)
     }
 
