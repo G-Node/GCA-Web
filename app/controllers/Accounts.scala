@@ -1,16 +1,12 @@
 package controllers
 
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
-import com.mohiva.play.silhouette.contrib.utils.BCryptPasswordHasher
-import com.mohiva.play.silhouette.core.{LoginInfo, Silhouette}
-import conf.{Global, GlobalEnvironment}
+import com.mohiva.play.silhouette.core.Silhouette
+import conf.GlobalEnvironment
 import forms.{SignInForm, SignUpForm}
 import models._
 import play.api.mvc.Action
-import service.{AccountStore, CredentialsStore}
-
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
+import service.AccountStore
 
 /**
  * Controller serving login and sign up pages.
@@ -18,8 +14,7 @@ import scala.concurrent.duration.Duration
 class Accounts(implicit val env: GlobalEnvironment)
   extends Silhouette[Login, CachedCookieAuthenticator] {
 
-  val accountService = new AccountStore()
-  val pwHasher = new BCryptPasswordHasher()
+  val accountService = new AccountStore(env.pwHasher)
 
   def logIn = UserAwareAction { implicit request =>
 
@@ -46,20 +41,12 @@ class Accounts(implicit val env: GlobalEnvironment)
   }
 
   def create = Action { implicit request =>
-    SignUpForm.form.fold(
-      invalid => {
-        BadRequest(views.html.signup(invalid))
-      },
+    SignUpForm.form.bindFromRequest.fold (
+      invalid => BadRequest(views.html.signup(invalid)),
       ok => {
         try {
-          val account = accountService.create(Account(null, ok.email, ok.firstName, ok.lastName, None))
-
-          val loginInfo = LoginInfo(env.credentialsProvider.id, account.mail)
-          val pwInfo = env.pwHasher.hash(ok.password)
-
-          val pwStored = Await.result(env.authInfoService.save(loginInfo, pwInfo), Duration.Inf)
-
-          Ok("fixme")
+          accountService.create(Account(null, ok.email, ok.firstName, ok.lastName, None), Some(ok.password))
+          Redirect(routes.Application.conferences()) // TODO success message
         } catch {
           case e: Throwable => Redirect(routes.Accounts.signUp()).flashing("error" -> e.getMessage)
         }
