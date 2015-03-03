@@ -23,6 +23,7 @@ import play.api.Play.current
 @Entity
 class Account extends Model {
 
+  @Column(unique = true)
   var mail: String = _
   var firstName: String = _
   var lastName: String = _
@@ -59,6 +60,29 @@ object Account {
 
     account.conferences = toJSet(conferences)
     account.abstracts   = toJSet(abstracts)
+
+    account
+  }
+
+  def apply(uuid: String,
+            mail: String,
+            firstName: String,
+            lastName: String,
+            fullName: Option[String]) : Account = {
+
+    val account = new Account()
+
+    account.uuid        = uuid
+    account.mail        = mail
+    account.firstName   = firstName
+    account.lastName    = lastName
+    account.fullName = fullName match {
+      case Some(name) => name
+      case _ => s"$firstName $lastName"
+    }
+
+    account.conferences = toJSet(Nil)
+    account.abstracts   = toJSet(Nil)
 
     account
   }
