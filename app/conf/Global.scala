@@ -3,18 +3,13 @@ package conf
 import java.lang.reflect.Constructor
 import javax.persistence.{EntityNotFoundException, NoResultException}
 
-import com.mohiva.play.silhouette.contrib.services.{CachedCookieAuthenticator, CachedCookieAuthenticatorService, CachedCookieAuthenticatorSettings, DelegableAuthInfoService}
-import com.mohiva.play.silhouette.contrib.utils.{BCryptPasswordHasher, PlayCacheLayer, SecureRandomIDGenerator}
-import com.mohiva.play.silhouette.core.providers.CredentialsProvider
-import com.mohiva.play.silhouette.core.services.{AuthenticatorService, IdentityService}
-import com.mohiva.play.silhouette.core.utils.Clock
-import com.mohiva.play.silhouette.core.{Environment, EventBus, Provider, SecuredSettings}
+import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
+import com.mohiva.play.silhouette.core.{Environment, SecuredSettings}
 import models.Login
 import play.api._
 import play.api.libs.json.{JsError, JsResultException, Json}
 import play.api.mvc.Results._
 import play.api.mvc._
-import service.{CredentialsStore, LoginStore}
 
 import scala.concurrent.Future
 
@@ -56,39 +51,14 @@ object Global extends GlobalSettings with SecuredSettings {
   }
 
   import play.api.Play.current
-
-  lazy val idGenerator = new SecureRandomIDGenerator()
-  lazy val cacheLayer = new PlayCacheLayer
-  lazy val authInfoService = new DelegableAuthInfoService(new CredentialsStore())
-  lazy val pwHasher = new BCryptPasswordHasher()
-  lazy val credentialsProvider = new CredentialsProvider(authInfoService, pwHasher, Seq(pwHasher))
-
-  object GlobalEnv extends Environment[Login, CachedCookieAuthenticator] {
-    override lazy val identityService: IdentityService[Login] = new LoginStore
-
-    override lazy val authenticatorService: AuthenticatorService[CachedCookieAuthenticator] = {
-      new CachedCookieAuthenticatorService(CachedCookieAuthenticatorSettings(
-        cookieName = Play.configuration.getString("silhouette.authenticator.cookieName").getOrElse("id"),
-        cookiePath = Play.configuration.getString("silhouette.authenticator.cookiePath").getOrElse("/"),
-        cookieDomain = Play.configuration.getString("silhouette.authenticator.cookieDomain"),
-        secureCookie = Play.configuration.getBoolean("silhouette.authenticator.secureCookie").getOrElse(false),
-        httpOnlyCookie = Play.configuration.getBoolean("silhouette.authenticator.httpOnlyCookie").getOrElse(true),
-        cookieIdleTimeout = Play.configuration.getInt("silhouette.authenticator.cookieIdleTimeout").getOrElse(1800),
-        cookieAbsoluteTimeout = Play.configuration.getInt("silhouette.authenticator.cookieAbsoluteTimeout"),
-        authenticatorExpiry = Play.configuration.getInt("silhouette.authenticator.authenticatorExpiry").getOrElse(43200)
-      ), cacheLayer, idGenerator, Clock())
-    }
-
-    override lazy val providers: Map[String, Provider] = Map(credentialsProvider.id -> credentialsProvider)
-    override lazy val eventBus: EventBus = new EventBus
-  }
+  lazy val globalEnv = new GlobalEnvironment()
 
   override def getControllerInstance[A](controllerClass: Class[A]): A = {
     val instance = controllerClass.getConstructors.find { c =>
       val params = c.getParameterTypes
-      params.length == 1 && params(0) == classOf[Environment[Login, CachedCookieAuthenticator]]
+      params.length == 1 && classOf[Environment[Login, CachedCookieAuthenticator]].isAssignableFrom(params(0))
     }.map {
-      _.asInstanceOf[Constructor[A]].newInstance(GlobalEnv)
+      _.asInstanceOf[Constructor[A]].newInstance(globalEnv)
     }
     instance.getOrElse(super.getControllerInstance(controllerClass))
   }
