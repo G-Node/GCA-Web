@@ -1,14 +1,12 @@
 package controllers.api
 
+import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
+import com.mohiva.play.silhouette.core.{Environment, Silhouette}
+import models._
 import play.api.libs.json._
-import play.api.mvc._
+import service.AccountStore
 import utils.DefaultRoutesResolver._
 import utils.serializer.AccountFormat
-import models._
-import service.AccountStore
-
-import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
-import com.mohiva.play.silhouette.core.{Silhouette, Environment}
 
 /**
  * Accounts controller.
@@ -22,17 +20,21 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
   val accountStore = new AccountStore()
 
   /**
-   * Searches for available accounts by email (can be several due to OAuth).
+   * Searches for available accounts by email.
    *
    * @param email an e-mail to search
    *
    * @return Ok with all accounts that match.
    */
   def accountsByEmail(email: String) = SecuredAction { implicit request =>
-    val accounts = accountStore.findByEmail(email)
-    Ok(JsArray(
-      for (acc <- accounts) yield accountFormat.writes(acc)
-    ))
+    // TODO since email is unique this could be a single result
+    val accounts = try {
+      Seq(accountStore.getByMail(email))
+    } catch {
+      case e: Throwable => Seq[Account]()
+    }
+
+    Ok(Json.toJson(accounts))
   }
 
   def listAccounts() = SecuredAction { implicit request =>
