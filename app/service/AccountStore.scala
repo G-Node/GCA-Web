@@ -55,7 +55,7 @@ class AccountStore {
   }
 
   def create(account: Account): Account = {
-    def created = transaction { (em, tx) =>
+    val created = transaction { (em, tx) =>
       // TODO check for existing account
       account.logins.clear()
       em.merge(account)
@@ -65,8 +65,8 @@ class AccountStore {
   }
 
   def update(account: Account): Account = {
-    def updated = transaction { (em, tx) =>
-      def accountCecked = get(account.uuid)
+    val updated = transaction { (em, tx) =>
+      val accountCecked = get(account.uuid)
 
       // prevent update of logins (this may not be necessary)
       account.logins = accountCecked.logins
@@ -78,7 +78,7 @@ class AccountStore {
 
   def delete(account: Account): Unit = {
     transaction { (em, tx) =>
-      def accountCecked = em.find(classOf[Account], account.uuid)
+      val accountCecked = em.find(classOf[Account], account.uuid)
 
       accountCecked.logins.foreach(em.remove(_))
       em.remove(accountCecked)
