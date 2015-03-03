@@ -56,7 +56,7 @@ object Global extends GlobalSettings with SecuredSettings {
   override def getControllerInstance[A](controllerClass: Class[A]): A = {
     val instance = controllerClass.getConstructors.find { c =>
       val params = c.getParameterTypes
-      params.length == 1 && params(0) == classOf[Environment[Login, CachedCookieAuthenticator]]
+      params.length == 1 && classOf[Environment[Login, CachedCookieAuthenticator]].isAssignableFrom(params(0))
     }.map {
       _.asInstanceOf[Constructor[A]].newInstance(globalEnv)
     }
