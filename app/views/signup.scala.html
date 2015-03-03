@@ -9,7 +9,7 @@
   <fieldset class="col-md-6 col-md-offset-3">
     <legend>Register an account</legend>
 
-    @helper.form(action = routes.Accounts.signUp()) {
+    @helper.form(action = routes.Accounts.create()) {
 
       @text(form("firstName"), "First name", icon = "person")
       @text(form("lastName"), "Last name", icon = "person")
