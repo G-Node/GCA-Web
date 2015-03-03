@@ -21,15 +21,18 @@ object Global extends GlobalSettings with SecuredSettings {
 
   override def onError(request: RequestHeader, ex: Throwable): Future[Result] = {
     Future.successful {
-      if (acceptsJson(request))
+      if (returnAsJson(request))
         exHandlerJSON(ex)
       else
         exHandlerHTML(ex)
     }
   }
 
-  def acceptsJson(request: RequestHeader) : Boolean = {
-    request.accepts("application/json") || request.accepts("text/json")
+  def returnAsJson(request: RequestHeader) : Boolean = {
+    // Browsers send */* in the accept header therefore the path is
+    // probably the best way for us to determine whether to serve json.
+    // Any better idea is very wellcome.
+    request.path.startsWith("/api/")
   }
 
   def exHandlerHTML(e: Throwable) : Result = {
