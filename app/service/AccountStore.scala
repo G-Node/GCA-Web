@@ -115,7 +115,7 @@ class CredentialsStore extends DelegableAuthInfoDAO[PasswordInfo] {
 
   override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
     Try {
-      query { em =>
+      transaction { (em, tx) =>
         val queryStr =
           """SELECT DISTINCT l FROM CredentialsLogin l
              LEFT JOIN FETCH l.account a

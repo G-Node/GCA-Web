@@ -4,13 +4,14 @@ import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.contrib.utils.BCryptPasswordHasher
 import com.mohiva.play.silhouette.core.{LoginInfo, Silhouette}
 import conf.GlobalEnvironment
-import forms.{SignInForm, SignUpForm}
+import forms.{ResetPasswordForm, SignInForm, SignUpForm}
 import models._
 import play.api.mvc.Action
 import service.AccountStore
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
+import scala.concurrent.{Future, Await}
+import scala.concurrent.duration._
+import scala.util.Success
 
 
 /**
@@ -37,23 +38,22 @@ class Accounts(implicit val env: GlobalEnvironment)
     }
   }
 
-  /*
-  def passwordReset = SecuredAction { implicit request =>
-    request.method() match {
-      case "GET" => Ok(views.html.passwordreset(ResetPasswordForm.passwordsForm))
-      case "POST" => {
-        ResetPasswordForm.passwordsForm.bindFromRequest.fold(
-          formWithErrors => Ok(views.html.passwordreset(formWithErrors)),
-          passwords => {
-
-          }
-        )
-      }
-    }
-
-
+  def passwordResetPage = SecuredAction { implicit request =>
+    Ok(views.html.passwordreset(ResetPasswordForm.passwordsForm))
   }
-  */
+
+  def passwordResetCommit = SecuredAction { implicit request =>
+    ResetPasswordForm.passwordsForm.bindFromRequest.fold(
+      formWithErrors => Ok(views.html.passwordreset(formWithErrors)),
+      passwords => {
+        val loginInfo = LoginInfo(env.credentialsProvider.id, request.identity.account.mail)
+        val pwInfo = env.pwHasher.hash(passwords._1)
+
+        Await.result(env.authInfoService.save(loginInfo, pwInfo), 5 seconds)
+        Redirect(routes.Application.index()).flashing("success" -> "Password successfully changed")
+      }
+    )
+  }
 
   def logOut = SecuredAction { implicit request =>
     val result = Redirect(routes.Application.index)

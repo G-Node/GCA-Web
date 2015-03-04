@@ -76,3 +76,5 @@ GET           /signup                                         @controllers.Accou
 POST          /signup                                         @controllers.Accounts.create
 GET           /logout                                         @controllers.Accounts.logOut
 GET           /notauthenticated                               @controllers.Accounts.notAuthenticated
+GET           /password                                       @controllers.Accounts.passwordResetPage
+POST          /password                                       @controllers.Accounts.passwordResetCommit
