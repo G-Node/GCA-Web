@@ -1,12 +1,16 @@
 package controllers
 
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
-import com.mohiva.play.silhouette.core.Silhouette
+import com.mohiva.play.silhouette.core.{LoginInfo, Silhouette}
 import conf.GlobalEnvironment
-import forms.{SignInForm, SignUpForm}
+import forms.{ResetPasswordForm, SignInForm, SignUpForm}
 import models._
 import play.api.mvc.Action
 import service.AccountStore
+
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
 
 /**
  * Controller serving login and sign up pages.
@@ -29,6 +33,23 @@ class Accounts(implicit val env: GlobalEnvironment)
       case Some(user) => Redirect(routes.Application.index())
       case _ => Ok(views.html.signup(SignUpForm.form))
     }
+  }
+
+  def passwordResetPage = SecuredAction { implicit request =>
+    Ok(views.html.passwordreset(ResetPasswordForm.passwordsForm))
+  }
+
+  def passwordResetCommit = SecuredAction { implicit request =>
+    ResetPasswordForm.passwordsForm.bindFromRequest.fold(
+      formWithErrors => Ok(views.html.passwordreset(formWithErrors)),
+      passwords => {
+        val loginInfo = LoginInfo(env.credentialsProvider.id, request.identity.account.mail)
+        val pwInfo = env.pwHasher.hash(passwords._1)
+
+        Await.result(env.authInfoService.save(loginInfo, pwInfo), 5 seconds)
+        Redirect(routes.Application.index()).flashing("success" -> "Password successfully changed")
+      }
+    )
   }
 
   def logOut = SecuredAction { implicit request =>

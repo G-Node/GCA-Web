@@ -1,6 +1,10 @@
-@(account: Option[Account], conferences: Seq[Conference], current: Option[Conference])
+@(account: Option[Account], conferences: Seq[Conference], current: Option[Conference])(implicit request: RequestHeader)
+
+@import views.html.bootstrap._
 
 @template(account, current, "conference") {
+
+    @flash(request)
 
     @if(current.isDefined) {
         @defining(current.get) { current =>
