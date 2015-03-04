@@ -1,6 +1,6 @@
 package controllers
 
-import com.mohiva.play.silhouette.core.exceptions.AuthenticationException
+import com.mohiva.play.silhouette.core.exceptions.{AccessDeniedException, AuthenticationException}
 import service.LoginStore
 
 import scala.concurrent.Future
@@ -43,7 +43,11 @@ class Authentication(implicit val env: Environment[Login, CachedCookieAuthentica
           case None => throw new AuthenticationException("Authenticator error")
         }
         case None => Future.failed(new AuthenticationException("Invalid user"))
-      }.recoverWith(exceptionHandler)
+      }
+    }.recover {
+      case ex: AccessDeniedException => {
+        Redirect(routes.Accounts.logIn()).flashing("error" -> "Wrong user name or password")
+      }
     }
   }
 
