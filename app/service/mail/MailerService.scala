@@ -2,30 +2,33 @@ package service.mail
 
 import models.Account
 import play.api.Play.current
-import com.typesafe.plugin._
+import play.api.libs.mailer.{MailerPlugin, Email}
 
 
 class MailerService {
 
-  val mailer: MailerPlugin = use[MailerPlugin]
   val from: String = current.configuration.getString("smtp.from").get
 
   def sendPasswordReset(account: Account, password: String, loginUrl: String): Unit = {
-    val mail = mailer.email
+    val mail = Email(
+      subject = "Reset password",
+      from = from,
+      to = Seq(account.mail),
+      bodyText = Some(views.html.mail.pwreset(account, password, loginUrl).toString())
+    )
 
-    mail.setFrom(from)
-    mail.setRecipient(account.mail)
-    mail.setSubject("Please confirm your registration")
-    mail.send(views.html.mail.pwreset(account, password, loginUrl).toString())
+    MailerPlugin.send(mail)
   }
 
   def sendConfirmation(account: Account, tokenUrl: String): Unit = {
-    val mail = mailer.email
+    val mail = Email(
+      subject = "Please confirm your registration",
+      from = from,
+      to = Seq(account.mail),
+      bodyText = Some(views.html.mail.confirmation(account, tokenUrl).toString())
+    )
 
-    mail.setFrom(from)
-    mail.setRecipient(account.mail)
-    mail.setSubject("Please confirm your registration")
-    mail.send(views.html.mail.confirmation(account, tokenUrl).toString())
+    MailerPlugin.send(mail)
   }
 
 }
