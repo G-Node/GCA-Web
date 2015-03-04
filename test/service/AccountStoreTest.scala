@@ -2,6 +2,7 @@ package service
 
 import javax.persistence.NoResultException
 
+import com.mohiva.play.silhouette.contrib.utils.BCryptPasswordHasher
 import com.mohiva.play.silhouette.core.LoginInfo
 import models.Account
 import org.junit.{AfterClass, Before, BeforeClass, Test}
@@ -28,7 +29,7 @@ class AccountStoreTest extends JUnitSuite {
     assets = new Assets()
     assets.killDB()
     assets.fillDB()
-    store = new AccountStore()
+    store = new AccountStore(new BCryptPasswordHasher())
   }
 
 

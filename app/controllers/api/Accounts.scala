@@ -2,6 +2,7 @@ package controllers.api
 
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.core.{Environment, Silhouette}
+import conf.GlobalEnvironment
 import models._
 import play.api.libs.json._
 import service.AccountStore
@@ -12,12 +13,12 @@ import utils.serializer.AccountFormat
  * Accounts controller.
  * Manages HTTP request logic for accounts.
  */
-class Accounts(implicit val env: Environment[Login, CachedCookieAuthenticator])
+class Accounts(implicit val env: GlobalEnvironment)
 extends Silhouette[Login, CachedCookieAuthenticator] {
 
   implicit val accountFormat = new AccountFormat()
 
-  val accountStore = new AccountStore()
+  val accountStore = new AccountStore(env.pwHasher)
 
   /**
    * Searches for available accounts by email.
