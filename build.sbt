@@ -14,7 +14,7 @@ libraryDependencies ++= Seq(
   ws,
   "org.scalatest" %% "scalatest" % "2.2.1",
   "org.eclipse.persistence" % "org.eclipse.persistence.jpa" % "2.5.2",
-  "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.0",
+  "com.typesafe.play" %% "play-mailer" % "2.4.0",
   "com.mohiva" %% "play-silhouette" % "1.0",
   "org.postgresql" % "postgresql" % "9.3-1100-jdbc4",
   // web jars
