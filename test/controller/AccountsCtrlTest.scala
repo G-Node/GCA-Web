@@ -57,6 +57,27 @@ class AccountsCtrlTest extends BaseCtrlTest {
     assert(contentType(reqAuthResult) == Some("application/json"))
   }
 
+  @Test
+  def testPasswordReset(): Unit = {
+    val reqNoAuth = FakeRequest(GET, "/password")
+
+    var response = route(AccountsCtrlTest.app, reqNoAuth).get
+    assert(status(response) == UNAUTHORIZED)
+
+    val newpass = "foofoofoo"
+    val body = "password1=%s&password2=%s".format(newpass, newpass)
+    val postR = FakeRequest(POST, "/password").withCookies(cookie)
+      .withFormUrlEncodedBody("password1" -> newpass, "password2" -> newpass)
+
+    response = route(AccountsCtrlTest.app, postR).get
+    assert(status(response) == SEE_OTHER || status(response) == OK)
+
+    val new_cookie = getCookie(assets.alice, newpass)
+
+    val reqAuth = reqNoAuth.withCookies(new_cookie)
+    response = route(AccountsCtrlTest.app, reqAuth).get
+    assert(status(response) == OK)
+  }
 }
 
 
