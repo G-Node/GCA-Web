@@ -71,6 +71,17 @@ class RoutesResolver {
   def conferenceUrl(id: String) = {
     new URL(baseUrl + s"/api/conferences/$id")
   }
+
+  /**
+   * Builds an URL to the the account activation
+   *
+   * @param token The token used to activate the account
+   *
+   * @return URL for the activation
+   */
+  def activationUrl(token: String) = {
+    new URL(baseUrl + s"/activate/$token")
+  }
 }
 
 object DefaultRoutesResolver {

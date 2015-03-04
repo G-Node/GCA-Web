@@ -10,12 +10,17 @@ import com.mohiva.play.silhouette.core.services.IdentityService
 import com.mohiva.play.silhouette.core.utils.PasswordHasher
 import models.{Account, CredentialsLogin, Login}
 import plugins.DBUtil._
+import service.mail.MailerService
+import utils.DefaultRoutesResolver
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 class AccountStore(val pwHasher: PasswordHasher) {
+
+  val resolver = DefaultRoutesResolver.resolver
+  val mailerService = new MailerService
 
   def get(id: String, requireActive: Boolean = true) : Account = {
     query { em =>
@@ -80,6 +85,7 @@ class AccountStore(val pwHasher: PasswordHasher) {
       plainPassword.foreach { pw =>
         val token = UUID.randomUUID.toString
         account.logins.add(CredentialsLogin(pwHasher.hash(pw), isActive = false, token, account))
+        mailerService.sendConfirmation(account, resolver.activationUrl(token).toString)
       }
 
       em.merge(account)
@@ -203,7 +209,7 @@ class CredentialsStore extends DelegableAuthInfoDAO[PasswordInfo] {
         login.isActive = true
         login.token = null
 
-        em.merge[CredentialsLogin](login)
+        em.merge(login)
       }
     } match {
       case Success(login) =>
