@@ -78,3 +78,5 @@ GET           /logout                                         @controllers.Accou
 GET           /notauthenticated                               @controllers.Accounts.notAuthenticated
 GET           /password                                       @controllers.Accounts.passwordResetPage
 POST          /password                                       @controllers.Accounts.passwordResetCommit
+GET           /forgotpassword                                 @controllers.Accounts.forgotPasswordPage
+POST          /forgotpassword                                 @controllers.Accounts.forgotPasswordCommit

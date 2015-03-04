@@ -65,7 +65,6 @@ class AccountsCtrlTest extends BaseCtrlTest {
     assert(status(response) == UNAUTHORIZED)
 
     val newpass = "foofoofoo"
-    val body = "password1=%s&password2=%s".format(newpass, newpass)
     val postR = FakeRequest(POST, "/password").withCookies(cookie)
       .withFormUrlEncodedBody("password1" -> newpass, "password2" -> newpass)
 
@@ -77,6 +76,28 @@ class AccountsCtrlTest extends BaseCtrlTest {
     val reqAuth = reqNoAuth.withCookies(new_cookie)
     response = route(AccountsCtrlTest.app, reqAuth).get
     assert(status(response) == OK)
+  }
+
+  @Test
+  def testForgotPassword(): Unit = {
+    val reqNoAuth = FakeRequest(GET, "/forgotpassword")
+
+    var response = route(AccountsCtrlTest.app, reqNoAuth).get
+    assert(status(response) == OK)
+
+    val postR = FakeRequest(POST, "/forgotpassword")
+      .withFormUrlEncodedBody("email" -> "alice@foo.com")
+
+    response = route(AccountsCtrlTest.app, postR).get
+    assert(status(response) == SEE_OTHER || status(response) == OK)
+
+    try {
+      val new_cookie = getCookie(assets.alice, "testtest")
+      fail("Password was not reset properly")
+    }
+    catch {
+      case _:RuntimeException => // Expected, continue
+    }
   }
 }
 

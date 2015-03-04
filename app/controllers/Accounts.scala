@@ -1,12 +1,15 @@
 package controllers
 
+import java.util.UUID
+
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.core.{LoginInfo, Silhouette}
 import conf.GlobalEnvironment
-import forms.{ResetPasswordForm, SignInForm, SignUpForm}
+import forms.{ResetPasswordForm, SignInForm, SignUpForm, EmailForm}
 import models._
 import play.api.mvc.Action
 import service.AccountStore
+import service.mail.MailerService
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -19,6 +22,7 @@ class Accounts(implicit val env: GlobalEnvironment)
   extends Silhouette[Login, CachedCookieAuthenticator] {
 
   val accountService = new AccountStore(env.pwHasher)
+  val mailer = new MailerService
 
   def logIn = UserAwareAction { implicit request =>
 
@@ -26,6 +30,11 @@ class Accounts(implicit val env: GlobalEnvironment)
       case Some(user) => Redirect(routes.Application.index())
       case _ => Ok(views.html.login(SignInForm.form))
     }
+  }
+
+  def logOut = SecuredAction { implicit request =>
+    val result = Redirect(routes.Application.index)
+    env.authenticatorService.discard(result);
   }
 
   def signUp = UserAwareAction { implicit request =>
@@ -52,9 +61,30 @@ class Accounts(implicit val env: GlobalEnvironment)
     )
   }
 
-  def logOut = SecuredAction { implicit request =>
-    val result = Redirect(routes.Application.index)
-    env.authenticatorService.discard(result);
+  def forgotPasswordPage = UserAwareAction { implicit request =>
+    request.identity match {
+      case Some(user) => Redirect(routes.Application.index())
+      case None => Ok(views.html.forgotpassword(EmailForm.emailForm))
+    }
+  }
+
+  def forgotPasswordCommit = Action { implicit request =>
+    EmailForm.emailForm.bindFromRequest.fold (
+      formWithErrors => Ok(views.html.forgotpassword(formWithErrors)),
+      email => {
+        val account = accountService.getByMail(email)
+
+        val newpass = UUID.randomUUID.toString.substring(0, 8);
+        val loginInfo = LoginInfo(env.credentialsProvider.id, account.mail)
+        val pwInfo = env.pwHasher.hash(newpass)
+
+        mailer.sendPasswordReset(account, newpass, routes.Accounts.logIn().absoluteURL())
+
+        Await.result(env.authInfoService.save(loginInfo, pwInfo), 5 seconds)
+
+        Redirect(routes.Accounts.logIn()).flashing("success" -> "Password reset and sent to you by email")
+      }
+    )
   }
 
   def notAuthenticated = Action { implicit request =>
