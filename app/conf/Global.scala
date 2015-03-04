@@ -4,7 +4,9 @@ import java.lang.reflect.Constructor
 import javax.persistence.{EntityNotFoundException, NoResultException}
 
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
+import com.mohiva.play.silhouette.core.exceptions.AccessDeniedException
 import com.mohiva.play.silhouette.core.{Environment, SecuredSettings}
+import forms.SignInForm
 import models.Login
 import play.api._
 import play.api.libs.json.{JsError, JsResultException, Json}
@@ -15,32 +17,43 @@ import scala.concurrent.Future
 
 object Global extends GlobalSettings with SecuredSettings {
 
+  import play.api.Play.current
+  implicit lazy val globalEnv = new GlobalEnvironment()
+
   override def onHandlerNotFound(request: RequestHeader) = {
     Future.successful(NotFound(views.html.error.NotFound()))
   }
 
   override def onError(request: RequestHeader, ex: Throwable): Future[Result] = {
     Future.successful {
-      if (acceptsJson(request))
-        exHandlerJSON(ex)
+      if (returnAsJson(request))
+        exHandlerJSON(request, ex)
       else
-        exHandlerHTML(ex)
+        exHandlerHTML(request, ex)
     }
   }
 
-  def acceptsJson(request: RequestHeader) : Boolean = {
-    request.accepts("application/json") || request.accepts("text/json")
+  def returnAsJson(request: RequestHeader) : Boolean = {
+    // Browsers send */* in the accept header therefore the path is
+    // probably the best way for us to determine whether to serve json.
+    // Any better idea is very wellcome.
+    request.path.startsWith("/api/")
   }
 
-  def exHandlerHTML(e: Throwable) : Result = {
-    e match {
+  def exHandlerHTML(request: RequestHeader, ex: Throwable) : Result = {
+    ex match {
       case e: NoResultException => NotFound(views.html.error.NotFound())
-      case e: Exception => InternalServerError(views.html.error.InternalServerError(e))
+      case e: Exception => {
+        e.getCause match {
+          case cause: AccessDeniedException => Unauthorized(views.html.error.NotAuthorized())
+          case _ => InternalServerError(views.html.error.InternalServerError(e))
+        }
+      }
     }
   }
 
-  def exHandlerJSON(e: Throwable) : Result = {
-    e match {
+  def exHandlerJSON(request: RequestHeader, ex: Throwable) : Result = {
+    ex match {
       case e: NoResultException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
       case e: EntityNotFoundException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
       case e: IllegalArgumentException => BadRequest(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
@@ -49,9 +62,6 @@ object Global extends GlobalSettings with SecuredSettings {
       case e: Exception => InternalServerError(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
     }
   }
-
-  import play.api.Play.current
-  lazy val globalEnv = new GlobalEnvironment()
 
   override def getControllerInstance[A](controllerClass: Class[A]): A = {
     val instance = controllerClass.getConstructors.find { c =>
