@@ -15,6 +15,7 @@ import javax.persistence._
 import com.mohiva.play.silhouette.core.providers.PasswordInfo
 import com.mohiva.play.silhouette.core.{Identity, LoginInfo}
 import models.Model._
+import org.joda.time.LocalDateTime
 import play.api.Play.current
 
 /**
@@ -104,21 +105,42 @@ class CredentialsLogin extends Login {
   var hasher: String = _
   var password: String = _
   var salt: String = _
+  var isActive: Boolean = _
+  var token: String = _
+  var date: LocalDateTime = _
+
 
   override def loginInfo: LoginInfo = new LoginInfo("credentials", account.mail)
 
+  @PrePersist
+  override protected def beforePersist(): Unit = {
+    super.beforePersist()
+    if (date == null) {
+      date = LocalDateTime.now()
+    }
+  }
 }
 
 
 object CredentialsLogin {
 
-  def apply(passwordInfo: PasswordInfo, account: Option[Account]): CredentialsLogin = {
+  def apply(passwordInfo: PasswordInfo, isActive: Boolean, account: Account): CredentialsLogin = {
     val login = new CredentialsLogin()
 
-    login.account = unwrapRef(account)
     login.hasher = passwordInfo.hasher
     login.password = passwordInfo.password
     login.salt = unwrapRef(passwordInfo.salt)
+
+    login.isActive = isActive
+    login.account = account
+
+    login
+  }
+
+  def apply(passwordInfo: PasswordInfo, isActive: Boolean, token: String, account: Account): CredentialsLogin = {
+    val login = CredentialsLogin(passwordInfo, isActive = isActive, account)
+
+    login.token = token
 
     login
   }

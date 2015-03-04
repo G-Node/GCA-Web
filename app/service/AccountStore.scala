@@ -1,5 +1,6 @@
 package service
 
+import java.util.UUID
 import javax.persistence.{NoResultException, TypedQuery}
 
 import com.mohiva.play.silhouette.contrib.daos.DelegableAuthInfoDAO
@@ -14,6 +15,7 @@ import scala.collection.JavaConversions._
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
+// TODO check where non active accounts should be omitted
 class AccountStore(val pwHasher: PasswordHasher) {
 
   def get(id: String ) : Account = {
@@ -72,7 +74,8 @@ class AccountStore(val pwHasher: PasswordHasher) {
       account.logins.clear()
 
       plainPassword.foreach { pw =>
-        account.logins.add(CredentialsLogin(pwHasher.hash(pw), Some(account)))
+        val token = UUID.randomUUID.toString
+        account.logins.add(CredentialsLogin(pwHasher.hash(pw), isActive = false, token, account))
       }
 
       em.merge(account)
@@ -111,7 +114,7 @@ class LoginStore extends IdentityService[Login] {
       val queryStr =
         """SELECT DISTINCT l FROM CredentialsLogin l
            LEFT JOIN FETCH l.account a
-           WHERE LOWER(a.mail) = LOWER(:email)"""
+           WHERE LOWER(a.mail) = LOWER(:email) AND l.isActive = true"""
 
       val query: TypedQuery[CredentialsLogin] = em.createQuery(queryStr, classOf[CredentialsLogin])
       query.setParameter("email", loginInfo.providerKey)
@@ -165,7 +168,7 @@ class CredentialsStore extends DelegableAuthInfoDAO[PasswordInfo] {
         val queryStr =
           """SELECT DISTINCT l FROM CredentialsLogin l
              LEFT JOIN FETCH l.account a
-             WHERE LOWER(a.mail) = LOWER(:email)"""
+             WHERE LOWER(a.mail) = LOWER(:email) AND l.isActive = true"""
 
         val query: TypedQuery[CredentialsLogin] = em.createQuery(queryStr, classOf[CredentialsLogin])
         query.setParameter("email", loginInfo.providerKey)
