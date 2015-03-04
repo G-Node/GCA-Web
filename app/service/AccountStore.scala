@@ -15,18 +15,18 @@ import scala.collection.JavaConversions._
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
-// TODO check where non active accounts should be omitted
 class AccountStore(val pwHasher: PasswordHasher) {
 
-  def get(id: String ) : Account = {
+  def get(id: String, requireActive: Boolean = true) : Account = {
     query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Account a
            LEFT JOIN FETCH a.logins l
-           WHERE a.uuid = :uuid"""
+           WHERE a.uuid = :uuid AND (l.isActive = true OR :require = false)"""
 
       val query: TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
       query.setParameter("uuid", id)
+      query.setParameter("require", requireActive)
 
       query.getSingleResult
     }
@@ -37,7 +37,7 @@ class AccountStore(val pwHasher: PasswordHasher) {
       val queryStr =
         """SELECT DISTINCT a FROM Account a
            LEFT JOIN FETCH a.logins l
-           WHERE LOWER(a.mail) = LOWER(:email)"""
+           WHERE LOWER(a.mail) = LOWER(:email) AND l.isActive = true"""
 
       val query: TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
       query.setParameter("email", mail)
@@ -48,9 +48,12 @@ class AccountStore(val pwHasher: PasswordHasher) {
 
   def list(): Seq[Account] = {
     query { em =>
-      val builder = em.getCriteriaBuilder
-      val criteria = builder.createQuery(classOf[Account])
-      val query = em.createQuery(criteria)
+      val queryStr =
+        """SELECT DISTINCT a FROM Account a
+           LEFT JOIN a.logins l
+           WHERE l.isActive = true"""
+
+      val query: TypedQuery[Account] = em.createQuery(queryStr, classOf[Account])
 
       asScalaBuffer(query.getResultList)
     }
@@ -69,6 +72,7 @@ class AccountStore(val pwHasher: PasswordHasher) {
 
       val existing = query.getResultList
       if (! existing.isEmpty)
+        // TODO define a better exception and forward the user to the reset pw page
         throw new RuntimeException(s"An account with '${account.mail}' already exists!")
 
       account.logins.clear()
@@ -81,7 +85,7 @@ class AccountStore(val pwHasher: PasswordHasher) {
       em.merge(account)
     }
 
-    get(created.uuid)
+    get(created.uuid, requireActive = false)
   }
 
   def update(account: Account): Account = {
@@ -162,7 +166,6 @@ class CredentialsStore extends DelegableAuthInfoDAO[PasswordInfo] {
   }
 
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
-
     Try {
       query { em =>
         val queryStr =
@@ -181,6 +184,32 @@ class CredentialsStore extends DelegableAuthInfoDAO[PasswordInfo] {
         case e: NoResultException => Future.successful(None)
         case _ => Future.failed(e)
       }
+    }
+  }
+
+  def activate(token: String): Future[PasswordInfo] = {
+    Try {
+      transaction { (em, tx) =>
+        val queryStr =
+          """SELECT DISTINCT l FROM CredentialsLogin l
+             LEFT JOIN FETCH l.account a
+             WHERE l.token = :token"""
+
+        val query: TypedQuery[CredentialsLogin] = em.createQuery(queryStr, classOf[CredentialsLogin])
+        query.setParameter("token", token)
+
+        val login = query.getSingleResult
+
+        login.isActive = true
+        login.token = null
+
+        em.merge[CredentialsLogin](login)
+      }
+    } match {
+      case Success(login) =>
+        Future.successful(PasswordInfo(login.hasher, login.password, Option(login.salt)))
+      case Failure(e) =>
+        Future.failed(e)
     }
   }
 

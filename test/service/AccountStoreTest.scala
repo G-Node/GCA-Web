@@ -4,16 +4,21 @@ import javax.persistence.NoResultException
 
 import com.mohiva.play.silhouette.contrib.utils.BCryptPasswordHasher
 import com.mohiva.play.silhouette.core.LoginInfo
-import models.Account
+import models.{CredentialsLogin, Account}
 import org.junit.{AfterClass, Before, BeforeClass, Test}
 import org.scalatest.junit.JUnitSuite
 import play.api.Play
 import play.api.test.FakeApplication
+import scala.collection.JavaConversions._
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+
 
 class AccountStoreTest extends JUnitSuite {
 
   var assets: Assets = _
-  var store: AccountStore = _
+  var accountStore: AccountStore = _
+  var credentialStore: CredentialsStore = _
 
 
   val existingAccountList = List (
@@ -29,34 +34,35 @@ class AccountStoreTest extends JUnitSuite {
     assets = new Assets()
     assets.killDB()
     assets.fillDB()
-    store = new AccountStore(new BCryptPasswordHasher())
+    accountStore = new AccountStore(new BCryptPasswordHasher())
+    credentialStore = new CredentialsStore()
   }
 
 
   @Test
   def testGet(): Unit = {
     for (account <- assets.accounts) {
-      val result = store.get(account.uuid)
+      val result = accountStore.get(account.uuid)
       assert(result.uuid == account.uuid)
     }
 
-    intercept[NoResultException](store.get("doesNotExist"))
+    intercept[NoResultException](accountStore.get("doesNotExist"))
   }
 
   @Test
   def testFindByEmail(): Unit =  {
     for (id <- existingAccountList) {
-      val account = store.getByMail(id.providerKey)
+      val account = accountStore.getByMail(id.providerKey)
       assert(account.mail.equalsIgnoreCase(id.providerKey))
     }
 
-    intercept[NoResultException](store.getByMail("notindb@forsure.com"))
+    intercept[NoResultException](accountStore.getByMail("notindb@forsure.com"))
   }
 
   @Test
   def testList(): Unit = {
 
-    val l = store.list()
+    val l = accountStore.list()
 
     assert(l.size == assets.accounts.size)
 
@@ -67,19 +73,28 @@ class AccountStoreTest extends JUnitSuite {
 
   @Test
   def testCreate(): Unit = {
-
     val accountNew = Account(null, "newuser@bar.com", "New", "User", None)
-    val accountCreated = store.create(accountNew)
+    val accountCreated = accountStore.create(accountNew, Some("testtest"))
 
     assert(accountCreated.uuid != null)
+    assert(accountCreated.logins.size() == 1)
+    assert(accountCreated.logins.forall {
+        case l: CredentialsLogin => ! l.isActive
+        case _ => true
+      }
+    )
     assert(accountNew.mail.equalsIgnoreCase(accountCreated.mail))
 
-    var accountRetrieved = store.get(accountCreated.uuid)
+    accountCreated.logins.foreach {
+      case l: CredentialsLogin => Await.result(credentialStore.activate(l.token), Duration.Inf)
+    }
+
+    var accountRetrieved = accountStore.get(accountCreated.uuid)
 
     assert(accountRetrieved.uuid != null)
     assert(accountNew.mail.equalsIgnoreCase(accountRetrieved.mail))
 
-    accountRetrieved = store.getByMail(accountNew.mail)
+    accountRetrieved = accountStore.getByMail(accountNew.mail)
 
     assert(accountRetrieved.uuid != null)
     assert(accountNew.mail.equalsIgnoreCase(accountRetrieved.mail))
@@ -94,7 +109,7 @@ class AccountStoreTest extends JUnitSuite {
     alice.lastName = "Schwarzer"
     alice.fullName = "Alice Sophie Schwarzer"
 
-    val aliceUpdated = store.update(alice)
+    val aliceUpdated = accountStore.update(alice)
 
     assert(aliceUpdated.firstName == "Alice")
     assert(aliceUpdated.lastName == "Schwarzer")
@@ -102,13 +117,13 @@ class AccountStoreTest extends JUnitSuite {
 
     val accountNew = Account(null, "newuser@bar.com", "New", "User", None)
 
-    intercept[NoResultException](store.update(accountNew))
+    intercept[NoResultException](accountStore.update(accountNew))
   }
 
   @Test
   def testDelete(): Unit = {
-    store.delete(assets.alice)
-    intercept[NoResultException](store.get(assets.alice.uuid))
+    accountStore.delete(assets.alice)
+    intercept[NoResultException](accountStore.get(assets.alice.uuid))
   }
 
 }
