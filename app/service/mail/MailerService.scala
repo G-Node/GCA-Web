@@ -30,5 +30,4 @@ class MailerService {
 
     MailerPlugin.send(mail)
   }
-
 }
