@@ -6,7 +6,6 @@ import javax.persistence.{EntityNotFoundException, NoResultException}
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.core.exceptions.AccessDeniedException
 import com.mohiva.play.silhouette.core.{Environment, SecuredSettings}
-import forms.SignInForm
 import models.Login
 import play.api._
 import play.api.libs.json.{JsError, JsResultException, Json}
@@ -25,6 +24,7 @@ object Global extends GlobalSettings with SecuredSettings {
   }
 
   override def onError(request: RequestHeader, ex: Throwable): Future[Result] = {
+    Logger.error(s"Error occurred on ${request.path}", ex)
     Future.successful {
       if (returnAsJson(request))
         exHandlerJSON(request, ex)
