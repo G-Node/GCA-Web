@@ -74,6 +74,7 @@ POST          /authenticate/:provider                         @controllers.Authe
 GET           /login                                          @controllers.Accounts.logIn
 GET           /signup                                         @controllers.Accounts.signUp
 POST          /signup                                         @controllers.Accounts.create
+GET           /activate/:token                                @controllers.Accounts.activate(token: String)
 GET           /logout                                         @controllers.Accounts.logOut
 GET           /notauthenticated                               @controllers.Accounts.notAuthenticated
 GET           /password                                       @controllers.Accounts.passwordResetPage

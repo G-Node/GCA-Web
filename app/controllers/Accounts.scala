@@ -1,19 +1,20 @@
 package controllers
 
 import java.util.UUID
+import javax.persistence.NoResultException
 
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.core.{LoginInfo, Silhouette}
 import conf.GlobalEnvironment
-import forms.{ResetPasswordForm, SignInForm, SignUpForm, EmailForm}
+import forms.{EmailForm, ResetPasswordForm, SignInForm, SignUpForm}
 import models._
 import play.api.mvc.Action
-import service.AccountStore
 import service.mail.MailerService
+import service.{AccountStore, CredentialsStore}
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration._
-
 
 /**
  * Controller serving login and sign up pages.
@@ -23,7 +24,8 @@ class Accounts(implicit val env: GlobalEnvironment)
 
   val accountService = new AccountStore(env.pwHasher)
   val mailer = new MailerService
-
+  val credentialStore = new CredentialsStore()
+  
   def logIn = UserAwareAction { implicit request =>
 
     request.identity match {
@@ -103,6 +105,15 @@ class Accounts(implicit val env: GlobalEnvironment)
         }
       }
     )
+  }
+
+  def activate(token: String) = Action.async { implicit request =>
+    credentialStore.activate(token).map { pwInfo =>
+      Redirect(routes.Accounts.logIn()).flashing("info" -> "You successfully activated your account")
+    }.recover {
+      case ex : NoResultException =>
+        NotFound(views.html.error.NotFound())
+    }
   }
 
 }
