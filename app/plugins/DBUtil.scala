@@ -12,8 +12,6 @@ import play.api.Logger._
 class DBUtil(implicit app: Application) extends Plugin {
 
   private lazy val emf = Persistence.createEntityManagerFactory(DBUtil.DEFAULT_UNIT)
-  private lazy val tlem = new ThreadLocalEM
-
 
   override def onStart(): Unit = {
     info("DBUtil: activating  plugin")
@@ -21,16 +19,8 @@ class DBUtil(implicit app: Application) extends Plugin {
 
 
   override def onStop(): Unit = {
+    emf.close()
     info("DBUtil: stopping  plugin")
-  }
-
-  /**
-   * Get a thread local entity manager.
-   *
-   * @return An entity manager that is always the same for each thread.
-   */
-  def threadLocalEM : EntityManager = {
-    tlem.get()
   }
 
   /**
@@ -42,41 +32,11 @@ class DBUtil(implicit app: Application) extends Plugin {
     emf.createEntityManager()
   }
 
-
-  /**
-   * ThreadLocal implementation for EntityManager
-   */
-  private class ThreadLocalEM extends ThreadLocal[EntityManager] {
-
-    override def initialValue(): EntityManager = {
-      emf.createEntityManager()
-    }
-
-    override def set(value: EntityManager): Unit = {
-      val curr = get()
-      if (curr.isOpen)
-        curr.close()
-
-      super.set(value)
-    }
-
-    override def remove(): Unit = {
-      val curr = get()
-      if (curr.isOpen)
-        curr.close()
-
-      super.remove()
-    }
-  }
-
 }
 
 object DBUtil {
 
-  val DEFAULT_UNIT = Play.current.configuration.getString("jpa.default") match {
-    case Some(unit) => unit
-    case None => "defaultPersistenceUnit"
-  }
+  val DEFAULT_UNIT = Play.current.configuration.getString("jpa.default").getOrElse("defaultPersistenceUnit")
 
   /**
    * Get the plugin instance from the play runtime
