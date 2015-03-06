@@ -35,16 +35,16 @@ define(["lib/tools"], function (tools) {
      * @returns {Result} The validation result.
      */
     function validateAbstract(abstract) {
-        var abstractResults = validate(
-                abstract,
-                must("title", notNothing, "The abstract has no title"),
-                should("authors", notEmpty, "No authors are defined for this abstract"),
-                should("text", notNothing, "The abstract contains no text"),
-                should("topic", notNothing, "No topic selected for the abstract")
-            ),
-            authorResults = validateAuthor(abstract.authors);
-
-        return abstractResults.concat(authorResults);
+        return validate(
+            abstract,
+            must("title", notNothing, "The abstract has no title"),
+            should("authors", notEmpty, "No authors are defined for this abstract"),
+            should("authors", useAllAffiliations(getVal(abstract, "affiliations")), "Some affiliations are not used"),
+            should("text", notNothing, "The abstract contains no text"),
+            should("topic", notNothing, "No topic selected for the abstract")
+        ).concat(
+            validateAuthor(abstract.authors)
+        );
     }
 
     /**
@@ -206,6 +206,29 @@ define(["lib/tools"], function (tools) {
      */
     function notEmpty(val) {
         return val ? val.length > 0 : false;
+    }
+
+    /**
+     * Creates a special test that checks whether all affiliations are used.
+     *
+     * @param affiliations The affiliations of the abstract.
+     *
+     * @returns {Function} Returns the actual test function, that gets the author
+     *                     list as first and only argument.
+     */
+    function useAllAffiliations(affiliations) {
+
+        var positions = affiliations.map( function(_, index) { return index; } );
+
+        return function(authors) {
+            var used = positions.filter(function(pos) {
+                return authors.some(function(author) {
+                    var otherPositions = getVal(author, "affiliations")
+                    return otherPositions.indexOf(pos) >= 0;
+                })
+            });
+            return used.length === positions.length;
+        }
     }
 
     //
