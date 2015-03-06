@@ -67,15 +67,12 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
   }
 
   def conferences = UserAwareAction { implicit request =>
-    var conferences = conferenceService.list()
+    val conferences = conferenceService.list()
 
-    // TODO assign active conference properly
-    val current = conferences.lift(0)
+    val list_opened = conferences.filter(conf => conf.isOpen)
+    val list_published = conferences.filter(conf => conf.isPublished && !conf.isOpen)
 
-    if (current.isDefined)
-      conferences = conferences.filter(conf => conf.uuid != current.get.uuid)
-
-    Ok(views.html.conferencelist(request.identity.map{ _.account }, conferences, current))
+    Ok(views.html.conferencelist(request.identity.map{ _.account }, list_opened, list_published))
   }
 
   def conference(confId: String) = UserAwareAction { implicit request =>

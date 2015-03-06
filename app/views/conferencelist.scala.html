@@ -1,84 +1,52 @@
-@(account: Option[Account], conferences: Seq[Conference], current: Option[Conference])(implicit request: RequestHeader)
+@(account: Option[Account], list_opened: Seq[Conference], list_published: Seq[Conference])(implicit request: RequestHeader)
 
 @import views.html.bootstrap._
 
-@template(account, current, "conference") {
+@template(account, None, "") {
 
     @flash(request)
 
-    @if(current.isDefined) {
-        @defining(current.get) { current =>
+    <div class="page-header">
+        <h1>Conference abstracts <small>and submission</small></h1>
+    </div>
 
-        <div class="jumbotron">
-            <a href="@routes.Application.conference(current.uuid)"><h1>@current.name</h1></a>
-            <p>@current.description</p>
+    @if(list_opened.nonEmpty) {
+        <h2>Active conferences</h2>
 
-            @if(current.logo != null && current.link != null) {
-                <p><img class="conference-logo img-responsive img-rounded" src="@current.logo"></p>
-            }
+        <hr>
 
-            @if(current.startDate != null && current.endDate != null) {
-                <p><b>When:</b> @current.startDate.toString(current.dateFormatter) - @current.endDate.toString(current.dateFormatter)</p>
-            }
-
-            @if(current.isOpen) {
-                <p><div>
-                    <p>Submission is currently <span class="text-success"><b>open</b></span>.
-
-                    @if(current.deadline != null) {
-                        <p><b>Submission deadline:</b> @current.deadline.toString(current.dateFormatter)</p>
-                    }
-
-                    @if(!account.isDefined) {
-                        In order to submit an abstract please login or register.</p>
-
-                        <a href="@routes.Accounts.signUp()" class="btn btn-primary">Register</a>
-                        <a href="@routes.Accounts.logIn()" class="btn btn-primary">Login</a>
-                        <a href="@routes.Accounts.forgotPasswordPage()">Forgot password?</a>
-
-                    } else {
-                        In order to submit an abstract please press the appropriate button below.</p>
-
-                        <form action="@routes.Application.submission(current.uuid)">
-                            <input class="btn btn-success" type="submit" value="Submit an Abstract">
-                        </form>
-                    }
-                </div></p>
-            } else {
-                <p><div>
-                    <p>Abstract submission is currently <span class="text-danger"><b>closed</b></span>.</p>
-                </div></p>
-            }
-
-            <p><a class="btn btn-primary btn-lg" href="@current.link" role="button">Go to the conference page</a></p>
-
-            <!-- Conference owner section to manage owners -->
-
-            @if(account.isDefined) {
-                <hr>
-                @if(current.isOwner(account.get) || account.get.isAdmin) {
-                    <h3>Administration</h3>
-                    <ul class="list-inline">
-                        <li><a href="@routes.Application.adminConference(current.uuid)" class="btn btn-danger">Conference Settings</a></li>
-                        <li><a href="@routes.Application.adminAbstracts(current.uuid)" class="btn btn-danger">Abstracts</a></li>
-                    </ul>
+        @for(conf <- list_opened) {
+            <div class="jumbotron">
+                @if(conf.logo != null) {
+                    <p><img class="conference-logo img-responsive img-rounded" src="@conf.logo"></p>
                 }
-            }
-        </div>
+                <a href="@routes.Application.conference(conf.uuid)"><h3>@conf.name</h3></a>
+                <p>@conf.description</p>
 
+                @if(conf.startDate != null && conf.endDate != null) {
+                    <p><b></b> @conf.startDate.toString(conf.dateFormatter) - @conf.endDate.toString(conf.dateFormatter)</p>
+                }
+
+                <p><b>Submission deadline:</b> @conf.deadline.toString(conf.dateFormatter)</p>
+
+                @if(account.isDefined) {
+                    @if(conf.isOwner(account.get) || account.get.isAdmin) {
+                        <a href="@routes.Application.adminConference(conf.uuid)" class="btn btn-danger">
+                            Conference Settings</a>
+                        <a href="@routes.Application.adminAbstracts(conf.uuid)" class="btn btn-danger">
+                            Manage abstracts</a>
+                    }
+                }
+            </div>
         }
-    } else {
-        <div class="jumbotron">
-            <h3>At the moment there are no active conferences.</h3>
-        </div>
     }
 
-    @if(conferences.nonEmpty) {
+    @if(list_published.nonEmpty) {
         <h3>Past conferences</h3>
 
         <hr>
 
-        @for(conf <- conferences) {
+        @for(conf <- list_published) {
             <div class="media">
                 <div class="pull-left media-left">
                     <a href="@routes.Application.conference(conf.uuid)">
@@ -86,18 +54,17 @@
                     </a>
                 </div>
                 <div class="media-body">
-                    <a href="@routes.Application.conference(conf.uuid)">
+                    <a href="@routes.Application.abstractsPublic(conf.uuid)">
                         <h4 class="media-heading">@conf.name</h4>
                     </a>
 
                     <p>@conf.description</p>
 
                     @if(conf.startDate != null && conf.endDate != null) {
-                        <p><b>When:</b> @conf.startDate.toString(conf.dateFormatter) - @conf.endDate.toString(conf.dateFormatter)</p>
+                        <p><b></b> @conf.startDate.toString(conf.dateFormatter) - @conf.endDate.toString(conf.dateFormatter)</p>
                     }
 
                     <ul class="list-inline">
-                        <li><a href="@routes.Application.abstractsPublic(conf.uuid)" class="btn btn-default">Abstracts</a></li>
                         @if(account.isDefined) {
                             @if(conf.isOwner(account.get) || account.get.isAdmin) {
                                 <li><a href="@routes.Application.adminConference(conf.uuid)" class="btn btn-danger">
