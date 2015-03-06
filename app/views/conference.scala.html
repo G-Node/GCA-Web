@@ -32,7 +32,7 @@
     }
 
     @if(conference.startDate != null && conference.endDate != null) {
-        <p><b>When:</b> @conference.startDate.toString(conference.dateFormatter) - @conference.endDate.toString(conference.dateFormatter)</p>
+        <p><b></b> @conference.startDate.toString(conference.dateFormatter) - @conference.endDate.toString(conference.dateFormatter)</p>
     }
 
     <!-- Buttons to register, sign in and submit -->
@@ -47,7 +47,8 @@
         }
 
         @if(!account.isDefined) {
-            In order to submit an abstract please login or register.</p>
+            In order to submit an abstract please login or register.<br>
+            Accounts registered for previous conferences are still valid.</p>
 
             <a href="@routes.Accounts.logIn()" class="btn btn-primary">Login</a>
             <a href="@routes.Accounts.signUp()" class="btn btn-primary">Register</a>
