@@ -21,7 +21,7 @@
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
-    <strong>Info!</strong> @message
+    @message
   </div>
 }
 @request.flash.get("success").map { message =>
@@ -29,6 +29,6 @@
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
-    <strong>Success!</strong> @message
+    @message
   </div>
 }
