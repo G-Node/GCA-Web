@@ -35,7 +35,9 @@
     <div data-bind="foreach: conferences">
         <div class="panel panel-default">
             <div class="panel-heading" >
-                <h4 class="panel-title" data-bind="text: name"></h4>
+                <a data-bind="attr: { href: link }">
+                    <h4 class="panel-title" data-bind="text: name"></h4>
+                </a>
             </div>
                 <div class="panel-body">
                     <span data-bind="text: cite"></span>

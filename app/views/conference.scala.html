@@ -49,14 +49,17 @@
         @if(!account.isDefined) {
             In order to submit an abstract please login or register.</p>
 
-        <a href="FIXME: Login" class="btn btn-primary">Login</a>
-        <a href="FIXME: Logout" class="btn btn-primary">Register</a>
+            <a href="@routes.Accounts.logIn()" class="btn btn-primary">Login</a>
+            <a href="@routes.Accounts.signUp()" class="btn btn-primary">Register</a>
 
         } else {
             In order to submit an abstract please press the appropriate button below.</p>
-            <form action="@routes.Application.submission(conference.uuid)">
-                <input class="btn btn-success" type="submit" value="Submit an Abstract">
-            </form>
+
+            <div class="form-group">
+                <a href="@routes.Application.submission(conference.uuid)" class="btn btn-success">Submit new Abstract</a>
+                or manage
+                <a href="@routes.Application.abstractsPrivate()" class="btn btn-primary">Created Abstracts</a>
+            </div>
         }
     </div>
     } else {

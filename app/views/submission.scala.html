@@ -75,9 +75,10 @@
     <span data-bind="ifnot: showEditButton">
         <div class="alert alert-danger alert-text-only">
             <ul>
-                <li>Submitted abstracts can be modified until the deadline.<br/>
-                    To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract. Don't forget to re-submit after editing.</li>
-                <li>This abstract is submitted, changes are deactivated. To add changes, please withdraw and reactivate the abstract.</li>
+                <li>This abstract is submitted, changes are deactivated.<br/>
+                    Submitted abstracts can be modified until the deadline.</li>
+                <li>To modify a submitted abstract, withdraw and reactivate the abstract.<br/>
+                    Don't forget to re-submit after editing.</li>
             </ul>
         </div>
     </span>
@@ -349,7 +350,7 @@
                         maxlength="100" data-bind="value: affiliation.department" />
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="Institute"
+                        <input type="text" class="form-control input-sm" placeholder="Institution"
                         maxlength="100" data-bind="value: affiliation.section" />
                     </td>
                     <td>

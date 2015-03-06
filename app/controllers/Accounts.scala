@@ -8,6 +8,7 @@ import com.mohiva.play.silhouette.core.{LoginInfo, Silhouette}
 import conf.GlobalEnvironment
 import forms.{EmailForm, ResetPasswordForm, SignInForm, SignUpForm}
 import models._
+import play.api.http.Status._
 import play.api.mvc.Action
 import service.mail.MailerService
 import service.{AccountStore, CredentialsStore}
@@ -58,7 +59,9 @@ class Accounts(implicit val env: GlobalEnvironment)
         val pwInfo = env.pwHasher.hash(passwords._1)
 
         Await.result(env.authInfoService.save(loginInfo, pwInfo), 5 seconds)
-        Redirect(routes.Application.index()).flashing("success" -> "Password successfully changed")
+        Redirect(routes.Application.index()).flashing("success" ->
+          """Password successfully changed.
+          If you don't get a confirmation email in a few moments, Please check your spam folder.""")
       }
     )
   }
@@ -74,17 +77,26 @@ class Accounts(implicit val env: GlobalEnvironment)
     EmailForm.emailForm.bindFromRequest.fold (
       formWithErrors => Ok(views.html.forgotpassword(formWithErrors)),
       email => {
-        val account = accountService.getByMail(email)
+        try {
+          val account = accountService.getByMail(email)
 
-        val newpass = UUID.randomUUID.toString.substring(0, 8);
-        val loginInfo = LoginInfo(env.credentialsProvider.id, account.mail)
-        val pwInfo = env.pwHasher.hash(newpass)
+          val newpass = UUID.randomUUID.toString.substring(0, 8)
+          val loginInfo = LoginInfo(env.credentialsProvider.id, account.mail)
+          val pwInfo = env.pwHasher.hash(newpass)
 
-        mailer.sendPasswordReset(account, newpass, routes.Accounts.logIn().absoluteURL())
+          mailer.sendPasswordReset(account, newpass, routes.Accounts.logIn().absoluteURL())
 
-        Await.result(env.authInfoService.save(loginInfo, pwInfo), 5 seconds)
+          Await.result(env.authInfoService.save(loginInfo, pwInfo), 5 seconds)
 
-        Redirect(routes.Accounts.logIn()).flashing("success" -> "Password reset and sent to you by email")
+          Redirect(routes.Accounts.logIn()).flashing("success" ->
+            """Password was reset and sent to you by email.
+            If you don't get it in a few moments, please check your spam folder.""")
+
+        } catch {
+          case e: NoResultException => Redirect(routes.Accounts.forgotPasswordPage())
+            .flashing("error" -> "Account with this email does not exist.")
+        }
+
       }
     )
   }
