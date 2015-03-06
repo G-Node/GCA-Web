@@ -87,6 +87,10 @@
                         }
                     }
 
+                    @if(conference.isEmpty && active) {
+                        <li class="active"><a>@active</a></li>
+                    }
+
                 </ul>
 
 
