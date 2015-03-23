@@ -67,10 +67,18 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
   }
 
   def conferences = UserAwareAction { implicit request =>
+    val is_admin = request.identity match {
+      case Some(uid) => uid.account.isAdmin
+      case _         => false
+    }
+
     val conferences = conferenceService.list()
 
-    val list_opened = conferences.filter(conf => conf.isOpen)
     val list_published = conferences.filter(conf => conf.isPublished && !conf.isOpen)
+    var list_opened = conferences.filter(conf => !list_published.contains(conf))
+    if (!is_admin) {
+      list_opened = list_opened.filter(conf => conf.isOpen)
+    }
 
     Ok(views.html.conferencelist(request.identity.map{ _.account }, list_opened, list_published))
   }
@@ -111,7 +119,6 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
       Ok(views.html.dashboard.admin.conference(request.identity.account, Some(conference)))
     }
   }
-
 
   def adminAbstracts(confId: String) = SecuredAction { implicit request =>
     val conference = conferenceService.get(confId)
