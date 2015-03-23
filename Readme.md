@@ -1,10 +1,20 @@
 G-Node Conference Application Suite - Web Application
-======================================================
+=====================================================
 
-This is a work in progress project that aims to be a
-abstract viewer, editor and submission tool.
+This project provides an online application for the submission and management of abstracts to conferences in the scientific community (focus life sciences).
 
-The old viewer part can be found in the oldstable branch.
+Features include:
+- management of multiple individual conferences
+- admin based conference workflow from open, active to closed
+- submission and editing of abstracts for open conferences
+- abstract workflow on a user/admin based system from submitted to accepted/rejected
+- abstract viewer for open and closed conferences
+
+The current version is stable.
+
+A previous version of the application can be found in the "oldstable" branch.
+
+Please find the latest release notes in our [wiki release notes](https://github.com/G-Node/GCA-Web/wiki) section.
 
 --
 
