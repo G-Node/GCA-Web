@@ -26,7 +26,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
 
   @Test
   def testCreate(): Unit = {
-    val body = formatter.writes(assets.conferences(0)).as[JsObject] - "uuid" - "abstracts"
+    val body = formatter.writes(assets.conferences(0)).as[JsObject] - "uuid" - "abstracts" - "short"
 
     val createUnauth = FakeRequest(POST, "/api/conferences").withHeaders(
       ("Content-Type", "application/json")
