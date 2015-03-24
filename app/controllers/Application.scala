@@ -70,7 +70,7 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
   def conferences = UserAwareAction { implicit request =>
     val conferences = conferenceService.list()
 
-    val list_active = conferences.filter(conf => conf.endDate.isBefore(DateTime.now()))
+    val list_active = conferences.filter(conf => conf.endDate.isAfter(DateTime.now()))
     val list_past = conferences.filter(conf => !list_active.contains(conf))
 
     Ok(views.html.conferencelist(request.identity.map{ _.account }, list_active, list_past))
