@@ -71,7 +71,7 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
     val conferences = conferenceService.list()
 
     val list_active = conferences.filter(conf => conf.endDate.isAfter(DateTime.now()))
-    val list_past = conferences.filter(conf => !list_active.contains(conf))
+    val list_past = conferences.filter(conf => !conf.endDate.isAfter(DateTime.now()))
 
     Ok(views.html.conferencelist(request.identity.map{ _.account }, list_active, list_past))
   }
