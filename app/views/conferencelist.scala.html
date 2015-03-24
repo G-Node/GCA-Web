@@ -20,7 +20,7 @@
                 @if(conf.logo != null) {
                     <p><img class="conference-logo img-responsive img-rounded" src="@conf.logo"></p>
                 }
-                <a href="@routes.Application.conference(conf.uuid)"><h3>@conf.name</h3></a>
+                <a href="@routes.Application.conference(conf.short)"><h3>@conf.name</h3></a>
                 <p>@conf.description</p>
 
                 @if(conf.startDate != null && conf.endDate != null) {
@@ -49,12 +49,12 @@
         @for(conf <- list_published) {
             <div class="media">
                 <div class="pull-left media-left">
-                    <a href="@routes.Application.conference(conf.uuid)">
+                    <a href="@routes.Application.conference(conf.short)">
                         <img class="media-object conference-thumbnail" src="@conf.thumbnail">
                     </a>
                 </div>
                 <div class="media-body">
-                    <a href="@routes.Application.abstractsPublic(conf.uuid)">
+                    <a href="@routes.Application.abstractsPublic(conf.short)">
                         <h4 class="media-heading">@conf.name</h4>
                     </a>
 
