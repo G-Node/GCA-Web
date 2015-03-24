@@ -7,6 +7,7 @@ import play.api.mvc._
 import models._
 import service.{AbstractService, ConferenceService}
 import java.net._
+import org.joda.time.DateTime
 
 class Application(implicit val env: Environment[Login, CachedCookieAuthenticator])
   extends Silhouette[Login, CachedCookieAuthenticator] {
@@ -67,20 +68,12 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
   }
 
   def conferences = UserAwareAction { implicit request =>
-    val is_admin = request.identity match {
-      case Some(uid) => uid.account.isAdmin
-      case _         => false
-    }
-
     val conferences = conferenceService.list()
 
-    val list_published = conferences.filter(conf => conf.isPublished && !conf.isOpen)
-    var list_opened = conferences.filter(conf => !list_published.contains(conf))
-    if (!is_admin) {
-      list_opened = list_opened.filter(conf => conf.isOpen)
-    }
+    val list_active = conferences.filter(conf => conf.endDate.isBefore(DateTime.now()))
+    val list_past = conferences.filter(conf => !list_active.contains(conf))
 
-    Ok(views.html.conferencelist(request.identity.map{ _.account }, list_opened, list_published))
+    Ok(views.html.conferencelist(request.identity.map{ _.account }, list_active, list_past))
   }
 
   def conference(confId: String) = UserAwareAction { implicit request =>
