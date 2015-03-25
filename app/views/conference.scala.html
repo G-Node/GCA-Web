@@ -14,72 +14,72 @@
     </div>
 
     <!-- The conference info page -->
-
-    <div class="page-header">
-        <h1>@conference.name</h1>
-    </div>
-
-    @if(conference.logo != null && conference.link != null) {
-        <div>
-            <a href="@conference.link">
-                <img class="conference-logo img-responsive img-rounded" src="@conference.logo" alt="Conference Logo">
-            </a>
+    <div class="jumbotron">
+        <div class="page-header">
+            <h1>@conference.name</h1>
         </div>
-    }
 
-    @if(conference.description != null) {
-        <h5>@conference.description</h5>
-    }
-
-    @if(conference.startDate != null && conference.endDate != null) {
-        <p><b></b> @conference.startDate.toString(conference.dateFormatter) - @conference.endDate.toString(conference.dateFormatter)</p>
-    }
-
-    <!-- Buttons to register, sign in and submit -->
-
-    <h3>Abstract Submission</h3>
-    @if(conference.isOpen) {
-    <div>
-        <p>Submission is currently <span class="text-success"><b>open</b></span>.
-
-        @if(conference.deadline != null) {
-            <p><b>Submission deadline:</b> @conference.deadline.toString(conference.dateFormatter)</p>
-        }
-
-        @if(!account.isDefined) {
-            In order to submit an abstract please login or register.<br>
-            Accounts registered for previous conferences are still valid.</p>
-
-            <a href="@routes.Accounts.logIn()" class="btn btn-primary">Login</a>
-            <a href="@routes.Accounts.signUp()" class="btn btn-primary">Register</a>
-
-        } else {
-            In order to submit an abstract please press the appropriate button below.</p>
-
-            <div class="form-group">
-                <a href="@routes.Application.submission(conference.uuid)" class="btn btn-success">Submit new Abstract</a>
-                or manage
-                <a href="@routes.Application.abstractsPrivate()" class="btn btn-primary">Created Abstracts</a>
+        @if(conference.logo != null && conference.link != null) {
+            <div>
+                <a href="@conference.link">
+                    <img class="conference-logo img-responsive img-rounded" src="@conference.logo" alt="Conference Logo">
+                </a>
             </div>
         }
-    </div>
-    } else {
-    <div>
-        <p>Abstract submission is currently <span class="text-danger"><b>closed</b></span>.</p>
-    </div>
-    }
 
-    <!-- Conference owner section to manage owners -->
-
-    @if(account.isDefined) {
-        <hr>
-        @if(conference.isOwner(account.get) || account.get.isAdmin) {
-            <h3>Administration</h3>
-            <ul class="list-inline">
-            <li><a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">Conference Settings</a></li>
-            <li><a href="@routes.Application.adminAbstracts(conference.uuid)" class="btn btn-danger">Abstracts</a></li>
-            </ul>
+        @if(conference.description != null) {
+            <h5>@conference.description</h5>
         }
-    }
+
+        @if(conference.startDate != null && conference.endDate != null) {
+            <p><b></b> @conference.startDate.toString(conference.dateFormatter) - @conference.endDate.toString(conference.dateFormatter)</p>
+        }
+
+        <!-- Buttons to register, sign in and submit -->
+
+        @if(conference.isOpen) {
+        <div>
+            <p>Submission is currently <span class="text-success"><b>open</b></span>.
+
+            @if(conference.deadline != null) {
+                <p><b>Submission deadline:</b> @conference.deadline.toString(conference.dateFormatter)</p>
+            }
+
+            @if(!account.isDefined) {
+                In order to submit an abstract please login or register.<br>
+                Accounts registered for previous conferences are still valid.</p>
+
+                <a href="@routes.Accounts.logIn()" class="btn btn-primary">Login</a>
+                <a href="@routes.Accounts.signUp()" class="btn btn-primary">Register</a>
+
+            } else {
+                In order to submit an abstract please press the appropriate button below.</p>
+
+                <div class="form-group">
+                    <a href="@routes.Application.submission(conference.uuid)" class="btn btn-success">Submit new Abstract</a>
+                    or manage
+                    <a href="@routes.Application.abstractsPrivate()" class="btn btn-primary">Created Abstracts</a>
+                </div>
+            }
+        </div>
+        } else {
+        <div>
+            <p>Abstract submission is currently <span class="text-danger"><b>closed</b></span>.</p>
+        </div>
+        }
+
+        <!-- Conference owner section to manage owners -->
+
+        @if(account.isDefined) {
+            <hr>
+            @if(conference.isOwner(account.get) || account.get.isAdmin) {
+                <h3>Administration</h3>
+                <ul class="list-inline">
+                <li><a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">Conference Settings</a></li>
+                <li><a href="@routes.Application.adminAbstracts(conference.uuid)" class="btn btn-danger">Abstracts</a></li>
+                </ul>
+            }
+        }
+    </div>
 
 }

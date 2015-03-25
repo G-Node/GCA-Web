@@ -27,8 +27,6 @@
                     <p><b></b> @conf.startDate.toString(conf.dateFormatter) - @conf.endDate.toString(conf.dateFormatter)</p>
                 }
 
-                <p><b>Submission deadline:</b> @conf.deadline.toString(conf.dateFormatter)</p>
-
                 @if(account.isDefined) {
                     @if(conf.isOwner(account.get) || account.get.isAdmin) {
                         <a href="@routes.Application.adminConference(conf.uuid)" class="btn btn-danger">
