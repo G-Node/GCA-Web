@@ -106,12 +106,17 @@ class Accounts(implicit val env: GlobalEnvironment)
   }
 
   def create = Action { implicit request =>
+    val flashing = "Your account was created. An email with " +
+      "a link to activate the account was sent to your email " +
+      "address. Please check your spam folder if the message " +
+      "is not delivered within a few minutes."
+
     SignUpForm.form.bindFromRequest.fold (
       invalid => BadRequest(views.html.signup(invalid)),
       ok => {
         try {
           accountService.create(Account(null, ok.email, ok.firstName, ok.lastName, None), Some(ok.password))
-          Redirect(routes.Application.conferences()) // TODO success message
+          Redirect(routes.Application.conferences()).flashing("info" -> flashing)
         } catch {
           case e: Throwable => Redirect(routes.Accounts.signUp()).flashing("error" -> e.getMessage)
         }
