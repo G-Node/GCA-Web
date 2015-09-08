@@ -40,6 +40,13 @@
     <meta name="description" content="Conference Abstracts">
     <meta name="keywords" content="Abstracts">
     <meta name="author" content="German Neuroinformatics Node (G-Node)">
+
+    <!-- smart app banner -->
+    @conference.map { conf =>
+       @if(conf.iOSApp != null) {
+           <meta name="apple-itunes-app" content="app-id=@conf.iOSApp">
+       }
+    }
 </head>
 <body>
 

@@ -224,6 +224,7 @@ class Assets() {
       ?(new DateTime(393415200000L)), ?(new DateTime(574423200000L)), ?(new DateTime(1321005600000L)),
       ?("http://www.nncn.de/header/header-conference.jpg"),
       ?("http://www.nncn.de/bilder/bc14_kurzlogo"),
+      ?("557712638"),
       Seq(AbstractGroup(None, ?(1), ?("Talk"), ?("T")),
           AbstractGroup(None, ?(2), ?("Poster"), ?("P")))),
     Conference(None, ?("The second conference"), ?("C2"),
