@@ -1,6 +1,8 @@
 package conf
 
+import java.io.{PrintWriter, StringWriter}
 import java.lang.reflect.Constructor
+import java.util.concurrent.ExecutionException
 import javax.persistence.{EntityNotFoundException, NoResultException}
 
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
@@ -8,7 +10,7 @@ import com.mohiva.play.silhouette.core.exceptions.AccessDeniedException
 import com.mohiva.play.silhouette.core.{Environment, SecuredSettings}
 import models.Login
 import play.api._
-import play.api.libs.json.{JsError, JsResultException, Json}
+import play.api.libs.json.{JsObject, JsError, JsResultException, Json}
 import play.api.mvc.Results._
 import play.api.mvc._
 
@@ -54,12 +56,18 @@ object Global extends GlobalSettings with SecuredSettings {
 
   def exHandlerJSON(request: RequestHeader, ex: Throwable) : Result = {
     ex match {
-      case e: NoResultException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
-      case e: EntityNotFoundException => NotFound(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
-      case e: IllegalArgumentException => BadRequest(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
+      case e: NoResultException => NotFound(exceptionToJSON(e))
+      case e: EntityNotFoundException => NotFound(exceptionToJSON(e))
+      case e: IllegalArgumentException => BadRequest(exceptionToJSON(e))
       case e: JsResultException => BadRequest(Json.obj("error" -> true, "causes" -> JsError.toFlatJson(e.errors)))
-      case e: IllegalAccessException => Forbidden(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
-      case e: Exception => InternalServerError(Json.obj("error" -> true, e.getMessage -> e.getStackTrace.toString))
+      case e: IllegalAccessException => Forbidden(exceptionToJSON(e))
+
+      case e: Exception =>
+        e.getCause match {
+          case cause: IllegalArgumentException =>
+            UnprocessableEntity(exceptionToJSON(cause))
+          case _ => InternalServerError(exceptionToJSON(e))
+        }
     }
   }
 
@@ -71,5 +79,14 @@ object Global extends GlobalSettings with SecuredSettings {
       _.asInstanceOf[Constructor[A]].newInstance(globalEnv)
     }
     instance.getOrElse(super.getControllerInstance(controllerClass))
+  }
+
+  def exceptionToJSON(ex: Throwable): JsObject = {
+    val w = new StringWriter()
+    ex.printStackTrace(new PrintWriter(w))
+
+    Json.obj("error" -> true,
+      "message" -> ex.getMessage,
+      "stacktrace" -> w.toString)
   }
 }
