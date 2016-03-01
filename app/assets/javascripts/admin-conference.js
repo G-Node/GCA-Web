@@ -65,7 +65,14 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable"], fun
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
             console.log( "Request Failed: " + err );
-            self.setError("danger", "Error while fetching data from server: <br\\>" + error);
+            var errobj = $.parseJSON(jqxhr.responseText);
+
+            var details = "";
+            if ("message" in errobj) {
+                details = "<br>" + errobj.message;
+            }
+
+            self.setError("danger", "IO error: " + error + details);
         };
 
         self.changeHandler = function(newValue) {
