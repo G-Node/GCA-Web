@@ -32,7 +32,9 @@ class Conference extends Model with Owned {
 
   def dateFormatter = DateTimeFormat.forPattern("d MMMM, yyyy")
 
+  @Column(nullable = false)
   var name: String = _
+
   @Column(unique = true)
   var short: String = _
   var cite: String = _

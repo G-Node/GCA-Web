@@ -1,5 +1,6 @@
 require(["main"], function () {
-require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable"], function(models, tools, owned, ko) {
+require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "datetimepicker"],
+    function(models, tools, owned, ko) {
     "use strict";
 
 
@@ -24,6 +25,39 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable"], fun
         self.error = ko.observable(false);
         self.conference = ko.observable(null);
         self.haveChanges = ko.observable(false);
+
+        ko.bindingHandlers.datetimepicker = {
+            init: function(element, valueAccessor, allBindingsAccessor) {
+
+                function onSelectHandler(text, obj) {
+                    var os = valueAccessor();
+                    var dt = $el.datetimepicker("getDate");
+                    var dateString = dt.toISOString();
+                    os(dateString);
+                }
+
+                var $el = $(element);
+                var options = { onSelect: onSelectHandler };
+
+                $el.datetimepicker(options);
+
+                //handle disposal (if KO removes by the template binding)
+                ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+                    $el.datetimepicker("destroy");
+                });
+
+            },
+            update: function(element, valueAccessor) {
+                var $el = $(element);
+                var text = ko.utils.unwrapObservable(valueAccessor());
+                var value = new Date(text);
+
+                var current = $el.datetimepicker("getDate");
+                if (value - current !== 0) {
+                    $el.datetimepicker("setDate", value);
+                }
+            }
+        };
 
         self.saveButtonText = ko.computed(function(){
 
@@ -65,7 +99,14 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable"], fun
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
             console.log( "Request Failed: " + err );
-            self.setError("danger", "Error while fetching data from server: <br\\>" + error);
+            var errobj = $.parseJSON(jqxhr.responseText);
+
+            var details = "";
+            if ("message" in errobj) {
+                details = "<br>" + errobj.message;
+            }
+
+            self.setError("danger", "IO error: " + error + details);
         };
 
         self.changeHandler = function(newValue) {
