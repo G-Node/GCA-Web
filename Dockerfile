@@ -22,11 +22,14 @@ ADD public /srv/gca/public
 ADD test /srv/gca/test
 ADD build.sbt /srv/gca/
 
-ENTRYPOINT ["/bin/sh"]
+RUN mkdir -p /srv/gca/db
+RUN echo "db.default.url=\"jdbc:h2:/srv/gca/db/gca-web\"" >> /srv/gca/conf/application.dev.conf
 
 # test and stage
 WORKDIR /srv/gca
 RUN activator test stage
+
+VOLUME ["/srv/gca/db"]
 
 EXPOSE 9000
 ENTRYPOINT ["target/universal/stage/bin/gca-web"]
