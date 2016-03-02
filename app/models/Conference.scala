@@ -57,6 +57,8 @@ class Conference extends Model with Owned {
   var logo: String = _
   var thumbnail: String = _
 
+  var iOSApp: String = _
+
   @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var groups: JSet[AbstractGroup] = new JTreeSet[AbstractGroup]()
 
@@ -84,6 +86,7 @@ object Conference {
             deadline: Option[DateTime] = null,
             logo: Option[String] = null,
             thumbnail: Option[String] = null,
+            iOSApp: Option[String] = null,
             groups: Seq[AbstractGroup] = Nil,
             owners: Seq[Account] = Nil,
             abstracts: Seq[Abstract] = Nil,
@@ -105,6 +108,8 @@ object Conference {
 
     conference.logo        = unwrapRef(logo)
     conference.thumbnail   = unwrapRef(thumbnail)
+
+    conference.iOSApp      = unwrapRef(iOSApp)
 
     conference.groups      = toJSet(groups)
     conference.owners      = toJSet(owners)

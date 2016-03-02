@@ -108,10 +108,11 @@ package object serializer {
       (__ \ "deadline").readNullable[DateTime] and
       (__ \ "logo").readNullable[String] and
       (__ \ "thumbnail").readNullable[String] and
+      (__ \ "iOSApp").readNullable[String] and
 
       (__ \ "groups").read[List[AbstractGroup]] and
       (__ \ "topics").read[List[Topic]].addPosition
-    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
+    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
       val groups: Seq[AbstractGroup] = asScalaSet(c.groups).toSeq.sortBy(x => x.prefix)
@@ -130,6 +131,7 @@ package object serializer {
         "deadline" -> c.deadline,
         "logo" -> c.logo,
         "thumbnail" -> c.thumbnail,
+        "iOSApp" -> c.iOSApp,
         "abstracts" -> routesResolver.abstractsUrl(c.uuid),
         "allAbstracts" -> routesResolver.allAbstractsUrl(c.uuid),
         "topics" -> c.topics.toSeq.sorted[Model]

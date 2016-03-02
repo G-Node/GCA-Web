@@ -251,6 +251,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @param {string}  [end]
      * @param {string}  [logo]
      * @param {string}  [thumbnail]
+     * @param {string}  [iOSApp]
      * @param {string}  [deadline]
      * @param {string}  [owners] URL to all abstract owners.
      * @param {string}  [abstracts] The URL to all abstracts.
@@ -261,11 +262,11 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Conference(uuid, name, short, cite, link, description, isOpen, isPublished, groups,
-                        start, end, deadline, logo, thumbnail, owners, abstracts, topics) {
+                        start, end, deadline, logo, thumbnail, iOSApp, owners, abstracts, topics) {
 
         if (! (this instanceof Conference)) {
             return new Conference(uuid, name, short, cite, link, description, isOpen, isPublished, groups,
-                                  start, end, deadline, logo, thumbnail, owners, abstracts, topics);
+                                  start, end, deadline, logo, thumbnail, iOSApp, owners, abstracts, topics);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -283,6 +284,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.deadline = deadline || null;
         self.logo = logo || null;
         self.thumbnail = thumbnail || null;
+        self.iOSApp = iOSApp || null;
         self.owners = owners || [];
         self.abstracts = abstracts || [];
         self.topics = topics || [];
@@ -329,18 +331,23 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             for (prop in self) {
                 if (self.hasOwnProperty(prop)) {
                     var value = self[prop];
+                    var plain = null;
+
+                    if (tools.type(value) !== "function") {
+                        plain = value;
+                    } else if (tools.functionName(value) === "observable") {
+                        plain = self[prop]();
+                    }
 
                     if (prop === "groups") {
                         obj.groups = [];
-                        if (tools.functionName(value) === "observable") {
-                            self.groups().forEach(appendGroup);
-                        } else {
-                            self.groups.forEach(appendGroup);
-                        }
-                    } else if (tools.type(value) !== "function") {
-                        obj[prop] = toType(value);
-                    } else if (tools.functionName(value) === "observable") {
-                        obj[prop] = toType(self[prop]());
+                        plain.forEach(appendGroup);
+                    } else if (prop === "iOSApp" && plain) {
+                        // don't convert iOSApp app ids, which for now seem
+                        //  to be numbers, but leave them as strings
+                        obj[prop] = plain;
+                    } else if (plain) {
+                        obj[prop] = toType(plain);
                     }
                 }
             }
