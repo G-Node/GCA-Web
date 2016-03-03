@@ -10,7 +10,7 @@
 package models
 
 import models.Model._
-import javax.persistence.{ManyToOne, Entity}
+import javax.persistence.{Column, ManyToOne, Entity}
 
 /**
  * A model for figures.
@@ -18,6 +18,7 @@ import javax.persistence.{ManyToOne, Entity}
 @Entity
 class Figure extends PositionedModel {
 
+  @Column(length=300)
   var caption: String = _
 
   @ManyToOne

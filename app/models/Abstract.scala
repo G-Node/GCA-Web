@@ -27,6 +27,7 @@ class Abstract extends Model with Owned {
   var text:  String = _
   var doi:   String = _
   var conflictOfInterest: String = _
+  @Column(length=300)
   var acknowledgements: String = _
 
   var isTalk: Boolean = false

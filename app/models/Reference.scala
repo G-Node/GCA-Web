@@ -10,7 +10,7 @@
 package models
 
 import models.Model._
-import javax.persistence.{ManyToOne, Entity}
+import javax.persistence.{Column, ManyToOne, Entity}
 
 /**
  * Very simple model for referenced literature.
@@ -18,6 +18,7 @@ import javax.persistence.{ManyToOne, Entity}
 @Entity
 class Reference extends PositionedModel {
 
+  @Column(length=300)
   var text: String = _
   var link: String = _
   var doi: String = _

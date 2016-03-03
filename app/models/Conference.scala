@@ -13,12 +13,8 @@ import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
 import org.joda.time.DateTime
-import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-import scala.Some
+import org.joda.time.format.DateTimeFormat
 import models.util.DateTimeConverter
-import scala.collection.JavaConversions._
-import scala.Some
-
 
 
 /**
@@ -40,6 +36,7 @@ class Conference extends Model with Owned {
   var cite: String = _
   var link: String = _
 
+  @Column(length=512)
   var description: String = _
 
   var isOpen: Boolean = _
@@ -71,7 +68,7 @@ class Conference extends Model with Owned {
   var topics: JSet[Topic] = new JTreeSet[Topic]()
 }
 
-object Conference {
+object Conference extends Model {
 
   def apply(uuid: Option[String],
             name: Option[String],
