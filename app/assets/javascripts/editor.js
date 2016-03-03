@@ -21,8 +21,8 @@ function (ko, models, tools, msg, validate, owned) {
         var self = tools.inherit(this, msg.MessageVM);
         self = tools.inherit(self, owned.Owned);
 
-        self.textCharacterLimit = 2000;
-        self.ackCharacterLimit = 200;
+        self.textCharacterLimit = 2500;
+        self.ackCharacterLimit = 300;
 
         self.conference = ko.observable(null);
         self.abstract = ko.observable(null);
