@@ -59,6 +59,11 @@ class Conference extends Model with Owned {
 
   var iOSApp: String = _
 
+  @Convert(converter = classOf[DateTimeConverter])
+  var ctime: DateTime = _
+  @Convert(converter = classOf[DateTimeConverter])
+  var mtime: DateTime = _
+
   @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var groups: JSet[AbstractGroup] = new JTreeSet[AbstractGroup]()
 

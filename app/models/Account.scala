@@ -15,7 +15,8 @@ import javax.persistence._
 import com.mohiva.play.silhouette.core.providers.PasswordInfo
 import com.mohiva.play.silhouette.core.{Identity, LoginInfo}
 import models.Model._
-import org.joda.time.LocalDateTime
+import models.util.DateTimeConverter
+import org.joda.time.{DateTime, LocalDateTime}
 import play.api.Play.current
 
 /**
@@ -31,6 +32,11 @@ class Account extends Model {
   var fullName: String = _
 
   var avatar: String = _
+
+  @Convert(converter = classOf[DateTimeConverter])
+  var ctime: DateTime = _
+  @Convert(converter = classOf[DateTimeConverter])
+  var mtime: DateTime = _
 
   @ManyToMany(mappedBy = "owners")
   var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
