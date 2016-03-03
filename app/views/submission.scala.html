@@ -277,8 +277,10 @@
     </script>
     <script id="body-title-editor" type="text/html">
         <label for="title"></label>
-        <input type="text" class="form-control" id="title" maxlength="255"
-            data-bind="value: editedAbstract().title" placeholder="Title (max. 255 characters)" />
+        <input type="text" class="form-control" id="title"
+                placeholder="Title (max. @Model.getLimit[Abstract]("title") characters)"
+                data-bind="value: editedAbstract().title"
+                maxlength="@Model.getLimit[Abstract]("title")"/>
     </script>
 
     <!-- authors templates -->
@@ -299,19 +301,23 @@
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="First Name"
-                        maxlength="100" data-bind="value: person.firstName" />
+                                maxlength="@Model.getLimit[Author]("firstName")"
+                                data-bind="value: person.firstName" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Middle Name"
-                        maxlength="100" data-bind="value: person.middleName" />
+                                maxlength="@Model.getLimit[Author]("middleName")"
+                                data-bind="value: person.middleName" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Last Name"
-                        maxlength="100" data-bind="value: person.lastName" />
+                                maxlength="@Model.getLimit[Author]("lastName")"
+                                data-bind="value: person.lastName" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Mail"
-                        maxlength="100" data-bind="value: person.mail" />
+                                maxlength="@Model.getLimit[Author]("mail")"
+                                data-bind="value: person.mail" />
                     </td>
                     <td>
                         <div class="btn-group pull-right">
@@ -347,19 +353,23 @@
                 <tr class="affiliation-form">
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Department"
-                        maxlength="100" data-bind="value: affiliation.department" />
+                                maxlength="@Model.getLimit[Affiliation]("department")"
+                                data-bind="value: affiliation.department" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Institution"
-                        maxlength="100" data-bind="value: affiliation.section" />
+                                maxlength="@Model.getLimit[Affiliation]("section")"
+                                data-bind="value: affiliation.section" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Address"
-                        maxlength="100" data-bind="value: affiliation.address" />
+                                maxlength="@Model.getLimit[Affiliation]("address")"
+                                data-bind="value: affiliation.address" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Country"
-                        maxlength="100" data-bind="value: affiliation.country" />
+                                maxlength="@Model.getLimit[Affiliation]("country")"
+                                data-bind="value: affiliation.country" />
                     </td>
                     <td>
                         <div class="btn-group pull-right">
@@ -423,12 +433,13 @@
         <h3>Enter the Abstract Text</h3>
     </script>
     <script id="body-abstract-text-editor" type="text/html">
-        <textarea rows="10" class="form-control" id="text" maxlength="2000"
-        data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'">
+        <textarea rows="10" class="form-control" id="text"
+                data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'"
+                maxlength="@Model.getLimit[Abstract]("text")">
         </textarea>
         <div>
             <span>LaTeX-like equation typesetting is supported via MathJax. Use $$ and $ (inline).
-                <a target="_blank" href="http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference">Quick quide</a>
+                <a target="_blank" href="http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference">Quick guide</a>
             </span><br>
             <span>Characters left: </span><span data-bind="text: editorTextCharactersLeft"></span>
         </div>
@@ -439,8 +450,9 @@
         <h3>Enter Acknowledgements Text</h3>
     </script>
     <script id="body-acknowledgements-editor" type="text/html">
-        <textarea rows="10" class="form-control" id="text" maxlength="200"
-        data-bind="value: editedAbstract().acknowledgements, valueUpdate: 'afterkeydown'">
+        <textarea rows="10" class="form-control" id="text"
+                data-bind="value: editedAbstract().acknowledgements, valueUpdate: 'afterkeydown'"
+                maxlength="@Model.getLimit[Abstract]("acknowledgements")">
         </textarea>
         <div>
             <span>Characters left: </span><span data-bind="text: editorAckCharactersLeft"></span>
@@ -465,15 +477,18 @@
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Citation"
-                        maxlength="255" data-bind="value: reference.text" />
+                                maxlength="@Model.getLimit[Reference]("text")"
+                                data-bind="value: reference.text" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="link"
-                        maxlength="255" data-bind="value: reference.link" />
+                                maxlength="@Model.getLimit[Reference]("link")"
+                                data-bind="value: reference.link" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="DOI"
-                        maxlength="100" data-bind="value: reference.doi" />
+                                maxlength="@Model.getLimit[Reference]("doi")"
+                                data-bind="value: reference.doi" />
                     </td>
                     <td>
                         <div class="btn-group pull-right">
@@ -500,12 +515,14 @@
     <script id="body-figure-editor" type="text/html">
         <div data-bind="ifnot: hasAbstractFigures">
             <div class="form-group">
-                <input type="text" name="figure-caption" id="figure-caption" data-bind="value: newFigure.caption"
-                    maxlength="250" class="form-control input-sm" placeholder="Figure Caption (max. 250 characters)">
+                <input type="text" name="figure-caption" id="figure-caption" class="form-control input-sm"
+                    placeholder="Figure Caption (max. @Model.getLimit[Figure]("caption") characters)"
+                    maxlength="@Model.getLimit[Figure]("caption")"
+                    data-bind="value: newFigure.caption">
             </div>
             <div class="form-group">
                 <input type="file" name="figure-file" id="figure-file" data-bind="event: { change: getNewFigure }"
-                    maxlength="100" class="form-control input-sm">
+                    maxlength="250" class="form-control input-sm">
             </div>
             <div data-bind="ifnot: isAbstractSaved">
                 Note: the figure will be uploaded when the abstract is saved for the first time.
@@ -521,9 +538,9 @@
                 <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
                 <div class="figure-caption">
                     <span>Figure 1: </span>
-                    <input type="text" name="figure-update-caption" id="figure-update-caption"
-                    maxlength="250" class="form-control input-sm"
-                    data-bind="value: abstract().figures()[0].caption, valueUpdate: 'afterkeydown'">
+                    <input type="text" name="figure-update-caption" id="figure-update-caption" class="form-control input-sm"
+                            maxlength="@Model.getLimit[Figure]("caption")"
+                            data-bind="value: abstract().figures()[0].caption, valueUpdate: 'afterkeydown'">
                 </div>
             </div>
         </div>
@@ -565,10 +582,10 @@
         </div>
         <div data-bind="if: editedAbstract().isTalk">
             <input type="text" class="form-control" placeholder="Why should this contribution be selected for an oral presentation?"
-            maxlength="100" data-bind="value: editedAbstract().reasonForTalk">
+                    maxlength="@Model.getLimit[Abstract]("reasonForTalk")"
+                    data-bind="value: editedAbstract().reasonForTalk">
         </div>
     </script>
-
 
     <!-- general footer used with all modals so far -->
     <script id="generalModalFooter" type="text/html">
