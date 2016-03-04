@@ -36,6 +36,8 @@ class Abstract extends Model with Owned {
   var sortId: Int = _
 
   @Convert(converter = classOf[DateTimeConverter])
+  var ctime: DateTime = _
+  @Convert(converter = classOf[DateTimeConverter])
   var mtime: DateTime = _
 
   @Convert(converter = classOf[AbstractStateConverter])

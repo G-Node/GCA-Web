@@ -33,6 +33,7 @@ class Conference extends Model with Owned {
 
   @Column(unique = true)
   var short: String = _
+  var conferenceGroup: String = _
   var cite: String = _
   var link: String = _
 
@@ -41,6 +42,8 @@ class Conference extends Model with Owned {
 
   var isOpen: Boolean = _
   var isPublished: Boolean = _
+  var isActive: Boolean = _
+  var hasPresentationPrefs: Boolean = _
 
   @Convert(converter = classOf[DateTimeConverter])
   var startDate: DateTime = _
@@ -55,6 +58,17 @@ class Conference extends Model with Owned {
   var thumbnail: String = _
 
   var iOSApp: String = _
+  @Column(length = 10000)
+  var geo: String = _
+  @Column(length = 100000)
+  var schedule: String = _
+  @Column(length = 10000)
+  var info: String = _
+
+  @Convert(converter = classOf[DateTimeConverter])
+  var ctime: DateTime = _
+  @Convert(converter = classOf[DateTimeConverter])
+  var mtime: DateTime = _
 
   @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var groups: JSet[AbstractGroup] = new JTreeSet[AbstractGroup]()
