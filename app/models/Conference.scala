@@ -37,6 +37,7 @@ class Conference extends Model with Owned {
 
   @Column(unique = true)
   var short: String = _
+  var conferenceGroup: String = _
   var cite: String = _
   var link: String = _
 
