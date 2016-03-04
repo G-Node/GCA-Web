@@ -46,6 +46,7 @@ class Conference extends Model with Owned {
   var isOpen: Boolean = _
   var isPublished: Boolean = _
   var isActive: Boolean = _
+  var hasPresentationPrefs: Boolean = _
 
   @Convert(converter = classOf[DateTimeConverter])
   var startDate: DateTime = _
