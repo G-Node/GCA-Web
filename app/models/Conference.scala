@@ -59,6 +59,12 @@ class Conference extends Model with Owned {
   var thumbnail: String = _
 
   var iOSApp: String = _
+  @Column(length = 10000)
+  var geo: String = _
+  @Column(length = 100000)
+  var schedule: String = _
+  @Column(length = 10000)
+  var info: String = _
 
   @Convert(converter = classOf[DateTimeConverter])
   var ctime: DateTime = _
