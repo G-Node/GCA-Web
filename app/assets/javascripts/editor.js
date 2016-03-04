@@ -21,9 +21,6 @@ function (ko, models, tools, msg, validate, owned) {
         var self = tools.inherit(this, msg.MessageVM);
         self = tools.inherit(self, owned.Owned);
 
-        self.textCharacterLimit = 2500;
-        self.ackCharacterLimit = 300;
-
         self.conference = ko.observable(null);
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
@@ -59,12 +56,37 @@ function (ko, models, tools, msg, validate, owned) {
             self
         );
 
+        self.editorTextShowCharsLeft = ko.computed(
+            function () {
+                if (self.editedAbstract() && self.editedAbstract().text()
+                            || $('#text').attr('maxLength') != undefined) {
+                    return "Characters left: ";
+                } else {
+                    return "";
+                }
+            },
+            self
+        );
+
         self.editorTextCharactersLeft = ko.computed(
             function () {
-                if (self.editedAbstract() && self.editedAbstract().text()) {
-                    return self.textCharacterLimit - self.editedAbstract().text().length;
+                var textCharLimit = $('#text').attr('maxLength');
+                if (self.editedAbstract() && self.editedAbstract().text() && textCharLimit != undefined) {
+                    return textCharLimit - self.editedAbstract().text().length;
                 } else {
-                    return self.textCharacterLimit;
+                    return textCharLimit;
+                }
+            },
+            self
+        );
+
+        self.editorAckShowCharsLeft = ko.computed(
+            function () {
+                if (self.editedAbstract() && self.editedAbstract().acknowledgements()
+                            || $('#acknowledgements').attr('maxLength') != undefined) {
+                    return "Characters left: ";
+                } else {
+                    return "";
                 }
             },
             self
@@ -72,10 +94,11 @@ function (ko, models, tools, msg, validate, owned) {
 
         self.editorAckCharactersLeft = ko.computed(
             function () {
-                if (self.editedAbstract() && self.editedAbstract().acknowledgements()) {
-                    return self.ackCharacterLimit - self.editedAbstract().acknowledgements().length;
+                var ackCharLimit = $('#acknowledgements').attr('maxLength');
+                if (self.editedAbstract() && self.editedAbstract().acknowledgements() && ackCharLimit != undefined) {
+                    return ackCharLimit - self.editedAbstract().acknowledgements().length;
                 } else {
-                    return self.ackCharacterLimit;
+                    return ackCharLimit;
                 }
             },
             self
@@ -488,6 +511,10 @@ function (ko, models, tools, msg, validate, owned) {
             self.modalHeader("header-"+ editorId.replace('#',''));
             // load corresponding script for modal body
             self.modalBody("body-"+ editorId.replace('#',''));
+
+            var textCharLimit = $('#text').attr('maxLength');
+            var ackCharLimit = $('#acknowledgements').attr('maxLength');
+
         };
 
 
