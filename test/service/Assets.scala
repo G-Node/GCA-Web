@@ -220,7 +220,7 @@ class Assets() {
   var conferences : Array[Conference] = Array(
     Conference(None, ?("Bernstein Conference 2014"), ?("BC14"),
       ?("The C1 Conf, Somewhere, Sometime"), ?("http://www.nncn.de/en/bernstein-conference/2014"),
-      ?(bcDesc), ?(true), ?(true),
+      ?(bcDesc), ?(true), ?(true), ?(true), ?(true),
       ?(new DateTime(393415200000L)), ?(new DateTime(574423200000L)), ?(new DateTime(1321005600000L)),
       ?("http://www.nncn.de/header/header-conference.jpg"),
       ?("http://www.nncn.de/bilder/bc14_kurzlogo"),
@@ -228,12 +228,12 @@ class Assets() {
       Seq(AbstractGroup(None, ?(1), ?("Talk"), ?("T")),
           AbstractGroup(None, ?(2), ?("Poster"), ?("P")))),
     Conference(None, ?("The second conference"), ?("C2"),
-      ?("The C2 Conf, Somewhere, Sometime"), ?(""), None, ?(false), ?(true),
+      ?("The C2 Conf, Somewhere, Sometime"), ?(""), None, ?(false), ?(true), ?(false), ?(true),
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
       ?("http://www.nncn.de/header/header-conference.jpg"),
       ?("http://www.nncn.de/bilder/bc14_kurzlogo")),
     Conference(None, ?("The third conference"), ?("C3"),
-      ?("The C3 Conf, Somewhere, Sometime"), ?(""), ?(""), ?(false), ?(true),
+      ?("The C3 Conf, Somewhere, Sometime"), ?(""), ?(""), ?(false), ?(true), ?(false), ?(false),
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
       ?("http://www.nncn.de/header/header-conference.jpg"),
       ?("http://www.nncn.de/bilder/bc14_kurzlogo"))

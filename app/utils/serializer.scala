@@ -103,16 +103,17 @@ package object serializer {
       (__ \ "description").readNullable[String] and
       (__ \ "isOpen").readNullable[Boolean] and
       (__ \ "isPublished").readNullable[Boolean] and
+      (__ \ "isActive").readNullable[Boolean] and
+      (__ \ "hasPresentationPrefs").readNullable[Boolean] and
       (__ \ "start").readNullable[DateTime] and
       (__ \ "end").readNullable[DateTime] and
       (__ \ "deadline").readNullable[DateTime] and
       (__ \ "logo").readNullable[String] and
       (__ \ "thumbnail").readNullable[String] and
       (__ \ "iOSApp").readNullable[String] and
-
       (__ \ "groups").read[List[AbstractGroup]] and
       (__ \ "topics").read[List[Topic]].addPosition
-    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
+    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
       val groups: Seq[AbstractGroup] = asScalaSet(c.groups).toSeq.sortBy(x => x.prefix)
@@ -125,6 +126,8 @@ package object serializer {
         "description" -> c.description,
         "isOpen" -> c.isOpen,
         "isPublished" -> c.isPublished,
+        "isActive" -> c.isActive,
+        "hasPresentationPrefs" -> c.hasPresentationPrefs,
         "groups" ->  groups,
         "start" -> c.startDate,
         "end" -> c.endDate,
