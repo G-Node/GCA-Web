@@ -2,9 +2,7 @@ package conf
 
 import java.io.{PrintWriter, StringWriter}
 import java.lang.reflect.Constructor
-import java.util.concurrent.ExecutionException
 import javax.persistence.{EntityNotFoundException, NoResultException}
-
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.core.exceptions.AccessDeniedException
 import com.mohiva.play.silhouette.core.{Environment, SecuredSettings}
@@ -13,7 +11,6 @@ import play.api._
 import play.api.libs.json.{JsObject, JsError, JsResultException, Json}
 import play.api.mvc.Results._
 import play.api.mvc._
-
 import scala.concurrent.Future
 
 object Global extends GlobalSettings with SecuredSettings {
@@ -38,12 +35,13 @@ object Global extends GlobalSettings with SecuredSettings {
   def returnAsJson(request: RequestHeader) : Boolean = {
     // Browsers send */* in the accept header therefore the path is
     // probably the best way for us to determine whether to serve json.
-    // Any better idea is very wellcome.
+    // Any better idea is very welcome.
     request.path.startsWith("/api/")
   }
 
   def exHandlerHTML(request: RequestHeader, ex: Throwable) : Result = {
     ex match {
+      // From manual tests it can be assumed, that the NoResultsException case is probably never accessed.
       case e: NoResultException => NotFound(views.html.error.NotFound())
       case e: Exception => {
         e.getCause match {
@@ -90,4 +88,5 @@ object Global extends GlobalSettings with SecuredSettings {
       "message" -> ex.getMessage,
       "stacktrace" -> w.toString)
   }
+
 }
