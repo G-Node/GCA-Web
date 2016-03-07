@@ -48,6 +48,7 @@ object Global extends GlobalSettings with SecuredSettings {
       case e: Exception => {
         e.getCause match {
           case cause: AccessDeniedException => Unauthorized(views.html.error.NotAuthorized())
+          case cause: NoResultException => NotFound(views.html.error.NotFound())
           case _ => InternalServerError(views.html.error.InternalServerError(e))
         }
       }
