@@ -12,6 +12,7 @@ package models
 import collection.JavaConversions.asJavaCollection
 import java.util.{Set => JSet, TreeSet => JTreeSet, UUID}
 import javax.persistence.{PrePersist, Id, MappedSuperclass}
+import scala.reflect.runtime.universe._
 
 /**
  * Trait that defines stuff that is common for all models.
@@ -60,7 +61,6 @@ object Model {
    * Unwrap an optional value.
    *
    * @param value The optional value.
-   *
    * @return The value wrapped by Some or 0
    */
   def unwrapVal[T: Numeric](value: Option[T]) = {
@@ -74,7 +74,6 @@ object Model {
    * Unwrap an optional reference.
    *
    * @param value An optional value
-   *
    * @return The value wrapped by Some or null
    */
   def unwrapRef[T >: Null](value: Option[T]) : T = {
@@ -87,7 +86,6 @@ object Model {
   /**
    *
    * @param seq The sequence to convert.
-   *
    * @return A list
    */
   def toJSet[T](seq : Seq[T]) : JSet[T] = {
@@ -97,6 +95,25 @@ object Model {
     }
   }
 
+  def membersAnnotations[T: TypeTag]: Map[String, Map[String, Map[String, Any]]] = {
+    typeOf[T].members.withFilter {
+      _.annotations.length > 0
+    }.map { m =>
+      m.name.toString.trim -> m.annotations.map { a =>
+        a.tree.tpe.typeSymbol.name.toString.trim -> a.tree.children.withFilter {
+          _.productPrefix eq "AssignOrNamedArg"
+        }.map { tree =>
+          tree.productElement(0).toString.trim -> tree.productElement(1)
+        }.toMap
+      }.toMap
+    }.toMap
+  }
+
+  def getLimit[T :TypeTag](name: String): Int = {
+    membersAnnotations[T].get(name).flatMap(_.get("Column")).flatMap(_.get("length")).map {
+      x => x.asInstanceOf[Literal].value.value.asInstanceOf[Int]
+    }.getOrElse(255)
+  }
 
 }
 
