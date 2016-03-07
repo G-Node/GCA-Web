@@ -74,7 +74,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.init = function() {
 
-            if (confId != null) {
+            if (confId !== null) {
                 self.loadConference(confId);
             } else {
                 var conf = models.Conference();
@@ -174,7 +174,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 if (conf.hasOwnProperty(prop)) {
                     var value = conf[prop];
 
-                    if (value != undefined && tools.functionName(value) === "observable") {
+                    if (value !== undefined && tools.functionName(value) === "observable") {
                         value.subscribe(self.changeHandler);
                     }
                 }
