@@ -441,7 +441,7 @@
             <span>LaTeX-like equation typesetting is supported via MathJax. Use $$ and $ (inline).
                 <a target="_blank" href="http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference">Quick guide</a>
             </span><br>
-            <span data-bind="text: editorTextShowCharsLeft"></span><span data-bind="text: editorTextCharactersLeft"></span>
+            <span data-bind="if: showAbstractTextCharsLeft">Characters left: </span><span data-bind="text: editorTextCharactersLeft"></span>
         </div>
     </script>
 
@@ -455,7 +455,7 @@
                 maxlength="@Model.getLimit[Abstract]("acknowledgements")">
         </textarea>
         <div>
-            <span data-bind="text: editorAckShowCharsLeft"></span><span data-bind="text: editorAckCharactersLeft"></span>
+            <span data-bind="if: showAckCharsLeft">Characters left: </span><span data-bind="text: editorAckCharactersLeft"></span>
         </div>
     </script>
 

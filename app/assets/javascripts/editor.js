@@ -56,13 +56,13 @@ function (ko, models, tools, msg, validate, owned) {
             self
         );
 
-        self.editorTextShowCharsLeft = ko.computed(
+        self.showAbstractTextCharsLeft = ko.computed(
             function () {
-                if (self.editedAbstract() && self.editedAbstract().text()
-                            || $('#text').attr('maxLength') != undefined) {
-                    return "Characters left: ";
+                var textCharLimit = $('#text').attr('maxLength');
+                if (self.editedAbstract() && self.editedAbstract().text() && textCharLimit !== undefined) {
+                    return true;
                 } else {
-                    return "";
+                    return textCharLimit !== undefined;
                 }
             },
             self
@@ -71,7 +71,7 @@ function (ko, models, tools, msg, validate, owned) {
         self.editorTextCharactersLeft = ko.computed(
             function () {
                 var textCharLimit = $('#text').attr('maxLength');
-                if (self.editedAbstract() && self.editedAbstract().text() && textCharLimit != undefined) {
+                if (self.editedAbstract() && self.editedAbstract().text() && textCharLimit !== undefined) {
                     return textCharLimit - self.editedAbstract().text().length;
                 } else {
                     return textCharLimit;
@@ -80,13 +80,13 @@ function (ko, models, tools, msg, validate, owned) {
             self
         );
 
-        self.editorAckShowCharsLeft = ko.computed(
+        self.showAckCharsLeft = ko.computed(
             function () {
-                if (self.editedAbstract() && self.editedAbstract().acknowledgements()
-                            || $('#acknowledgements').attr('maxLength') != undefined) {
-                    return "Characters left: ";
+                var ackCharLimit = $('#acknowledgements').attr('maxLength');
+                if (self.editedAbstract() && self.editedAbstract().acknowledgements() && ackCharLimit !== undefined) {
+                    return true;
                 } else {
-                    return "";
+                    return ackCharLimit !== undefined;
                 }
             },
             self
@@ -95,7 +95,7 @@ function (ko, models, tools, msg, validate, owned) {
         self.editorAckCharactersLeft = ko.computed(
             function () {
                 var ackCharLimit = $('#acknowledgements').attr('maxLength');
-                if (self.editedAbstract() && self.editedAbstract().acknowledgements() && ackCharLimit != undefined) {
+                if (self.editedAbstract() && self.editedAbstract().acknowledgements() && ackCharLimit !== undefined) {
                     return ackCharLimit - self.editedAbstract().acknowledgements().length;
                 } else {
                     return ackCharLimit;
