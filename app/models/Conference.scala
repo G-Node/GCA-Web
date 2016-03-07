@@ -92,6 +92,8 @@ object Conference extends Model {
             description: Option[String],
             isOpen: Option[Boolean],
             isPublished: Option[Boolean],
+            isActive: Option[Boolean],
+            hasPresentationPrefs: Option[Boolean],
             startDate: Option[DateTime],
             endDate: Option[DateTime],
             deadline: Option[DateTime] = null,
@@ -111,8 +113,10 @@ object Conference extends Model {
     conference.cite        = unwrapRef(cite)
     conference.link        = unwrapRef(link)
     conference.description = unwrapRef(description)
-    conference.isOpen      = isOpen match {case Some(b) => b; case _ => false}
-    conference.isPublished = isPublished match {case Some(b) => b; case _ => false}
+    conference.isOpen      = isOpen.getOrElse(false)
+    conference.isPublished = isPublished.getOrElse(false)
+    conference.isActive    = isActive.getOrElse(false)
+    conference.hasPresentationPrefs = hasPresentationPrefs.getOrElse(false)
     conference.startDate   = unwrapRef(startDate)
     conference.endDate     = unwrapRef(endDate)
     conference.deadline    = unwrapRef(deadline)

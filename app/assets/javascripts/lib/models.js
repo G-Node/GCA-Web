@@ -246,6 +246,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @param {string}  [description]
      * @param {boolean} [isOpen]
      * @param {boolean} [isPublished]
+     * @param {boolean} [isActive]
+     * @param {boolean} [hasPresentationPrefs]
      * @param {Array}   [groups] List of {AbstractGroups}
      * @param {string}  [start]
      * @param {string}  [end]
@@ -261,12 +263,13 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @constructor
      * @public
      */
-    function Conference(uuid, name, short, cite, link, description, isOpen, isPublished, groups,
-                        start, end, deadline, logo, thumbnail, iOSApp, owners, abstracts, topics) {
+    function Conference(uuid, name, short, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
+                        groups, start, end, deadline, logo, thumbnail, iOSApp, owners, abstracts, topics) {
 
         if (! (this instanceof Conference)) {
-            return new Conference(uuid, name, short, cite, link, description, isOpen, isPublished, groups,
-                                  start, end, deadline, logo, thumbnail, iOSApp, owners, abstracts, topics);
+            return new Conference(uuid, name, short, cite, link, description, isOpen, isPublished, isActive,
+                                  hasPresentationPrefs, groups, start, end, deadline, logo, thumbnail, iOSApp, owners,
+                                  abstracts, topics);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -278,6 +281,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.description = description || null;
         self.isOpen = isOpen || false;
         self.isPublished = isPublished || false;
+        self.isActive = isActive || false;
+        self.hasPresentationPrefs = hasPresentationPrefs || false;
         self.groups = groups || [];
         self.start = start || null;
         self.end = end || null;

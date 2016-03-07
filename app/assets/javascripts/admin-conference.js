@@ -74,7 +74,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.init = function() {
 
-            if (confId != null) {
+            if (confId !== null) {
                 self.loadConference(confId);
             } else {
                 var conf = models.Conference();
@@ -167,13 +167,14 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.makeConferenceObservable = function (conf) {
             conf.makeObservable(["name", "short", "cite", "description", "start", "end", "groups",
-                "deadline", "logo", "thumbnail", "link", "isOpen", "isPublished", "topics", "iOSApp"]);
+                "deadline", "logo", "thumbnail", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
+                "topics", "iOSApp"]);
 
             for(var prop in conf) {
                 if (conf.hasOwnProperty(prop)) {
                     var value = conf[prop];
 
-                    if (value && tools.functionName(value) === "observable") {
+                    if (value !== undefined && tools.functionName(value) === "observable") {
                         value.subscribe(self.changeHandler);
                     }
                 }
@@ -211,7 +212,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             console.log("saveConference::");
             var method = self.conference().uuid === null ? "POST" : "PUT";
             var url = "/api/conferences" + (self.conference().uuid === null ? "" : "/" + self.conference().uuid);
-            var confData = self.conference().toJSON(4);
+            var confData = self.conference().toJSON();
             console.log(confData);
             self.isLoading("Saving conference data.");
             $.ajax(url, {

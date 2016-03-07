@@ -209,45 +209,51 @@
 
         </div>
 
-        <hr class="separator">
+        @if(! conference.topics.isEmpty || conference.hasPresentationPrefs) {
+            <hr class="separator">
+        }
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
-            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
-                        data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#topic-editor')">
-                    Edit
-                </button>
-            </div>
-
-            <div class="modal" id="topic-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
-
-            <div class="topic">
-                <h4>Topic</h4>
-                <p data-bind="text: abstract().topic"></p>
-            </div>
-        </div>
-
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
-            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                <button type="button" class="btn btn-default btn-sm" data-target="#is-talk-editor"
-                data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#is-talk-editor')">
-                    Edit
-                </button>
-            </div>
-
-            <div class="modal" id="is-talk-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
-
-            <div class="poster-or-talk">
-                <h4>Presentation Preference</h4>
-                <div data-bind="if: abstract().isTalk">
-                    <p>Talk or Poster</p>
-                    <p>Reason: <span data-bind="text: abstract().reasonForTalk"></span></p>
+        @if(! conference.topics.isEmpty) {
+            <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+                <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
+                    <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
+                    data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#topic-editor')">
+                        Edit
+                    </button>
                 </div>
-                <div data-bind="ifnot: abstract().isTalk">
-                    <p>Poster</p>
+
+                <div class="modal" id="topic-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
+
+                <div class="topic">
+                    <h4>Topic</h4>
+                    <p data-bind="text: abstract().topic"></p>
                 </div>
             </div>
-        </div>
+        }
+
+        @if(conference.hasPresentationPrefs) {
+            <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+                <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
+                    <button type="button" class="btn btn-default btn-sm" data-target="#is-talk-editor"
+                    data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#is-talk-editor')">
+                        Edit
+                    </button>
+                </div>
+
+                <div class="modal" id="is-talk-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
+
+                <div class="poster-or-talk">
+                    <h4>Presentation Preference</h4>
+                    <div data-bind="if: abstract().isTalk">
+                        <p>Talk or Poster</p>
+                        <p>Reason: <span data-bind="text: abstract().reasonForTalk"></span></p>
+                    </div>
+                    <div data-bind="ifnot: abstract().isTalk">
+                        <p>Poster</p>
+                    </div>
+                </div>
+            </div>
+        }
 
         <div data-bind="if: isAbstractSaved">
             <hr class="separator">
@@ -546,46 +552,50 @@
         </div>
     </script>
 
-    <!-- topic templates -->
-    <script id="header-topic-editor" type="text/html">
-        <h3>Set the Abstract Topic</h3>
-    </script>
-    <script id="body-topic-editor" type="text/html">
-        <div data-bind="foreach: conference().topics">
+    @if(! conference.topics.isEmpty) {
+            <!-- topic templates -->
+        <script id="header-topic-editor" type="text/html">
+            <h3>Set the Abstract Topic</h3>
+        </script>
+        <script id="body-topic-editor" type="text/html">
+            <div data-bind="foreach: conference().topics">
+                <div class="radio">
+                    <label>
+                        <input type="radio" data-bind="checked: $root.editedAbstract().topic, value: $data" />
+                        <span data-bind="text: $data"></span>
+                    </label>
+                </div>
+            </div>
+        </script>
+    }
+
+    @if(conference.hasPresentationPrefs) {
+        <!-- poster/talk templates -->
+        <script id="header-is-talk-editor" type="text/html">
+            <h3>Presentation Preference</h3>
+        </script>
+        <script id="body-is-talk-editor" type="text/html">
             <div class="radio">
                 <label>
-                    <input type="radio" data-bind="checked: $root.editedAbstract().topic, value: $data" />
-                    <span data-bind="text: $data"></span>
+                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="false"
+                           data-bind="checked: editedAbstract().isTalk.computed">
+                    Poster
                 </label>
             </div>
-        </div>
-    </script>
-
-    <!-- poster/talk templates -->
-    <script id="header-is-talk-editor" type="text/html">
-        <h3>Presentation Preference</h3>
-    </script>
-    <script id="body-is-talk-editor" type="text/html">
-        <div class="radio">
-            <label>
-                <input type="radio" name="optionsRadios" id="optionsRadios1" value="false"
-                data-bind="checked: editedAbstract().isTalk.computed">
-                Poster
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="optionsRadios" id="optionsRadios2" value="true"
-                data-bind="checked: editedAbstract().isTalk.computed">
-                Talk or Poster
-            </label>
-        </div>
-        <div data-bind="if: editedAbstract().isTalk">
-            <input type="text" class="form-control" placeholder="Why should this contribution be selected for an oral presentation?"
-                    maxlength="@Model.getLimit[Abstract]("reasonForTalk")"
-                    data-bind="value: editedAbstract().reasonForTalk">
-        </div>
-    </script>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="true"
+                           data-bind="checked: editedAbstract().isTalk.computed">
+                    Talk or Poster
+                </label>
+            </div>
+            <div data-bind="if: editedAbstract().isTalk">
+                <input type="text" class="form-control" placeholder="Why should this contribution be selected for an oral presentation?"
+                        maxlength="@Model.getLimit[Abstract]("reasonForTalk")"
+                        data-bind="value: editedAbstract().reasonForTalk">
+            </div>
+        </script>
+    }
 
     <!-- general footer used with all modals so far -->
     <script id="generalModalFooter" type="text/html">

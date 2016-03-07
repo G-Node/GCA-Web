@@ -14,7 +14,8 @@ import utils.DefaultRoutesResolver._
 class SerializerTest extends JUnitSuite {
 
   val sampleConference: Conference = Conference(Option("someuuid"), Option("bar"), Some("XX"), Some("X"),
-                                                None, None, Some(false), Some(true), None, None, None)
+                                                None, None, Some(false), Some(true), Some(false), Some(true),
+                                                None, None, None)
   val sampleAccount: Account = Account(Option("someuuid"), Option("example@gnode.org"))
   val sampleAuthor: Author = Author(Option("someuuid"), Option("email"), Option("first"),
     Option("middle"), Option("last"))
