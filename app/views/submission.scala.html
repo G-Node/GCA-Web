@@ -209,11 +209,11 @@
 
         </div>
 
-        @if(conference.topics.isEmpty || conference.hasPresentationPrefs) {
+        @if(! conference.topics.isEmpty || conference.hasPresentationPrefs) {
             <hr class="separator">
         }
 
-        @if(conference.topics.isEmpty) {
+        @if(! conference.topics.isEmpty) {
             <div class="editor-box" data-bind="css: {editable: isChangeOk}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                     <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
@@ -552,7 +552,7 @@
         </div>
     </script>
 
-    @if(conference.topics.isEmpty) {
+    @if(! conference.topics.isEmpty) {
             <!-- topic templates -->
         <script id="header-topic-editor" type="text/html">
             <h3>Set the Abstract Topic</h3>
