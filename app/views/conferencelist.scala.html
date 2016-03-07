@@ -1,4 +1,4 @@
-@(account: Option[Account], list_opened: Seq[Conference], list_published: Seq[Conference])(implicit request: RequestHeader)
+@(account: Option[Account], list_active: Seq[Conference], list_other: Seq[Conference])(implicit request: RequestHeader)
 
 @import views.html.bootstrap._
 
@@ -10,12 +10,12 @@
         <h1>Conference abstracts <small>and submission</small></h1>
     </div>
 
-    @if(list_opened.nonEmpty) {
+    @if(list_active.nonEmpty) {
         <h2>Active conferences</h2>
 
         <hr>
 
-        @for(conf <- list_opened) {
+        @for(conf <- list_active) {
             <div class="jumbotron">
                 @if(conf.logo != null) {
                     <p><img class="conference-logo img-responsive img-rounded" src="@conf.logo"></p>
@@ -39,12 +39,12 @@
         }
     }
 
-    @if(list_published.nonEmpty) {
+    @if(list_other.nonEmpty) {
         <h3>Past conferences</h3>
 
         <hr>
 
-        @for(conf <- list_published) {
+        @for(conf <- list_other) {
             <div class="media">
                 <div class="pull-left media-left">
                     <a href="@routes.Application.conference(conf.short)">
