@@ -1,6 +1,6 @@
 require(["main"], function () {
-require(["knockout", "lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned", "ko.sortable"],
-function (ko, models, tools, msg, validate, owned) {
+require(["knockout", "lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned", "lib/astate", "ko.sortable"],
+function (ko, models, tools, msg, validate, owned, astate) {
     "use strict";
 
     /**
@@ -41,6 +41,9 @@ function (ko, models, tools, msg, validate, owned) {
 
         // required to affiliate and author with a department
         self.selectedAffiliationAuthor = 0;
+
+        // just a shortcut
+        self.stateHelper = astate.changeHelper;
 
         self.isAbstractSaved = ko.computed(
             function () {
@@ -182,20 +185,9 @@ function (ko, models, tools, msg, validate, owned) {
             if (!saved) {
                 isOk = (newState === 'InPreparation' || newState === 'Submitted');
             } else {
-                switch (oldState) {
-                    case 'InPreparation':
-                        isOk = (newState === 'InPreparation' || newState === 'Submitted');
-                        break;
-                    case 'Submitted':
-                        isOk = (newState === 'Withdrawn');
-                        break;
-                    case 'Withdrawn':
-                        isOk = (newState === 'InPreparation');
-                        break;
-                    case 'InRevision':
-                        isOk = (newState === 'InRevision' || newState === 'Submitted');
-                        break;
-                }
+                var confIsClosed = !self.conference().isOpen;
+                isOk = newState === oldState ||
+                    self.stateHelper.canTransitionTo(oldState, newState, false, confIsClosed);
             }
 
             return isOk;
