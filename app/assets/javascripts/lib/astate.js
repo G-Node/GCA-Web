@@ -42,10 +42,10 @@ define(["lib/tools", "moment"], function(tools, moment) {
         };
 
         self.getActiveTransitionMap = function(isAdmin, isClosed) {
-            if(isAdmin) {
+            if (isAdmin) {
                 return self.transitionMap.admin;
             } else {
-                return self.owner[isClosed ? 'isClosed' : 'isOpen'];
+                return self.transitionMap.owner[isClosed ? 'isClosed' : 'isOpen'];
             }
         };
 
