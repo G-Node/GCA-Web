@@ -56,7 +56,7 @@ define(["lib/tools", "moment"], function(tools, moment) {
 
         self.canTransitionTo = function(fromState, toState, isAdmin, isClosed) {
             var possibleStates = self.getPossibleStatesFor(fromState, isAdmin, isClosed);
-            return toState in possibleStates;
+            return possibleStates.indexOf(toState) > -1;
         };
     }
 
