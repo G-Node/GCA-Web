@@ -387,13 +387,14 @@ class AbstractService(figPath: String) extends PermissionsBase {
 
   def setState(abstr: Abstract, state: AbstractState.State, editor: Account, message: Option[String]) = {
     transaction { (em, tx) =>
-      val logEntry = StateLogEntry(abstr, state, editor, message)
 
-      abstr.state = state
-      abstr.stateLog.add(logEntry)
+      val abstrMerged = em.merge(abstr)
+      abstrMerged.state = state
 
-      val merged = em.merge(abstr)
-      merged.stateLog.toSeq.sortWith(_.timestamp.getMillis > _.timestamp.getMillis)
+      val log = em.merge(StateLogEntry(abstrMerged, state, editor, message))
+      abstrMerged.stateLog.add(log)
+
+      abstrMerged.stateLog.toSeq.sortWith (_.timestamp.getMillis > _.timestamp.getMillis)
     }
   }
 
