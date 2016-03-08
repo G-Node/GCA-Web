@@ -23,3 +23,4 @@ bootstrap.css
 # local settings
 conf/application.dev.conf
 conf/application.prod.conf
+conf/*.disabled
