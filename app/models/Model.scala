@@ -39,16 +39,21 @@ class Model extends Ordered[Model] {
     if (uuid != null && that.uuid != null)
       uuid.compareTo(that.uuid)
     else
-      hashCode.compareTo(that.hashCode)
+      hashCode().compareTo(that.hashCode())
   }
 
-  override def equals(that: Any) : Boolean = {
-    that match {
-      case t: Model => (uuid != null && uuid == t.uuid) || hashCode == t.hashCode
-      case _ => false
-    }
+  def canEqual(other: Any): Boolean = other.isInstanceOf[Model]
+
+  override def equals(other: Any): Boolean = other match {
+    case that: Model =>
+      (that canEqual this) &&
+        uuid == that.uuid
+    case _ => false
   }
 
+  override def hashCode(): Int = {
+    if (uuid != null) uuid.hashCode else super.hashCode()
+  }
 }
 
 object Model {
