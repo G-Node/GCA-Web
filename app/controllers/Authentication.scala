@@ -2,10 +2,8 @@ package controllers
 
 import com.mohiva.play.silhouette.core.exceptions.{AccessDeniedException, AuthenticationException}
 import service.LoginStore
-
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
-
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.core.providers.CredentialsProvider
 import com.mohiva.play.silhouette.core.{LoginEvent, Silhouette, Environment}
@@ -28,7 +26,7 @@ class Authentication(implicit val env: Environment[Login, CachedCookieAuthentica
 
     (env.providers.get(provider) match {
       case Some(p: CredentialsProvider) => SignInForm.form.bindFromRequest().fold(
-        err => Future.failed(throw new AuthenticationException("Invalid form data")),
+        err => Future.failed(new AuthenticationException("Invalid form data")),
         data => p.authenticate(data))
       case _ => Future.failed(new AuthenticationException("Unsupported provider"))
     }).flatMap { loginInfo =>
@@ -45,7 +43,7 @@ class Authentication(implicit val env: Environment[Login, CachedCookieAuthentica
         case None => Future.failed(new AuthenticationException("Invalid user"))
       }
     }.recover {
-      case ex: AccessDeniedException => {
+      case ex @ (_:AccessDeniedException | _:AuthenticationException) => {
         Redirect(routes.Accounts.logIn()).flashing("error" -> "Wrong user name or password")
       }
     }
