@@ -170,7 +170,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
    * @throws NoResultException If was not found
    */
   def getOwn(id: String, account: Account) : Abstract = {
-    val abstr = query { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
            LEFT JOIN FETCH a.owners o
@@ -188,13 +188,13 @@ class AbstractService(figPath: String) extends PermissionsBase {
 
       val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
       query.setParameter("uuid", id)
-      query.getSingleResult
+      val abstr = query.getSingleResult
+
+      if (!(abstr.isOwner(account) || abstr.conference.isOwner(account) || account.isAdmin))
+        throw new IllegalAccessException("No permissions for abstract with uuid = " + abstr.uuid)
+
+      abstr
     }
-
-    if (!(abstr.isOwner(account) || abstr.conference.isOwner(account) || account.isAdmin))
-      throw new IllegalAccessException("No permissions for abstract with uuid = " + abstr.uuid)
-
-    abstr
   }
 
   /**
