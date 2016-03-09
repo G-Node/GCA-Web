@@ -259,6 +259,29 @@
             <button type="submit" class="btn btn-success"
                     data-bind="click: $root.saveConference, text: $root.saveButtonText, css { disabled: $root.saveButtonDisabled }">Save</button>
         </div>
+
+        <!-- Geo information management -->
+        <div data-bind="if: $root.hasConferenceUuid">
+            <hr>
+            <p class="lead">Geo information</p>
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="col-xs-12">
+                            <textarea id="geoContent" class="form-control" rows="4"
+                                placeholder="Conference geo information. Requires well-formed JSON."
+                                data-bind="value: geoContent, valueUpdate: 'afterkeydown'"
+                                maxlength="@Model.getLimit[Conference]("geo")"></textarea>
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-success"
+                                data-bind="click: $root.uploadGeo">Upload</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <hr>
 
         <!-- owner management with owned component -->
