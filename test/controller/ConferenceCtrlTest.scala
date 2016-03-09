@@ -2,7 +2,7 @@ package controller
 
 import org.junit._
 import play.api.Play
-import play.api.libs.json.{JsArray, JsObject, JsValue}
+import play.api.libs.json._
 import play.api.mvc.Cookie
 import play.api.test.Helpers._
 import play.api.test._
@@ -137,6 +137,39 @@ class ConferenceCtrlTest extends BaseCtrlTest {
 
     assert(status(response) == FORBIDDEN)
   }
+
+  @Test
+  def testGetGeo(): Unit = {
+
+    val existingGeo = assets.conferences(0)
+    val uuid = existingGeo.uuid
+    val req = FakeRequest(GET, s"/api/conferences/$uuid/geo")
+    val responseNoUser = route(ConferenceCtrlTest.app, req).get
+
+    assert(status(responseNoUser) == UNAUTHORIZED)
+
+    val eveCookie = getCookie(assets.eve, "testtest")
+    val reqEve = FakeRequest(GET, s"/api/conferences/$uuid/geo").withCookies(eveCookie)
+    val responseEve = route(ConferenceCtrlTest.app, reqEve).get
+
+    assert(status(responseEve) == OK)
+
+    val adminCookie = getCookie(assets.admin, "testtest")
+    val request = FakeRequest(GET, s"/api/conferences/$uuid/geo").withCookies(adminCookie)
+    val responseAdmin = route(ConferenceCtrlTest.app, request).get
+
+    assert(status(responseAdmin) == OK)
+    assert(contentAsJson(responseAdmin).equals(Json.parse(existingGeo.geo)))
+
+    val emptyGeo = assets.conferences(1)
+    val emptyGeoUuid = emptyGeo.uuid
+    val reqEmpty = FakeRequest(GET, s"/api/conferences/$emptyGeoUuid/geo").withCookies(adminCookie)
+    val response = route(ConferenceCtrlTest.app, reqEmpty).get
+
+    assert(status(response) == NOT_FOUND)
+    assert(contentAsJson(response).asInstanceOf[JsObject].values.head.asInstanceOf[JsBoolean].value.equals(true))
+  }
+
 }
 
 
