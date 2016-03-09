@@ -190,6 +190,7 @@ class ConferenceService() extends PermissionsBase {
         throw new IllegalAccessException("No permissions for conference with uuid = " + conference.uuid)
 
       conference.owners = confChecked.owners
+      conference.geo = confChecked.geo
 
       conference.groups.foreach { group =>
         group.conference = conference

@@ -112,9 +112,8 @@ package object serializer {
       (__ \ "thumbnail").readNullable[String] and
       (__ \ "iOSApp").readNullable[String] and
       (__ \ "groups").read[List[AbstractGroup]] and
-      (__ \ "topics").read[List[Topic]].addPosition and
-      (__ \ "geo").readNullable[String]
-    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _, _)).reads(json)
+      (__ \ "topics").read[List[Topic]].addPosition
+    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _)).reads(json)
 
     override def writes(c: Conference): JsValue = {
       val groups: Seq[AbstractGroup] = asScalaSet(c.groups).toSeq.sortBy(x => x.prefix)
