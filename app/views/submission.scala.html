@@ -23,20 +23,17 @@
 
     <div class="header">
         <div class="pull-right state-btn-group">
-            <span data-bind="ifnot: isAbstractSaved">
-                <button type="button" class="btn btn-success" data-bind="click: doSaveAbstract">
-                    Save
-                </button>
-            </span>
-            <span data-bind="if: showButtonSubmit">
-                <button type="button" class="btn btn-danger" data-bind="click: doSubmitAbstract">
-                    Submit
-                </button>
-            </span>
             <span data-bind="if: showButtonWithdraw">
                 <button type="button" class="btn btn-danger"  data-bind="click: doWithdrawAbstract">
                     Withdraw
                 </button>
+            </span>
+            <span data-bind="if: action">
+                <!-- ko with: action -->
+                <button type="button" class="btn" data-bind="click: action, text: label, css: level">
+                    Action
+                </button>
+                <!-- /ko -->
             </span>
         </div>
 
@@ -63,7 +60,7 @@
                 </span>
                 <li>After entering all information, click the <b>Submit</b> button to submit your abstract.</li>
                 <li>Submitted abstracts can be modified until the deadline.<br/>
-                    To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract. Don't forget to re-submit after editing.</li>
+                    To edit a <b>submitted</b> abstract, unlock the abstract. Don't forget to re-submit after editing.</li>
             </ul>
         </div>
     </span>
@@ -72,7 +69,7 @@
             <ul>
                 <li>This abstract is submitted, changes are deactivated.<br/>
                     Submitted abstracts can be modified until the deadline.</li>
-                <li>To modify a submitted abstract, withdraw and reactivate the abstract.<br/>
+                <li>To modify a submitted abstract, unlock the abstract.<br/>
                     Don't forget to re-submit after editing.</li>
             </ul>
         </div>

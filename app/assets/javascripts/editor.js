@@ -107,20 +107,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self
         );
 
-        self.showButtonSubmit = ko.computed(
-            function () {
-                if (self.abstract()) {
-                    var saved = self.isAbstractSaved(),
-                        state = self.originalState();
-
-                    return saved && (!state || state === 'InPreparation' || state === 'InRevision');
-                } else {
-                    return false;
-                }
-            },
-            self
-        );
-
         self.showButtonWithdraw = ko.computed(
             function () {
                 if (self.abstract()) {
@@ -472,12 +458,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
 
-        self.doSubmitAbstract = function () {
-            self.abstract().state('Submitted');
-            self.doSaveAbstract(self.abstract())
-        };
-
-
         self.doWithdrawAbstract = function () {
             self.abstract().state('Withdrawn');
             self.doSaveAbstract(self.abstract())
@@ -629,7 +609,74 @@ function (ko, models, tools, msg, validate, owned, astate) {
             references.splice(index, 1);
 
             self.editedAbstract().references(references);
-        }
+        };
+
+        // state related functions go here
+
+        // All state changing should be done via the state endpoint
+        self.doChangeState = function() {
+            var ctx = self.action(),
+                data = {state: ctx.want};
+
+            $.ajax("/api/abstracts/" + self.abstract().uuid + '/state', {
+                data: JSON.stringify(data),
+                type: "PUT",
+                contentType: "application/json",
+                success: function(result) {
+                    self.abstract().state(ctx.want);
+                    self.originalState(self.abstract().state());
+                    self.setOk("Ok", "Abstract now " + ctx.want, true);
+                },
+                error: function(jqxhr, textStatus, error) {
+                    abstract.state(abstract.state(self.originalState()));
+                    self.setError("Error", "Unable to set abstract state: " + error);
+                }
+            });
+
+        };
+
+        self.action = ko.computed(
+            function() {
+                var saved = self.isAbstractSaved(),
+                    state = self.originalState(),
+                    open = self.conference() && self.conference().isOpen;
+
+                if (open && ! saved) {
+                    return {
+                        label: "Save",
+                        level: "btn-success",
+                        action: self.doSaveAbstract
+                    };
+                }
+
+                var next = self.stateHelper.getPossibleStatesFor(state, false, !open);
+
+                // for this to work, there must be a single next state,
+                //  with the exception of Withdrawn, which must *not* be
+                //  the first (cf. the state map in lib/astate)
+                if (next.length > 0) {
+                    var possible = next[0];
+                    if (possible === 'Submitted') {
+                        return {
+                            label: "Submit",
+                            level: "btn-danger",
+                            action: self.doSubmitAbstract,
+                            want: "Submitted"
+                        };
+                    } else if (possible === 'InPreparation') {
+                        return {
+                            label: "Unlock",
+                            level: "btn-danger",
+                            action: self.doChangeState,
+                            want: 'InPreparation'
+                        };
+                    }
+                }
+
+                return false;
+            },
+            self
+        );
 
     }
 
