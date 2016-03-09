@@ -37,6 +37,8 @@ GET           /api/conferences/:id/abstracts                  @controllers.api.A
 GET           /api/conferences/:id/allAbstracts               @controllers.api.Abstracts.listAllByConference(id: String)
 PUT           /api/conferences/:id/owners                     @controllers.api.Conferences.setPermissions(id: String)
 GET           /api/conferences/:id/owners                     @controllers.api.Conferences.getPermissions(id: String)
+PUT           /api/conferences/:id/geo                        @controllers.api.Conferences.setGeo(id: String)
+GET           /api/conferences/:id/geo                        @controllers.api.Conferences.getGeo(id: String)
 
 # Abstract interface
 GET           /api/abstracts/:id                              @controllers.api.Abstracts.get(id: String)
