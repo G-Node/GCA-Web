@@ -17,8 +17,7 @@ define(["lib/tools", "moment"], function(tools, moment) {
             owner: {
                 isOpen: {
                     InPreparation: ["Submitted"],
-                    Submitted:     ["Withdrawn"],
-                    Withdrawn:     ["InPreparation"],
+                    Submitted:     ["InPreparation", "Withdrawn"],
                     InRevision:    ["Submitted"]
                 },
                 isClosed: {
