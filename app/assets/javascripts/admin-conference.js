@@ -25,6 +25,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.error = ko.observable(false);
         self.conference = ko.observable(null);
         self.haveChanges = ko.observable(false);
+        self.geoContent = ko.observable(null);
 
         ko.bindingHandlers.datetimepicker = {
             init: function(element, valueAccessor, allBindingsAccessor) {
@@ -206,6 +207,23 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             self.loadOwnersData(function() {
                 self.isLoading(false);
             });
+
+            var url = self.conference().geo;
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                success: function(obj) {
+                    self.geoContent(JSON.stringify(obj));
+                },
+                error: function(obj) {
+                    // Do not display NotFound errors.
+                    if (obj.status !== 404) {
+                        self.ioFailHandler(obj, obj.statusText, obj.status);
+                    }
+                }
+            });
+
         };
 
         self.saveConference = function() {
@@ -226,8 +244,39 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 error: self.ioFailHandler
             });
         };
-    }
 
+        self.hasConferenceUuid = ko.computed(function() {
+            if (self.conference() === null) {
+                return false;
+            } else {
+                return self.conference().uuid !== null;
+            }
+        });
+
+        self.uploadGeo = function() {
+            console.log("Upload geo information");
+            if( self.conference().uuid === null ) {
+                console.log("Conference does not exist yet.");
+                self.setError("danger", "Please create conference before uploading geo information.");
+            } else {
+                var url = self.conference().geo;
+                var geo = self.geoContent();
+                self.isLoading("Uploading geo data.");
+                $.ajax(url, {
+                    data: geo,
+                    type: "PUT",
+                    contentType: "application/json",
+                    success: function() {
+                        self.setError("info", "Geo information saved.")
+                    },
+                    error: function() {
+                        self.setError("danger", "Error uploading geo information. Please ensure that the JSON is well-formed.")
+                    }
+                });
+            }
+        };
+
+    }
 
     $(document).ready(function() {
 
