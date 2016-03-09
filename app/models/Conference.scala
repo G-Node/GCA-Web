@@ -103,7 +103,8 @@ object Conference extends Model {
             groups: Seq[AbstractGroup] = Nil,
             owners: Seq[Account] = Nil,
             abstracts: Seq[Abstract] = Nil,
-            topics: Seq[Topic] = Nil): Conference = {
+            topics: Seq[Topic] = Nil,
+            geo: Option[String] = null): Conference = {
 
     val conference = new Conference()
 
@@ -130,6 +131,8 @@ object Conference extends Model {
     conference.owners      = toJSet(owners)
     conference.abstracts   = toJSet(abstracts)
     conference.topics      = toJSet(topics)
+
+    conference.geo         = unwrapRef(geo)
 
     conference
   }
