@@ -399,6 +399,7 @@ function (ko, models, tools, msg, validate, owned) {
 
             if (!self.isChangeOk(abstract)) {
                 self.setError("Error", "Unable to save abstract: illegal state");
+                abstract.state(self.originalState());
                 return;
             }
 
@@ -406,6 +407,13 @@ function (ko, models, tools, msg, validate, owned) {
 
             if (result.hasErrors()) {
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
+                abstract.state(self.originalState());
+                return;
+            }
+
+            if (abstract.state() === "Submitted" && result.hasWarnings()) {
+                self.setError("Error", "Unable to save abstract: " + result.warnings[0]);
+                abstract.state(self.originalState());
                 return;
             }
 
