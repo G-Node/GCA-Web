@@ -193,7 +193,6 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     val response = route(ConferenceCtrlTest.app, req).get
 
     assert(status(response) == OK)
-    assert(contentAsJson(response).asInstanceOf[JsObject].values.head.asInstanceOf[JsBoolean].value.equals(false))
 
     val reqCheck = FakeRequest(GET, s"/api/conferences/$uuid/geo").withCookies(adminCookie)
     val getValidResponse = route(ConferenceCtrlTest.app, reqCheck).get
