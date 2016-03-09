@@ -144,7 +144,7 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
   def getGeo(id: String) = SecuredAction { implicit request =>
     val geo = conferenceService.get(id).geo
     if (geo == null) {
-      NotFound(Json.obj("error" -> true))
+      NotFound(Json.obj("message" -> "No geo entry not found."))
     } else {
       Ok(Json.parse(geo))
     }
