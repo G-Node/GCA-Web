@@ -82,6 +82,18 @@ class RoutesResolver {
   def activationUrl(token: String) = {
     new URL(baseUrl + s"/activate/$token")
   }
+
+  /**
+    * Builds an URL to fetch or manipulate the geo entry of a conference for a given conference UUID.
+    *
+    * @param id A UUID of a Conference object to insert into the URL.
+    *
+    * @return URL to manipulate the geo entry of the conference, like "/api/conferences/HNOPSADMHV/geo".
+    */
+  def geoUrl(id: String) = {
+    new URL(baseUrl + s"/api/conferences/$id/geo")
+  }
+
 }
 
 object DefaultRoutesResolver {
