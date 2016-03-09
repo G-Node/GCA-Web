@@ -13,7 +13,7 @@ object AbstractState extends Enumeration {
    *                        ,----- Conference.isOpen                                                                  *
    *                       \/                                                                                         */
   val ownerStates = Map("isOpen"  -> Map(InPreparation -> (Submitted :: Nil),
-                                         Submitted     -> (InPreparation :: Nil),
+                                         Submitted     -> (InPreparation :: Withdrawn :: Nil),
                                          InRevision    -> (Submitted :: Nil)),
                        "isClosed" -> Map(InRevision    -> (Submitted :: Nil)))
 
