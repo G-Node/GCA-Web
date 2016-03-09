@@ -137,7 +137,8 @@ package object serializer {
         "iOSApp" -> c.iOSApp,
         "abstracts" -> routesResolver.abstractsUrl(c.uuid),
         "allAbstracts" -> routesResolver.allAbstractsUrl(c.uuid),
-        "topics" -> c.topics.toSeq.sorted[Model]
+        "topics" -> c.topics.toSeq.sorted[Model],
+        "geo" -> routesResolver.geoUrl(c.uuid)
       )
     }
   }

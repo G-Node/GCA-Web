@@ -190,6 +190,7 @@ class ConferenceService() extends PermissionsBase {
         throw new IllegalAccessException("No permissions for conference with uuid = " + conference.uuid)
 
       conference.owners = confChecked.owners
+      conference.geo = confChecked.geo
 
       conference.groups.foreach { group =>
         group.conference = conference
@@ -256,6 +257,40 @@ class ConferenceService() extends PermissionsBase {
       em.remove(confChecked)
     }
   }
+
+  /**
+    * Update geo entry of an existing conference.
+    * @param conference Conference thats supposed to be updated.
+    * @param account The account which wants to perform the update.
+    * @param geo Value that is to be used for the update.
+    *
+    * @throws IllegalArgumentException If the conference has no uuid.
+    * @throws EntityNotFoundException If the conference or the user does not exist.
+    * @throws IllegalAccessException If account is not an owner.
+    */
+  def updateGeo(conference: Conference, account: Account, geo: String) : Unit = {
+    val conf = transaction { (em, tx) =>
+
+      if (conference.uuid == null)
+        throw new IllegalArgumentException("Unable to update a conference without uuid")
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val confChecked = em.find(classOf[Conference], conference.uuid)
+      if (confChecked == null)
+        throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
+
+      if (! (confChecked.owners.contains(accountChecked) || accountChecked.isAdmin))
+        throw new IllegalAccessException("No permissions for conference with uuid = " + conference.uuid)
+
+      conference.geo = geo
+
+      em.merge(conference)
+    }
+  }
+
 }
 
 
