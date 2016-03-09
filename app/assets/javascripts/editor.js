@@ -132,17 +132,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             },
             self
         );
-
-        self.showButtonReactivate = ko.computed(
-            function () {
-                var saved = self.isAbstractSaved(),
-                    state = self.originalState();
-
-                return saved && (!state || state === 'Withdrawn');
-            },
-            self
-        );
-
+        
         // hide edit buttons, if the abstract is in any state other
         // than "InPreparation" or "InRevision"
         self.showEditButton = ko.computed(
@@ -490,12 +480,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         self.doWithdrawAbstract = function () {
             self.abstract().state('Withdrawn');
-            self.doSaveAbstract(self.abstract())
-        };
-
-
-        self.doReactivateAbstract = function () {
-            self.abstract().state('InPreparation');
             self.doSaveAbstract(self.abstract())
         };
 
