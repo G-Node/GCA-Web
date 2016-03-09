@@ -8,9 +8,7 @@ import utils.DefaultRoutesResolver._
 import models.Conference
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
-
 import models._
-
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.core.{Silhouette, Environment}
 
@@ -63,7 +61,6 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
    * A conference info by id.
    *
    * @param id The id of the conference.
-   *
    * @return OK with conference in JSON / NotFound
    */
   def get(id: String) = Action { implicit request =>
@@ -74,7 +71,6 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
    * Update an existing conference info.
    *
    * @param id   The conference id to update.
-   *
    * @return OK with conference in JSON / BadRequest / Forbidden
    */
   def update(id: String) = SecuredAction(parse.json) { implicit request =>
@@ -89,7 +85,6 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
    * Delete an existing conference.
    *
    * @param id   Conference id to delete.
-   *
    * @return OK | BadRequest | Forbidden
    */
   def delete(id: String) = SecuredAction { implicit request =>
@@ -127,5 +122,32 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
       for (acc <- owners) yield accountFormat.writes(acc)
     ))
   }
-}
 
+  /**
+    * Set the geo entry of a specific conference.
+    *
+    * @param id Conference id where the geo entry should be set.
+    * @return OK | BadRequest | Forbidden | Unauthorized
+    */
+  def setGeo(id: String) = SecuredAction(parse.json) { implicit request =>
+    val geo = Json.stringify(request.body)
+    conferenceService.updateGeo(conferenceService.get(id), request.identity.account, geo)
+    Ok(Json.obj("error" -> false))
+  }
+
+  /**
+    * Return the geo entry of a specific conference.
+    *
+    * @param id Conference id of the required geo entry.
+    * @return OK | NotFound
+    */
+  def getGeo(id: String) = SecuredAction { implicit request =>
+    val geo = conferenceService.get(id).geo
+    if (geo == null) {
+      NotFound(Json.obj("error" -> true))
+    } else {
+      Ok(Json.parse(geo))
+    }
+  }
+
+}
