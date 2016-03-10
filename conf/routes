@@ -39,6 +39,10 @@ PUT           /api/conferences/:id/owners                     @controllers.api.C
 GET           /api/conferences/:id/owners                     @controllers.api.Conferences.getPermissions(id: String)
 PUT           /api/conferences/:id/geo                        @controllers.api.Conferences.setGeo(id: String)
 GET           /api/conferences/:id/geo                        @controllers.api.Conferences.getGeo(id: String)
+PUT           /api/conferences/:id/schedule                   @controllers.api.Conferences.setSchedule(id: String)
+GET           /api/conferences/:id/schedule                   @controllers.api.Conferences.getSchedule(id: String)
+PUT           /api/conferences/:id/info                       @controllers.api.Conferences.setInfo(id: String)
+GET           /api/conferences/:id/info                       @controllers.api.Conferences.getInfo(id: String)
 
 # Abstract interface
 GET           /api/abstracts/:id                              @controllers.api.Abstracts.get(id: String)
