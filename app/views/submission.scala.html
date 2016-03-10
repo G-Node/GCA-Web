@@ -247,9 +247,21 @@
             </div>
         }
 
-        <div data-bind="if: isAbstractSaved">
-            <hr class="separator">
-            @components.owned()
+        <!-- Advanced abstract settings -->
+        <div>
+            <ul class="nav nav-pills" role="tablist">
+                <li role="presentation" data-bind="if: isAbstractSaved">
+                    <a href="#owner" aria-controls="owner" role="tab" data-toggle="tab">Owner Management</a>
+                </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content" data-bind="if: isAbstractSaved">
+                <div role="tabpanel" class="tab-pane" id="owner">
+                @components.owned()
+                </div>
+            </div>
+
         </div>
 
     </div>
