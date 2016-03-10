@@ -271,12 +271,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
 
       abstr.stateLog = abstrChecked.stateLog
       if(abstr.state != abstrChecked.state) {
-
-        //TODO: reject all state changes if abstr.state != InPreparation,
-        //TODO:   except for Submitted && Withdrawn
-
-        //state changed, add a log entry
-        abstr.stateLog.add(StateLogEntry(abstr, abstr.state, account))
+        throw new IllegalAccessException(s"Trying to change state via update [uuid = $abstr.uuid]")
       }
 
       arrangeAffiliations(abstr)

@@ -102,6 +102,26 @@ class AbstractsCtrlTest extends BaseCtrlTest {
   }
 
   @Test
+  def testUpdateState() {
+
+    val original = assets.abstracts(0)
+
+    original.state = AbstractState.Withdrawn
+    val absUUID = original.uuid
+
+    val body = Json.toJson(original)
+    val reqNoAuth = FakeRequest(PUT, s"/api/abstracts/$absUUID").withJsonBody(body)
+
+    val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
+    assert(status(reqNoAuthResult) == UNAUTHORIZED)
+
+    val reqAuth = reqNoAuth.withCookies(cookie)
+
+    val reqAuthResult = routeWithErrors(AbstractsCtrlTest.app, reqAuth).get
+    assert(status(reqAuthResult) == FORBIDDEN)
+  }
+
+  @Test
   def testListByAccount() {
 
     val uid = assets.alice.uuid

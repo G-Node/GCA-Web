@@ -23,35 +23,21 @@
 
     <div class="header">
         <div class="pull-right state-btn-group">
-            <span data-bind="ifnot: isAbstractSaved">
-                <button type="button" class="btn btn-success" data-bind="click: doSaveAbstract">
-                    Save
+            <span data-bind="if: action">
+                <!-- ko with: action -->
+                <button type="button" class="btn" data-bind="click: action, text: label, css: level">
+                    Action
                 </button>
-            </span>
-            <span data-bind="if: showButtonReactivate">
-                <button type="button" class="btn btn-success" data-bind="click: doReactivateAbstract">
-                    Reactivate
-                </button>
-            </span>
-            <span data-bind="if: showButtonSubmit">
-                <button type="button" class="btn btn-danger" data-bind="click: doSubmitAbstract">
-                    Submit
-                </button>
-            </span>
-            <span data-bind="if: showButtonWithdraw">
-                <button type="button" class="btn btn-danger"  data-bind="click: doWithdrawAbstract">
-                    Withdraw
-                </button>
+                <!-- /ko -->
             </span>
         </div>
 
-        <!-- display the current abstract status-->
-        <div>
+        <h3>Abstract submission  <small>@conference.name</small></h3>
+        <!-- display the current abstract status -->
+        <div data-bind="if: isAbstractSaved">
             Abstract status:
             <span class="badge" data-bind="text: abstract().state()"></span>
         </div>
-
-        <h2>Abstract submission  <small>@conference.name</small></h2>
     </div>
 
     <hr class="separator">
@@ -68,7 +54,7 @@
                 </span>
                 <li>After entering all information, click the <b>Submit</b> button to submit your abstract.</li>
                 <li>Submitted abstracts can be modified until the deadline.<br/>
-                    To edit a <b>submitted</b> abstract, withdraw and reactivate the abstract. Don't forget to re-submit after editing.</li>
+                    To edit a <b>submitted</b> abstract, unlock the abstract. Don't forget to re-submit after editing.</li>
             </ul>
         </div>
     </span>
@@ -77,7 +63,7 @@
             <ul>
                 <li>This abstract is submitted, changes are deactivated.<br/>
                     Submitted abstracts can be modified until the deadline.</li>
-                <li>To modify a submitted abstract, withdraw and reactivate the abstract.<br/>
+                <li>To modify a submitted abstract, unlock the abstract.<br/>
                     Don't forget to re-submit after editing.</li>
             </ul>
         </div>
@@ -87,7 +73,7 @@
 
     <div id="abstract">
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal"
                         data-bind="click: doStartEdit.bind($root, '#title-editor')">
@@ -102,7 +88,7 @@
             </div>
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal"
                         data-bind="click: doStartEdit.bind($root, '#authors-editor')">
@@ -119,7 +105,7 @@
             </div>
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#affiliations-editor')">
@@ -137,7 +123,7 @@
 
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#abstract-text-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#abstract-text-editor')">
@@ -152,7 +138,7 @@
             </div>
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#acknowledgements-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#acknowledgements-editor')">
@@ -168,7 +154,7 @@
             </div>
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#references-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#references-editor')">
@@ -186,7 +172,7 @@
             </div>
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#figure-editor"
                 data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#figure-editor')">
@@ -214,7 +200,7 @@
         }
 
         @if(! conference.topics.isEmpty) {
-            <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+            <div class="editor-box" data-bind="css: {editable: showEditButton}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                     <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
                     data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#topic-editor')">
@@ -232,7 +218,7 @@
         }
 
         @if(conference.hasPresentationPrefs) {
-            <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+            <div class="editor-box" data-bind="css: {editable: showEditButton}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                     <button type="button" class="btn btn-default btn-sm" data-target="#is-talk-editor"
                     data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#is-talk-editor')">
@@ -255,9 +241,43 @@
             </div>
         }
 
-        <div data-bind="if: isAbstractSaved">
-            <hr class="separator">
-            @components.owned()
+        <!-- Advanced abstract settings -->
+        <div>
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active" data-bind="if: stateLog">
+                    <a href="#statelog" aria-controls="statelog" role="tab" data-toggle="tab">State Log</a>
+                </li>
+                <li role="presentation" data-bind="if: showEditButton() && isAbstractSaved()">
+                    <a href="#owner" aria-controls="owner" role="tab" data-toggle="tab">Owner Management</a>
+                </li>
+                <li role="presentation" data-bind="if: showButtonWithdraw">
+                    <a href="#withdraw" aria-controls="withdraw" role="tab" data-toggle="tab">Withdraw</a>
+                </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content" data-bind="if: stateLog">
+                <div role="tabpanel" class="tab-pane active" id="statelog">
+                @components.statelog("stateLog") { <div></div> }
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="owner" data-bind="if: showEditButton() && isAbstractSaved()">
+                @components.owned()
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="withdraw" data-bind="if: showButtonWithdraw">
+                    <div class="callout-danger">
+                        <h4>Warning!</h4>
+                        <p>Abstract withdrawal is permanent! There is no way to recover the
+                           abstract yourself once it is withdrawn.
+                          <br>
+                            <button type="button" class="btn btn-danger"  data-bind="click: doWithdrawAbstract">
+                                Withdraw
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>

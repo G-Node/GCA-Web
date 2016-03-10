@@ -144,6 +144,15 @@ class AbstractServiceTest extends JUnitSuite {
     intercept[IllegalAccessException] {
       srv.update(original, assets.eve)
     }
+
+    // state changes are not allowed via the update API anymore
+    val stateChanged = assets.abstracts(0)
+    AbstractState.values.filter(stateChanged.state != _).foreach { v =>
+      stateChanged.state = v
+      intercept[IllegalAccessException] {
+        srv.update(stateChanged, assets.alice)
+      }
+    }
   }
 
   @Test

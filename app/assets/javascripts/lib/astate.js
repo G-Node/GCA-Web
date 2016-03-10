@@ -17,8 +17,7 @@ define(["lib/tools", "moment"], function(tools, moment) {
             owner: {
                 isOpen: {
                     InPreparation: ["Submitted"],
-                    Submitted:     ["Withdrawn"],
-                    Withdrawn:     ["InPreparation"],
+                    Submitted:     ["InPreparation", "Withdrawn"],
                     InRevision:    ["Submitted"]
                 },
                 isClosed: {
@@ -42,10 +41,10 @@ define(["lib/tools", "moment"], function(tools, moment) {
         };
 
         self.getActiveTransitionMap = function(isAdmin, isClosed) {
-            if(isAdmin) {
+            if (isAdmin) {
                 return self.transitionMap.admin;
             } else {
-                return self.owner[isClosed ? 'isClosed' : 'isOpen'];
+                return self.transitionMap.owner[isClosed ? 'isClosed' : 'isOpen'];
             }
         };
 
@@ -56,7 +55,7 @@ define(["lib/tools", "moment"], function(tools, moment) {
 
         self.canTransitionTo = function(fromState, toState, isAdmin, isClosed) {
             var possibleStates = self.getPossibleStatesFor(fromState, isAdmin, isClosed);
-            return toState in possibleStates;
+            return possibleStates.indexOf(toState) > -1;
         };
     }
 

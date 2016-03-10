@@ -1,6 +1,6 @@
 require(["main"], function () {
-require(["knockout", "lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned", "ko.sortable"],
-function (ko, models, tools, msg, validate, owned) {
+require(["knockout", "lib/models", "lib/tools", "lib/msg", "lib/validate", "lib/owned", "lib/astate", "ko.sortable"],
+function (ko, models, tools, msg, validate, owned, astate) {
     "use strict";
 
     /**
@@ -24,7 +24,7 @@ function (ko, models, tools, msg, validate, owned) {
         self.conference = ko.observable(null);
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
-        self.originalState = ko.observable(null);
+        self.stateLog = ko.observable(null);
 
         // required to set displayed modal header
         self.modalHeader = ko.observable(null);
@@ -41,6 +41,9 @@ function (ko, models, tools, msg, validate, owned) {
 
         // required to affiliate and author with a department
         self.selectedAffiliationAuthor = 0;
+
+        // just a shortcut
+        self.stateHelper = astate.changeHelper;
 
         self.isAbstractSaved = ko.computed(
             function () {
@@ -103,51 +106,13 @@ function (ko, models, tools, msg, validate, owned) {
             },
             self
         );
-
-        self.showButtonSubmit = ko.computed(
-            function () {
-                if (self.abstract()) {
-                    var saved = self.isAbstractSaved(),
-                        state = self.originalState();
-
-                    return saved && (!state || state === 'InPreparation' || state === 'InRevision');
-                } else {
-                    return false;
-                }
-            },
-            self
-        );
-
-        self.showButtonWithdraw = ko.computed(
-            function () {
-                if (self.abstract()) {
-                    var ok = ['Submitted', 'InReview'];
-                    return self.isAbstractSaved() && (ok.indexOf(self.originalState()) >= 0);
-                } else {
-                    return false;
-                }
-            },
-            self
-        );
-
-        self.showButtonReactivate = ko.computed(
-            function () {
-                var saved = self.isAbstractSaved(),
-                    state = self.originalState();
-
-                return saved && (!state || state === 'Withdrawn');
-            },
-            self
-        );
-
+        
         // hide edit buttons, if the abstract is in any state other
         // than "InPreparation" or "InRevision"
         self.showEditButton = ko.computed(
             function () {
-                var saved = self.isAbstractSaved(),
-                    state = self.originalState();
-
-                return !saved || (!state || state === 'InPreparation' || state === 'InRevision');
+                var ok = ['InPreparation', 'InRevision'];
+                return !self.isAbstractSaved() || (ok.indexOf(self.abstract().state()) > -1);
             },
             self
         );
@@ -161,46 +126,12 @@ function (ko, models, tools, msg, validate, owned) {
                 self.requestAbstract(abstrId);
             } else {
                 self.abstract(models.ObservableAbstract());
-                self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract());
             }
 
             ko.applyBindings(window.editor);
             MathJax.Hub.Configured(); //start MathJax
         };
-
-
-        self.isChangeOk = function (abstract) {
-
-            abstract = abstract || self.abstract();
-
-            var saved = self.isAbstractSaved(),
-                oldState = self.originalState(),
-                newState = abstract ? abstract.state() : null,
-                isOk = false;
-
-            if (!saved) {
-                isOk = (newState === 'InPreparation' || newState === 'Submitted');
-            } else {
-                switch (oldState) {
-                    case 'InPreparation':
-                        isOk = (newState === 'InPreparation' || newState === 'Submitted');
-                        break;
-                    case 'Submitted':
-                        isOk = (newState === 'Withdrawn');
-                        break;
-                    case 'Withdrawn':
-                        isOk = (newState === 'InPreparation');
-                        break;
-                    case 'InRevision':
-                        isOk = (newState === 'InRevision' || newState === 'Submitted');
-                        break;
-                }
-            }
-
-            return isOk;
-        };
-
 
         self.getEditorAuthorsForAffiliation = function (index) {
             var authors = [];
@@ -252,8 +183,8 @@ function (ko, models, tools, msg, validate, owned) {
 
             function success(obj) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
-                self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract());
+                self.fetchStateLog();
                 self.setupOwners("/api/abstracts/" + abstrId + "/owners", self.setError);
                 self.loadOwnersData(null);
             }
@@ -355,11 +286,6 @@ function (ko, models, tools, msg, validate, owned) {
 
         self.doRemoveFigure = function () {
 
-            if (!self.isChangeOk()) {
-                self.setError("Error", "Unable to save abstract: illegal state");
-                return;
-            }
-
             if (self.hasAbstractFigures()) {
                 var figure = self.abstract().figures()[0];
 
@@ -397,23 +323,10 @@ function (ko, models, tools, msg, validate, owned) {
                 abstract = self.abstract();
             }
 
-            if (!self.isChangeOk(abstract)) {
-                self.setError("Error", "Unable to save abstract: illegal state");
-                abstract.state(self.originalState());
-                return;
-            }
-
             var result = validate.abstract(abstract);
 
             if (result.hasErrors()) {
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
-                abstract.state(self.originalState());
-                return;
-            }
-
-            if (abstract.state() === "Submitted" && result.hasWarnings()) {
-                self.setError("Error", "Unable to save abstract: " + result.warnings[0]);
-                abstract.state(self.originalState());
                 return;
             }
 
@@ -455,7 +368,6 @@ function (ko, models, tools, msg, validate, owned) {
 
             function successAbs(obj) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
-                self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract());
 
                 var hasNoFig = !self.hasAbstractFigures(),
@@ -469,6 +381,10 @@ function (ko, models, tools, msg, validate, owned) {
                     } else {
                         self.setOk("Ok", "Abstract saved.", true);
                     }
+                }
+
+                if (! self.stateLog()) {
+                    self.fetchStateLog();
                 }
 
                 self.setupOwners("/api/abstracts/" + self.abstract().uuid + "/owners", self.setError);
@@ -488,26 +404,7 @@ function (ko, models, tools, msg, validate, owned) {
                 self.setError("Error", "Unable to save abstract!");
             }
         };
-
-
-        self.doSubmitAbstract = function () {
-            self.abstract().state('Submitted');
-            self.doSaveAbstract(self.abstract())
-        };
-
-
-        self.doWithdrawAbstract = function () {
-            self.abstract().state('Withdrawn');
-            self.doSaveAbstract(self.abstract())
-        };
-
-
-        self.doReactivateAbstract = function () {
-            self.abstract().state('InPreparation');
-            self.doSaveAbstract(self.abstract())
-        };
-
-
+        
         self.doStartEdit = function (editorId) {
             var ed = $(editorId).find("input").first();
             ed.focus();
@@ -519,10 +416,6 @@ function (ko, models, tools, msg, validate, owned) {
             self.modalHeader("header-"+ editorId.replace('#',''));
             // load corresponding script for modal body
             self.modalBody("body-"+ editorId.replace('#',''));
-
-            var textCharLimit = $('#text').attr('maxLength');
-            var ackCharLimit = $('#acknowledgements').attr('maxLength');
-
         };
 
 
@@ -653,7 +546,113 @@ function (ko, models, tools, msg, validate, owned) {
             references.splice(index, 1);
 
             self.editedAbstract().references(references);
-        }
+        };
+
+        // state related functions go here
+
+        self.successStateLog = function(logData) {
+            astate.logHelper.formatDate(logData);
+            self.stateLog(logData);
+        };
+
+        self.fetchStateLog = function() {
+            var logUrl = "/api/abstracts/" + self.abstract().uuid + "/stateLog";
+            $.getJSON(logUrl, self.successStateLog).error(function(jqxhr, textStatus, error) {
+                self.setError("Warning", "Unable to fetch state log: " + error);
+            });
+        };
+
+        // All state changing should be done via the state endpoint
+        self.doChangeState = function(toState) {
+            var data = {state: toState};
+
+            if (toState === "Submitted") {
+                var result = validate.abstract(self.abstract());
+                if (! result.ok()) {
+                    self.setError("Error", "Unable to submit: " +
+                        (result.hasErrors() ? result.errors[0] : result.warnings[0]));
+                    return;
+                }
+            }
+
+            $.ajax("/api/abstracts/" + self.abstract().uuid + '/state', {
+                data: JSON.stringify(data),
+                type: "PUT",
+                contentType: "application/json",
+                success: function(result) {
+                    self.abstract().state(toState);
+                    self.setOk("Ok", "Abstract now " + toState, true);
+                    self.successStateLog(result);
+                },
+                error: function(jqxhr, textStatus, error) {
+                    self.setError("Error", "Unable to set abstract state: " + error);
+                }
+            });
+        };
+
+        self.doWithdrawAbstract = function () {
+            self.doChangeState("Withdrawn");
+        };
+
+        self.action = ko.computed(
+            function() {
+                var saved = self.isAbstractSaved(),
+                    open = self.conference() && self.conference().isOpen;
+
+                if (! saved) {
+                    if (open) {
+                        return {
+                            label: "Save",
+                            level: "btn-success",
+                            action: self.doSaveAbstract
+                        };
+                    } else {
+                        return false;
+                    }
+                }
+
+                var current = self.abstract().state();
+                var possible = self.stateHelper.getPossibleStatesFor(current, false, !open);
+
+                // for this to work, there must be a single next state,
+                //  with the exception of Withdrawn, which must *not* be
+                //  the first (cf. the state map in lib/astate)
+                if (possible.length > 0) {
+                    var next = possible[0];
+                    if (next === 'Submitted') {
+                        return {
+                            label: "Submit",
+                            level: "btn-danger",
+                            action: function() { self.doChangeState(next); },
+                            want: next
+                        };
+                    } else if (next === 'InPreparation') {
+                        return {
+                            label: "Unlock",
+                            level: "btn-danger",
+                            action: function() { self.doChangeState(next); },
+                            want: next
+                        };
+                    }
+                }
+
+                return false;
+            },
+            self
+        );
+
+        self.showButtonWithdraw = ko.computed(
+            function () {
+                if (self.abstract() && self.isAbstractSaved()) {
+                    var state = self.abstract().state(),
+                        open = self.conference() && self.conference().isOpen;
+                    return self.stateHelper.canTransitionTo(state, "Withdrawn", false, !open);
+                } else {
+                    return false;
+                }
+            },
+            self
+        );
 
     }
 

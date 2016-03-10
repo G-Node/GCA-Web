@@ -65,6 +65,8 @@ object Global extends GlobalSettings with SecuredSettings {
         e.getCause match {
           case cause: IllegalArgumentException =>
             UnprocessableEntity(exceptionToJSON(cause))
+          case cause: IllegalAccessException =>
+            Forbidden(exceptionToJSON(cause))
           case _ => InternalServerError(exceptionToJSON(e))
         }
     }
