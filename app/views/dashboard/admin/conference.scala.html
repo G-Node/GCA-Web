@@ -195,69 +195,73 @@
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         <button type="submit" class="btn btn-success"
-                                data-bind="click: $root.saveConference, text: $root.saveButtonText, css { disabled: $root.saveButtonDisabled }">Save</button>
+                                data-bind="click: $root.saveConference, text: $root.saveButtonText,
+                                                css { disabled: $root.saveButtonDisabled }">Save</button>
                     </div>
                 </div>
             </form>
         </div>
 
         <!-- groups management -->
-        <p class="lead">Groups</p>
-        <div data-bind="with: conference">
-            <table class="table .table-condensed">
-                <thead>
-                    <tr>
-                        <th class="col-xs-1">Prefix</th>
-                        <th class="col-xs-4">Short</th>
-                        <th class="col-xs-6">Long</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- ko foreach: groups -->
-                    <tr>
-                        <td>
-                            <input class="form-control" data-bind="value: prefix, valueUpdate: 'afterkeydown'"
-                                    type="text" maxlength="@Model.getLimit[AbstractGroup]("prefix")">
-                        </td>
-                        <td>
-                            <input class="form-control" data-bind="value: short, valueUpdate: 'afterkeydown'"
-                                    type="text" maxlength="@Model.getLimit[AbstractGroup]("short")">
-                        </td>
-                        <td>
-                            <input class="form-control" data-bind="value: name, valueUpdate: 'afterkeydown'"
-                                    type="text" maxlength="@Model.getLimit[AbstractGroup]("name")">
-                        </td>
-                        <td>
-                            <button class="btn btn-danger btn-xs" data-bind="click: $root.removeGroup">
-                                <span class="glyphicon glyphicon-remove icon-no-gap"> Remove</span>
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- /ko -->
-                    <tr id="newGroup">
-                        <td>
-                            <input id="ngPrefix" class="form-control" type="text"
-                                    maxlength="@Model.getLimit[AbstractGroup]("prefix")">
-                        </td>
-                        <td>
-                            <input id="ngShort" class="form-control" type="text"
-                                    maxlength="@Model.getLimit[AbstractGroup]("short")">
-                        </td>
-                        <td>
-                            <input id="ngName" class="form-control" type="text"
-                                    maxlength="@Model.getLimit[AbstractGroup]("name")">
-                        </td>
-                        <td>
-                            <button class="btn btn-primary btn-xs" data-bind="click: $root.addGroup">
-                                <span class="glyphicon glyphicon-plus icon-no-gap"> Create</span>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <button type="submit" class="btn btn-success"
-                    data-bind="click: $root.saveConference, text: $root.saveButtonText, css { disabled: $root.saveButtonDisabled }">Save</button>
+        <div data-bind="if: $root.isConferenceSaved">
+            <p class="lead">Groups</p>
+            <div data-bind="with: conference">
+                <table class="table .table-condensed">
+                    <thead>
+                        <tr>
+                            <th class="col-xs-1">Prefix</th>
+                            <th class="col-xs-4">Short</th>
+                            <th class="col-xs-6">Long</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ko foreach: groups -->
+                        <tr>
+                            <td>
+                                <input class="form-control" data-bind="value: prefix, valueUpdate: 'afterkeydown'"
+                                        type="text" maxlength="@Model.getLimit[AbstractGroup]("prefix")">
+                            </td>
+                            <td>
+                                <input class="form-control" data-bind="value: short, valueUpdate: 'afterkeydown'"
+                                        type="text" maxlength="@Model.getLimit[AbstractGroup]("short")">
+                            </td>
+                            <td>
+                                <input class="form-control" data-bind="value: name, valueUpdate: 'afterkeydown'"
+                                        type="text" maxlength="@Model.getLimit[AbstractGroup]("name")">
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btn-xs" data-bind="click: $root.removeGroup">
+                                    <span class="glyphicon glyphicon-remove icon-no-gap"> Remove</span>
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- /ko -->
+                        <tr id="newGroup">
+                            <td>
+                                <input id="ngPrefix" class="form-control" type="text"
+                                        maxlength="@Model.getLimit[AbstractGroup]("prefix")">
+                            </td>
+                            <td>
+                                <input id="ngShort" class="form-control" type="text"
+                                        maxlength="@Model.getLimit[AbstractGroup]("short")">
+                            </td>
+                            <td>
+                                <input id="ngName" class="form-control" type="text"
+                                        maxlength="@Model.getLimit[AbstractGroup]("name")">
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-xs" data-bind="click: $root.addGroup">
+                                    <span class="glyphicon glyphicon-plus icon-no-gap"> Create</span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-success"
+                        data-bind="click: $root.saveConference, text: $root.saveButtonText,
+                                        css { disabled: $root.saveButtonDisabled }">Save</button>
+            </div>
         </div>
 
         <!-- Geo information management -->
