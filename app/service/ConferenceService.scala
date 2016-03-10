@@ -191,6 +191,8 @@ class ConferenceService() extends PermissionsBase {
 
       conference.owners = confChecked.owners
       conference.geo = confChecked.geo
+      conference.schedule = confChecked.schedule
+      conference.info = confChecked.info
 
       conference.groups.foreach { group =>
         group.conference = conference
