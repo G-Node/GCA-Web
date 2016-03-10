@@ -172,30 +172,31 @@ class ConferenceCtrlTest extends BaseCtrlTest {
 
   @Test
   def testGetGeo(): Unit = {
-
     val existingGeo = assets.conferences(0)
     val uuid = existingGeo.uuid
-    val req = FakeRequest(GET, s"/api/conferences/$uuid/geo")
+    val mainUrl = "api/conferences"
+    val urlCap = "geo"
+
+    val req = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap")
     val responseNoUser = route(ConferenceCtrlTest.app, req).get
 
     assert(status(responseNoUser) == UNAUTHORIZED)
 
     val eveCookie = getCookie(assets.eve, "testtest")
-    val reqEve = FakeRequest(GET, s"/api/conferences/$uuid/geo").withCookies(eveCookie)
+    val reqEve = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(eveCookie)
     val responseEve = route(ConferenceCtrlTest.app, reqEve).get
 
     assert(status(responseEve) == OK)
 
     val adminCookie = getCookie(assets.admin, "testtest")
-    val request = FakeRequest(GET, s"/api/conferences/$uuid/geo").withCookies(adminCookie)
+    val request = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie)
     val responseAdmin = route(ConferenceCtrlTest.app, request).get
 
     assert(status(responseAdmin) == OK)
     assert(contentAsJson(responseAdmin).equals(Json.parse(existingGeo.geo)))
 
-    val emptyGeo = assets.conferences(1)
-    val emptyGeoUuid = emptyGeo.uuid
-    val reqEmpty = FakeRequest(GET, s"/api/conferences/$emptyGeoUuid/geo").withCookies(adminCookie)
+    val emptyGeoUuid = assets.conferences(1).uuid
+    val reqEmpty = FakeRequest(GET, s"/$mainUrl/$emptyGeoUuid/$urlCap").withCookies(adminCookie)
     val response = route(ConferenceCtrlTest.app, reqEmpty).get
 
     assert(status(response) == NOT_FOUND)
@@ -205,47 +206,47 @@ class ConferenceCtrlTest extends BaseCtrlTest {
 
   @Test
   def testSetGeo(): Unit = {
-    val emptyGeo = assets.conferences(2)
-    val uuid = emptyGeo.uuid
+    val uuid = assets.conferences(2).uuid
+    val mainUrl = "api/conferences"
+    val urlCap = "geo"
 
     val validJson = Json.toJson("""{"entryOne": 1, "entryTwo": 2}""")
 
-    val reqNoUser = FakeRequest(PUT, s"/api/conferences/$uuid/geo").withJsonBody(validJson)
+    val reqNoUser = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withJsonBody(validJson)
     val responseNoUser = route(ConferenceCtrlTest.app, reqNoUser).get
 
     assert(status(responseNoUser) == UNAUTHORIZED)
 
     val eveCookie = getCookie(assets.eve, "testtest")
-    val reqNoAccess = FakeRequest(PUT, s"/api/conferences/$uuid/geo").withCookies(eveCookie).withJsonBody(validJson)
+    val reqNoAccess = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withCookies(eveCookie).withJsonBody(validJson)
     val responseNoAccess = routeWithErrors(ConferenceCtrlTest.app, reqNoAccess).get
 
     assert(status(responseNoAccess) == FORBIDDEN)
 
     val adminCookie = getCookie(assets.admin, "testtest")
-    val req = FakeRequest(PUT, s"/api/conferences/$uuid/geo").withCookies(adminCookie).withJsonBody(validJson)
+    val req = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie).withJsonBody(validJson)
     val response = route(ConferenceCtrlTest.app, req).get
 
     assert(status(response) == OK)
 
-    val reqCheck = FakeRequest(GET, s"/api/conferences/$uuid/geo").withCookies(adminCookie)
+    val reqCheck = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie)
     val getValidResponse = route(ConferenceCtrlTest.app, reqCheck).get
 
     assert(contentAsJson(getValidResponse).equals(validJson))
 
     val invalidJson = """entryOne: 1, "entryTwo": 2}"""
-    val reqInvalid = FakeRequest(PUT, s"/api/conferences/$uuid/geo").withCookies(adminCookie).withBody(invalidJson)
+    val reqInvalid = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie).withBody(invalidJson)
     val responseInvalid = route(ConferenceCtrlTest.app, reqInvalid).get
 
     assert(status(responseInvalid) == BAD_REQUEST)
 
-    val reqInvalidCheck = FakeRequest(GET, s"/api/conferences/$uuid/geo").withCookies(adminCookie)
+    val reqInvalidCheck = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie)
     val getInvalidResponse = route(ConferenceCtrlTest.app, reqInvalidCheck).get
 
-    assert(!contentAsJson(getInvalidResponse).equals(invalidJson))
     assert(contentAsJson(getInvalidResponse).equals(validJson))
 
     val empty = ""
-    val reqEmpty = FakeRequest(PUT, s"/api/conferences/$uuid/geo").withCookies(adminCookie).withBody(empty)
+    val reqEmpty = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie).withBody(empty)
     val responseEmpty = route(ConferenceCtrlTest.app, reqEmpty).get
 
     assert(status(responseEmpty) == BAD_REQUEST)
