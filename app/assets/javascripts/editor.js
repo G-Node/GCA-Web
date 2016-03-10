@@ -416,10 +416,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self.modalHeader("header-"+ editorId.replace('#',''));
             // load corresponding script for modal body
             self.modalBody("body-"+ editorId.replace('#',''));
-
-            var textCharLimit = $('#text').attr('maxLength');
-            var ackCharLimit = $('#acknowledgements').attr('maxLength');
-
         };
 
 
