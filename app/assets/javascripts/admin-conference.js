@@ -26,6 +26,8 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.conference = ko.observable(null);
         self.haveChanges = ko.observable(false);
         self.geoContent = ko.observable(null);
+        self.scheduleContent = ko.observable(null);
+        self.infoContent = ko.observable(null);
 
         ko.bindingHandlers.datetimepicker = {
             init: function(element, valueAccessor, allBindingsAccessor) {
@@ -208,13 +210,22 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 self.isLoading(false);
             });
 
-            var url = self.conference().geo;
+            self.requestConfSpecificField(self.conference().geo, "json", self.geoContent);
+            self.requestConfSpecificField(self.conference().schedule, "json", self.scheduleContent);
+            self.requestConfSpecificField(self.conference().info, "text", self.infoContent);
+        };
+
+        self.requestConfSpecificField = function(url, type, setObservable) {
             $.ajax({
                 url: url,
                 type: "GET",
-                dataType: "json",
+                dataType: type,
                 success: function(obj) {
-                    self.geoContent(JSON.stringify(obj));
+                    var setValue = obj;
+                    if (type === "json") {
+                        setValue = JSON.stringify(obj);
+                    }
+                    setObservable(setValue);
                 },
                 error: function(obj) {
                     // Do not display NotFound errors.
@@ -223,7 +234,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                     }
                 }
             });
-
         };
 
         self.saveConference = function() {
@@ -253,29 +263,58 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             }
         });
 
-        self.uploadGeo = function() {
-            console.log("Upload geo information");
+        self.uploadSpecificField = function (url, fieldName, fieldValue, conType, successMsg, errorMsg) {
             if( self.conference().uuid === null ) {
                 console.log("Conference does not exist yet.");
-                self.setError("danger", "Please create conference before uploading geo information.");
+                self.setError("danger", "Please create conference before uploading "+ fieldName +" information.");
             } else {
-                var url = self.conference().geo;
-                var geo = self.geoContent();
-                self.isLoading("Uploading geo data.");
+                self.isLoading("Uploading "+ fieldName +" data.");
                 $.ajax(url, {
-                    data: geo,
+                    data: fieldValue,
                     type: "PUT",
-                    contentType: "application/json",
+                    contentType: conType,
                     success: function() {
-                        self.setError("info", "Geo information saved.")
+                        self.setError("info", successMsg)
                     },
                     error: function() {
-                        self.setError("danger", "Error uploading geo information. Please ensure that the JSON is well-formed.")
+                        self.setError("danger", errorMsg)
                     }
                 });
             }
         };
 
+        self.uploadGeo = function() {
+            var url = self.conference().geo;
+            var fieldName = "geo";
+            var fieldValue = self.geoContent();
+            var contentType = "application/json";
+            var successMsg = "Geo information saved.";
+            var errorMsg = "Error uploading geo information. Please ensure that the JSON is well-formed.";
+
+            self.uploadSpecificField(url, fieldName, fieldValue, contentType, successMsg, errorMsg);
+        };
+
+        self.uploadSchedule = function() {
+            var url = self.conference().schedule;
+            var fieldName = "schedule";
+            var fieldValue = self.scheduleContent();
+            var contentType = "application/json";
+            var successMsg = "Schedule information saved.";
+            var errorMsg = "Error uploading schedule information. Please ensure that the JSON is well-formed.";
+
+            self.uploadSpecificField(url, fieldName, fieldValue, contentType, successMsg, errorMsg);
+        };
+
+        self.uploadInfo = function() {
+            var url = self.conference().info;
+            var fieldName = "info";
+            var fieldValue = self.infoContent();
+            var contentType = "text/plain";
+            var successMsg = "Info data saved.";
+            var errorMsg = "Error uploading info data.";
+
+            self.uploadSpecificField(url, fieldName, fieldValue, contentType, successMsg, errorMsg);
+        };
     }
 
     $(document).ready(function() {
