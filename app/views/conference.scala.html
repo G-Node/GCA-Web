@@ -30,11 +30,7 @@
                 @conference.description
             </div>
         }
-        @if(conference.startDate != null && conference.endDate != null) {
-            <p>
-                @conference.startDate.toString(conference.dateFormatter) - @conference.endDate.toString(conference.dateFormatter)
-            </p>
-        }
+        <p>@conference.formatDuration</p>
         <!-- user/conference options depending on the conference state -->
         @if(conference.isOpen) {
             <p>
