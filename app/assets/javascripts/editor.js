@@ -24,6 +24,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
         self.conference = ko.observable(null);
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
+        self.stateLog = ko.observable(null);
 
         // required to set displayed modal header
         self.modalHeader = ko.observable(null);
@@ -183,6 +184,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             function success(obj) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
                 self.editedAbstract(self.abstract());
+                self.fetchStateLog();
                 self.setupOwners("/api/abstracts/" + abstrId + "/owners", self.setError);
                 self.loadOwnersData(null);
             }
@@ -381,6 +383,10 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     }
                 }
 
+                if (! self.stateLog()) {
+                    self.fetchStateLog();
+                }
+
                 self.setupOwners("/api/abstracts/" + self.abstract().uuid + "/owners", self.setError);
                 self.loadOwnersData(null);
             }
@@ -548,6 +554,18 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         // state related functions go here
 
+        self.successStateLog = function(logData) {
+            astate.logHelper.formatDate(logData);
+            self.stateLog(logData);
+        };
+
+        self.fetchStateLog = function() {
+            var logUrl = "/api/abstracts/" + self.abstract().uuid + "/stateLog";
+            $.getJSON(logUrl, self.successStateLog).error(function(jqxhr, textStatus, error) {
+                self.setError("Warning", "Unable to fetch state log: " + error);
+            });
+        };
+
         // All state changing should be done via the state endpoint
         self.doChangeState = function(toState) {
             var data = {state: toState};
@@ -568,6 +586,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 success: function(result) {
                     self.abstract().state(toState);
                     self.setOk("Ok", "Abstract now " + toState, true);
+                    self.successStateLog(result);
                 },
                 error: function(jqxhr, textStatus, error) {
                     self.setError("Error", "Unable to set abstract state: " + error);

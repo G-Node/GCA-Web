@@ -244,8 +244,11 @@
 
         <!-- Advanced abstract settings -->
         <div>
-            <ul class="nav nav-pills" role="tablist">
-                <li role="presentation" data-bind="if: isAbstractSaved">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active" data-bind="if: stateLog">
+                    <a href="#statelog" aria-controls="statelog" role="tab" data-toggle="tab">State Log</a>
+                </li>
+                <li role="presentation" data-bind="if: showEditButton() && isAbstractSaved()">
                     <a href="#owner" aria-controls="owner" role="tab" data-toggle="tab">Owner Management</a>
                 </li>
                 <li role="presentation" data-bind="if: showButtonWithdraw">
@@ -254,8 +257,12 @@
             </ul>
 
             <!-- Tab panes -->
-            <div class="tab-content" data-bind="if: isAbstractSaved">
-                <div role="tabpanel" class="tab-pane" id="owner">
+            <div class="tab-content" data-bind="if: stateLog">
+                <div role="tabpanel" class="tab-pane active" id="statelog">
+                @components.statelog("stateLog") { <div></div> }
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="owner" data-bind="if: showEditButton() && isAbstractSaved()">
                 @components.owned()
                 </div>
 
