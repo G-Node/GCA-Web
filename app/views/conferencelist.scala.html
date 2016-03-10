@@ -30,11 +30,9 @@
                         @conference.description
                     </div>
                 }
-                @if(conference.startDate != null && conference.endDate != null) {
-                    <p>
-                        @conference.startDate.toString(conference.dateFormatter) - @conference.endDate.toString(conference.dateFormatter)
-                    </p>
-                }
+
+                <p>@conference.formatDuration</p>
+
                 @if(account.isDefined && (conference.isOwner(account.get) || account.get.isAdmin)) {
                     <div class="form-group">
                         <a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">
@@ -65,11 +63,7 @@
                     <a href="@routes.Application.abstractsPublic(conference.short)">
                         <h4 class="media-heading">@conference.name</h4>
                     </a>
-                    @if(conference.startDate != null && conference.endDate != null) {
-                        <p>
-                            @conference.startDate.toString(conference.dateFormatter) - @conference.endDate.toString(conference.dateFormatter)
-                        </p>
-                    }
+                    <p>@conference.formatDuration</p>
                     @if(account.isDefined && (conference.isOwner(account.get) || account.get.isAdmin)) {
                         <div class="form-group">
                             <a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">

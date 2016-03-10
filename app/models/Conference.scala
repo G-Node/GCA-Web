@@ -80,6 +80,31 @@ class Conference extends Model with Owned {
   var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
   @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var topics: JSet[Topic] = new JTreeSet[Topic]()
+
+
+  def formatDuration : String = {
+    if (startDate == null || endDate == null) {
+      return ""
+    }
+
+    if (startDate.year.get == endDate.year.get) {
+      if (startDate.monthOfYear.get == endDate.monthOfYear.get) {
+        if (startDate.dayOfMonth.get == endDate.dayOfMonth.get) {
+          val dateFormatter = DateTimeFormat.forPattern("d MMMM yyyy")
+          startDate.toString(dateFormatter)
+        } else {
+          startDate.monthOfYear.getAsText + " " + startDate.dayOfMonth.get + " - " + endDate.dayOfMonth.get + ", " + endDate.year.get
+        }
+      } else {
+        val fmtDayMonth = DateTimeFormat.forPattern("MMMM, d")
+        startDate.toString(fmtDayMonth) + " - " + endDate.toString(fmtDayMonth) + ", " + endDate.year.get
+      }
+    } else {
+      val dateFormatter = DateTimeFormat.forPattern("MMMM d, yyyy")
+      startDate.toString(dateFormatter) + " - " + endDate.toString(dateFormatter)
+    }
+  }
+
 }
 
 object Conference extends Model {
