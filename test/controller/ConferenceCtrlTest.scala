@@ -167,7 +167,8 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     val response = route(ConferenceCtrlTest.app, reqEmpty).get
 
     assert(status(response) == NOT_FOUND)
-    assert(contentAsJson(response).asInstanceOf[JsObject].values.head.asInstanceOf[JsBoolean].value.equals(true))
+    assert(contentAsJson(response).asInstanceOf[JsObject]
+      .values.head.asInstanceOf[JsString].value.equals("Geo entry not found."))
   }
 
   @Test
