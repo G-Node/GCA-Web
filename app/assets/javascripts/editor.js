@@ -24,7 +24,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
         self.conference = ko.observable(null);
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
-        self.originalState = ko.observable(null);
 
         // required to set displayed modal header
         self.modalHeader = ko.observable(null);
@@ -111,10 +110,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
         // than "InPreparation" or "InRevision"
         self.showEditButton = ko.computed(
             function () {
-                var saved = self.isAbstractSaved(),
-                    state = self.originalState();
-
-                return !saved || (!state || state === 'InPreparation' || state === 'InRevision');
+                var ok = ['InPreparation', 'InRevision'];
+                return !self.isAbstractSaved() || (ok.indexOf(self.abstract().state()) > -1);
             },
             self
         );
@@ -128,35 +125,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 self.requestAbstract(abstrId);
             } else {
                 self.abstract(models.ObservableAbstract());
-                self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract());
             }
 
             ko.applyBindings(window.editor);
             MathJax.Hub.Configured(); //start MathJax
         };
-
-
-        self.isChangeOk = function (abstract) {
-
-            abstract = abstract || self.abstract();
-
-            var saved = self.isAbstractSaved(),
-                oldState = self.originalState(),
-                newState = abstract ? abstract.state() : null,
-                isOk = false;
-
-            if (!saved) {
-                isOk = (newState === 'InPreparation' || newState === 'Submitted');
-            } else {
-                var confIsClosed = !self.conference().isOpen;
-                isOk = newState === oldState ||
-                    self.stateHelper.canTransitionTo(oldState, newState, false, confIsClosed);
-            }
-
-            return isOk;
-        };
-
 
         self.getEditorAuthorsForAffiliation = function (index) {
             var authors = [];
@@ -208,7 +182,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             function success(obj) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
-                self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract());
                 self.setupOwners("/api/abstracts/" + abstrId + "/owners", self.setError);
                 self.loadOwnersData(null);
@@ -311,11 +284,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         self.doRemoveFigure = function () {
 
-            if (!self.isChangeOk()) {
-                self.setError("Error", "Unable to save abstract: illegal state");
-                return;
-            }
-
             if (self.hasAbstractFigures()) {
                 var figure = self.abstract().figures()[0];
 
@@ -353,23 +321,15 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 abstract = self.abstract();
             }
 
-            if (!self.isChangeOk(abstract)) {
-                self.setError("Error", "Unable to save abstract: illegal state");
-                abstract.state(self.originalState());
-                return;
-            }
-
             var result = validate.abstract(abstract);
 
             if (result.hasErrors()) {
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
-                abstract.state(self.originalState());
                 return;
             }
 
             if (abstract.state() === "Submitted" && result.hasWarnings()) {
                 self.setError("Error", "Unable to save abstract: " + result.warnings[0]);
-                abstract.state(self.originalState());
                 return;
             }
 
@@ -411,7 +371,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             function successAbs(obj) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
-                self.originalState(self.abstract().state());
                 self.editedAbstract(self.abstract());
 
                 var hasNoFig = !self.hasAbstractFigures(),
@@ -604,7 +563,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 contentType: "application/json",
                 success: function(result) {
                     self.abstract().state(toState);
-                    self.originalState(self.abstract().state());
                     self.setOk("Ok", "Abstract now " + toState, true);
                 },
                 error: function(jqxhr, textStatus, error) {
@@ -620,37 +578,41 @@ function (ko, models, tools, msg, validate, owned, astate) {
         self.action = ko.computed(
             function() {
                 var saved = self.isAbstractSaved(),
-                    state = self.originalState(),
                     open = self.conference() && self.conference().isOpen;
 
-                if (open && ! saved) {
-                    return {
-                        label: "Save",
-                        level: "btn-success",
-                        action: self.doSaveAbstract
-                    };
+                if (! saved) {
+                    if (open) {
+                        return {
+                            label: "Save",
+                            level: "btn-success",
+                            action: self.doSaveAbstract
+                        };
+                    } else {
+                        return false;
+                    }
                 }
 
-                var next = self.stateHelper.getPossibleStatesFor(state, false, !open);
+                var current = self.abstract().state();
+                var possible = self.stateHelper.getPossibleStatesFor(current, false, !open);
 
                 // for this to work, there must be a single next state,
                 //  with the exception of Withdrawn, which must *not* be
                 //  the first (cf. the state map in lib/astate)
-                if (next.length > 0) {
-                    var possible = next[0];
-                    if (possible === 'Submitted') {
+                if (possible.length > 0) {
+                    var next = possible[0];
+                    if (next === 'Submitted') {
                         return {
                             label: "Submit",
                             level: "btn-danger",
-                            action: function() { self.doChangeState(possible); },
-                            want: possible
+                            action: function() { self.doChangeState(next); },
+                            want: next
                         };
-                    } else if (possible === 'InPreparation') {
+                    } else if (next === 'InPreparation') {
                         return {
                             label: "Unlock",
                             level: "btn-danger",
-                            action: function() { self.doChangeState(possible); },
-                            want: possible
+                            action: function() { self.doChangeState(next); },
+                            want: next
                         };
                     }
                 }

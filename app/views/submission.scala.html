@@ -79,7 +79,7 @@
 
     <div id="abstract">
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal"
                         data-bind="click: doStartEdit.bind($root, '#title-editor')">
@@ -94,7 +94,7 @@
             </div>
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal"
                         data-bind="click: doStartEdit.bind($root, '#authors-editor')">
@@ -111,7 +111,7 @@
             </div>
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#affiliations-editor')">
@@ -129,7 +129,7 @@
 
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#abstract-text-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#abstract-text-editor')">
@@ -144,7 +144,7 @@
             </div>
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#acknowledgements-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#acknowledgements-editor')">
@@ -160,7 +160,7 @@
             </div>
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#references-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#references-editor')">
@@ -178,7 +178,7 @@
             </div>
         </div>
 
-        <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+        <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#figure-editor"
                 data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#figure-editor')">
@@ -206,7 +206,7 @@
         }
 
         @if(! conference.topics.isEmpty) {
-            <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+            <div class="editor-box" data-bind="css: {editable: showEditButton}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                     <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
                     data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#topic-editor')">
@@ -224,7 +224,7 @@
         }
 
         @if(conference.hasPresentationPrefs) {
-            <div class="editor-box" data-bind="css: {editable: isChangeOk}">
+            <div class="editor-box" data-bind="css: {editable: showEditButton}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                     <button type="button" class="btn btn-default btn-sm" data-target="#is-talk-editor"
                     data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#is-talk-editor')">
