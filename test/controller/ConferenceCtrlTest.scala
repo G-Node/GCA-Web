@@ -41,9 +41,21 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     val created = route(ConferenceCtrlTest.app, createAuth).get
     assert(status(created) == CREATED)
 
-    val newName = assets.conferences(0).name + "01"
+    val bodyNameNull = formatter.writes(assets.conferences(0)).as[JsObject] - "uuid" - "abstracts" - "name"
+    val reqNameNull = FakeRequest(POST, "/api/conferences")
+      .withHeaders(("Content-Type", "application/json"))
+      .withJsonBody(bodyNameNull)
+      .withCookies(cookie)
+    val respNameNull = routeWithErrors(ConferenceCtrlTest.app, reqNameNull).get
+    assert(status(respNameNull) == INTERNAL_SERVER_ERROR)
+    val nameNullMessage = contentAsJson(respNameNull)
+      .asInstanceOf[JsObject]
+      .fields.filter(f => f._1 == "message")
+      .head._2.toString()
+    assert(nameNullMessage.contains("NULL not allowed for column \\\"NAME\\\""))
+
     val bodyShortNull = formatter.writes(assets.conferences(0))
-                          .as[JsObject] - "uuid" - "abstracts" - "short" ++ Json.obj("name" -> newName)
+                          .as[JsObject] - "uuid" - "abstracts" - "short"
     val reqShortNull = FakeRequest(POST, "/api/conferences")
                         .withHeaders(("Content-Type", "application/json"))
                         .withJsonBody(bodyShortNull)
