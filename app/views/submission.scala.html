@@ -23,11 +23,6 @@
 
     <div class="header">
         <div class="pull-right state-btn-group">
-            <span data-bind="if: showButtonWithdraw">
-                <button type="button" class="btn btn-danger"  data-bind="click: doWithdrawAbstract">
-                    Withdraw
-                </button>
-            </span>
             <span data-bind="if: action">
                 <!-- ko with: action -->
                 <button type="button" class="btn" data-bind="click: action, text: label, css: level">
@@ -253,6 +248,9 @@
                 <li role="presentation" data-bind="if: isAbstractSaved">
                     <a href="#owner" aria-controls="owner" role="tab" data-toggle="tab">Owner Management</a>
                 </li>
+                <li role="presentation" data-bind="if: showButtonWithdraw">
+                    <a href="#withdraw" aria-controls="withdraw" role="tab" data-toggle="tab">Withdraw</a>
+                </li>
             </ul>
 
             <!-- Tab panes -->
@@ -260,8 +258,20 @@
                 <div role="tabpanel" class="tab-pane" id="owner">
                 @components.owned()
                 </div>
-            </div>
 
+                <div role="tabpanel" class="tab-pane" id="withdraw" data-bind="if: showButtonWithdraw">
+                    <div class="callout-danger">
+                        <h4>Warning!</h4>
+                        <p>Abstract withdrawal is permanent! There is no way to recover the
+                           abstract yourself once it is withdrawn.
+                          <br>
+                            <button type="button" class="btn btn-danger"  data-bind="click: doWithdrawAbstract">
+                                Withdraw
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
