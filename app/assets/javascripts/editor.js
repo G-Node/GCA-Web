@@ -328,11 +328,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 return;
             }
 
-            if (abstract.state() === "Submitted" && result.hasWarnings()) {
-                self.setError("Error", "Unable to save abstract: " + result.warnings[0]);
-                return;
-            }
-
             if (self.isAbstractSaved()) {
 
                 if (self.hasAbstractFigures()) {
