@@ -130,8 +130,9 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     * @return OK | BadRequest | Forbidden | Unauthorized
     */
   def setGeo(id: String) = SecuredAction(parse.json) { implicit request =>
-    val geo = Json.stringify(request.body)
-    conferenceService.updateGeo(conferenceService.get(id), request.identity.account, geo)
+    val geoContent = Json.stringify(request.body)
+    conferenceService.updateSpecificFields(conferenceService.get(id),
+                                            request.identity.account, geo = geoContent)
     Ok(request.body)
   }
 
