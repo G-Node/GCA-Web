@@ -15,63 +15,71 @@
 
         <hr>
 
-        @for(conf <- list_active) {
+        @for(conference <- list_active) {
             <div class="jumbotron">
-                @if(conf.logo != null) {
-                    <p><img class="conference-logo img-responsive img-rounded" src="@conf.logo"></p>
+                @if(conference.logo != null) {
+                    <p>
+                        <img class="conference-logo img-responsive img-rounded" src="@conference.logo">
+                    </p>
                 }
-                <a href="@routes.Application.conference(conf.short)"><h3>@conf.name</h3></a>
-                <p>@conf.description</p>
-
-                @if(conf.startDate != null && conf.endDate != null) {
-                    <p><b></b> @conf.startDate.toString(conf.dateFormatter) - @conf.endDate.toString(conf.dateFormatter)</p>
+                <h3>
+                    <a href="@routes.Application.conference(conference.short)">@conference.name</a>
+                </h3>
+                @if(conference.description != null) {
+                    <div class="jumbo-small">
+                        @conference.description
+                    </div>
                 }
-
-                @if(account.isDefined) {
-                    @if(conf.isOwner(account.get) || account.get.isAdmin) {
-                        <a href="@routes.Application.adminConference(conf.uuid)" class="btn btn-danger">
-                            Conference Settings</a>
-                        <a href="@routes.Application.adminAbstracts(conf.uuid)" class="btn btn-danger">
-                            Manage abstracts</a>
-                    }
+                @if(conference.startDate != null && conference.endDate != null) {
+                    <p>
+                        @conference.startDate.toString(conference.dateFormatter) - @conference.endDate.toString(conference.dateFormatter)
+                    </p>
+                }
+                @if(account.isDefined && (conference.isOwner(account.get) || account.get.isAdmin)) {
+                    <div class="form-group">
+                        <a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">
+                            Conference Settings
+                        </a>
+                        <a href="@routes.Application.adminAbstracts(conference.uuid)" class="btn btn-danger">
+                            Manage abstracts
+                        </a>
+                    </div>
                 }
             </div>
         }
     }
 
     @if(list_other.nonEmpty) {
-        <h3>Past conferences</h3>
+        <h2>Past conferences</h2>
 
         <hr>
 
-        @for(conf <- list_other) {
+        @for(conference <- list_other) {
             <div class="media">
                 <div class="pull-left media-left">
-                    <a href="@routes.Application.conference(conf.short)">
-                        <img class="media-object conference-thumbnail" src="@conf.thumbnail">
+                    <a href="@routes.Application.conference(conference.short)">
+                        <img class="media-object conference-thumbnail" src="@conference.thumbnail">
                     </a>
                 </div>
                 <div class="media-body">
-                    <a href="@routes.Application.abstractsPublic(conf.short)">
-                        <h4 class="media-heading">@conf.name</h4>
+                    <a href="@routes.Application.abstractsPublic(conference.short)">
+                        <h4 class="media-heading">@conference.name</h4>
                     </a>
-
-                    <p>@conf.description</p>
-
-                    @if(conf.startDate != null && conf.endDate != null) {
-                        <p><b></b> @conf.startDate.toString(conf.dateFormatter) - @conf.endDate.toString(conf.dateFormatter)</p>
+                    @if(conference.startDate != null && conference.endDate != null) {
+                        <p>
+                            @conference.startDate.toString(conference.dateFormatter) - @conference.endDate.toString(conference.dateFormatter)
+                        </p>
                     }
-
-                    <ul class="list-inline">
-                        @if(account.isDefined) {
-                            @if(conf.isOwner(account.get) || account.get.isAdmin) {
-                                <li><a href="@routes.Application.adminConference(conf.uuid)" class="btn btn-danger">
-                                    Conference Settings</a></li>
-                                <li><a href="@routes.Application.adminAbstracts(conf.uuid)" class="btn btn-danger">
-                                    Manage abstracts</a></li>
-                            }
-                        }
-                    </ul>
+                    @if(account.isDefined && (conference.isOwner(account.get) || account.get.isAdmin)) {
+                        <div class="form-group">
+                            <a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">
+                                Conference Settings
+                            </a>
+                            <a href="@routes.Application.adminAbstracts(conference.uuid)" class="btn btn-danger">
+                                Manage abstracts
+                            </a>
+                        </div>
+                    }
                 </div>
             </div>
         }
