@@ -150,4 +150,59 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     }
   }
 
+  /**
+    * Set the schedule entry of a specific conference.
+    *
+    * @param id Conference id where the schedule entry should be set.
+    * @return OK | BadRequest | Forbidden | Unauthorized
+    */
+  def setSchedule(id: String) = SecuredAction(parse.json) { implicit request =>
+    val scheduleContent = Json.stringify(request.body)
+    conferenceService.updateSpecificFields(conferenceService.get(id),
+                                            request.identity.account, schedule = scheduleContent)
+    Ok(request.body)
+  }
+
+  /**
+    * Return the schedule entry of a specific conference.
+    *
+    * @param id Conference id of the required schedule entry.
+    * @return OK | NotFound
+    */
+  def getSchedule(id: String) = SecuredAction { implicit request =>
+    val schedule = conferenceService.get(id).schedule
+    if (schedule == null) {
+      NotFound(Json.obj("message" -> "Schedule entry not found."))
+    } else {
+      Ok(Json.parse(schedule))
+    }
+  }
+
+  /**
+    * Set the info entry of a specific conference.
+    *
+    * @param id Conference id where the info entry should be set.
+    * @return OK | BadRequest | Forbidden | Unauthorized
+    */
+  def setInfo(id: String) = SecuredAction(parse.text) { implicit request =>
+    val infoContent = request.body
+    conferenceService.updateSpecificFields(conferenceService.get(id), request.identity.account, info = infoContent)
+    Ok(request.body)
+  }
+
+  /**
+    * Return the info entry of a specific conference.
+    *
+    * @param id Conference id of the required info entry.
+    * @return OK | NotFound
+    */
+  def getInfo(id: String) = SecuredAction { implicit request =>
+    val info = conferenceService.get(id).info
+    if (info == null) {
+      NotFound(Json.obj("message" -> "Info entry not found."))
+    } else {
+      Ok(info)
+    }
+  }
+
 }
