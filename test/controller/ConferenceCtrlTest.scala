@@ -26,17 +26,49 @@ class ConferenceCtrlTest extends BaseCtrlTest {
 
   @Test
   def testCreate(): Unit = {
-    val body = formatter.writes(assets.conferences(0)).as[JsObject] - "uuid" - "abstracts" - "short"
 
-    val createUnauth = FakeRequest(POST, "/api/conferences").withHeaders(
-      ("Content-Type", "application/json")
-    ).withJsonBody(body)
+    val newShort = assets.conferences(0).short + "01"
+    val body = formatter.writes(assets.conferences(0))
+                  .as[JsObject] - "uuid" - "abstracts" ++ Json.obj("short" -> newShort)
+
+    val createUnauth = FakeRequest(POST, "/api/conferences")
+                        .withHeaders(("Content-Type", "application/json"))
+                        .withJsonBody(body)
     val failed = route(ConferenceCtrlTest.app, createUnauth).get
     assert(status(failed) == UNAUTHORIZED)
 
     val createAuth = createUnauth.withCookies(cookie)
     val created = route(ConferenceCtrlTest.app, createAuth).get
     assert(status(created) == CREATED)
+
+    val bodyNameNull = formatter.writes(assets.conferences(0)).as[JsObject] - "uuid" - "abstracts" - "name"
+    val reqNameNull = FakeRequest(POST, "/api/conferences")
+      .withHeaders(("Content-Type", "application/json"))
+      .withJsonBody(bodyNameNull)
+      .withCookies(cookie)
+    val respNameNull = routeWithErrors(ConferenceCtrlTest.app, reqNameNull).get
+    assert(status(respNameNull) == INTERNAL_SERVER_ERROR)
+    val nameNullMessage = contentAsJson(respNameNull)
+      .asInstanceOf[JsObject]
+      .fields.filter(f => f._1 == "message")
+      .head._2.toString()
+    assert(nameNullMessage.contains("NULL not allowed for column \\\"NAME\\\""))
+
+    val bodyShortNull = formatter.writes(assets.conferences(0))
+                          .as[JsObject] - "uuid" - "abstracts" - "short"
+    val reqShortNull = FakeRequest(POST, "/api/conferences")
+                        .withHeaders(("Content-Type", "application/json"))
+                        .withJsonBody(bodyShortNull)
+                        .withCookies(cookie)
+    val respShortNull = routeWithErrors(ConferenceCtrlTest.app, reqShortNull).get
+    assert(status(respShortNull) == INTERNAL_SERVER_ERROR)
+
+    val shortNullMessage = contentAsJson(respShortNull)
+      .asInstanceOf[JsObject]
+      .fields.filter(f => f._1 == "message")
+      .head._2.toString()
+    assert(shortNullMessage.contains("NULL not allowed for column \\\"SHORT\\\""))
+
   }
 
   @Test

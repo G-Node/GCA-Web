@@ -31,7 +31,7 @@ class Conference extends Model with Owned {
   @Column(nullable = false)
   var name: String = _
 
-  @Column(unique = true)
+  @Column(nullable = false, unique = true)
   var short: String = _
   var conferenceGroup: String = _
   var cite: String = _
