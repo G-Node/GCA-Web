@@ -94,6 +94,28 @@ class RoutesResolver {
     new URL(baseUrl + s"/api/conferences/$id/geo")
   }
 
+  /**
+    * Builds an URL to fetch or manipulate the schedule entry of a conference for a given conference UUID.
+    *
+    * @param id A UUID of a Conference object to insert into the URL.
+    *
+    * @return URL to manipulate the schedule entry of the conference, like "/api/conferences/HNOPSADMHV/schedule".
+    */
+  def scheduleUrl(id: String) = {
+    new URL(baseUrl + s"/api/conferences/$id/schedule")
+  }
+
+  /**
+    * Builds an URL to fetch or manipulate the info entry of a conference for a given conference UUID.
+    *
+    * @param id A UUID of a Conference object to insert into the URL.
+    *
+    * @return URL to manipulate the info entry of the conference, like "/api/conferences/HNOPSADMHV/info".
+    */
+  def infoUrl(id: String) = {
+    new URL(baseUrl + s"/api/conferences/$id/info")
+  }
+
 }
 
 object DefaultRoutesResolver {
