@@ -557,6 +557,15 @@ function (ko, models, tools, msg, validate, owned, astate) {
         self.doChangeState = function(toState) {
             var data = {state: toState};
 
+            if (toState === "Submitted") {
+                var result = validate.abstract(self.abstract());
+                if (! result.ok()) {
+                    self.setError("Error", "Unable to submit: " +
+                        (result.hasErrors() ? result.errors[0] : result.warnings[0]));
+                    return;
+                }
+            }
+
             $.ajax("/api/abstracts/" + self.abstract().uuid + '/state', {
                 data: JSON.stringify(data),
                 type: "PUT",
