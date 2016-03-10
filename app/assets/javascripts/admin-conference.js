@@ -245,7 +245,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             });
         };
 
-        self.hasConferenceUuid = ko.computed(function() {
+        self.isConferenceSaved = ko.computed(function() {
             if (self.conference() === null) {
                 return false;
             } else {
