@@ -32,13 +32,12 @@
             </span>
         </div>
 
-        <!-- display the current abstract status-->
-        <div>
+        <h3>Abstract submission  <small>@conference.name</small></h3>
+        <!-- display the current abstract status -->
+        <div data-bind="if: isAbstractSaved">
             Abstract status:
             <span class="badge" data-bind="text: abstract().state()"></span>
         </div>
-
-        <h2>Abstract submission  <small>@conference.name</small></h2>
     </div>
 
     <hr class="separator">
