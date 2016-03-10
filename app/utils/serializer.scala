@@ -159,6 +159,8 @@ package object serializer {
       Json.obj(
         "uuid" -> account.uuid,
         "mail" -> account.mail,
+        "fullName" -> account.fullName,
+        "ctime" -> account.ctime,
         "abstracts" -> routesResolver.abstractsUrl(account.uuid)
       )
     }

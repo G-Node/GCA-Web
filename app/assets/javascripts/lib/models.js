@@ -1146,15 +1146,26 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @constructor
      * @public
      */
-    function ObservableAccount(uuid, mail) {
+    function ObservableAccount(uuid, mail, fullName, ctime) {
 
         if (! (this instanceof ObservableAccount)) {
-            return new ObservableAccount(uuid, mail);
+            return new ObservableAccount(uuid, mail, fullName, ctime);
         }
 
         var self = tools.inherit(this, Model, uuid);
 
         self.mail = ko.observable(mail || null);
+        self.fullName = ko.observable(fullName || null);
+        self.ctime = ko.observable(ctime || null);
+
+        self.formatCtime = function() {
+            if (self.ctime) {
+                return moment(self.ctime()).format("YY/MM/DD")
+            } else {
+                return ""
+            }
+        }
+
     }
 
     ObservableAccount.fromObject = function(obj) {
