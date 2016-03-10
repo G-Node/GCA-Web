@@ -291,6 +291,50 @@ class ConferenceService() extends PermissionsBase {
     }
   }
 
+  /**
+    * Update any of the geo, schedule and info entries of an existing conference.
+    * @param conference Conference thats supposed to be updated.
+    * @param account The account which wants to perform the update.
+    * @param geo Value that is to be used to update the geo entry.
+    * @param schedule Value that is to be used to update the schedule entry.
+    * @param info Value that is to be used to update the info entry.
+    *
+    * @throws IllegalArgumentException If the conference has no uuid.
+    * @throws EntityNotFoundException If the conference or the user does not exist.
+    * @throws IllegalAccessException If account is not an owner.
+    */
+  def updateSpecificFields(conference: Conference, account: Account,
+                  geo: String = null, schedule: String = null, info: String = null) : Unit = {
+    val conf = transaction { (em, tx) =>
+
+      if (conference.uuid == null)
+        throw new IllegalArgumentException("Unable to update a conference without uuid")
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val confChecked = em.find(classOf[Conference], conference.uuid)
+      if (confChecked == null)
+        throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
+
+      if (! (confChecked.owners.contains(accountChecked) || accountChecked.isAdmin))
+        throw new IllegalAccessException("No permissions for conference with uuid = " + conference.uuid)
+
+      if (geo != null) {
+        conference.geo = geo
+      }
+      if (schedule != null) {
+        conference.schedule = schedule
+      }
+      if (info != null) {
+        conference.info  = info
+      }
+
+      em.merge(conference)
+    }
+  }
+
 }
 
 
