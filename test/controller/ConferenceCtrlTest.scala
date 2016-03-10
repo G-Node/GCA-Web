@@ -251,6 +251,151 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     assert(status(responseEmpty) == BAD_REQUEST)
   }
 
+  @Test
+  def testGetSchedule(): Unit = {
+    val existing = assets.conferences(0)
+    val uuid = existing.uuid
+    val mainUrl = "api/conferences"
+    val urlCap = "schedule"
+    val req = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap")
+    val responseNoUser = route(ConferenceCtrlTest.app, req).get
+
+    assert(status(responseNoUser) == UNAUTHORIZED)
+
+    val eveCookie = getCookie(assets.eve, "testtest")
+    val reqEve = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(eveCookie)
+    val responseEve = route(ConferenceCtrlTest.app, reqEve).get
+
+    assert(status(responseEve) == OK)
+
+    val adminCookie = getCookie(assets.admin, "testtest")
+    val request = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie)
+    val responseAdmin = route(ConferenceCtrlTest.app, request).get
+
+    assert(status(responseAdmin) == OK)
+    assert(contentAsJson(responseAdmin).equals(Json.parse(existing.schedule)))
+
+    val emptyScheduleID = assets.conferences(1).uuid
+    val reqEmpty = FakeRequest(GET, s"/$mainUrl/$emptyScheduleID/$urlCap").withCookies(adminCookie)
+    val response = route(ConferenceCtrlTest.app, reqEmpty).get
+
+    assert(status(response) == NOT_FOUND)
+    assert(contentAsJson(response).asInstanceOf[JsObject]
+      .values.head.asInstanceOf[JsString].value.equals("Schedule entry not found."))
+  }
+
+  @Test
+  def testSetSchedule(): Unit = {
+    val uuid = assets.conferences(2).uuid
+    val mainUrl = "api/conferences"
+    val urlCap = "schedule"
+
+    val validJson = Json.toJson("""{"entryOne": 1, "entryTwo": 2}""")
+
+    val reqNoUser = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withJsonBody(validJson)
+    val responseNoUser = route(ConferenceCtrlTest.app, reqNoUser).get
+
+    assert(status(responseNoUser) == UNAUTHORIZED)
+
+    val eveCookie = getCookie(assets.eve, "testtest")
+    val reqNoAccess = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withCookies(eveCookie).withJsonBody(validJson)
+    val responseNoAccess = routeWithErrors(ConferenceCtrlTest.app, reqNoAccess).get
+
+    assert(status(responseNoAccess) == FORBIDDEN)
+
+    val adminCookie = getCookie(assets.admin, "testtest")
+    val req = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie).withJsonBody(validJson)
+    val response = route(ConferenceCtrlTest.app, req).get
+
+    assert(status(response) == OK)
+
+    val reqCheck = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie)
+    val getValidResponse = route(ConferenceCtrlTest.app, reqCheck).get
+
+    assert(contentAsJson(getValidResponse).equals(validJson))
+
+    val invalidJson = """entryOne: 1, "entryTwo": 2}"""
+    val reqInvalid = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie).withBody(invalidJson)
+    val responseInvalid = route(ConferenceCtrlTest.app, reqInvalid).get
+
+    assert(status(responseInvalid) == BAD_REQUEST)
+
+    val reqInvalidCheck = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie)
+    val getInvalidResponse = route(ConferenceCtrlTest.app, reqInvalidCheck).get
+
+    assert(contentAsJson(getInvalidResponse).equals(validJson))
+
+    val empty = ""
+    val reqEmpty = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie).withBody(empty)
+    val responseEmpty = route(ConferenceCtrlTest.app, reqEmpty).get
+
+    assert(status(responseEmpty) == BAD_REQUEST)
+  }
+
+  @Test
+  def testGetInfo(): Unit = {
+    val existing = assets.conferences(0)
+    val uuid = existing.uuid
+    val mainUrl = "api/conferences"
+    val urlCap = "info"
+    val req = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap")
+    val responseNoUser = route(ConferenceCtrlTest.app, req).get
+
+    assert(status(responseNoUser) == UNAUTHORIZED)
+
+    val eveCookie = getCookie(assets.eve, "testtest")
+    val reqEve = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(eveCookie)
+    val responseEve = route(ConferenceCtrlTest.app, reqEve).get
+
+    assert(status(responseEve) == OK)
+
+    val adminCookie = getCookie(assets.admin, "testtest")
+    val request = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie)
+    val responseAdmin = route(ConferenceCtrlTest.app, request).get
+
+    assert(status(responseAdmin) == OK)
+    assert( contentAsString(responseAdmin).equals(existing.info))
+
+    val emptyInfoUuid = assets.conferences(1).uuid
+    val reqEmpty = FakeRequest(GET, s"/$mainUrl/$emptyInfoUuid/$urlCap").withCookies(adminCookie)
+    val response = route(ConferenceCtrlTest.app, reqEmpty).get
+
+    assert(status(response) == NOT_FOUND)
+    assert(contentAsJson(response).asInstanceOf[JsObject]
+      .values.head.asInstanceOf[JsString].value.equals("Info entry not found."))
+  }
+
+  @Test
+  def testSetInfo(): Unit = {
+    val uuid = assets.conferences(2).uuid
+    val mainUrl = "api/conferences"
+    val urlCap = "info"
+
+    val infoContent = "> Markdown entry"
+
+    val reqNoUser = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withTextBody(infoContent)
+    val responseNoUser = route(ConferenceCtrlTest.app, reqNoUser).get
+
+    assert(status(responseNoUser) == UNAUTHORIZED)
+
+    val eveCookie = getCookie(assets.eve, "testtest")
+    val reqNoAccess = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withCookies(eveCookie).withTextBody(infoContent)
+    val responseNoAccess = routeWithErrors(ConferenceCtrlTest.app, reqNoAccess).get
+
+    assert(status(responseNoAccess) == FORBIDDEN)
+
+    val adminCookie = getCookie(assets.admin, "testtest")
+    val req = FakeRequest(PUT, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie).withTextBody(infoContent)
+    val response = route(ConferenceCtrlTest.app, req).get
+
+    assert(status(response) == OK)
+
+    val reqCheck = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(adminCookie)
+    val getValidResponse = route(ConferenceCtrlTest.app, reqCheck).get
+
+    assert(contentAsString(getValidResponse).equals(infoContent))
+  }
+
 }
 
 
