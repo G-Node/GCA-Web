@@ -106,18 +106,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             },
             self
         );
-
-        self.showButtonWithdraw = ko.computed(
-            function () {
-                if (self.abstract()) {
-                    var ok = ['Submitted', 'InReview'];
-                    return self.isAbstractSaved() && (ok.indexOf(self.originalState()) >= 0);
-                } else {
-                    return false;
-                }
-            },
-            self
-        );
         
         // hide edit buttons, if the abstract is in any state other
         // than "InPreparation" or "InRevision"
@@ -456,14 +444,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 self.setError("Error", "Unable to save abstract!");
             }
         };
-
-
-        self.doWithdrawAbstract = function () {
-            self.abstract().state('Withdrawn');
-            self.doSaveAbstract(self.abstract())
-        };
-
-
+        
         self.doStartEdit = function (editorId) {
             var ed = $(editorId).find("input").first();
             ed.focus();
@@ -614,25 +595,26 @@ function (ko, models, tools, msg, validate, owned, astate) {
         // state related functions go here
 
         // All state changing should be done via the state endpoint
-        self.doChangeState = function() {
-            var ctx = self.action(),
-                data = {state: ctx.want};
+        self.doChangeState = function(toState) {
+            var data = {state: toState};
 
             $.ajax("/api/abstracts/" + self.abstract().uuid + '/state', {
                 data: JSON.stringify(data),
                 type: "PUT",
                 contentType: "application/json",
                 success: function(result) {
-                    self.abstract().state(ctx.want);
+                    self.abstract().state(toState);
                     self.originalState(self.abstract().state());
-                    self.setOk("Ok", "Abstract now " + ctx.want, true);
+                    self.setOk("Ok", "Abstract now " + toState, true);
                 },
                 error: function(jqxhr, textStatus, error) {
-                    abstract.state(abstract.state(self.originalState()));
                     self.setError("Error", "Unable to set abstract state: " + error);
                 }
             });
+        };
 
+        self.doWithdrawAbstract = function () {
+            self.doChangeState("Withdrawn");
         };
 
         self.action = ko.computed(
@@ -660,20 +642,33 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         return {
                             label: "Submit",
                             level: "btn-danger",
-                            action: self.doSubmitAbstract,
-                            want: "Submitted"
+                            action: function() { self.doChangeState(possible); },
+                            want: possible
                         };
                     } else if (possible === 'InPreparation') {
                         return {
                             label: "Unlock",
                             level: "btn-danger",
-                            action: self.doChangeState,
-                            want: 'InPreparation'
+                            action: function() { self.doChangeState(possible); },
+                            want: possible
                         };
                     }
                 }
 
                 return false;
+            },
+            self
+        );
+
+        self.showButtonWithdraw = ko.computed(
+            function () {
+                if (self.abstract() && self.isAbstractSaved()) {
+                    var state = self.abstract().state(),
+                        open = self.conference() && self.conference().isOpen;
+                    return self.stateHelper.canTransitionTo(state, "Withdrawn", false, !open);
+                } else {
+                    return false;
+                }
             },
             self
         );
