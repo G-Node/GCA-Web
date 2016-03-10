@@ -28,7 +28,7 @@
     <div>
         <div data-bind="foreach: figures">
             <div class="row">
-                <img class="col-xs-offset-4 col-xs-4 img-responsive"
+                <img class="col-xs-offset-2 col-xs-8 img-responsive"
                       data-bind="attr: {src: URL}, click: function(data, event) { $(('#figure' + ($index() + 1))).modal(); }">
                 <div class="col-xs-offset-2 col-xs-8">
                     <span>Figure: </span><span data-bind="text: $index() + 1"></span>
@@ -72,11 +72,13 @@
         <div class="foot-info">
             <ul>
                 <!-- ko with: $root.@conference -->
-                <li><span class="kv-key">Conference:</span> <span data-bind="html: cite"></span></li>
                 <li><span class="kv-key">Citation:</span> <span data-bind="html: formatCitation($parent)"></span></li>
+                <li><span class="kv-key">Copyright:</span> <span data-bind="html: formatCopyright($parent)"></span></li>
                 <!-- /ko -->
-                <li data-bind="if: $data.doi"><span class="kv-key">doi</span>:
-                    <a data-bind="text: $data.doi, attr: {href: $data.doiLink()}"></a></li>
+                <li data-bind="if: $data.doi">
+                    <span class="kv-key">doi</span>:
+                    <a data-bind="text: $data.doi, attr: {href: $data.doiLink()}"></a>
+                </li>
             </ul>
         </div>
     }

@@ -25,12 +25,16 @@
             <thead>
                 <tr>
                     <th>Email</th>
+                    <th>Name</th>
+                    <th>Registration</th>
                     <th>uuid</th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: accounts">
                 <tr>
                     <td><span data-bind="text: mail"></span></td>
+                    <td><span data-bind="text: fullName"></span></td>
+                    <td><span data-bind="text: formatCtime()"></span></td>
                     <td><span data-bind="text: uuid"></span></td>
                 </tr>
             </tbody>
