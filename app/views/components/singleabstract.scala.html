@@ -73,6 +73,7 @@
             <ul>
                 <!-- ko with: $root.@conference -->
                 <li><span class="kv-key">Citation:</span> <span data-bind="html: formatCitation($parent)"></span></li>
+                <li><span class="kv-key">Copyright:</span> <span data-bind="html: formatCopyright($parent)"></span></li>
                 <!-- /ko -->
                 <li data-bind="if: $data.doi">
                     <span class="kv-key">doi</span>:

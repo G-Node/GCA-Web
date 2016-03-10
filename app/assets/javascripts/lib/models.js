@@ -330,6 +330,11 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             return abstract.formatAuthorsCitation() + " (" + year + ") " + abstract.title + '. ' + self.name + '.';
         };
 
+        self.formatCopyright = function(abstract) {
+            var year = moment(self.start).year();
+            return "©" + " (" + year + ") " + abstract.formatAuthorsCitation()
+        };
+
         self.toObject = function() {
             var prop,
                 obj = {};
