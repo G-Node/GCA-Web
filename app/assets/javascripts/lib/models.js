@@ -254,6 +254,9 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @param {string}  [logo]
      * @param {string}  [thumbnail]
      * @param {string}  [iOSApp]
+     * @param {string}  [geo]
+     * @param {string}  [schedule]
+     * @param {string}  [info]
      * @param {string}  [deadline]
      * @param {string}  [owners] URL to all abstract owners.
      * @param {string}  [abstracts] The URL to all abstracts.
@@ -264,12 +267,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Conference(uuid, name, short, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
-                        groups, start, end, deadline, logo, thumbnail, iOSApp, geo, owners, abstracts, topics) {
+                        groups, start, end, deadline, logo, thumbnail, iOSApp, geo, schedule, info, owners, abstracts, topics) {
 
         if (! (this instanceof Conference)) {
             return new Conference(uuid, name, short, cite, link, description, isOpen, isPublished, isActive,
-                                  hasPresentationPrefs, groups, start, end, deadline, logo, thumbnail, iOSApp, geo, owners,
-                                  abstracts, topics);
+                                  hasPresentationPrefs, groups, start, end, deadline, logo, thumbnail, iOSApp,
+                                  geo, schedule, info, owners, abstracts, topics);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -291,6 +294,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.thumbnail = thumbnail || null;
         self.iOSApp = iOSApp || null;
         self.geo = geo || null;
+        self.schedule = schedule || null;
+        self.info = info || null;
         self.owners = owners || [];
         self.abstracts = abstracts || [];
         self.topics = topics || [];

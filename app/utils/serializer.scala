@@ -138,7 +138,9 @@ package object serializer {
         "abstracts" -> routesResolver.abstractsUrl(c.uuid),
         "allAbstracts" -> routesResolver.allAbstractsUrl(c.uuid),
         "topics" -> c.topics.toSeq.sorted[Model],
-        "geo" -> routesResolver.geoUrl(c.uuid)
+        "geo" -> routesResolver.geoUrl(c.uuid),
+        "schedule" -> routesResolver.scheduleUrl(c.uuid),
+        "info" -> routesResolver.infoUrl(c.uuid)
       )
     }
   }

@@ -286,6 +286,50 @@
             </table>
         </div>
 
+        <!-- Schedule information management -->
+        <div data-bind="if: $root.isConferenceSaved">
+            <hr>
+            <p class="lead">Schedule information</p>
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="col-xs-12">
+                            <textarea id="scheduleContent" class="form-control" rows="4"
+                            placeholder="Conference schedule information. Requires well-formed JSON."
+                            data-bind="value: scheduleContent, valueUpdate: 'afterkeydown'"
+                            maxlength="@Model.getLimit[Conference]("schedule")"></textarea>
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-success"
+                            data-bind="click: $root.uploadSchedule">Upload</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Conference info management -->
+        <div data-bind="if: $root.isConferenceSaved">
+            <hr>
+            <p class="lead">Info data</p>
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="col-xs-12">
+                            <textarea id="infoContent" class="form-control" rows="4"
+                            placeholder="Conference info data. Use markdown."
+                            data-bind="value: infoContent, valueUpdate: 'afterkeydown'"
+                            maxlength="@Model.getLimit[Conference]("info")"></textarea>
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-success"
+                            data-bind="click: $root.uploadInfo">Upload</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <hr>
 
         <!-- owner management with owned component -->
