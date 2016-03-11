@@ -234,7 +234,7 @@ class Assets() {
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
       ?("http://www.nncn.de/header/header-conference.jpg"),
       ?("http://www.nncn.de/bilder/bc14_kurzlogo")),
-    Conference(None, ?("The third conference"), ?("C3"), ?("BCCN"),
+    Conference(None, ?("The third conference"), ?("C3"), ?(""),
       ?("The C3 Conf, Somewhere, Sometime"), ?(""), ?(""), ?(false), ?(true), ?(false), ?(false),
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
       ?("http://www.nncn.de/header/header-conference.jpg"),

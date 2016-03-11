@@ -42,6 +42,12 @@ class ConferenceServiceTest extends JUnitSuite {
   }
 
   @Test
+  def testListWithGroup() : Unit = {
+    val list = srv.listWithGroup("BCCN")
+    assert(list.size == 2)
+  }
+
+  @Test
   def testListOwn() : Unit = {
     var list = srv.listOwn(assets.alice)
     assert(list.size == 3)

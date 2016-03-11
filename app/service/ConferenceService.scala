@@ -72,6 +72,24 @@ class ConferenceService() extends PermissionsBase {
     }
   }
 
+  def listWithGroup(group: String) : Seq[Conference] = {
+    query { em =>
+      val queryStr =
+        """SELECT DISTINCT c FROM Conference c
+           LEFT JOIN FETCH c.groups
+           LEFT JOIN FETCH c.owners
+           WHERE c.group = :group
+           ORDER BY c.startDate DESC
+        """
+
+
+      val result = em.createQuery(queryStr, classOf[Conference])
+        .setParameter("group", group)
+        .getResultList
+      asScalaBuffer(result)
+    }
+  }
+
   def listWithAbstractsOfAccount(account: Account) : Seq[Conference] = {
     query { em =>
       val queryStr =
