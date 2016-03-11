@@ -26,6 +26,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
         self.editedAbstract = ko.observable(null);
         self.stateLog = ko.observable(null);
 
+        // autosave label
+        self.autosave = ko.observable({text: "Loading", css:"label-primary"});
+
         // required to set displayed modal header
         self.modalHeader = ko.observable(null);
         // required to set displayed modal body
@@ -238,12 +241,14 @@ function (ko, models, tools, msg, validate, owned, astate) {
             function success(obj) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
                 self.editedAbstract(self.abstract());
+                self.autosave({text: 'Ok', css: 'label-success'});
                 self.fetchStateLog();
                 self.setupOwners("/api/abstracts/" + abstrId + "/owners", self.setError);
                 self.loadOwnersData(null);
             }
 
             function fail() {
+                self.autosave({text: 'Error', css: 'btn-danger'});
                 self.setError("Error", "Unable to request the abstract: uuid = " + abstrId);
             }
 
@@ -343,6 +348,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
             if (self.hasAbstractFigures()) {
                 var figure = self.abstract().figures()[0];
 
+                self.autosave({text: 'Saving', css: 'label-warning'});
+
                 $.ajax({
                     url: '/api/figures/' + figure.uuid,
                     type: 'DELETE',
@@ -363,10 +370,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 self.requestAbstract(self.abstract().uuid);
 
                 self.setOk("Ok", "Figure removed from abstract");
+                self.autosave({text: 'Ok', css: 'label-success'});
             }
 
             function fail() {
                 self.setError("Error", "Unable to delete the figure");
+                self.autosave({text: 'Error!', css: 'label-danger'});
             }
         };
 
@@ -383,6 +392,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
                 return;
             }
+
+            self.autosave({text: 'Saving', css: 'label-warning'});
 
             if (self.isAbstractSaved()) {
 
@@ -430,6 +441,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 if (hasNoFig && hasFigData) {
                     self.figureUpload(successFig);
                 } else {
+                    self.autosave({text: 'Ok', css: 'label-success'});
                     if (result.hasWarnings()) {
                         self.setInfo("Note", "The abstract was saved but still has issues: " + result.warnings[0]);
                     } else {
@@ -447,6 +459,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             function successFig() {
                 self.requestAbstract(self.abstract().uuid);
+                self.autosave({text: 'Ok', css: 'label-success'});
                 if (result.hasWarnings()) {
                     self.setInfo("Note", "The abstract and figure was saved but still has issues: " + result.warnings[0]);
                 } else {
@@ -456,6 +469,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             function fail() {
                 self.setError("Error", "Unable to save abstract!");
+                self.autosave({text: 'Error!', css: 'label-danger'});
             }
         };
         
