@@ -236,41 +236,17 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     };
 
     /**
-     * Model for conference.
-     *
-     * @param {string}  [uuid]   The uuid of the conference.
-     * @param {string}  [name]   The name of the conference.
-     * @param {string}  [short]
-     * @param {string}  [cite]
-     * @param {string}  [link]
-     * @param {string}  [description]
-     * @param {boolean} [isOpen]
-     * @param {boolean} [isPublished]
-     * @param {boolean} [isActive]
-     * @param {boolean} [hasPresentationPrefs]
-     * @param {Array}   [groups] List of {AbstractGroups}
-     * @param {string}  [start]
-     * @param {string}  [end]
-     * @param {string}  [logo]
-     * @param {string}  [thumbnail]
-     * @param {string}  [iOSApp]
-     * @param {string}  [geo]
-     * @param {string}  [schedule]
-     * @param {string}  [info]
-     * @param {string}  [deadline]
-     * @param {string}  [owners] URL to all abstract owners.
-     * @param {string}  [abstracts] The URL to all abstracts.
-     * @param {Array}   [topics]
+     * Model for conference
      *
      * @returns {Conference}
      * @constructor
      * @public
      */
-    function Conference(uuid, name, short, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
+    function Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
                         groups, start, end, deadline, logo, thumbnail, iOSApp, geo, schedule, info, owners, abstracts, topics) {
 
         if (! (this instanceof Conference)) {
-            return new Conference(uuid, name, short, cite, link, description, isOpen, isPublished, isActive,
+            return new Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive,
                                   hasPresentationPrefs, groups, start, end, deadline, logo, thumbnail, iOSApp,
                                   geo, schedule, info, owners, abstracts, topics);
         }
@@ -280,6 +256,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.name = name || null;
         self.short = short || null;
         self.cite = cite || null;
+        self.group = group || null;
         self.link = link || null;
         self.description = description || null;
         self.isOpen = isOpen || false;
@@ -1195,6 +1172,5 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         ObservableAbstract: ObservableAbstract,
         ObservableAccount: ObservableAccount,
         AbstractGroup: AbstractGroup
-
     };
 });

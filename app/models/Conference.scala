@@ -33,7 +33,8 @@ class Conference extends Model with Owned {
 
   @Column(nullable = false, unique = true)
   var short: String = _
-  var conferenceGroup: String = _
+  @Column(name="conferenceGroup")
+  var group: String = _
   var cite: String = _
   var link: String = _
 
@@ -112,6 +113,7 @@ object Conference extends Model {
   def apply(uuid: Option[String],
             name: Option[String],
             short: Option[String],
+            group: Option[String],
             cite: Option[String],
             link: Option[String],
             description: Option[String],
@@ -138,6 +140,7 @@ object Conference extends Model {
     conference.uuid        = unwrapRef(uuid)
     conference.name        = unwrapRef(name)
     conference.short       = unwrapRef(short)
+    conference.group       = unwrapRef(group)
     conference.cite        = unwrapRef(cite)
     conference.link        = unwrapRef(link)
     conference.description = unwrapRef(description)
