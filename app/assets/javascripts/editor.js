@@ -117,6 +117,60 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self
         );
 
+        self.validity = ko.computed(
+            function() {
+                var abstract = self.abstract();
+                if (abstract == null) {
+                    return {
+                        ok: true,
+                        isError: false,
+                        badgeLevel: "btn-default",
+                        badgeText: "N/A",
+                        items: [],
+                        handler: function() {}
+                    };
+                }
+                var res = validate.abstract(abstract);
+                if (res.ok()) {
+                    return {
+                        ok: true,
+                        isError: false,
+                        badgeLevel: "btn-success",
+                        badgeText: "Ok",
+                        items: [],
+                        handler: function() {}
+                    };
+                } else if (res.hasErrors()) {
+                    var nerr = res.errors.length;
+                    return {
+                        ok: false,
+                        isError: true,
+                        badgeLevel: "btn-danger",
+                        badgeText: "" + nerr  + " error" + (nerr > 1 ? "s" : ""),
+                        handler: self.showValidation,
+                        items: res.errors
+                    };
+                } else {
+                    var nwarn = res.warnings.length;
+                    return {
+                        ok: false,
+                        isError: false,
+                        badgeLevel: "btn-warning",
+                        badgeText: "" + nwarn  + " warning" + (nwarn > 1 ? "s" : ""),
+                        handler: self.showValidation,
+                        items: res.warnings
+                    };
+                }
+            },
+            self
+        );
+
+        self.showValidation = function () {
+            self.modalHeader("header-validation");
+            self.modalBody("body-validation");
+            self.modalFooter("footer-validation");
+        };
+
         self.init = function () {
 
             if (confId) {
@@ -416,6 +470,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self.modalHeader("header-"+ editorId.replace('#',''));
             // load corresponding script for modal body
             self.modalBody("body-"+ editorId.replace('#',''));
+            // load corresponding script for modal footer (wow, I am such a useful comment)
+            self.modalFooter("generalModalFooter");
         };
 
 

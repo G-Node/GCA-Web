@@ -33,11 +33,27 @@
         </div>
 
         <h3>Abstract submission  <small>@conference.name</small></h3>
-        <!-- display the current abstract status -->
-        <div data-bind="if: isAbstractSaved">
-            Abstract status:
-            <span class="badge" data-bind="text: abstract().state()"></span>
-        </div>
+        <ul class="list-inline">
+            <li data-bind="if: showEditButton">
+                <div data-bind="with: validity">Validation:
+                    <button id="lblvalid" class="btn btn-xs" type="button" data-target="#validation-dialog" data-toggle="modal"
+                    data-bind="text: badgeText, css: badgeLevel, click: handler, attr: { 'data-toggle': ok ? '' : 'modal' }"></button>
+                </div>
+            </li>
+            <li data-bind="if: showEditButton() && isAbstractSaved()">
+                <div data-bind="with: autosave">Autosave:
+                    <span class="label" data-bind="text: text, css: css"></span>
+                </div>
+            </li>
+            <li>
+                <!-- display the current abstract status -->
+                <div data-bind="if: isAbstractSaved">
+                    Status:
+                    <span class="label label-primary" data-bind="text: abstract().state()"></span>
+                </div>
+            </li>
+        </ul>
+        <div class="modal" id="validation-dialog" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
     </div>
 
     <hr class="separator">
@@ -294,6 +310,35 @@
                 <div class="modal-footer" data-bind="template: { name: modalFooter }"></div>
             </div>
         </div>
+    </script>
+
+    <!-- validation result template -->
+    <script id="header-validation" type="text/html">
+       <h3>Abstract validation</h3>
+    </script>
+
+    <script id="body-validation" type="text/html">
+       <!-- ko with: $root.validity -->
+           <!-- ko ifnot: isError -->
+           <div class="callout-warning">
+               <h4>Warnings:</h4>
+               <!-- ko foreach: items -->
+                   <p data-bind="text: $data">Placeholder</p>
+               <!-- /ko -->
+           </div>
+           <!-- /ko -->
+           <!-- ko if: isError -->
+           <div class="callout-danger">
+              <h4>Errors:</h4>
+              <!-- ko foreach: items -->
+                  <p data-bind="text: $data">Placeholder</p>
+              <!-- /ko -->
+           </div>
+           <!-- /ko -->
+       <!-- /ko -->
+    </script>
+    <script id="footer-validation" type="text/html">
+       <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Ok</button>
     </script>
 
     <!-- modal header and body template section -->
