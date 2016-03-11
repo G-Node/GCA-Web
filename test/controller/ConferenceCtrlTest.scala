@@ -48,11 +48,6 @@ class ConferenceCtrlTest extends BaseCtrlTest {
       .withCookies(cookie)
     val respNameNull = routeWithErrors(ConferenceCtrlTest.app, reqNameNull).get
     assert(status(respNameNull) == INTERNAL_SERVER_ERROR)
-    val nameNullMessage = contentAsJson(respNameNull)
-      .asInstanceOf[JsObject]
-      .fields.filter(f => f._1 == "message")
-      .head._2.toString()
-    assert(nameNullMessage.contains("NULL not allowed for column \\\"NAME\\\""))
 
     val bodyShortNull = formatter.writes(assets.conferences(0))
                           .as[JsObject] - "uuid" - "abstracts" - "short"
@@ -62,12 +57,6 @@ class ConferenceCtrlTest extends BaseCtrlTest {
                         .withCookies(cookie)
     val respShortNull = routeWithErrors(ConferenceCtrlTest.app, reqShortNull).get
     assert(status(respShortNull) == INTERNAL_SERVER_ERROR)
-
-    val shortNullMessage = contentAsJson(respShortNull)
-      .asInstanceOf[JsObject]
-      .fields.filter(f => f._1 == "message")
-      .head._2.toString()
-    assert(shortNullMessage.contains("NULL not allowed for column \\\"SHORT\\\""))
 
   }
 
