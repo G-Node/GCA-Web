@@ -63,7 +63,7 @@ class ConferenceServiceTest extends JUnitSuite {
 
   @Test
   def testCreate() : Unit = {
-    val c = srv.create(Conference(None, Some("fooconf"), Some("F1"), Some("F"),
+    val c = srv.create(Conference(None, Some("fooconf"), Some("F1"), Some("G"), Some("F"),
                        None, None, Some(false), Some(true), Some(false), Some(true), None, None),
                        assets.alice)
 
@@ -72,13 +72,13 @@ class ConferenceServiceTest extends JUnitSuite {
     assert(c.owners.head.uuid == assets.alice.uuid)
 
     intercept[IllegalArgumentException] {
-      srv.create(Conference(Some("uuid"), Some("wrongconf"), Some("bla"),
+      srv.create(Conference(Some("uuid"), Some("wrongconf"), Some("bla"), Some("G"),
                  None, None, None, Some(false), Some(true), Some(false), Some(true), None, None),
                  assets.alice)
     }
 
     intercept[EntityNotFoundException] {
-      srv.create(Conference(None, Some("fooconf two"), Some("XX"), Some("X"),
+      srv.create(Conference(None, Some("fooconf two"), Some("XX"), Some("G"), Some("X"),
                  None, None, Some(false), Some(true), Some(false), Some(true), None, None, None),
         Account(Some("uuid"), Some("foo@bar.com")))
     }
@@ -93,12 +93,12 @@ class ConferenceServiceTest extends JUnitSuite {
     assert(c.name == "changed conference name")
 
     intercept[IllegalArgumentException] {
-      srv.update(Conference(None, Some("wrongconf"), Some("XX"), Some("X"),
+      srv.update(Conference(None, Some("wrongconf"), Some("XX"), Some("G"), Some("X"),
                  None, None, Some(false), Some(true), Some(false), Some(true), None, None, None), assets.alice)
     }
 
     intercept[EntityNotFoundException] {
-      srv.update(Conference(Some("uuid"), Some("wrongconf"), Some("XX"), Some("X"),
+      srv.update(Conference(Some("uuid"), Some("wrongconf"), Some("XX"), Some("G"), Some("X"),
                  None, None, Some(false), Some(true), Some(false), Some(true), None, None, None), assets.alice)
     }
 
