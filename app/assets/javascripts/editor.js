@@ -368,8 +368,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 self.newFigure.caption = null;
 
                 self.requestAbstract(self.abstract().uuid);
-
-                self.setOk("Ok", "Figure removed from abstract");
                 self.autosave({text: 'Ok', css: 'label-success'});
             }
 
@@ -442,11 +440,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     self.figureUpload(successFig);
                 } else {
                     self.autosave({text: 'Ok', css: 'label-success'});
-                    if (result.hasWarnings()) {
-                        self.setInfo("Note", "The abstract was saved but still has issues: " + result.warnings[0]);
-                    } else {
-                        self.setOk("Ok", "Abstract saved.", true);
-                    }
                 }
 
                 if (! self.stateLog()) {
@@ -460,11 +453,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             function successFig() {
                 self.requestAbstract(self.abstract().uuid);
                 self.autosave({text: 'Ok', css: 'label-success'});
-                if (result.hasWarnings()) {
-                    self.setInfo("Note", "The abstract and figure was saved but still has issues: " + result.warnings[0]);
-                } else {
-                    self.setOk("Ok", "Abstract and figure saved.", true);
-                }
             }
 
             function fail() {
@@ -494,14 +482,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             if (self.isAbstractSaved()) {
                 self.doSaveAbstract(self.editedAbstract())
             } else {
-                var result = validate.abstract(self.editedAbstract());
-                if (result.hasErrors()) {
-                    self.setWarning("Warning", result.errors[0]);
-                } else if (result.hasWarnings()) {
-                    self.setInfo("Note", result.warnings[0]);
-                } else {
-                    self.clearMessage();
-                }
                 self.abstract(self.editedAbstract());
             }
 
@@ -651,7 +631,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 contentType: "application/json",
                 success: function(result) {
                     self.abstract().state(toState);
-                    self.setOk("Ok", "Abstract now " + toState, true);
                     self.successStateLog(result);
                 },
                 error: function(jqxhr, textStatus, error) {
