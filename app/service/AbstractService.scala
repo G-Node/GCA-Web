@@ -182,6 +182,12 @@ class AbstractService(figPath: String) extends PermissionsBase {
            LEFT JOIN FETCH a.references
            WHERE a.uuid = :uuid"""
 
+      // this apparently useless query is needed to avoid strange caching behaviour related to #285
+      val queryUserStr =  """SELECT acc FROM Account acc LEFT JOIN acc.abstracts a WHERE a.uuid = :uuid"""
+      em.createQuery(queryUserStr, classOf[Account])
+        .setParameter("uuid", id)
+        .getResultList
+
       val accountChecked = em.find(classOf[Account], account.uuid)
       if (accountChecked == null)
         throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
