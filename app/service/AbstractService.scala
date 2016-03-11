@@ -170,7 +170,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
    * @throws NoResultException If was not found
    */
   def getOwn(id: String, account: Account) : Abstract = {
-    val abstr = query { em =>
+    query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
            LEFT JOIN FETCH a.owners o
@@ -182,19 +182,25 @@ class AbstractService(figPath: String) extends PermissionsBase {
            LEFT JOIN FETCH a.references
            WHERE a.uuid = :uuid"""
 
+      // this apparently useless query is needed to avoid strange caching behaviour related to #285
+      val queryUserStr =  """SELECT acc FROM Account acc LEFT JOIN acc.abstracts a WHERE a.uuid = :uuid"""
+      em.createQuery(queryUserStr, classOf[Account])
+        .setParameter("uuid", id)
+        .getResultList
+
       val accountChecked = em.find(classOf[Account], account.uuid)
       if (accountChecked == null)
         throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
 
       val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
       query.setParameter("uuid", id)
-      query.getSingleResult
+      val abstr = query.getSingleResult
+
+      if (!(abstr.isOwner(account) || abstr.conference.isOwner(account) || account.isAdmin))
+        throw new IllegalAccessException("No permissions for abstract with uuid = " + abstr.uuid)
+
+      abstr
     }
-
-    if (!(abstr.isOwner(account) || abstr.conference.isOwner(account) || account.isAdmin))
-      throw new IllegalAccessException("No permissions for abstract with uuid = " + abstr.uuid)
-
-    abstr
   }
 
   /**
