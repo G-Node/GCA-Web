@@ -18,7 +18,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             return new EditorViewModel(confId, abstrId);
         }
 
-        var self = tools.inherit(this, msg.MessageVM);
+        var self = tools.inherit(this, msg.MessageBox);
         self = tools.inherit(self, owned.Owned);
 
         self.conference = ko.observable(null);

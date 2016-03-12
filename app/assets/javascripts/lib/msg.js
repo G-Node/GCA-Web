@@ -4,10 +4,10 @@
  */
 define(["lib/tools", "knockout"], function(tools, ko) {
 
-    function MessageVM() {
+    function MessageBox() {
 
         if (tools.isGlobalOrUndefined(this)) {
-            return new MessageVM();
+            return new MessageBox();
         }
 
         var self = this;
@@ -74,7 +74,7 @@ define(["lib/tools", "knockout"], function(tools, ko) {
     }
 
     return {
-        MessageVM: MessageVM
+        MessageBox: MessageBox
     };
 
 });
