@@ -556,8 +556,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 affiliations.push(index);
                 affiliations.sort();
                 author.affiliations(affiliations);
-            } else {
-                self.setInfo("Hint", "This author is assigned to this affiliation.");
             }
 
             // reset author select index
