@@ -28,7 +28,7 @@ define(["lib/tools", "knockout"], function(tools, ko) {
             }
 
             if (text) {
-                self.message({message: text, level: 'alert-' + level, desc: description});
+                self.message({message: text, level: 'callout-' + level, desc: description, close: self.clearMessage});
             } else {
                 self.clearMessage();
             }

@@ -1,0 +1,11 @@
+@()
+<!-- Loading box -->
+<div data-bind="if: message">
+    <!-- ko with: message -->
+    <div class="callout fade in out" data-bind="css: level">
+        <button type="button" class="close" data-bind="click: close">&times;</button>
+        <h4 data-bind="text: message">Loading data</h4>
+        <p data-bind="html: desc">Please wait...</p>
+    </div>
+    <!-- /ko -->
+</div>
