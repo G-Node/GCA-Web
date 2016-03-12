@@ -38,7 +38,8 @@
                 <!-- display the current abstract status -->
                 <div data-bind="if: isAbstractSaved">
                     Status:
-                    <span class="label label-primary" data-bind="text: abstract().state()"></span>
+                    <span style="cursor: pointer" class="label label-primary"
+                          data-bind="text: abstract().state(), click: showHelp"></span>
                 </div>
             </li>
         </ul>
