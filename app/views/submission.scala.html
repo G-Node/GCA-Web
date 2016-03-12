@@ -47,37 +47,6 @@
 
     @components.messsagebox()
 
-    <hr class="separator">
-
-    <!-- display submission information -->
-    <span data-bind="if: showEditButton">
-        <div class="alert alert-info alert-text-only">
-            <ul>
-                <span data-bind="ifnot: isAbstractSaved">
-                    <li>Click the <b>Save</b> button once to save your abstract. Subsequent changes are saved automatically.</li>
-                </span>
-                <span data-bind="if: isAbstractSaved">
-                    <li>All changes to the abstract are saved automatically.</li>
-                </span>
-                <li>After entering all information, click the <b>Submit</b> button to submit your abstract.</li>
-                <li>Submitted abstracts can be modified until the deadline.<br/>
-                    To edit a <b>submitted</b> abstract, unlock the abstract. Don't forget to re-submit after editing.</li>
-            </ul>
-        </div>
-    </span>
-    <span data-bind="ifnot: showEditButton">
-        <div class="alert alert-danger alert-text-only">
-            <ul>
-                <li>This abstract is submitted, changes are deactivated.<br/>
-                    Submitted abstracts can be modified until the deadline.</li>
-                <li>To modify a submitted abstract, unlock the abstract.<br/>
-                    Don't forget to re-submit after editing.</li>
-            </ul>
-        </div>
-    </span>
-
-    <hr class="separator">
-
     <div id="abstract">
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">

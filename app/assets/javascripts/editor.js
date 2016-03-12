@@ -184,6 +184,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             } else {
                 self.abstract(models.ObservableAbstract());
                 self.editedAbstract(self.abstract());
+                self.showHelp();
             }
 
             ko.applyBindings(window.editor);
@@ -430,6 +431,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             }
 
             function successAbs(obj) {
+                var firstSave = !self.isAbstractSaved();
                 self.abstract(models.ObservableAbstract.fromObject(obj));
                 self.editedAbstract(self.abstract());
 
@@ -448,6 +450,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
                 self.setupOwners("/api/abstracts/" + self.abstract().uuid + "/owners", self.setError);
                 self.loadOwnersData(null);
+
+                if (firstSave) {
+                    self.showHelp();
+                } else {
+                    self.clearMessage();
+                }
             }
 
             function successFig() {
@@ -630,6 +638,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 success: function(result) {
                     self.abstract().state(toState);
                     self.successStateLog(result);
+                    self.showHelp();
                 },
                 error: function(jqxhr, textStatus, error) {
                     self.setError("Error", "Unable to set abstract state: " + error);
@@ -700,6 +709,86 @@ function (ko, models, tools, msg, validate, owned, astate) {
             },
             self
         );
+
+
+        // help
+
+        self.submittedBefore = function() {
+            if (!self.stateLog()) {
+                return false;
+            }
+
+            var log = self.stateLog();
+            for (var i = 0; i < log.length; i++) {
+                if (log[i].state == 'Submitted') {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        self.showHelp = function() {
+            var open = self.conference() && self.conference().isOpen;
+
+            if (!open) {
+                if (self.abstract().state == 'InRevision') {
+                    self.setInfo(
+                        "Abstract revision",
+                        "Please revise your abstract and re-submit your abstract by" +
+                        "clicking <b>Submit</b>"
+                    )
+                } else {
+                    self.setWarning(
+                        "Conference closed",
+                        "Conference is closed and the abstract can not be modified.")
+                }
+            } if (!self.isAbstractSaved()) {
+                self.setInfo(
+                    "Welcome to abstract submission",
+                    "<ul>" +
+                    "<li>Nothing will be stored on the server before the abstract is saved," +
+                    "    so it is ok to play around and investigate this editor.</li>" +
+                    "<li>The 'Validation' field above indicates if there are issues with the" +
+                    "    content of the abstract.</li>" +
+                    "<li>Once all errors have been fixed you can click the <b>Save</b> button" +
+                    "    to store the abstract on the server. Subsequent changes will be saved " +
+                    "    automatically.</li>" +
+                    "</ul>"
+                );
+            } else if (self.abstract().state() == 'InPreparation') {
+                if (self.submittedBefore()) {
+                    self.setWarning("Abstract unlocked",
+                        "<ul>" +
+                        "<li>Autosave is again enabled, changes will be stored directly on the server.</li>" +
+                        "<li>Abstract must be re-submitted before the deadline.</li>" +
+                        "</ul>"
+                    );
+                } else {
+                    self.setInfo(
+                        "Abstract is saved",
+                        "<ul>" +
+                        "<li>Autosave is enabled, i.e. changes are stored automatically on the server.</li>" +
+                        "<li>Once all errors and warnings have been fixed you can click the " +
+                        "    <b>Submit</b> button to submit it. NB: Submitted abstracts can still" +
+                        "    be modified until the deadline. </li>" +
+                        "<li>Additional abstract owners can be added at the bottom at the page via " +
+                        "    <b>Owner management</b>.</li>" +
+                        "</ul>"
+                    );
+                }
+            } else if (self.abstract().state() == 'Submitted') {
+                self.setInfo(
+                    "Abstract is submitted",
+                    "<ul>" +
+                    "<li>Changes are deactivated. Submitted abstracts can be modified until the" +
+                    " deadline.</li>" +
+                    "<li>To modify a submitted abstract, unlock the abstract.<br/>" +
+                    "</ul>"
+                )
+            }
+
+        }
 
     }
 
