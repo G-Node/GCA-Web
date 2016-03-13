@@ -218,7 +218,7 @@ class Assets() {
   var bcDesc = "The Bernstein Conference is the Bernstein Network's central forum that has developed over time into the biggest European Computational Neuroscience conference"
 
   var conferences : Array[Conference] = Array(
-    Conference(None, ?("Bernstein Conference 2014"), ?("BC14"),
+    Conference(None, ?("Bernstein Conference 2014"), ?("BC14"), ?("BCCN"),
       ?("The C1 Conf, Somewhere, Sometime"), ?("http://www.nncn.de/en/bernstein-conference/2014"),
       ?(bcDesc), ?(true), ?(true), ?(true), ?(true),
       ?(new DateTime(393415200000L)), ?(new DateTime(574423200000L)), ?(new DateTime(1321005600000L)),
@@ -229,12 +229,12 @@ class Assets() {
           AbstractGroup(None, ?(2), ?("Poster"), ?("P"))),Nil,Nil,Nil,
       ?("""[{"uuid": "someid", "location": { "position": { "geojson": { "type": "Point", "coordinates": [12.0, 14.0] } } } }]"""),
       ?("""{"schedule": "some schedule json"}"""), ?("# Some markdown text")),
-    Conference(None, ?("The second conference"), ?("C2"),
+    Conference(None, ?("The second conference"), ?("C2"), ?("BCCN"),
       ?("The C2 Conf, Somewhere, Sometime"), ?(""), None, ?(false), ?(true), ?(false), ?(true),
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
       ?("http://www.nncn.de/header/header-conference.jpg"),
       ?("http://www.nncn.de/bilder/bc14_kurzlogo")),
-    Conference(None, ?("The third conference"), ?("C3"),
+    Conference(None, ?("The third conference"), ?("C3"), ?(""),
       ?("The C3 Conf, Somewhere, Sometime"), ?(""), ?(""), ?(false), ?(true), ?(false), ?(false),
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
       ?("http://www.nncn.de/header/header-conference.jpg"),

@@ -73,6 +73,18 @@ class ConferenceCtrlTest extends BaseCtrlTest {
   }
 
   @Test
+  def testListWithGroup(): Unit = {
+    val request = FakeRequest(GET, "/api/conferences?group=BCCN")
+    val result  = route(ConferenceCtrlTest.app, request).get
+    assert(status(result) == OK)
+    assert(contentType(result) == Some("application/json"))
+
+    val existingIds: Array[String] = for (c <- assets.conferences if c.group == "BCCN")  yield c.uuid
+    for (c <- contentAsJson(result).as[List[JsObject]])
+      assert(existingIds.contains(formatter.reads(c).get.uuid))
+  }
+
+  @Test
   def testGet(): Unit = {
     val uuid = assets.conferences(0).uuid
     val request = FakeRequest(GET, s"/api/conferences/$uuid")

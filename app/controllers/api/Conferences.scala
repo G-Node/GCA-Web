@@ -40,10 +40,13 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
    *
    * @return Ok with all conferences publicly available.
    */
-  def list = Action { implicit request =>
-    Ok(JsArray(
-      for (conf <- conferenceService.list()) yield confFormat.writes(conf)
-    ))
+  def list(group: String) = Action { implicit request =>
+    val conferences = if (group != null) {
+      conferenceService.listWithGroup(group)
+    } else {
+      conferenceService.list()
+    }
+    Ok(Json.toJson(conferences))
   }
 
   /**

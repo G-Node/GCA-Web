@@ -169,7 +169,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
 
         self.makeConferenceObservable = function (conf) {
-            conf.makeObservable(["name", "short", "cite", "description", "start", "end", "groups",
+            conf.makeObservable(["name", "short", "group", "cite", "description", "start", "end", "groups",
                 "deadline", "logo", "thumbnail", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
                 "topics", "iOSApp"]);
 
