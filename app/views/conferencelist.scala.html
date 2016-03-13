@@ -6,14 +6,7 @@
 
     @flash(request)
 
-    <div class="page-header">
-        <h1>Conference abstracts <small>and submission</small></h1>
-    </div>
-
     @if(list_active.nonEmpty) {
-        <h2>Active conferences</h2>
-
-        <hr>
 
         @for(conference <- list_active) {
             <div class="jumbotron">
@@ -48,10 +41,7 @@
     }
 
     @if(list_other.nonEmpty) {
-        <h2>Past conferences</h2>
-
         <hr>
-
         @for(conference <- list_other) {
             <div class="media">
                 <div class="pull-left media-left">
