@@ -34,11 +34,24 @@
             <!-- The conference info page -->
 
         <div class="page-header">
-            <h1>Admin Panel</h1>
+            <h2>Admin Panel</h2>
         </div>
 
-        <div data-bind="with: conference">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
+            <!-- ko if:$root.isConferenceSaved  -->
+            <li role="presentation"><a href="#groups" aria-controls="groups" role="tab" data-toggle="tab">Groups</a></li>
+            <li role="presentation"><a href="#geo" aria-controls="geo" role="tab" data-toggle="tab">Maps</a></li>
+            <li role="presentation"><a href="#schedule" aria-controls="schedule" role="tab" data-toggle="tab">Schedule</a></li>
+            <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab">Info text</a></li>
+            <li role="presentation"><a href="#owner" aria-controls="owner" role="tab" data-toggle="tab">Owner</a></li>
+            <!-- /ko -->
+        </ul>
 
+      <div class="tab-content">
+
+        <!-- general -->
+        <div data-bind="with: conference" role="tabpanel" class="tab-pane active" id="general">
             <form class="form-horizontal admin-form" role="form">
 
                 <div class="form-group">
@@ -209,11 +222,10 @@
                     </div>
                 </div>
             </form>
-        </div>
+          </div>
 
         <!-- groups management -->
-        <div data-bind="if: $root.isConferenceSaved">
-            <p class="lead">Groups</p>
+        <div data-bind="if: $root.isConferenceSaved" role="tabpanel" class="tab-pane" id="groups">
             <div data-bind="with: conference">
                 <table class="table .table-condensed">
                     <thead>
@@ -274,9 +286,7 @@
         </div>
 
         <!-- Geo information management -->
-        <div data-bind="if: $root.isConferenceSaved">
-            <hr>
-            <p class="lead">Geo information</p>
+        <div data-bind="if: $root.isConferenceSaved" role="tabpanel" class="tab-pane" id="geo">
             <table>
                 <tbody>
                     <tr>
@@ -293,12 +303,10 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </div >
 
         <!-- Schedule information management -->
-        <div data-bind="if: $root.isConferenceSaved">
-            <hr>
-            <p class="lead">Schedule information</p>
+        <div data-bind="if: $root.isConferenceSaved" role="tabpanel" class="tab-pane" id="schedule">
             <table>
                 <tbody>
                     <tr>
@@ -318,9 +326,7 @@
         </div>
 
         <!-- Conference info management -->
-        <div data-bind="if: $root.isConferenceSaved">
-            <hr>
-            <p class="lead">Info data</p>
+        <div data-bind="if: $root.isConferenceSaved" role="tabpanel" class="tab-pane" id="info">
             <table>
                 <tbody>
                     <tr>
@@ -339,11 +345,12 @@
             </table>
         </div>
 
-        <hr>
-
         <!-- owner management with owned component -->
-        <p class="lead">Owner Management</p>
-        @components.owned()
+        <div data-bind="if: $root.isConferenceSaved" role="tabpanel" class="tab-pane" id="owner">
+            @components.owned()
+        </div>
+
+      </div> <!-- tab content -->
 
     </div> <!-- KO !flickerbox -->
 }
