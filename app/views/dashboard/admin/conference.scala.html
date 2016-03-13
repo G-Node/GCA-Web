@@ -291,7 +291,7 @@
                 <tbody>
                     <tr>
                         <td class="col-xs-12">
-                            <textarea id="geoContent" class="form-control" rows="4"
+                            <textarea id="geoContent" class="form-control" rows="12"
                                 placeholder="Conference geo information. Requires well-formed JSON."
                                 data-bind="value: geoContent, valueUpdate: 'afterkeydown'"
                                 maxlength="@Model.getLimit[Conference]("geo")"></textarea>
@@ -311,7 +311,7 @@
                 <tbody>
                     <tr>
                         <td class="col-xs-12">
-                            <textarea id="scheduleContent" class="form-control" rows="4"
+                            <textarea id="scheduleContent" class="form-control" rows="12"
                             placeholder="Conference schedule information. Requires well-formed JSON."
                             data-bind="value: scheduleContent, valueUpdate: 'afterkeydown'"
                             maxlength="@Model.getLimit[Conference]("schedule")"></textarea>
@@ -331,7 +331,7 @@
                 <tbody>
                     <tr>
                         <td class="col-xs-12">
-                            <textarea id="infoContent" class="form-control" rows="4"
+                            <textarea id="infoContent" class="form-control" rows="12"
                             placeholder="Conference info data. Use markdown."
                             data-bind="value: infoContent, valueUpdate: 'afterkeydown'"
                             maxlength="@Model.getLimit[Conference]("info")"></textarea>
