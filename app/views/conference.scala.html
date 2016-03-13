@@ -33,14 +33,15 @@
         <p>@conference.formatDuration</p>
         <!-- user/conference options depending on the conference state -->
         @if(conference.isOpen) {
-            <p>
-                Submission is currently <span class="text-success"><b>open</b></span>
-            </p>
-            @if(conference.deadline != null) {
-                <p>
-                    <b>Submission deadline:</b> @conference.deadline.toString(conference.dateFormatter)
-                </p>
-            }
+            <ul class="list-inline">
+            <li>
+               <p>Submission is <span class="text-success"><b>open</b></span>!</p>
+            </li>
+             @if(conference.deadline != null) {
+                 <li><p><b>Deadline:</b> @conference.deadline.toString(conference.dateFormatter)</p></li>
+             }
+            </ul>
+
             @if(account.isDefined) {
                 <div class="jumbo-small">
                     In order to submit an abstract please press the appropriate button below.
@@ -62,12 +63,9 @@
             }
         } else {
             @if(conference.isPublished) {
-                <p>
-                    Abstract submission is <span class="text-danger"><b>closed</b></span>.
-                </p>
+                <p>Abstract submission is <span class="text-danger"><b>closed</b></span>.</p>
             } else {
-                <p>
-                    The submission for the @conference.name is currently closed.
+                <p>The submission for the @conference.name is currently closed.<br>
                     Please check the <a href="@conference.link">conference homepage</a> for details.
                 </p>
             }

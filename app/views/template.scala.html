@@ -70,6 +70,9 @@
                 <!-- left hand side brand / icon -->
                 <a class="navbar-brand" href="/">
                     <span class="glyphicon glyphicon-home"></span>
+                    @if(conference.isEmpty) {
+                        Conference abstracts and submission
+                    }
                 </a>
             </div>
             <div class="navbar-collapse collapse">
