@@ -4,10 +4,10 @@
  */
 define(["lib/tools", "knockout"], function(tools, ko) {
 
-    function MessageVM() {
+    function MessageBox() {
 
         if (tools.isGlobalOrUndefined(this)) {
-            return new MessageVM();
+            return new MessageBox();
         }
 
         var self = this;
@@ -28,7 +28,7 @@ define(["lib/tools", "knockout"], function(tools, ko) {
             }
 
             if (text) {
-                self.message({message: text, level: 'alert-' + level, desc: description});
+                self.message({message: text, level: 'callout-' + level, desc: description, close: self.clearMessage});
             } else {
                 self.clearMessage();
             }
@@ -74,7 +74,7 @@ define(["lib/tools", "knockout"], function(tools, ko) {
     }
 
     return {
-        MessageVM: MessageVM
+        MessageBox: MessageBox
     };
 
 });

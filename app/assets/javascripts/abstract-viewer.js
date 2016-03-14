@@ -8,7 +8,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate", "knockout"], functi
             return new AbstractViewerViewModel(confId, abstrId, isAdmin, isOwner);
         }
 
-        var self = tools.inherit(this, msg.MessageVM);
+        var self = tools.inherit(this, msg.MessageBox);
 
         self.selectedAbstract = ko.observable(null);
         self.conference = ko.observable(null);

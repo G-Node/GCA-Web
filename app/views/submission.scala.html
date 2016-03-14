@@ -10,17 +10,6 @@
     <script data-main="@routes.Assets.at("javascripts/editor.js")"
             src="@routes.Assets.at("javascripts/require.js")"></script>
 
-    <!-- Loading box -->
-    <div data-bind="if: message">
-            <!-- ko with: message -->
-        <div class="alert alert-info fade in out" data-bind="css: level">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <h4 data-bind="text: message">Loading data</h4>
-            <p data-bind="html: desc">Please wait...</p>
-        </div>
-            <!-- /ko -->
-    </div>
-
     <div class="header">
         <div class="pull-right state-btn-group">
             <span data-bind="if: action">
@@ -33,43 +22,31 @@
         </div>
 
         <h3>Abstract submission  <small>@conference.name</small></h3>
-        <!-- display the current abstract status -->
-        <div data-bind="if: isAbstractSaved">
-            Abstract status:
-            <span class="badge" data-bind="text: abstract().state()"></span>
-        </div>
+        <ul class="list-inline">
+            <li data-bind="if: showEditButton">
+                <div data-bind="with: validity">Validation:
+                    <button id="lblvalid" class="btn btn-xs" type="button" data-target="#validation-dialog" data-toggle="modal"
+                    data-bind="text: badgeText, css: badgeLevel, click: handler, attr: { 'data-toggle': ok ? '' : 'modal' }"></button>
+                </div>
+            </li>
+            <li data-bind="if: showEditButton() && isAbstractSaved()">
+                <div data-bind="with: autosave">Autosave:
+                    <span class="label" data-bind="text: text, css: css"></span>
+                </div>
+            </li>
+            <li>
+                <!-- display the current abstract status -->
+                <div data-bind="if: isAbstractSaved">
+                    Status:
+                    <span style="cursor: pointer" class="label label-primary"
+                          data-bind="text: abstract().state(), click: showHelp"></span>
+                </div>
+            </li>
+        </ul>
+        <div class="modal" id="validation-dialog" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
     </div>
 
-    <hr class="separator">
-
-    <!-- display submission information -->
-    <span data-bind="if: showEditButton">
-        <div class="alert alert-info alert-text-only">
-            <ul>
-                <span data-bind="ifnot: isAbstractSaved">
-                    <li>Click the <b>Save</b> button once to save your abstract. Subsequent changes are saved automatically.</li>
-                </span>
-                <span data-bind="if: isAbstractSaved">
-                    <li>All changes to the abstract are saved automatically.</li>
-                </span>
-                <li>After entering all information, click the <b>Submit</b> button to submit your abstract.</li>
-                <li>Submitted abstracts can be modified until the deadline.<br/>
-                    To edit a <b>submitted</b> abstract, unlock the abstract. Don't forget to re-submit after editing.</li>
-            </ul>
-        </div>
-    </span>
-    <span data-bind="ifnot: showEditButton">
-        <div class="alert alert-danger alert-text-only">
-            <ul>
-                <li>This abstract is submitted, changes are deactivated.<br/>
-                    Submitted abstracts can be modified until the deadline.</li>
-                <li>To modify a submitted abstract, unlock the abstract.<br/>
-                    Don't forget to re-submit after editing.</li>
-            </ul>
-        </div>
-    </span>
-
-    <hr class="separator">
+    @components.messsagebox()
 
     <div id="abstract">
 
@@ -296,6 +273,35 @@
         </div>
     </script>
 
+    <!-- validation result template -->
+    <script id="header-validation" type="text/html">
+       <h3>Abstract validation</h3>
+    </script>
+
+    <script id="body-validation" type="text/html">
+       <!-- ko with: $root.validity -->
+           <!-- ko ifnot: isError -->
+           <div class="callout-warning">
+               <h4>Warnings:</h4>
+               <!-- ko foreach: items -->
+                   <p data-bind="text: $data">Placeholder</p>
+               <!-- /ko -->
+           </div>
+           <!-- /ko -->
+           <!-- ko if: isError -->
+           <div class="callout-danger">
+              <h4>Errors:</h4>
+              <!-- ko foreach: items -->
+                  <p data-bind="text: $data">Placeholder</p>
+              <!-- /ko -->
+           </div>
+           <!-- /ko -->
+       <!-- /ko -->
+    </script>
+    <script id="footer-validation" type="text/html">
+       <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Ok</button>
+    </script>
+
     <!-- modal header and body template section -->
     <!-- title templates -->
     <script id="header-title-editor" type="text/html">
@@ -410,8 +416,8 @@
                     <!-- ko if: $root.getEditorAuthorsForAffiliation($index(), affiliation).length < 1 -->
                 <tr>
                     <td colspan="5">
-                        <div class="affiliations-no-author">
-                            <span>No author assigned</span>
+                        <div class="affiliations-no-author text-danger">
+                            <span>No author assigned! Use dropdown menu below to select author and press "Assign".</span>
                         </div>
                     </td>
                 </tr>

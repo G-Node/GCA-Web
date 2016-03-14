@@ -9,7 +9,7 @@ require(["lib/models", "lib/tools", "lib/msg", "knockout"], function(models, too
             return new AdminAccountsViewModel();
         }
 
-        var self = tools.inherit(this, msg.MessageVM);
+        var self = tools.inherit(this, msg.MessageBox);
 
         self.accounts = ko.observableArray(null);
         self.noAccounts = ko.computed(function() {

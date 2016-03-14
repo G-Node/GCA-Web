@@ -18,13 +18,16 @@ function (ko, models, tools, msg, validate, owned, astate) {
             return new EditorViewModel(confId, abstrId);
         }
 
-        var self = tools.inherit(this, msg.MessageVM);
+        var self = tools.inherit(this, msg.MessageBox);
         self = tools.inherit(self, owned.Owned);
 
         self.conference = ko.observable(null);
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
         self.stateLog = ko.observable(null);
+
+        // autosave label
+        self.autosave = ko.observable({text: "Loading", css:"label-primary"});
 
         // required to set displayed modal header
         self.modalHeader = ko.observable(null);
@@ -117,6 +120,60 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self
         );
 
+        self.validity = ko.computed(
+            function() {
+                var abstract = self.abstract();
+                if (abstract == null) {
+                    return {
+                        ok: true,
+                        isError: false,
+                        badgeLevel: "btn-default",
+                        badgeText: "N/A",
+                        items: [],
+                        handler: function() {}
+                    };
+                }
+                var res = validate.abstract(abstract);
+                if (res.ok()) {
+                    return {
+                        ok: true,
+                        isError: false,
+                        badgeLevel: "btn-success",
+                        badgeText: "Ok",
+                        items: [],
+                        handler: function() {}
+                    };
+                } else if (res.hasErrors()) {
+                    var nerr = res.errors.length;
+                    return {
+                        ok: false,
+                        isError: true,
+                        badgeLevel: "btn-danger",
+                        badgeText: "" + nerr  + " error" + (nerr > 1 ? "s" : ""),
+                        handler: self.showValidation,
+                        items: res.errors
+                    };
+                } else {
+                    var nwarn = res.warnings.length;
+                    return {
+                        ok: false,
+                        isError: false,
+                        badgeLevel: "btn-warning",
+                        badgeText: "" + nwarn  + " warning" + (nwarn > 1 ? "s" : ""),
+                        handler: self.showValidation,
+                        items: res.warnings
+                    };
+                }
+            },
+            self
+        );
+
+        self.showValidation = function () {
+            self.modalHeader("header-validation");
+            self.modalBody("body-validation");
+            self.modalFooter("footer-validation");
+        };
+
         self.init = function () {
 
             if (confId) {
@@ -127,6 +184,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             } else {
                 self.abstract(models.ObservableAbstract());
                 self.editedAbstract(self.abstract());
+                self.showHelp();
             }
 
             ko.applyBindings(window.editor);
@@ -184,12 +242,14 @@ function (ko, models, tools, msg, validate, owned, astate) {
             function success(obj) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
                 self.editedAbstract(self.abstract());
+                self.autosave({text: 'Ok', css: 'label-success'});
                 self.fetchStateLog();
                 self.setupOwners("/api/abstracts/" + abstrId + "/owners", self.setError);
                 self.loadOwnersData(null);
             }
 
             function fail() {
+                self.autosave({text: 'Error', css: 'btn-danger'});
                 self.setError("Error", "Unable to request the abstract: uuid = " + abstrId);
             }
 
@@ -289,6 +349,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
             if (self.hasAbstractFigures()) {
                 var figure = self.abstract().figures()[0];
 
+                self.autosave({text: 'Saving', css: 'label-warning'});
+
                 $.ajax({
                     url: '/api/figures/' + figure.uuid,
                     type: 'DELETE',
@@ -307,12 +369,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 self.newFigure.caption = null;
 
                 self.requestAbstract(self.abstract().uuid);
-
-                self.setOk("Ok", "Figure removed from abstract");
+                self.autosave({text: 'Ok', css: 'label-success'});
             }
 
             function fail() {
                 self.setError("Error", "Unable to delete the figure");
+                self.autosave({text: 'Error!', css: 'label-danger'});
             }
         };
 
@@ -329,6 +391,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
                 return;
             }
+
+            self.autosave({text: 'Saving', css: 'label-warning'});
 
             if (self.isAbstractSaved()) {
 
@@ -367,6 +431,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             }
 
             function successAbs(obj) {
+                var firstSave = !self.isAbstractSaved();
                 self.abstract(models.ObservableAbstract.fromObject(obj));
                 self.editedAbstract(self.abstract());
 
@@ -376,11 +441,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 if (hasNoFig && hasFigData) {
                     self.figureUpload(successFig);
                 } else {
-                    if (result.hasWarnings()) {
-                        self.setInfo("Note", "The abstract was saved but still has issues: " + result.warnings[0]);
-                    } else {
-                        self.setOk("Ok", "Abstract saved.", true);
-                    }
+                    self.autosave({text: 'Ok', css: 'label-success'});
                 }
 
                 if (! self.stateLog()) {
@@ -389,19 +450,22 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
                 self.setupOwners("/api/abstracts/" + self.abstract().uuid + "/owners", self.setError);
                 self.loadOwnersData(null);
+
+                if (firstSave) {
+                    self.showHelp();
+                } else {
+                    self.clearMessage();
+                }
             }
 
             function successFig() {
                 self.requestAbstract(self.abstract().uuid);
-                if (result.hasWarnings()) {
-                    self.setInfo("Note", "The abstract and figure was saved but still has issues: " + result.warnings[0]);
-                } else {
-                    self.setOk("Ok", "Abstract and figure saved.", true);
-                }
+                self.autosave({text: 'Ok', css: 'label-success'});
             }
 
             function fail() {
                 self.setError("Error", "Unable to save abstract!");
+                self.autosave({text: 'Error!', css: 'label-danger'});
             }
         };
         
@@ -416,6 +480,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self.modalHeader("header-"+ editorId.replace('#',''));
             // load corresponding script for modal body
             self.modalBody("body-"+ editorId.replace('#',''));
+            // load corresponding script for modal footer (wow, I am such a useful comment)
+            self.modalFooter("generalModalFooter");
         };
 
 
@@ -424,14 +490,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             if (self.isAbstractSaved()) {
                 self.doSaveAbstract(self.editedAbstract())
             } else {
-                var result = validate.abstract(self.editedAbstract());
-                if (result.hasErrors()) {
-                    self.setWarning("Warning", result.errors[0]);
-                } else if (result.hasWarnings()) {
-                    self.setInfo("Note", result.warnings[0]);
-                } else {
-                    self.clearMessage();
-                }
                 self.abstract(self.editedAbstract());
             }
 
@@ -506,8 +564,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 affiliations.push(index);
                 affiliations.sort();
                 author.affiliations(affiliations);
-            } else {
-                self.setInfo("Hint", "This author is assigned to this affiliation.");
             }
 
             // reset author select index
@@ -581,8 +637,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 contentType: "application/json",
                 success: function(result) {
                     self.abstract().state(toState);
-                    self.setOk("Ok", "Abstract now " + toState, true);
                     self.successStateLog(result);
+                    self.showHelp();
                 },
                 error: function(jqxhr, textStatus, error) {
                     self.setError("Error", "Unable to set abstract state: " + error);
@@ -653,6 +709,86 @@ function (ko, models, tools, msg, validate, owned, astate) {
             },
             self
         );
+
+
+        // help
+
+        self.submittedBefore = function() {
+            if (!self.stateLog()) {
+                return false;
+            }
+
+            var log = self.stateLog();
+            for (var i = 0; i < log.length; i++) {
+                if (log[i].state == 'Submitted') {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        self.showHelp = function() {
+            var open = self.conference() && self.conference().isOpen;
+
+            if (!open) {
+                if (self.abstract().state == 'InRevision') {
+                    self.setInfo(
+                        "Abstract revision",
+                        "Please revise your abstract and re-submit your abstract by" +
+                        "clicking <b>Submit</b>"
+                    )
+                } else {
+                    self.setWarning(
+                        "Conference closed",
+                        "Conference is closed and the abstract can not be modified.")
+                }
+            } if (!self.isAbstractSaved()) {
+                self.setInfo(
+                    "Welcome to abstract submission",
+                    "<ul>" +
+                    "<li>Nothing will be stored on the server before the abstract is saved," +
+                    "    so it is ok to play around and investigate this editor.</li>" +
+                    "<li>The 'Validation' field above indicates if there are issues with the" +
+                    "    content of the abstract.</li>" +
+                    "<li>Once all errors have been fixed you can click the <b>Save</b> button" +
+                    "    to store the abstract on the server. Subsequent changes will be saved " +
+                    "    automatically.</li>" +
+                    "</ul>"
+                );
+            } else if (self.abstract().state() == 'InPreparation') {
+                if (self.submittedBefore()) {
+                    self.setWarning("Abstract unlocked",
+                        "<ul>" +
+                        "<li>Autosave is again enabled, changes will be stored directly on the server.</li>" +
+                        "<li>Abstract must be re-submitted before the deadline.</li>" +
+                        "</ul>"
+                    );
+                } else {
+                    self.setInfo(
+                        "Abstract is saved",
+                        "<ul>" +
+                        "<li>Autosave is enabled, i.e. changes are stored automatically on the server.</li>" +
+                        "<li>Once all errors and warnings have been fixed you can click the " +
+                        "    <b>Submit</b> button to submit it. NB: Submitted abstracts can still" +
+                        "    be modified until the deadline. </li>" +
+                        "<li>Additional abstract owners can be added at the bottom at the page via " +
+                        "    <b>Owner management</b>.</li>" +
+                        "</ul>"
+                    );
+                }
+            } else if (self.abstract().state() == 'Submitted') {
+                self.setInfo(
+                    "Abstract is submitted",
+                    "<ul>" +
+                    "<li>Changes are deactivated. Submitted abstracts can be modified until the" +
+                    " deadline.</li>" +
+                    "<li>To modify a submitted abstract, unlock the abstract.<br/>" +
+                    "</ul>"
+                )
+            }
+
+        }
 
     }
 
