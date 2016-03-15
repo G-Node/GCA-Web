@@ -120,6 +120,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self
         );
 
+        // validation
+
         self.validity = ko.computed(
             function() {
                 var abstract = self.abstract();
@@ -148,8 +150,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     return {
                         ok: false,
                         isError: true,
-                        badgeLevel: "btn-danger",
-                        badgeText: "" + nerr  + " error" + (nerr > 1 ? "s" : ""),
+                        badgeLevel: self.isAbstractSaved() ? "btn-danger" : " btn-default",
+                        badgeText: "" + nerr  + " issue" + (nerr > 1 ? "s" : ""),
                         handler: self.presentValidationResults,
                         items: res.errors
                     };
@@ -159,7 +161,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         ok: false,
                         isError: false,
                         badgeLevel: "btn-warning",
-                        badgeText: "" + nwarn  + " warning" + (nwarn > 1 ? "s" : ""),
+                        badgeText: "" + nwarn  + " issue" + (nwarn > 1 ? "s" : ""),
                         handler: self.presentValidationResults,
                         items: res.warnings
                     };
@@ -750,10 +752,11 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     "<li>Nothing will be stored on the server before the abstract is saved," +
                     "    so it is ok to play around and investigate this editor.</li>" +
                     "<li>The 'Validation' field above indicates if there are issues with the" +
-                    "    content of the abstract.</li>" +
-                    "<li>Once all errors have been fixed you can click the <b>Save</b> button" +
-                    "    to store the abstract on the server. Subsequent changes will be saved " +
-                    "    automatically.</li>" +
+                    "    content of the abstract. Clicking on the <i>issues</i> button will " +
+                    "    bring up a dialog with issue details.</li>" +
+                    "<li>After entering at least the title, click the <b>Save</b> button" +
+                    "    to store the abstract on the server. Subsequent changes will the be " +
+                    "    saved automatically.</li>" +
                     "</ul>"
                 );
             } else if (self.abstract().state() == 'InPreparation') {
@@ -769,7 +772,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         "Abstract is saved",
                         "<ul>" +
                         "<li>Autosave is enabled, i.e. changes are stored automatically on the server.</li>" +
-                        "<li>Once all errors and warnings have been fixed you can click the " +
+                        "<li>Once all issues are resolved you can click the " +
                         "    <b>Submit</b> button to submit it. NB: Submitted abstracts can still" +
                         "    be modified until the deadline. </li>" +
                         "<li>Additional abstract owners can be added at the bottom at the page via " +
