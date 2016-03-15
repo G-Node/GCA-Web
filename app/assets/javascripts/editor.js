@@ -150,7 +150,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         isError: true,
                         badgeLevel: "btn-danger",
                         badgeText: "" + nerr  + " error" + (nerr > 1 ? "s" : ""),
-                        handler: self.showValidation,
+                        handler: self.presentValidationResults,
                         items: res.errors
                     };
                 } else {
@@ -160,7 +160,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         isError: false,
                         badgeLevel: "btn-warning",
                         badgeText: "" + nwarn  + " warning" + (nwarn > 1 ? "s" : ""),
-                        handler: self.showValidation,
+                        handler: self.presentValidationResults,
                         items: res.warnings
                     };
                 }
@@ -168,7 +168,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self
         );
 
-        self.showValidation = function () {
+        self.presentValidationResults = function () {
             self.modalHeader("header-validation");
             self.modalBody("body-validation");
             self.modalFooter("footer-validation");
