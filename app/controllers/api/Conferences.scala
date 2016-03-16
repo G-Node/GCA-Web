@@ -67,7 +67,17 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
    * @return OK with conference in JSON / NotFound
    */
   def get(id: String) = Action { implicit request =>
-    Ok(confFormat.writes(conferenceService.get(id)))
+
+    val conference = conferenceService.get(id)
+
+    val theirs = request.headers.get("If-None-Match")
+    val eTag = conference.eTag
+
+    if (theirs.contains(eTag)) {
+       NotModified
+    } else {
+      Ok(confFormat.writes(conference)).withHeaders(ETAG -> eTag)
+    }
   }
 
   /**
