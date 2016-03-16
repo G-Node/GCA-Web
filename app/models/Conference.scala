@@ -14,6 +14,7 @@ import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
 
 import org.joda.time.{DateTimeZone, DateTime}
+import org.apache.commons.codec.digest.DigestUtils
 
 import org.joda.time.format.DateTimeFormat
 import models.util.DateTimeConverter
@@ -108,6 +109,8 @@ class Conference extends Model with Owned {
     }
   }
 
+  def eTag : String = DigestUtils.md5Hex(uuid + mtime.toString())
+  
 }
 
 object Conference extends Model {
