@@ -45,7 +45,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
 
     val newAbs = abstractService.create(abs, conference, request.identity.account)
 
-    Created(Json.toJson(newAbs))
+    Created(Json.toJson(newAbs)).withHeaders(ETAG -> newAbs.eTag)
   }
 
   /**
@@ -118,7 +118,13 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
       case _          => abstractService.get(id)
     }
 
-    Ok(Json.toJson(abs)).withHeaders(LAST_MODIFIED -> rfcDateFormatter.print(abs.mtime))
+    if (request.headers.get("If-None-Match").contains(abs.eTag)) {
+      NotModified
+    } else {
+      Ok(Json.toJson(abs)).withHeaders(
+        LAST_MODIFIED -> rfcDateFormatter.print(abs.mtime),
+        ETAG -> abs.eTag)
+      }
   }
 
   /**
@@ -148,7 +154,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
 
     val newAbstract = abstractService.update(abs, request.identity.account)
 
-    Ok(Json.toJson(newAbstract))
+    Ok(Json.toJson(newAbstract)).withHeaders(ETAG -> newAbstract.eTag)
   }
 
   /**
