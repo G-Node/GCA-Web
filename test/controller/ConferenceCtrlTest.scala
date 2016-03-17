@@ -40,6 +40,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     val createAuth = createUnauth.withCookies(cookie)
     val created = route(ConferenceCtrlTest.app, createAuth).get
     assert(status(created) == CREATED)
+    assert(header(ETAG, created).isDefined)
 
     val bodyNameNull = formatter.writes(assets.conferences(0)).as[JsObject] - "uuid" - "abstracts" - "name"
     val reqNameNull = FakeRequest(POST, "/api/conferences")
@@ -67,9 +68,20 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     assert(status(confResult) == OK)
     assert(contentType(confResult) == Some("application/json"))
 
+    val etag = header("etag", confResult)
+    assert(etag.isDefined)
+
     val existingIds: Array[String] = for (c <- assets.conferences) yield c.uuid
     for (jconf <- contentAsJson(confResult).as[List[JsObject]])
       assert(existingIds.contains(formatter.reads(jconf).get.uuid))
+
+    val eTagReq = FakeRequest(GET, "/api/conferences").withHeaders(
+      "If-None-Match" -> etag.get
+    )
+
+    val eTagRes = route(ConferenceCtrlTest.app, eTagReq).get
+    assert(status(eTagRes) == NOT_MODIFIED)
+
   }
 
   @Test
@@ -78,6 +90,8 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     val result  = route(ConferenceCtrlTest.app, request).get
     assert(status(result) == OK)
     assert(contentType(result) == Some("application/json"))
+    assert(header(ETAG, result).isDefined)
+
 
     val existingIds: Array[String] = for (c <- assets.conferences if c.group == "BCCN")  yield c.uuid
     for (c <- contentAsJson(result).as[List[JsObject]])
@@ -121,6 +135,8 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     ).withJsonBody(body).withCookies(aliceCookie)
     val updated = route(ConferenceCtrlTest.app, updateAuth).get
     assert(status(updated) == OK)
+    assert(header(ETAG, updated).isDefined)
+
 
     val bobCookie = getCookie(assets.bob, "testtest")
     val updateUnauth = updateAuth.withCookies(bobCookie)
