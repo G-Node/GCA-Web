@@ -1,5 +1,6 @@
 package controllers.api
 
+import org.apache.commons.codec.digest.DigestUtils
 import play.api.mvc._
 import play.api.libs.json._
 import utils.serializer.{AccountFormat, ConferenceFormat}
@@ -46,7 +47,15 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     } else {
       conferenceService.list()
     }
-    Ok(Json.toJson(conferences))
+
+    val theirs = request.headers.get("If-None-Match")
+    val eTag = conferences.map(_.eTag).reduce((a, b) => DigestUtils.md5Hex(a + b))
+
+    if (theirs.contains(eTag)) {
+      NotModified
+    } else {
+      Ok(Json.toJson(conferences)).withHeaders(ETAG -> eTag)
+    }
   }
 
   /**
