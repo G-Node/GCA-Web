@@ -12,7 +12,9 @@ package models
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
-import org.joda.time.DateTime
+
+import org.joda.time.{DateTimeZone, DateTime}
+
 import org.joda.time.format.DateTimeFormat
 import models.util.DateTimeConverter
 
@@ -165,6 +167,8 @@ object Conference extends Model {
     conference.geo         = unwrapRef(geo)
     conference.schedule    = unwrapRef(schedule)
     conference.info        = unwrapRef(info)
+
+    conference.mtime       = new DateTime(DateTimeZone.UTC)
 
     conference
   }
