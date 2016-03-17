@@ -163,11 +163,20 @@ class AbstractsCtrlTest extends BaseCtrlTest {
 
     val reqAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
     assert(status(reqAuthResult) == OK)
+    assert(header(ETAG, reqAuthResult).isDefined)
 
     val loadedAbs = contentAsJson(reqAuthResult).as[Seq[Abstract]]
 
     //Assure we have at least one, but none that is not published
     assert(loadedAbs.length > 0 && loadedAbs.count{ _.state != AbstractState.Accepted } == 0)
+
+    val eTag = header(ETAG, reqAuthResult).get
+    val reqETag = FakeRequest(GET, s"/api/conferences/$cid/abstracts").withHeaders(
+      "If-None-Match" -> eTag
+    )
+
+    val resETag = route(AbstractsCtrlTest.app, reqETag).get
+    assert(status(resETag) ==  NOT_MODIFIED)
   }
 
   @Test
