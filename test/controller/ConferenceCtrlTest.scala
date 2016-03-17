@@ -93,6 +93,20 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     assert(status(confResult) == OK)
     assert(contentType(confResult) == Some("application/json"))
     assert(formatter.reads(contentAsJson(confResult)).get.uuid == uuid)
+
+    val etag = header("etag", confResult)
+    assert(etag.isDefined)
+
+    val etagRequest = FakeRequest(GET, s"/api/conferences/$uuid").withHeaders(
+      "If-None-Match" -> etag.get)
+    val etagResult = route(ConferenceCtrlTest.app, etagRequest).get
+    assert(status(etagResult) == NOT_MODIFIED)
+
+    val wrongEtagRequest = FakeRequest(GET, s"/api/conferences/$uuid").withHeaders(
+      "If-None-Match" -> "MyEtagIsOverTheOcean")
+    val wrongEtagResult = route(ConferenceCtrlTest.app, wrongEtagRequest).get
+    assert(status(wrongEtagResult) == OK)
+
   }
 
   @Test
