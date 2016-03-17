@@ -36,6 +36,17 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     Created(confFormat.writes(resp)).withHeaders(ETAG -> conference.eTag)
   }
 
+  def resultWithETag[A](conferences: Seq[Conference])(implicit request: Request[A]) = {
+    val theirs = request.headers.get("If-None-Match")
+    val eTag = conferences.map(_.eTag).reduce((a, b) => DigestUtils.md5Hex(a + b))
+
+    if (theirs.contains(eTag)) {
+      NotModified
+    } else {
+      Ok(Json.toJson(conferences)).withHeaders(ETAG -> eTag)
+    }
+  }
+
   /**
    * List all available conferences.
    *
@@ -48,14 +59,7 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
       conferenceService.list()
     }
 
-    val theirs = request.headers.get("If-None-Match")
-    val eTag = conferences.map(_.eTag).reduce((a, b) => DigestUtils.md5Hex(a + b))
-
-    if (theirs.contains(eTag)) {
-      NotModified
-    } else {
-      Ok(Json.toJson(conferences)).withHeaders(ETAG -> eTag)
-    }
+    resultWithETag(conferences)
   }
 
   /**
@@ -66,15 +70,7 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
    */
   def listWithOwnAbstracts =  SecuredAction { implicit request =>
     val conferences = conferenceService.listWithAbstractsOfAccount(request.identity.account)
-
-    val theirs = request.headers.get("If-None-Match")
-    val eTag = conferences.map(_.eTag).reduce((a, b) => DigestUtils.md5Hex(a + b))
-
-    if (theirs.contains(eTag)) {
-      NotModified
-    } else {
-      Ok(Json.toJson(conferences)).withHeaders(ETAG -> eTag)
-    }
+    resultWithETag(conferences)
   }
 
   /**
