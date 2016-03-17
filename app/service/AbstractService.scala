@@ -20,6 +20,9 @@ import service.util.PermissionsBase
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{Map => MMap}
 
+import org.joda.time.{DateTimeZone, DateTime}
+
+
 //for the patch method
 abstract class PatchOp
 case class PatchAddSortId(id: Int) extends PatchOp
@@ -239,6 +242,8 @@ class AbstractService(figPath: String) extends PermissionsBase {
 
       abstr.stateLog.add(StateLogEntry(abstr, AbstractState.InPreparation,
         account, Some("Initial abstract creation")))
+
+      abstr.ctime = new DateTime(DateTimeZone.UTC)
 
       em.merge(abstr)
     }
