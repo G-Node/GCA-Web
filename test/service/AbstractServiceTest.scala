@@ -101,6 +101,8 @@ class AbstractServiceTest extends JUnitSuite {
     val abstr = srv.create(original, assets.conferences(0), assets.alice)
 
     assert(abstr.uuid != null)
+    assert(abstr.ctime != null)
+    assert(abstr.mtime != null)
     assert(abstr.title == original.title)
     assert(abstr.text == original.text)
 

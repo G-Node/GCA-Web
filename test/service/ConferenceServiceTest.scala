@@ -74,6 +74,8 @@ class ConferenceServiceTest extends JUnitSuite {
                        assets.alice)
 
     assert(c.uuid != null)
+    assert(c.ctime != null)
+    assert(c.mtime != null)
     assert(c.name == "fooconf")
     assert(c.owners.head.uuid == assets.alice.uuid)
 
