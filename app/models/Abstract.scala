@@ -12,6 +12,7 @@ import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
 import models.util.DateTimeConverter
+import org.apache.commons.codec.digest.DigestUtils
 import org.joda.time.{DateTimeZone, DateTime}
 
 
@@ -64,6 +65,8 @@ class Abstract extends Model with Owned {
   override def canRead(account: Account): Boolean = {
     isOwner(account) || account.isAdmin || conference.isOwner(account)
   }
+
+  def eTag = DigestUtils.md5Hex(uuid + mtime.toString())
 }
 
 
