@@ -123,11 +123,14 @@ class AbstractServiceTest extends JUnitSuite {
 
     original.title = "new title"
     original.affiliations.clear()
+    val ctime = original.ctime
+    original.ctime = null
 
     val abstr = srv.update(original, assets.alice)
 
     assert(abstr.title == original.title)
     assert(abstr.affiliations.size == 0)
+    assert(abstr.ctime == ctime) // ctime must be preserved
 
     val illegal = assets.createAbstract()
     intercept[IllegalArgumentException] {
