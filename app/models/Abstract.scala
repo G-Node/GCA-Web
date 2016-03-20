@@ -20,7 +20,7 @@ import org.joda.time.{DateTimeZone, DateTime}
  * A model class for abstracts
  */
 @Entity
-class Abstract extends Model with Owned {
+class Abstract extends Model with Owned with Tagged {
 
   var title: String = _
   var topic: String = _

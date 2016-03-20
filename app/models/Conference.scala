@@ -27,7 +27,7 @@ import models.util.DateTimeConverter
  * maybe we should keep it simple for now.
  */
 @Entity
-class Conference extends Model with Owned {
+class Conference extends Model with Owned with Tagged {
 
   def dateFormatter = DateTimeFormat.forPattern("d MMMM, yyyy")
 
