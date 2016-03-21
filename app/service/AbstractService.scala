@@ -20,6 +20,9 @@ import service.util.PermissionsBase
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{Map => MMap}
 
+import org.joda.time.{DateTimeZone, DateTime}
+
+
 //for the patch method
 abstract class PatchOp
 case class PatchAddSortId(id: Int) extends PatchOp
@@ -35,8 +38,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
    * List all published abstracts that belong to a conference.
    *
    * @param conference The conference for which to list the abstracts.
-   *
-   * @return All published abstracts that are associated with a
+    * @return All published abstracts that are associated with a
    *         certain conference.
    */
   def list(conference: Conference) : Seq[Abstract] = {
@@ -63,8 +65,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
   * List all abstracts (independent of the state) that belong to a conference.
   *
   * @param conference The conference for which to list the abstracts.
-    *
-  * @return All published abstracts that are associated with a
+    * @return All published abstracts that are associated with a
   *         certain conference.
     */
   def listAll(conference: Conference) : Seq[Abstract] = {
@@ -85,8 +86,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
    * List all published and unpublished abstracts that belong to an account.
    *
    * @param account The account for which to list the abstracts.
-   *
-   * @return All abstracts that belong to an account.
+    * @return All abstracts that belong to an account.
    */
   def listOwn(account: Account) : Seq[Abstract] = {
     query { em =>
@@ -131,10 +131,8 @@ class AbstractService(figPath: String) extends PermissionsBase {
    * Return a published (= Accepted && Conference.isPublished) abstract by id.
    *
    * @param id The id of the abstract.
-   *
-   * @return The abstract with the specified id.
-   *
-   * @throws NoResultException If the conference was not found
+    * @return The abstract with the specified id.
+    * @throws NoResultException If the conference was not found
    */
   def get(id: String) : Abstract= {
     query { em =>
@@ -162,10 +160,8 @@ class AbstractService(figPath: String) extends PermissionsBase {
    *
    * @param id      The id of the abstract.
    * @param account The account who wants to request the abstract.
-   *
-   * @return The abstract with the specified id.
-   *
-   * @throws EntityNotFoundException If the account does not exist
+    * @return The abstract with the specified id.
+    * @throws EntityNotFoundException If the account does not exist
    * @throws IllegalAccessException if not accessible
    * @throws NoResultException If was not found
    */
@@ -207,12 +203,10 @@ class AbstractService(figPath: String) extends PermissionsBase {
    * Create a new abstract.
    * This is only permitted if the account is one of the owners.
    *
-   *
-   * @param abstr   The Abstract to create.
+    * @param abstr   The Abstract to create.
    * @param conference  The the id of the conference.
    * @param account The account who wants to perform the creation.
-   *
-   * @return The created and persisted abstract.
+    * @return The created and persisted abstract.
    */
   def create(abstr : Abstract, conference: Conference, account: Account) : Abstract = {
     val abstrCreated = transaction { (em, tx) =>
@@ -240,6 +234,8 @@ class AbstractService(figPath: String) extends PermissionsBase {
       abstr.stateLog.add(StateLogEntry(abstr, AbstractState.InPreparation,
         account, Some("Initial abstract creation")))
 
+      abstr.ctime = new DateTime(DateTimeZone.UTC)
+
       em.merge(abstr)
     }
 
@@ -252,8 +248,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
    *
    * @param abstr   The Abstract to update.
    * @param account The account who wants to perform the update.
-   *
-   * @return The updated and persisted abstract.
+    * @return The updated and persisted abstract.
    */
   def update(abstr : Abstract, account: Account) : Abstract = {
     val abstrUpdated = transaction { (em, tx) =>
@@ -289,6 +284,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
       abstr.owners = abstrChecked.owners
       abstr.conference = abstrChecked.conference
       abstr.figures = abstrChecked.figures
+      abstr.ctime = abstrChecked.ctime
 
       val merged = em.merge(abstr)
 
@@ -319,8 +315,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
    *
    * @param id      The id of the abstract to delete.
    * @param account The account who wants to perform the delete.
-   *
-   * @throws IllegalArgumentException If the conference has no uuid
+    * @throws IllegalArgumentException If the conference has no uuid
    * @throws EntityNotFoundException If the conference or the user does not exist
    * @throws IllegalAccessException If account is not an owner.
    */
@@ -360,7 +355,8 @@ class AbstractService(figPath: String) extends PermissionsBase {
 
   /**
    * List all state logs of a given abstract
-   * @param id       abstract id
+    *
+    * @param id       abstract id
    * @param account  account (for permission)
    * @return         Sorted sequence of log entries (newest first)
    */

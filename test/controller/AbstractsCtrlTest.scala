@@ -38,6 +38,20 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     result = route(AbstractsCtrlTest.app, req).get
     assert(status(result) == OK)
 
+    val eTagHeader = header(ETAG, result)
+    assert(eTagHeader.isDefined)
+    val eTag = eTagHeader.get
+
+    req = FakeRequest(GET, s"/api/abstracts/$id").withHeaders("If-None-Match" -> eTag)
+    result = route(AbstractsCtrlTest.app, req).get
+    assert(status(result) == NOT_MODIFIED)
+
+    req = FakeRequest(GET, s"/api/abstracts/$id").withHeaders("If-None-Match" -> "42")
+    result = route(AbstractsCtrlTest.app, req).get
+    assert(status(result) == OK)
+    assert(header(ETAG, result).get == eTag)
+
+
     id = assets.abstracts(2).uuid //approved == false, published == false
     req = FakeRequest(GET, s"/api/abstracts/$id").withCookies(cookie) //but we auth as the owner
 
@@ -63,6 +77,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
 
     val reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
     assert(status(reqAuthResult) == CREATED)
+    assert(header(ETAG, reqAuthResult).isDefined)
 
     val loadedAbs = contentAsJson(reqAuthResult).as[Abstract]
     assert(loadedAbs.title == oldAbstract.title)
@@ -96,6 +111,7 @@ class AbstractsCtrlTest extends BaseCtrlTest {
 
     val reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
     assert(status(reqAuthResult) == OK)
+    assert(header(ETAG, reqAuthResult).isDefined)
 
     val loadedAbs = contentAsJson(reqAuthResult).as[Abstract]
     assert(loadedAbs.title == original.title)
@@ -147,11 +163,20 @@ class AbstractsCtrlTest extends BaseCtrlTest {
 
     val reqAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
     assert(status(reqAuthResult) == OK)
+    assert(header(ETAG, reqAuthResult).isDefined)
 
     val loadedAbs = contentAsJson(reqAuthResult).as[Seq[Abstract]]
 
     //Assure we have at least one, but none that is not published
     assert(loadedAbs.length > 0 && loadedAbs.count{ _.state != AbstractState.Accepted } == 0)
+
+    val eTag = header(ETAG, reqAuthResult).get
+    val reqETag = FakeRequest(GET, s"/api/conferences/$cid/abstracts").withHeaders(
+      "If-None-Match" -> eTag
+    )
+
+    val resETag = route(AbstractsCtrlTest.app, reqETag).get
+    assert(status(resETag) ==  NOT_MODIFIED)
   }
 
   @Test

@@ -17,6 +17,7 @@ import models._
 import plugins.DBUtil._
 import service.util.PermissionsBase
 
+import org.joda.time.{DateTimeZone, DateTime}
 import scala.collection.JavaConversions._
 
 /**
@@ -171,6 +172,8 @@ class ConferenceService() extends PermissionsBase {
         topic.conference = conference
       }
 
+      conference.ctime = new DateTime(DateTimeZone.UTC)
+
       em.merge(conference)
     }
 
@@ -211,6 +214,7 @@ class ConferenceService() extends PermissionsBase {
       conference.geo = confChecked.geo
       conference.schedule = confChecked.schedule
       conference.info = confChecked.info
+      conference.ctime = confChecked.ctime
 
       conference.groups.foreach { group =>
         group.conference = conference

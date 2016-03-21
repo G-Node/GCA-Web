@@ -12,7 +12,10 @@ package models
 import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
-import org.joda.time.DateTime
+
+import org.joda.time.{DateTimeZone, DateTime}
+import org.apache.commons.codec.digest.DigestUtils
+
 import org.joda.time.format.DateTimeFormat
 import models.util.DateTimeConverter
 
@@ -24,7 +27,7 @@ import models.util.DateTimeConverter
  * maybe we should keep it simple for now.
  */
 @Entity
-class Conference extends Model with Owned {
+class Conference extends Model with Owned with Tagged {
 
   def dateFormatter = DateTimeFormat.forPattern("d MMMM, yyyy")
 
@@ -106,6 +109,8 @@ class Conference extends Model with Owned {
     }
   }
 
+  def eTag : String = DigestUtils.md5Hex(uuid + mtime.toString())
+  
 }
 
 object Conference extends Model {
@@ -165,6 +170,8 @@ object Conference extends Model {
     conference.geo         = unwrapRef(geo)
     conference.schedule    = unwrapRef(schedule)
     conference.info        = unwrapRef(info)
+
+    conference.mtime       = new DateTime(DateTimeZone.UTC)
 
     conference
   }

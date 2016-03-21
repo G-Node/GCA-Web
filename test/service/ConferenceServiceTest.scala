@@ -74,6 +74,8 @@ class ConferenceServiceTest extends JUnitSuite {
                        assets.alice)
 
     assert(c.uuid != null)
+    assert(c.ctime != null)
+    assert(c.mtime != null)
     assert(c.name == "fooconf")
     assert(c.owners.head.uuid == assets.alice.uuid)
 
@@ -94,9 +96,12 @@ class ConferenceServiceTest extends JUnitSuite {
   def testUpdate() : Unit = {
     val conference = assets.conferences(1)
     conference.name = "changed conference name"
+    val ctime = conference.ctime
+    conference.ctime = null
     val c = srv.update(conference, assets.alice)
 
     assert(c.name == "changed conference name")
+    assert(c.ctime == ctime)
 
     intercept[IllegalArgumentException] {
       srv.update(Conference(None, Some("wrongconf"), Some("XX"), Some("G"), Some("X"),

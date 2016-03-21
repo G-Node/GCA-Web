@@ -20,6 +20,7 @@ import plugins.DBUtil._
 
 import scala.collection.JavaConversions._
 import scala.{Option => ?}
+import org.joda.time.{DateTimeZone, DateTime}
 
 
 class Assets() {
@@ -263,6 +264,8 @@ class Assets() {
         conf.topics = toJSet(createTopics)
         conf.topics.foreach { topic => topic.conference = conf }
 
+        conf.ctime = new DateTime(DateTimeZone.UTC)
+
         em.merge(conf)
       }
 
@@ -270,6 +273,8 @@ class Assets() {
       // add all abstracts to conference one
       abstracts = abstracts.map { abstr =>
         abstr.conference = conferences(0)
+
+        abstr.ctime = new DateTime(DateTimeZone.UTC)
 
         abstr.owners.add(alice)
         abstr.owners.add(bob)

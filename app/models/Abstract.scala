@@ -12,6 +12,7 @@ import models.Model._
 import java.util.{Set => JSet, TreeSet => JTreeSet}
 import javax.persistence._
 import models.util.DateTimeConverter
+import org.apache.commons.codec.digest.DigestUtils
 import org.joda.time.{DateTimeZone, DateTime}
 
 
@@ -19,7 +20,7 @@ import org.joda.time.{DateTimeZone, DateTime}
  * A model class for abstracts
  */
 @Entity
-class Abstract extends Model with Owned {
+class Abstract extends Model with Owned with Tagged {
 
   var title: String = _
   var topic: String = _
@@ -64,6 +65,8 @@ class Abstract extends Model with Owned {
   override def canRead(account: Account): Boolean = {
     isOwner(account) || account.isAdmin || conference.isOwner(account)
   }
+
+  def eTag = DigestUtils.md5Hex(uuid + mtime.toString())
 }
 
 

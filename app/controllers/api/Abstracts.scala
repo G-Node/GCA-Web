@@ -1,5 +1,6 @@
 package controllers.api
 
+import org.apache.commons.codec.digest.DigestUtils
 import org.joda.time.format.DateTimeFormat
 import play.api._
 import play.api.libs.functional.syntax._
@@ -45,7 +46,18 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
 
     val newAbs = abstractService.create(abs, conference, request.identity.account)
 
-    Created(Json.toJson(newAbs))
+    Created(Json.toJson(newAbs)).withHeaders(ETAG -> newAbs.eTag)
+  }
+
+  def resultWithETag[A](abstracts: Seq[Abstract])(implicit request: Request[A]) = {
+    val theirs = request.headers.get("If-None-Match")
+    val eTag = abstracts.map(_.eTag).reduce((a, b) => DigestUtils.md5Hex(a + b))
+
+    if (theirs.contains(eTag)) {
+      NotModified
+    } else {
+      Ok(Json.toJson(abstracts)).withHeaders(ETAG -> eTag)
+    }
   }
 
   /**
@@ -58,7 +70,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     val conference = conferenceService.get(id)
     val abstracts = abstractService.list(conference)
 
-    Ok(Json.toJson(abstracts))
+    resultWithETag(abstracts)
   }
 
   /**
@@ -75,7 +87,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     }
 
     val abstracts = abstractService.listAll(conference)
-    Ok(Json.toJson(abstracts))
+    resultWithETag(abstracts)
   }
 
   /**
@@ -85,8 +97,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
    */
   def listByAccount(id: String) = SecuredAction { implicit request =>
     val ownAbstracts = abstractService.listOwn(request.identity.account)
-
-    Ok(Json.toJson(ownAbstracts))
+    resultWithETag(ownAbstracts)
   }
 
 
@@ -100,7 +111,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
   val conference = conferenceService.get(conferenceId)
   val abstracts = abstractService.listOwn(conference, request.identity.account)
 
-  Ok(Json.toJson(abstracts))
+  resultWithETag(abstracts)
 }
 
   /**
@@ -108,7 +119,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
    *
    * @param id The id of the abstract.
    *
-   * @return An abstract as JSON / abstract page.
+    * @return An abstract as JSON / abstract page.
    */
   def get(id: String) = UserAwareAction { implicit request =>
     Logger.debug(s"Getting abstract with uuid: [$id]")
@@ -118,7 +129,13 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
       case _          => abstractService.get(id)
     }
 
-    Ok(Json.toJson(abs)).withHeaders(LAST_MODIFIED -> rfcDateFormatter.print(abs.mtime))
+    if (request.headers.get("If-None-Match").contains(abs.eTag)) {
+      NotModified
+    } else {
+      Ok(Json.toJson(abs)).withHeaders(
+        LAST_MODIFIED -> rfcDateFormatter.print(abs.mtime),
+        ETAG -> abs.eTag)
+      }
   }
 
   /**
@@ -148,7 +165,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
 
     val newAbstract = abstractService.update(abs, request.identity.account)
 
-    Ok(Json.toJson(newAbstract))
+    Ok(Json.toJson(newAbstract)).withHeaders(ETAG -> newAbstract.eTag)
   }
 
   /**

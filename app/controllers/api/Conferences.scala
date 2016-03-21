@@ -1,5 +1,6 @@
 package controllers.api
 
+import org.apache.commons.codec.digest.DigestUtils
 import play.api.mvc._
 import play.api.libs.json._
 import utils.serializer.{AccountFormat, ConferenceFormat}
@@ -32,7 +33,18 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     val conference = request.body.as[Conference]
     val resp = conferenceService.create(conference, request.identity.account)
 
-    Created(confFormat.writes(resp))
+    Created(confFormat.writes(resp)).withHeaders(ETAG -> conference.eTag)
+  }
+
+  def resultWithETag[A](conferences: Seq[Conference])(implicit request: Request[A]) = {
+    val theirs = request.headers.get("If-None-Match")
+    val eTag = conferences.map(_.eTag).reduce((a, b) => DigestUtils.md5Hex(a + b))
+
+    if (theirs.contains(eTag)) {
+      NotModified
+    } else {
+      Ok(Json.toJson(conferences)).withHeaders(ETAG -> eTag)
+    }
   }
 
   /**
@@ -46,7 +58,8 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     } else {
       conferenceService.list()
     }
-    Ok(Json.toJson(conferences))
+
+    resultWithETag(conferences)
   }
 
   /**
@@ -57,7 +70,7 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
    */
   def listWithOwnAbstracts =  SecuredAction { implicit request =>
     val conferences = conferenceService.listWithAbstractsOfAccount(request.identity.account)
-    Ok(Json.toJson(conferences))
+    resultWithETag(conferences)
   }
 
   /**
@@ -67,7 +80,17 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
    * @return OK with conference in JSON / NotFound
    */
   def get(id: String) = Action { implicit request =>
-    Ok(confFormat.writes(conferenceService.get(id)))
+
+    val conference = conferenceService.get(id)
+
+    val theirs = request.headers.get("If-None-Match")
+    val eTag = conference.eTag
+
+    if (theirs.contains(eTag)) {
+       NotModified
+    } else {
+      Ok(confFormat.writes(conference)).withHeaders(ETAG -> eTag)
+    }
   }
 
   /**
@@ -81,7 +104,7 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     conference.uuid = id
     val resp = conferenceService.update(conference, request.identity.account)
 
-    Ok(confFormat.writes(resp))
+    Ok(confFormat.writes(resp)).withHeaders(ETAG -> conference.eTag)
   }
 
   /**
