@@ -749,12 +749,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 self.setInfo(
                     "Welcome to abstract submission",
                     "<ul>" +
-                    "<li>Nothing will be stored on the server before the abstract is saved," +
-                    "    so it is ok to play around and investigate this editor.</li>" +
+                    "<li>Nothing will be stored on the server before the abstract is saved for" +
+                    "    the first time, so it is ok to play around and explore this editor.</li>" +
                     "<li>The 'Validation' field above indicates if there are issues with the" +
-                    "    content of the abstract. Clicking on the <i>issues</i> button will " +
+                    "    required content of the abstract. Clicking on the <i>issues</i> button will " +
                     "    bring up a dialog with issue details.</li>" +
-                    "<li>After entering at least the title, click the <b>Save</b> button" +
+                    "<li>After entering at least the abstract title, click the <b>Save</b> button" +
                     "    to store the abstract on the server. Subsequent changes will the be " +
                     "    saved automatically.</li>" +
                     "</ul>"
@@ -772,11 +772,11 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         "Abstract is saved",
                         "<ul>" +
                         "<li>Autosave is enabled, i.e. changes are stored automatically on the server.</li>" +
-                        "<li>Once all issues are resolved you can click the " +
-                        "    <b>Submit</b> button to submit it. NB: Submitted abstracts can still" +
+                        "<li>Once the Validation field shows 'Ok', you can click the " +
+                        "    <b>Submit</b> button to submit it. Submitted abstracts can" +
                         "    be modified until the deadline. </li>" +
                         "<li>Additional abstract owners can be added at the bottom at the page via " +
-                        "    <b>Owner management</b>.</li>" +
+                        "    <b>Owner Management</b>.</li>" +
                         "</ul>"
                     );
                 }
@@ -786,7 +786,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     "<ul>" +
                     "<li>Changes are deactivated. Submitted abstracts can be modified until the" +
                     " deadline.</li>" +
-                    "<li>To modify a submitted abstract, unlock the abstract.<br/>" +
+                    "<li>To modify a submitted abstract, use the <b>Unlock</b> button.<br/>" +
                     "</ul>"
                 )
             }
