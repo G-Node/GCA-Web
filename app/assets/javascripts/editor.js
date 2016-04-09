@@ -764,7 +764,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     self.setWarning("Abstract unlocked",
                         "<ul>" +
                         "<li>Autosave is again enabled, changes will be stored directly on the server.</li>" +
-                        "<li>Abstract must be re-submitted before the deadline.</li>" +
+                        "<li>Abstract must be re-submitted before the deadline. If the abstract is not submitted, " +
+                        "    it will not be considered for the conference.</li>" +
                         "</ul>"
                     );
                 } else {
@@ -775,7 +776,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         "<li>Once the Validation field shows 'Ok', you can click the " +
                         "    <b>Submit</b> button to submit it. Submitted abstracts can" +
                         "    be modified until the deadline. </li>" +
-                        "<li>Additional abstract owners can be added at the bottom at the page via " +
+                        "<li>Additional abstract owners can be added at the bottom of the page via " +
                         "    <b>Owner Management</b>.</li>" +
                         "</ul>"
                     );
