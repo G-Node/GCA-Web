@@ -17,4 +17,3 @@ before_script:
 script: activator-${ACTIVATOR_VERSION}-minimal/activator test
 notifications:
   email: false
-  irc: "chat.freenode.net#gnode"
