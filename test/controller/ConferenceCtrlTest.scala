@@ -135,8 +135,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     ).withJsonBody(body).withCookies(aliceCookie)
     val updated = route(ConferenceCtrlTest.app, updateAuth).get
     assert(status(updated) == OK)
-    assert(header(ETAG, updated).isDefined)
-
+    assert(header(ETAG, updated).isDefined && header(ETAG, updated).get != conf.eTag)
 
     val bobCookie = getCookie(assets.bob, "testtest")
     val updateUnauth = updateAuth.withCookies(bobCookie)
