@@ -256,6 +256,13 @@ class AbstractsCtrlTest extends BaseCtrlTest {
     var reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
     assert(status(reqAuthResult) == OK)
 
+    val getReq = FakeRequest(GET, s"/api/abstracts/$absUUID").withCookies(bobCookie)
+    val getRes = route(AbstractsCtrlTest.app, getReq).get
+    assert(status(getRes) == OK)
+    val etag = header("etag", getRes)
+    assert(etag.isDefined && etag.get != abstr.eTag) // setting the state must update the etag
+
+
     //try to change a state that we are not allowed to as owner
     stateChange = Json.obj("state" -> "InReview", "note" -> "")
     reqAuth = reqAuth.withJsonBody(stateChange)

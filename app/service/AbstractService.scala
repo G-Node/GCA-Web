@@ -387,6 +387,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
 
       val abstrMerged = em.merge(abstr)
       abstrMerged.state = state
+      abstrMerged.touch()
 
       val log = em.merge(StateLogEntry(abstrMerged, state, editor, message))
       abstrMerged.stateLog.add(log)
@@ -404,6 +405,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
         case _ => throw new IllegalArgumentException("Invalid value to patch")
       }
 
+      abstr.touch()
       em.merge(abstr)
     }
   }

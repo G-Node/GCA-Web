@@ -322,6 +322,8 @@ class ConferenceService() extends PermissionsBase {
         conference.info  = info
       }
 
+      conference.touch()
+
       em.merge(conference)
     }
   }

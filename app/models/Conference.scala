@@ -110,7 +110,9 @@ class Conference extends Model with Owned with Tagged {
   }
 
   def eTag : String = DigestUtils.md5Hex(uuid + mtime.toString())
-  
+  def touch (): Unit = {
+    this.mtime = new DateTime(DateTimeZone.UTC)
+  }
 }
 
 object Conference extends Model {

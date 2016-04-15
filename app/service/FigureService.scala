@@ -64,6 +64,7 @@ class FigureService(figPath: String) {
 
       abstractChecked.figures.add(fig)
       fig.abstr = abstractChecked
+      abstractChecked.touch()
 
       em.persist(fig)
 
@@ -109,6 +110,8 @@ class FigureService(figPath: String) {
       if (! (isOwner || isConfOwner || isAdmin))
         throw new IllegalAccessException("No permissions for figure with uuid = " + fig.uuid)
 
+      fig.abstr.touch()
+
       em.merge(fig)
     }
 
@@ -144,6 +147,7 @@ class FigureService(figPath: String) {
         file.delete()
 
       figChecked.abstr.figures.remove(figChecked)
+      figChecked.abstr.touch()
       figChecked.abstr = null
 
       em.remove(figChecked)

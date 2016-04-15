@@ -67,6 +67,9 @@ class Abstract extends Model with Owned with Tagged {
   }
 
   def eTag = DigestUtils.md5Hex(uuid + mtime.toString())
+  def touch (): Unit = {
+    this.mtime = new DateTime(DateTimeZone.UTC)
+  }
 }
 
 
