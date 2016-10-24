@@ -4,7 +4,7 @@ import java.net.URL
 
 class RoutesResolver {
   lazy val conf = play.api.Play.current.configuration
-  lazy val baseUrl = conf.getString("baseurl").getOrElse("http://localhost:9000")
+  lazy val baseUrl = sys.env.get("GCA_BASEURL").orElse(conf.getString("baseurl")).getOrElse("http://localhost:9000")
 
   /**
    * Builds an URL to the related abstracts from a given object ID.
