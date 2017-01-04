@@ -24,8 +24,10 @@ class Abstract extends Model with Owned with Tagged {
 
   var title: String = _
   var topic: String = _
-  @Column(length = 2500)
+  @Column(length = 250000)
   var text:  String = _
+  
+  @Column(length = 2500)
   var doi:   String = _
   var conflictOfInterest: String = _
   @Column(length=300)

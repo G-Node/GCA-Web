@@ -171,7 +171,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.makeConferenceObservable = function (conf) {
             conf.makeObservable(["name", "short", "group", "cite", "description", "start", "end", "groups",
                 "deadline", "logo", "thumbnail", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
-                "topics", "iOSApp"]);
+                "topics", "iOSApp","mAbsLeng","mFigs"]);
 
             for(var prop in conf) {
                 if (conf.hasOwnProperty(prop)) {

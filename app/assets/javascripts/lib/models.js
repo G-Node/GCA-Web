@@ -243,12 +243,13 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
-                        groups, start, end, deadline, logo, thumbnail, iOSApp, geo, schedule, info, owners, abstracts, topics) {
+                        groups, start, end, deadline, logo, thumbnail, iOSApp, geo, schedule, info, owners, abstracts, topics, 
+                        mAbsLeng, mFigs) {
 
         if (! (this instanceof Conference)) {
             return new Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive,
                                   hasPresentationPrefs, groups, start, end, deadline, logo, thumbnail, iOSApp,
-                                  geo, schedule, info, owners, abstracts, topics);
+                                  geo, schedule, info, owners, abstracts, topics,mAbsLeng, mFigs);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -276,6 +277,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.owners = owners || [];
         self.abstracts = abstracts || [];
         self.topics = topics || [];
+        self.mAbsLeng = mAbsLeng || null;
+        self.mFigs = mFigs || [];
 
         self.getGroupById = function(groupId) {
             var foundGroup = null;
@@ -390,7 +393,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @param {string} [middleName]
      * @param {string} [lastName]
      * @param {string} [affiliations]   Array with affiliation uuids.
-     *
+     * 
      * @returns {Author}
      * @constructor
      * @public

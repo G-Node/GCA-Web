@@ -84,6 +84,9 @@ class Conference extends Model with Owned with Tagged {
   var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
   @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var topics: JSet[Topic] = new JTreeSet[Topic]()
+  
+  var abstractMaxLength: Int = 2500
+  var abstractMaxFigures: Int = 1
 
 
   def formatDuration : String = {
@@ -140,7 +143,9 @@ object Conference extends Model {
             topics: Seq[Topic] = Nil,
             geo: Option[String] = null,
             schedule: Option[String] = null,
-            info: Option[String] = null): Conference = {
+            info: Option[String] = null,
+            abstractMaxLength: Option[Int] = null,
+            abstractMaxFigures: Option[Int] = null): Conference = {
 
     val conference = new Conference()
 
@@ -174,6 +179,9 @@ object Conference extends Model {
     conference.info        = unwrapRef(info)
 
     conference.mtime       = new DateTime(DateTimeZone.UTC)
+    
+    conference.abstractMaxLength = unwrapVal(abstractMaxLength)
+    conference.abstractMaxFigures = unwrapVal(abstractMaxFigures)
 
     conference
   }
