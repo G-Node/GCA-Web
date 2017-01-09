@@ -83,7 +83,7 @@
         </div>
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">
-            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
+            <div class="btn-group pull-right btn-group-hovezr" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#affiliations-editor')">
                     Edit
@@ -109,6 +109,7 @@
             </div>
 
             <div class="modal" id="abstract-text-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
+
             <div class="abstract-text" data-bind="foreach: {data: abstract().paragraphs(), as: 'p'}">
                 <p data-bind="text: p"></p>
             </div>
@@ -159,14 +160,16 @@
             <div class="modal" id="figure-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div class="figure">
-                <h4>Figure</h4>
-                <div data-bind="if: hasAbstractFigures" class="figure-box">
-                    <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
+                <h4>Figures</h4>
+                    <!-- ko foreach: abstract().figures() -->                    
+                <div class="figure-box">
+                    <img class="figure-image" src="" data-bind="attr: {src: $data.URL}">
                     <div class="figure-caption">
-                        <span>Figure 1: </span>
-                        <span data-bind="text: abstract().figures()[0].caption"></span>
+                        <span>Figure <b data-bind="text:$index() + 1"></b>: </span>
+                        <span data-bind="text: $data.caption"></span>
                     </div>
                 </div>
+                    <!-- /ko -->
             </div>
 
         </div>
@@ -466,7 +469,7 @@
     <script id="body-abstract-text-editor" type="text/html">
         <textarea rows="10" class="form-control" id="text"
                 data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'"
-                maxlength="@conference.abstractMaxLength">
+                maxlength="@Model.getLimit[Abstract]("text")">
         </textarea>
         <div>
             <span>LaTeX-like equation typesetting is supported via MathJax. Use $$ and $ (inline).
@@ -544,7 +547,7 @@
         <h3>Add a Figure</h3>
     </script>
     <script id="body-figure-editor" type="text/html">
-        <div data-bind="ifnot: hasAbstractFigures">
+        <div data-bind="ifnot: abstract().figures().length===@conference.abstractMaxFigures">
             <div class="form-group">
                 <input type="text" name="figure-caption" id="figure-caption" class="form-control input-sm"
                     placeholder="Figure Caption (max. @Model.getLimit[Figure]("caption") characters)"
@@ -561,19 +564,21 @@
         </div>
 
         <div data-bind="if: hasAbstractFigures">
-            <button type="button" class="btn btn-default btn-sm pull-right"
+        <!-- ko foreach: abstract().figures() -->
+        <button type="button" class="btn btn-default btn-sm pull-right"
                 data-bind="click: $root.doRemoveFigure">
                 Remove
             </button>
             <div class="figure-box">
-                <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
+                <img class="figure-image" src="" data-bind="attr: {src: $data.URL}">
                 <div class="figure-caption">
-                    <span>Figure 1: </span>
+                    <span>Figure <b data-bind="text:$index() + 1"></b>: </span>
                     <input type="text" name="figure-update-caption" id="figure-update-caption" class="form-control input-sm"
                             maxlength="@Model.getLimit[Figure]("caption")"
-                            data-bind="value: abstract().figures()[0].caption, valueUpdate: 'afterkeydown'">
+                            data-bind="value: $data.caption, valueUpdate: 'afterkeydown'">
                 </div>
             </div>
+        <!-- /ko -->
         </div>
     </script>
 
