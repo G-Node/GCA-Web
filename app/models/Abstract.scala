@@ -52,7 +52,8 @@ class Abstract extends Model with Owned with Tagged {
   @ManyToOne
   var conference : Conference = _
   @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
-  var figures: JSet[Figure] = new JTreeSet[Figure]()
+  @OrderBy("position")
+    var figures: JSet[Figure] = new JTreeSet[Figure]()
 
   @ManyToMany
   @JoinTable(name = "abstract_owners")
