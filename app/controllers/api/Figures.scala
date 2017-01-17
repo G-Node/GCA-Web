@@ -44,7 +44,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     }
 
     val jsfig = Json.parse(request.body.dataParts("figure")(0)).as[Figure]
-    
+
     jsfig.position = abstr.figures.toList.map(_.position).reduceLeftOption(_ max _).getOrElse(0) + 1
 
     val figure = figureService.create(jsfig, tempfile, abstr, request.identity.account)

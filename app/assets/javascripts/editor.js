@@ -26,6 +26,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
         self.editedAbstract = ko.observable(null);
         self.stateLog = ko.observable(null);
 
+        self.selectedType = ko.observable(null);
+
         // autosave label
         self.autosave = ko.observable({text: "Loading", css:"label-primary"});
 
@@ -257,11 +259,19 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         };
 
+        self.abstrTypeChanged = function(abstrType){
+            //Workaround as long as we have allow only one Abstract type
+            self.editedAbstract().abstrTypes().pop();
+            self.editedAbstract().abstrTypes().push(abstrType);
+            self.abstract().abstrTypes().pop();
+            self.abstract().abstrTypes().push(abstrType);
+            // needs to return true to enable default click action on the radio buttons (select)
+            return true;
+        };
 
         self.getNewFigure = function(data, event) {
           self.newFigure.file = event.currentTarget.files[0];
         };
-
 
         self.figureUpload = function (callback) {
 

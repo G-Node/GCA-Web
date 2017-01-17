@@ -113,7 +113,7 @@ package object serializer {
       (__ \ "thumbnail").readNullable[String] and
       (__ \ "iOSApp").readNullable[String] and
       (__ \ "groups").read[List[AbstractGroup]] and
-      (__ \ "topics").read[List[Topic]].addPosition and 
+      (__ \ "topics").read[List[Topic]].addPosition and
         (__ \ "mAbsLeng").readNullable[Int] and
         (__ \ "mFigs").readNullable[Int]
     )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _,
@@ -297,6 +297,7 @@ package object serializer {
     implicit val affiliationF = new AffiliationFormat()
     implicit val referenceF = new ReferenceFormat()
     implicit val figureF = new FigureFormat()
+    implicit val abtsrTyepF = new AbstractGroupFormat()
 
     override def reads(json: JsValue): JsResult[Abstract] = (
       (__ \ "uuid").readNullable[String] and
@@ -312,8 +313,9 @@ package object serializer {
       (__ \ "state").readNullable[AbstractState.State] and
       (__ \ "authors").read[List[Author]].addPosition and
       (__ \ "affiliations").read[List[Affiliation]].addPosition and
-      (__ \ "references").read[List[Reference]].addPosition
-    )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _)).reads(json)
+      (__ \ "references").read[List[Reference]].addPosition and
+        (__ \ "abstrTypes").read[List[AbstractGroup]]
+    )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _,_)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
 
@@ -336,8 +338,8 @@ package object serializer {
         "authors" -> asScalaSet(a.authors).toSeq.sorted[Model],
         "affiliations" -> asScalaSet(a.affiliations).toSeq.sorted[Model],
         "references" -> asScalaSet(a.references).toSeq.sorted[Model],
-        "stateLog" -> routesResolver.stateLogUrl(a.uuid)
-      )
+        "abstrTypes" -> asScalaSet(a.abstrTypes).toSeq,
+        "stateLog" -> routesResolver.stateLogUrl(a.uuid))
     }
   }
 }
