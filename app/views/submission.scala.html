@@ -552,7 +552,7 @@
         <h3>Add a Figure</h3>
     </script>
     <script id="body-figure-editor" type="text/html">
-        <div data-bind="ifnot: abstract().figures().length===@conference.abstractMaxFigures">
+        <div data-bind="visible: !(abstract().figures().length>=@conference.abstractMaxFigures)">
             <div class="form-group">
                 <input type="text" name="figure-caption" id="figure-caption" class="form-control input-sm"
                     placeholder="Figure Caption (max. @Model.getLimit[Figure]("caption") characters)"
