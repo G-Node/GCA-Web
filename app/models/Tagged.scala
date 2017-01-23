@@ -1,5 +1,6 @@
-// Copyright © 2016, German Neuroinformatics Node (G-Node)
+// Copyright © 2017, German Neuroinformatics Node (G-Node)
 //                   Christian Kellner <christian@kellner.me>
+//                   Chrisian Garbers <christian@stuebeweg50.de>
 //
 // All rights reserved.
 //
