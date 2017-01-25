@@ -334,17 +334,17 @@ class Assets() {
     }
 
     transaction { (em, tx) =>
-      em.createQuery("DELETE FROM StateLogEntry").executeUpdate()
-      em.createQuery("DELETE FROM AbstractGroup").executeUpdate()
+      em.createQuery("DELETE FROM StateLogEntry").executeUpdate()      
       em.createQuery("DELETE FROM Affiliation").executeUpdate()
       em.createQuery("DELETE FROM Author").executeUpdate()
       em.createQuery("DELETE FROM Reference").executeUpdate()
       em.createQuery("DELETE FROM Figure").executeUpdate()
       em.createQuery("DELETE FROM Abstract").executeUpdate()
       em.createQuery("DELETE FROM Topic").executeUpdate()
+      em.createQuery("DELETE FROM AbstractGroup").executeUpdate()
       em.createQuery("DELETE FROM Conference").executeUpdate()
       em.createQuery("DELETE FROM CredentialsLogin").executeUpdate()
-      em.createQuery("DELETE FROM Account").executeUpdate()
+      em.createQuery("DELETE FROM Account").executeUpdate()      
     }
   }
 
