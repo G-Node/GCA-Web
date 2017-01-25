@@ -474,7 +474,7 @@
     <script id="body-abstract-text-editor" type="text/html">
         <textarea rows="10" class="form-control" id="text"
                 data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'"
-                maxlength="@Model.getLimit[Abstract]("text")">
+                maxlength="@conference.abstractMaxLength">
         </textarea>
         <div>
             <span>LaTeX-like equation typesetting is supported via MathJax. Use $$ and $ (inline).
