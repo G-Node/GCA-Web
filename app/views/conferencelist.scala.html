@@ -43,29 +43,31 @@
     @if(list_other.nonEmpty) {
         <hr>
         @for(conference <- list_other) {
-            <div class="media">
-                <div class="pull-left media-left">
-                    <a href="@routes.Application.conference(conference.short)">
-                        <img class="media-object conference-thumbnail" src="@conference.thumbnail">
-                    </a>
-                </div>
-                <div class="media-body">
-                    <a href="@routes.Application.abstractsPublic(conference.short)">
-                        <h4 class="media-heading">@conference.name</h4>
-                    </a>
-                    <p>@conference.formatDuration</p>
-                    @if(account.isDefined && (conference.isOwner(account.get) || account.get.isAdmin)) {
-                        <div class="form-group">
-                            <a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">
-                                Conference Settings
-                            </a>
-                            <a href="@routes.Application.adminAbstracts(conference.uuid)" class="btn btn-danger">
-                                Manage abstracts
-                            </a>
-                        </div>
+            @if(conference.isPublished){
+                <div class="media">
+                    <div class="pull-left media-left">
+                        <a href="@routes.Application.conference(conference.short)">
+                            <img class="media-object conference-thumbnail" src="@conference.thumbnail">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <a href="@routes.Application.abstractsPublic(conference.short)">
+                            <h4 class="media-heading">@conference.name</h4>
+                        </a>
+                        <p>@conference.formatDuration</p>
+                        @if(account.isDefined && (conference.isOwner(account.get) || account.get.isAdmin)) {
+                            <div class="form-group">
+                                <a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">
+                                    Conference Settings
+                                </a>
+                                <a href="@routes.Application.adminAbstracts(conference.uuid)" class="btn btn-danger">
+                                    Manage abstracts
+                                </a>
+                            </div>
                     }
                 </div>
             </div>
+            }
         }
     }
 }
