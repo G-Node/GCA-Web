@@ -24,8 +24,10 @@ class Abstract extends Model with Owned with Tagged {
 
   var title: String = _
   var topic: String = _
-  @Column(length = 2500)
+  @Column(length = 250000)
   var text:  String = _
+
+  @Column(length = 2500)
   var doi:   String = _
   var conflictOfInterest: String = _
   @Column(length=300)
@@ -50,7 +52,8 @@ class Abstract extends Model with Owned with Tagged {
   @ManyToOne
   var conference : Conference = _
   @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
-  var figures: JSet[Figure] = new JTreeSet[Figure]()
+  @OrderBy("position")
+    var figures: JSet[Figure] = new JTreeSet[Figure]()
 
   @ManyToMany
   @JoinTable(name = "abstract_owners")
@@ -61,6 +64,9 @@ class Abstract extends Model with Owned with Tagged {
   var affiliations: JSet[Affiliation] = new JTreeSet[Affiliation]()
   @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var references: JSet[Reference] = new JTreeSet[Reference]()
+
+  @ManyToMany
+  var abstrTypes:JSet[AbstractGroup] = new JTreeSet[AbstractGroup]()
 
   override def canRead(account: Account): Boolean = {
     isOwner(account) || account.isAdmin || conference.isOwner(account)
@@ -91,7 +97,8 @@ object Abstract {
             owners:  Seq[Account] = Nil,
             authors: Seq[Author] = Nil,
             affiliations: Seq[Affiliation] = Nil,
-            references: Seq[Reference] = Nil) : Abstract = {
+            references: Seq[Reference] = Nil,
+            abstrTypes:Seq[AbstractGroup] = Nil) : Abstract = {
 
     val abstr = new Abstract()
 
@@ -113,6 +120,7 @@ object Abstract {
     abstr.authors     = toJSet(authors)
     abstr.affiliations = toJSet(affiliations)
     abstr.references  = toJSet(references)
+    abstr.abstrTypes = toJSet(abstrTypes)
 
     abstr.mtime = new DateTime(DateTimeZone.UTC)
 

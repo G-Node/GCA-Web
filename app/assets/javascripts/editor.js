@@ -26,6 +26,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
         self.editedAbstract = ko.observable(null);
         self.stateLog = ko.observable(null);
 
+        self.selectedType = ko.observable(null);
+
         // autosave label
         self.autosave = ko.observable({text: "Loading", css:"label-primary"});
 
@@ -257,11 +259,19 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         };
 
+        self.abstrTypeChanged = function(abstrType){
+            //Workaround as long as we have allow only one Abstract type
+            self.editedAbstract().abstrTypes().pop();
+            self.editedAbstract().abstrTypes().push(abstrType);
+            self.abstract().abstrTypes().pop();
+            self.abstract().abstrTypes().push(abstrType);
+            // needs to return true to enable default click action on the radio buttons (select)
+            return true;
+        };
 
         self.getNewFigure = function(data, event) {
           self.newFigure.file = event.currentTarget.files[0];
         };
-
 
         self.figureUpload = function (callback) {
 
@@ -322,35 +332,27 @@ function (ko, models, tools, msg, validate, owned, astate) {
          * where an update actually takes place.
          */
         self.doUpdateFigure = function () {
-
-            if (self.hasAbstractFigures()) {
-                var figure = self.abstract().figures()[0];
-
-                $.ajax({
-                    url: "/api/figures/" + figure.uuid,
-                    type: "PUT",
-                    contentType: "application/json",
-                    dataType: "json",
-                    data: figure.toJSON(),
-                    processData: false,
-                    error: fail,
-                    cache: false
-                });
-
-            } else {
-                self.setWarning("Error", "Unable to update caption: figure not found", true);
-            }
-
+            self.abstract().figures().map(function (figure) {
+                    $.ajax({
+                        url: "/api/figures/" + figure.uuid,
+                        type: "PUT",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: figure.toJSON(),
+                        processData: false,
+                        error: fail,
+                        cache: false
+                    });
+                }
+            )
             function fail() {
                 self.setError("Error", "Unable to update caption");
             }
         };
 
-        self.doRemoveFigure = function () {
+        self.doRemoveFigure = function (figure) {
 
             if (self.hasAbstractFigures()) {
-                var figure = self.abstract().figures()[0];
-
                 self.autosave({text: 'Saving', css: 'label-warning'});
 
                 $.ajax({
@@ -439,8 +441,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
                 var hasNoFig = !self.hasAbstractFigures(),
                     hasFigData = self.newFigure.file ? true : false;
-
-                if (hasNoFig && hasFigData) {
+                    if (hasFigData) {
+                    //success fig is a function callback...
                     self.figureUpload(successFig);
                 } else {
                     self.autosave({text: 'Ok', css: 'label-success'});

@@ -229,7 +229,7 @@ class Assets() {
       Seq(AbstractGroup(None, ?(1), ?("Talk"), ?("T")),
           AbstractGroup(None, ?(2), ?("Poster"), ?("P"))),Nil,Nil,Nil,
       ?("""[{"uuid": "someid", "location": { "position": { "geojson": { "type": "Point", "coordinates": [12.0, 14.0] } } } }]"""),
-      ?("""{"schedule": "some schedule json"}"""), ?("# Some markdown text")),
+      ?("""{"schedule": "some schedule json"}"""), ?("# Some markdown text"),Some(5000)),
     Conference(None, ?("The second conference"), ?("C2"), ?("BCCN"),
       ?("The C2 Conf, Somewhere, Sometime"), ?(""), None, ?(false), ?(true), ?(false), ?(true),
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
@@ -334,17 +334,17 @@ class Assets() {
     }
 
     transaction { (em, tx) =>
-      em.createQuery("DELETE FROM StateLogEntry").executeUpdate()
-      em.createQuery("DELETE FROM AbstractGroup").executeUpdate()
+      em.createQuery("DELETE FROM StateLogEntry").executeUpdate()      
       em.createQuery("DELETE FROM Affiliation").executeUpdate()
       em.createQuery("DELETE FROM Author").executeUpdate()
       em.createQuery("DELETE FROM Reference").executeUpdate()
       em.createQuery("DELETE FROM Figure").executeUpdate()
       em.createQuery("DELETE FROM Abstract").executeUpdate()
       em.createQuery("DELETE FROM Topic").executeUpdate()
+      em.createQuery("DELETE FROM AbstractGroup").executeUpdate()
       em.createQuery("DELETE FROM Conference").executeUpdate()
       em.createQuery("DELETE FROM CredentialsLogin").executeUpdate()
-      em.createQuery("DELETE FROM Account").executeUpdate()
+      em.createQuery("DELETE FROM Account").executeUpdate()      
     }
   }
 

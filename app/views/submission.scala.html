@@ -83,7 +83,7 @@
         </div>
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">
-            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
+            <div class="btn-group pull-right btn-group-hovezr" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#affiliations-editor')">
                     Edit
@@ -160,14 +160,16 @@
             <div class="modal" id="figure-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div class="figure">
-                <h4>Figure</h4>
-                <div data-bind="if: hasAbstractFigures" class="figure-box">
-                    <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
+                <h4>Figures</h4>
+                    <!-- ko foreach: abstract().figures() -->
+                <div class="figure-box">
+                    <img class="figure-image" src="" data-bind="attr: {src: $data.URL}">
                     <div class="figure-caption">
-                        <span>Figure 1: </span>
-                        <span data-bind="text: abstract().figures()[0].caption"></span>
+                        <span>Figure <b data-bind="text:$index() + 1"></b>: </span>
+                        <span data-bind="text: $data.caption"></span>
                     </div>
                 </div>
+                    <!-- /ko -->
             </div>
 
         </div>
@@ -193,7 +195,8 @@
                 </div>
             </div>
         }
-
+        <!-- This is recycling of the old Bernstein like presentation choice stryle, well keep the names fpr the time 
+        beeing -->
         @if(conference.hasPresentationPrefs) {
             <div class="editor-box" data-bind="css: {editable: showEditButton}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
@@ -206,15 +209,19 @@
                 <div class="modal" id="is-talk-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
                 <div class="poster-or-talk">
-                    <h4>Presentation Preference</h4>
-                    <div data-bind="if: abstract().isTalk">
-                        <p>Talk or Poster</p>
-                        <p>Reason: <span data-bind="text: abstract().reasonForTalk"></span></p>
+                    <h4>Presentation Type</h4>
+                    <div data-bind="if:abstract().abstrTypes().length>0">
+                        <div>
+                        <!-- Using only the first presentation style is a workaround, more types might come 
+                         later (or not). Everything is ready for more however.-->
+                            <span data-bind="text: abstract().abstrTypes()[0].name"></span>
+                        </div>
+                        <div data-bind="if:abstract().reasonForTalk">
+                            <p>Presentation comment: <span data-bind="text: abstract().reasonForTalk"></span></p>
+                        </div>
                     </div>
-                    <div data-bind="ifnot: abstract().isTalk">
-                        <p>Poster</p>
+
                     </div>
-                </div>
             </div>
         }
 
@@ -467,7 +474,7 @@
     <script id="body-abstract-text-editor" type="text/html">
         <textarea rows="10" class="form-control" id="text"
                 data-bind="value: editedAbstract().text, valueUpdate: 'afterkeydown'"
-                maxlength="@Model.getLimit[Abstract]("text")">
+                maxlength="@conference.abstractMaxLength">
         </textarea>
         <div>
             <span>LaTeX-like equation typesetting is supported via MathJax. Use $$ and $ (inline).
@@ -545,7 +552,7 @@
         <h3>Add a Figure</h3>
     </script>
     <script id="body-figure-editor" type="text/html">
-        <div data-bind="ifnot: hasAbstractFigures">
+        <div data-bind="visible: !(abstract().figures().length>=@conference.abstractMaxFigures)">
             <div class="form-group">
                 <input type="text" name="figure-caption" id="figure-caption" class="form-control input-sm"
                     placeholder="Figure Caption (max. @Model.getLimit[Figure]("caption") characters)"
@@ -562,19 +569,21 @@
         </div>
 
         <div data-bind="if: hasAbstractFigures">
-            <button type="button" class="btn btn-default btn-sm pull-right"
+        <!-- ko foreach: abstract().figures() -->
+        <button type="button" class="btn btn-default btn-sm pull-right"
                 data-bind="click: $root.doRemoveFigure">
                 Remove
             </button>
             <div class="figure-box">
-                <img class="figure-image" src="" data-bind="attr: {src: abstract().figures()[0].URL}">
+                <img class="figure-image" src="" data-bind="attr: {src: $data.URL}">
                 <div class="figure-caption">
-                    <span>Figure 1: </span>
+                    <span>Figure <b data-bind="text:$index() + 1"></b>: </span>
                     <input type="text" name="figure-update-caption" id="figure-update-caption" class="form-control input-sm"
                             maxlength="@Model.getLimit[Figure]("caption")"
-                            data-bind="value: abstract().figures()[0].caption, valueUpdate: 'afterkeydown'">
+                            data-bind="value: $data.caption, valueUpdate: 'afterkeydown'">
                 </div>
             </div>
+        <!-- /ko -->
         </div>
     </script>
 
@@ -587,7 +596,7 @@
             <div data-bind="foreach: conference().topics">
                 <div class="radio">
                     <label>
-                        <input type="radio" data-bind="checked: $root.editedAbstract().topic, value: $data" />
+                        <input type="radio" data-bind="checked: $root.editedAbstract().topic, value: $data"/>
                         <span data-bind="text: $data"></span>
                     </label>
                 </div>
@@ -595,31 +604,31 @@
         </script>
     }
 
-    @if(conference.hasPresentationPrefs) {
+    @if(! conference.groups.isEmpty) {
         <!-- poster/talk templates -->
         <script id="header-is-talk-editor" type="text/html">
-            <h3>Presentation Preference</h3>
+            <h3>Presentation Type</h3>
         </script>
         <script id="body-is-talk-editor" type="text/html">
+        <!-- ko foreach: conference().groups -->
             <div class="radio">
-                <label>
-                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="false"
-                           data-bind="checked: editedAbstract().isTalk.computed">
-                    Poster
-                </label>
+                <div data-bind="if:$root.abstract().abstrTypes().length>0">
+                    <input type="radio" name="optionPresentation" value="$data.name"
+                        data-bind="click:$root.abstrTypeChanged , checkedValue: $data.name, checked:$root.abstract().abstrTypes()[0].name">
+                </div>
+                <div data-bind="ifnot:$root.abstract().abstrTypes().length>0">
+                    <input type="radio" name="optionPresentation" value="$data.name"
+                        data-bind="click:$root.abstrTypeChanged">
+                </div>
+                <span data-bind="text: $data.name" ></span>
             </div>
-            <div class="radio">
-                <label>
-                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="true"
-                           data-bind="checked: editedAbstract().isTalk.computed">
-                    Talk or Poster
-                </label>
-            </div>
-            <div data-bind="if: editedAbstract().isTalk">
-                <input type="text" class="form-control" placeholder="Why should this contribution be selected for an oral presentation?"
+        <!-- /ko -->
+        <div>
+            <input type="text" class="form-control" placeholder="If applicable: Why should this contribution be selected for this type of presentation?"
                         maxlength="@Model.getLimit[Abstract]("reasonForTalk")"
                         data-bind="value: editedAbstract().reasonForTalk">
-            </div>
+        </div>
+
         </script>
     }
 

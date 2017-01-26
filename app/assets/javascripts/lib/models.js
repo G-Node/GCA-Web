@@ -243,12 +243,13 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
-                        groups, start, end, deadline, logo, thumbnail, iOSApp, geo, schedule, info, owners, abstracts, topics) {
+                        groups, start, end, deadline, logo, thumbnail, iOSApp, geo, schedule, info, owners, abstracts, topics, 
+                        mAbsLeng, mFigs) {
 
         if (! (this instanceof Conference)) {
             return new Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive,
                                   hasPresentationPrefs, groups, start, end, deadline, logo, thumbnail, iOSApp,
-                                  geo, schedule, info, owners, abstracts, topics);
+                                  geo, schedule, info, owners, abstracts, topics, mAbsLeng, mFigs);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -276,6 +277,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.owners = owners || [];
         self.abstracts = abstracts || [];
         self.topics = topics || [];
+        self.mAbsLeng = mAbsLeng || null;
+        self.mFigs = mFigs || [];
 
         self.getGroupById = function(groupId) {
             var foundGroup = null;
@@ -791,12 +794,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      */
     function Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
                       acknowledgements, isTalk, reasonForTalk, owners, state, figures,
-                      authors, affiliations, references) {
+                      authors, affiliations, references, abstrTypes) {
 
         if (! (this instanceof Abstract)) {
             return new Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
                                 acknowledgements, isTalk, reasonForTalk, owners, state,
-                                figures, authors, affiliations, references);
+                                figures, authors, affiliations, references, abstrTypes);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -816,6 +819,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.authors = authors || [];
         self.affiliations = affiliations || [];
         self.references = references || [];
+        self.abstrTypes = abstrTypes || [];
 
 
         self.paragraphs = function() {
@@ -868,6 +872,10 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                             obj.references = [];
                             self.references.forEach(appendReference);
                             break;
+                        case "abstrTypes":
+                            obj.abstrTypes = [];
+                            self.abstrTypes.forEach(appendAbstrTypes);
+                            break;
                         case "owners":
                             break;
                         case "figures":
@@ -892,9 +900,16 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                 obj.references.push(model.toObject());
             }
 
+            function appendAbstrTypes(model) {
+                obj.abstrTypes.push(model.toObject());
+            }
+
             return obj;
         };
 
+    self.hasTypeWuuid = function (uuid) {
+        return true;
+        }
     }
 
     Abstract.fromObject = function(obj) {
@@ -917,6 +932,9 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                         break;
                     case "references":
                         target.references = Reference.fromArray(value);
+                        break;
+                    case "abstrTypes":
+                        target.abstrTypes = AbstractGroup.fromArray(value);
                         break;
                     default:
                         if (tools.type(target[prop]) !== "function") {
@@ -960,12 +978,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      */
     function ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
                                 acknowledgements, isTalk, reasonForTalk, owners, state, figures,
-                                authors, affiliations, references) {
+                                authors, affiliations, references, abstrTypes) {
 
         if (! (this instanceof ObservableAbstract)) {
             return new ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
                                           acknowledgements, isTalk, reasonForTalk, owners, state,
-                                          figures, authors, affiliations, references);
+                                          figures, authors, affiliations, references, abstrTypes);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -984,6 +1002,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.authors = ko.observableArray(authors || []);
         self.affiliations = ko.observableArray(affiliations || []);
         self.references = ko.observableArray(references || []);
+        self.abstrTypes = ko.observableArray(abstrTypes||[]);
 
         this.isTalk.computed = ko.computed({
             'read': function() {
@@ -1044,6 +1063,10 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                             obj.references = [];
                             self.references().forEach(appendReference);
                             break;
+                        case "abstrTypes":
+                            obj.abstrTypes = [];
+                            self.abstrTypes().forEach(appendAbstrTypes);
+                            break;
                         case "owners":
                             break;
                         case "figures":
@@ -1068,6 +1091,10 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
             function appendReference(model) {
                 obj.references.push(model.toObject());
+            }
+
+            function appendAbstrTypes(model) {
+                obj.abstrTypes.push(model.toObject());
             }
 
             return obj;
@@ -1099,6 +1126,10 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                         break;
                     case "references":
                         target.references(ObservableReference.fromArray(value));
+                        break;
+
+                    case "abstrTypes":
+                        target.abstrTypes(ObservableAbstractGroup.fromArray(value));
                         break;
                     default:
                         if (tools.type(target[prop]) !== "function") {
@@ -1158,6 +1189,39 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         return Model.fromArray(array, ObservableAccount.fromObject);
     };
 
+    /**
+     * Observable model for AbstractGroups.
+     *
+     * @param {string} [uuid]
+     * @param {number} [prefix]
+     * @param {string} [name]
+     * @param {string} [short]
+     *
+     * @returns {ObservableAbstractGroup}
+     * @constructor
+     * @public
+     */
+    function ObservableAbstractGroup(uuid, prefix, name, short) {
+    //Why do i not hgave an self ???
+        if (! (this instanceof ObservableAbstractGroup)) {
+            return new ObservableAbstractGroup(uuid, prefix, name, short);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.prefix= ko.observable(prefix || null);
+        self.name = ko.observable(name || null);
+        self.short = ko.observable(short || null);
+
+    }
+
+    ObservableAbstractGroup.fromObject = function(obj) {
+        return Model.fromObject(obj, ObservableAbstractGroup);
+    };
+
+    ObservableAbstractGroup.fromArray = function(array) {
+        return Model.fromArray(array, ObservableAbstractGroup.fromObject);
+    };
     return {
         Conference: Conference,
         Author: Author,
@@ -1171,6 +1235,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         Abstract: Abstract,
         ObservableAbstract: ObservableAbstract,
         ObservableAccount: ObservableAccount,
-        AbstractGroup: AbstractGroup
+        AbstractGroup: AbstractGroup,
+        ObservableAbstractGroup:ObservableAbstractGroup
     };
 });
