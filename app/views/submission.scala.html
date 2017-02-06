@@ -148,31 +148,32 @@
                 </ol>
             </div>
         </div>
-
-        <div class="editor-box" data-bind="css: {editable: showEditButton}">
-            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                <button type="button" class="btn btn-default btn-sm" data-target="#figure-editor"
-                data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#figure-editor')">
-                    Edit
-                </button>
-            </div>
-
-            <div class="modal" id="figure-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
-
-            <div class="figure">
-                <h4>Figures</h4>
-                    <!-- ko foreach: abstract().figures() -->
-                <div class="figure-box">
-                    <img class="figure-image" src="" data-bind="attr: {src: $data.URL}">
-                    <div class="figure-caption">
-                        <span>Figure <b data-bind="text:$index() + 1"></b>: </span>
-                        <span data-bind="text: $data.caption"></span>
-                    </div>
+        @if(conference.abstractMaxFigures>0){
+            <div class="editor-box" data-bind="css: {editable: showEditButton}">
+                <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
+                    <button type="button" class="btn btn-default btn-sm" data-target="#figure-editor"
+                    data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#figure-editor')">
+                        Edit
+                    </button>
                 </div>
-                    <!-- /ko -->
+    
+                <div class="modal" id="figure-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
+        
+                <div class="figure">
+                    <h4>Figures</h4>
+                        <!-- ko foreach: abstract().figures() -->
+                    <div class="figure-box">
+                        <img class="figure-image" src="" data-bind="attr: {src: $data.URL}">
+                        <div class="figure-caption">
+                            <span>Figure <b data-bind="text:$index() + 1"></b>: </span>
+                            <span data-bind="text: $data.caption"></span>
+                        </div>
+                    </div>
+                        <!-- /ko -->
+                </div>
+    
             </div>
-
-        </div>
+        }
 
         @if(! conference.topics.isEmpty || conference.hasPresentationPrefs) {
             <hr class="separator">
