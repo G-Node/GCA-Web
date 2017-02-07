@@ -25,6 +25,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
         self.abstract = ko.observable(null);
         self.editedAbstract = ko.observable(null);
         self.stateLog = ko.observable(null);
+        // dirty workaround below
+        self.abstrGrChangeWatch = ko.observable(null);
 
         self.selectedType = ko.observable(null);
 
@@ -207,7 +209,20 @@ function (ko, models, tools, msg, validate, owned, astate) {
             return authors;
         };
 
-
+        self.showReason = ko.computed(
+            function () {
+                // dirty workaround part 2
+                var _x = self.abstrGrChangeWatch();
+                try{
+                    return self.conference().group==="BCCN" &&
+                        self.abstract().abstrTypes()[0].name==="Talk";
+                }
+                catch(err) {
+                    return false
+                }
+            },
+            self
+        );
         self.requestConference = function (confId) {
 
             $.ajax({
@@ -265,6 +280,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self.editedAbstract().abstrTypes().push(abstrType);
             self.abstract().abstrTypes().pop();
             self.abstract().abstrTypes().push(abstrType);
+            self.abstrGrChangeWatch.valueHasMutated();
             // needs to return true to enable default click action on the radio buttons (select)
             return true;
         };
