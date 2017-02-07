@@ -624,7 +624,8 @@
                 <span data-bind="text: $data.name" ></span>
             </div>
         <!-- /ko -->
-        <div>
+
+        <div data-bind="if:showReason">
             <input type="text" class="form-control" placeholder="If applicable: Why should this contribution be selected for this type of presentation?"
                         maxlength="@Model.getLimit[Abstract]("reasonForTalk")"
                         data-bind="value: editedAbstract().reasonForTalk">
