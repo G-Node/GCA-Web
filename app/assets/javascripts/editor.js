@@ -281,6 +281,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self.abstract().abstrTypes().pop();
             self.abstract().abstrTypes().push(abstrType);
             self.abstrGrChangeWatch.valueHasMutated();
+            if(!self.showReason()) {
+                self.editedAbstract().reasonForTalk(null);
+            }
             // needs to return true to enable default click action on the radio buttons (select)
             return true;
         };
