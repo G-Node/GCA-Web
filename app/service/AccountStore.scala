@@ -9,6 +9,7 @@ import com.mohiva.play.silhouette.core.providers.PasswordInfo
 import com.mohiva.play.silhouette.core.services.IdentityService
 import com.mohiva.play.silhouette.core.utils.PasswordHasher
 import models.{Account, CredentialsLogin, Login}
+import org.joda.time.DateTime
 import plugins.DBUtil._
 import service.mail.MailerService
 import utils.DefaultRoutesResolver
@@ -81,6 +82,9 @@ class AccountStore(val pwHasher: PasswordHasher) {
         throw new RuntimeException(s"An account with '${account.mail}' already exists!")
 
       account.logins.clear()
+      var now = new DateTime()
+      account.ctime = now
+      account.mtime = now
 
       plainPassword.foreach { pw =>
         val token = UUID.randomUUID.toString
@@ -100,6 +104,7 @@ class AccountStore(val pwHasher: PasswordHasher) {
 
       // prevent update of logins (this may not be necessary)
       account.logins = accountCecked.logins
+      account.mtime = new DateTime()
       em.merge(account)
     }
 
