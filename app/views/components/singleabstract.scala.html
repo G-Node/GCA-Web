@@ -31,7 +31,7 @@
                 <img class="col-xs-offset-2 col-xs-8 img-responsive"
                       data-bind="attr: {src: URL}, click: function(data, event) { $(('#figure' + ($index() + 1))).modal(); }">
                 <div class="col-xs-offset-2 col-xs-8">
-                    <span>Figure </span><span data-bind="text: $index() + 1">:</span>
+                    <span>Figure <span data-bind="text: $index() + 1"></span>:</span>
                     <span data-bind="text: caption"></span>
                 </div>
             </div>

@@ -70,7 +70,7 @@ define(["lib/tools", "lib/models", "knockout"], function(tools, models, ko) {
                     self.owners.push(found[0]);
                     mailInput.val("");
                 } else {
-                    self.ownersErrorHandler("danger", "No user with this email found");
+                    self.ownersErrorHandler("Error", "No user with this email found");
                 }
             }
         };
