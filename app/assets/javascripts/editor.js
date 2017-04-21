@@ -215,7 +215,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 var _x = self.abstrGrChangeWatch();
                 try{
                     return self.conference().group==="BCCN" &&
-                        self.abstract().abstrTypes()[0].name==="Talk";
+                        self.abstract().abstrTypes()[0].name==="Talk or Poster";
                 }
                 catch(err) {
                     return false
