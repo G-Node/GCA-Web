@@ -139,7 +139,10 @@ class FigureService(figPath: String) {
       if (figChecked == null)
         throw new EntityNotFoundException("Unable to find figure with uuid = " + account.uuid)
 
-      if (!figChecked.abstr.owners.contains(accountChecked))
+      val isOwner = figChecked.abstr.owners.contains(accountChecked)
+      val isConfOwner = figChecked.abstr.conference.owners.contains(accountChecked)
+      val isAdmin = accountChecked.isAdmin
+      if (! (isOwner || isConfOwner || isAdmin))
         throw new IllegalAccessException("No permissions for figure with uuid = " + id)
 
       val file = new File(figPath, figChecked.uuid)
