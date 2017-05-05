@@ -1,0 +1,104 @@
+
+
+@(account: Option[Account], conference: Option[Conference], active: String)(content: Html)
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+           ____       _   _           _
+          / ___|     | \ | | ___   __| | ___
+         | |  _ _____|  \| |/ _ \ / _` |/ _ \
+         | |_| |_____| |\  | (_) | (_| |  __/
+          \____|     |_| \_|\___/ \__,_|\___|
+
+          Brought to you by the German Neuroinformatics Node (G-Node) @@gnode
+          Copyright (c) 2013,2014,2017 G-Node
+          License: BSD-4 clause and Apache 2.0 (see http://www.apache.org/licenses/LICENSE-2.0.html)
+          Authors: Christian Garbers <christian@@stuebeweg50.de>
+                   Christian Kellner <kellner@@bio.lmu.de>
+                   Andrey Sobolev <sobolev.andrey@@gmail.com>
+                   Adrian Stoewer <adrian.stoewer@@rz.ifi.lmu.de>
+
+    -->
+    <title>@conference.map(_.name).getOrElse("G-Node Conference Application Suite")</title>
+
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/g-node-bootstrap.play.css")" />
+    <script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>
+    <link rel="stylesheet" href="@routes.Assets.at("lib/jquery-ui/jquery-ui.min.css")" />
+    <script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
+
+    <!-- project stylesheet -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/layout.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Conference Abstracts">
+    <meta name="keywords" content="Abstracts">
+    <meta name="author" content="German Neuroinformatics Node (G-Node)">
+
+    <!-- smart app banner -->
+    @conference.map { conf =>
+       @if(conf.iOSApp != null) {
+           <meta name="apple-itunes-app" content="app-id=@conf.iOSApp">
+       }
+    }
+</head>
+<body>
+
+    <div class="container">
+    <!-- navigation -->
+    <div class="navbar navbar-default">
+
+            <div class="navbar-header">
+                <!-- toggle nav button for small screens -->
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- left hand side brand / icon -->
+                <a class="navbar-brand" href="/">
+                    <span class="glyphicon glyphicon-home"></span>
+                    @if(conference.isEmpty) {
+                        Conference abstracts and submission
+                    }
+                </a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+
+                </ul>
+
+
+                <ul class="nav navbar-nav navbar-right">
+
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </div>
+
+    <!-- main content -->
+    <div class="container main-content">
+    @content
+    </div>
+
+    <div class="container">
+        <div class="footer">
+            <div class="row">
+                <div class="pull-left">
+                    <ul class="list-inline">
+                        <li><a href="@routes.Application.contact">Contact</a></li>
+                        <li><a href="@routes.Application.impressum">Imprint</a></li>
+                        <li><a href="@routes.Application.about">About</a></li>
+                    </ul>
+                </div>
+                <div class="pull-right"><p>The G-Node Conference Site &mdash; © <a href="http://www.g-node.org">G-Node</a> 2017 </p></div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>
