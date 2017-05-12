@@ -808,9 +808,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     "<ul>" +
                     "<li>Changes are deactivated. Submitted abstracts can be modified until the" +
                     " deadline.</li>" +
-                    "<li>To modify a submitted abstract, use the <b>Unlock</b> button.<br/>" +
-                    "</ul>"
-                )
+                    "<li>To modify a submitted abstract, use the <b>Unlock</b> button.<br/></li>" +
+                    "</ul> <br/>" + 
+                    "<b> <u> Please note that abstract submission does not replace conference registration!</u> <br/>"+
+                    "All abstract submitters also have to register for the conference.</b><br/>"+
+                    "To register please go to: <a href=\"" + self.conference().link + "\">" + self.conference().link + "</a>"
+                    )
             }
 
         }
