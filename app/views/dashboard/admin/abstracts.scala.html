@@ -45,6 +45,8 @@
                 <tr>
                     <th>Authors</th>
                     <th>Title</th>
+                    <th>Type</th>
+                    <th>Topic</th>
                     <th>State</th>
                     <th></th>
                 </tr>
@@ -53,6 +55,13 @@
                 <tr>
                     <td><span data-bind="text: $root.mkAuthorList($data)"></span></td>
                     <td><span data-bind="text: title"> </span></td>
+                    <td>
+                    <!-- ko foreach: abstrTypes -->
+                            <div data-bind="text:$data.short"></div>
+                    <!-- /ko -->
+                    </td>
+                    <td data-bind="text:topic.slice(0,3)"></td>
+                    
                     <td>
                         <div class="dropdown">
                             <button id="statemenu" type="button" class="btn btn-xs btn-default dropdown-toggle"
