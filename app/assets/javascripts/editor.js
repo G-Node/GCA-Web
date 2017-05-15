@@ -812,7 +812,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     "</ul> <br/>" + 
                     "<b> <u> Please note that abstract submission does not replace conference registration!</u> <br/>"+
                     "All abstract submitters also have to register for the conference.</b><br/>"+
-                    "To register please go to: <a href=\"" + self.conference().link + "\">" + self.conference().link + "</a>"
+                    "To register please go to: <a target=\"_blank\" href=\"" + self.conference().link + "\">" + self.conference().link + "</a>"
                     )
             }
 
