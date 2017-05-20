@@ -240,9 +240,9 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
                 self.isLoading(false);
                 return;
             }
-            if (localStorage.getItem('conference') !== null){
-                onConferenceData(localStorage.getItem('conference'));
-                return
+            if (localStorage.getItem(confId) !== null){
+                onConferenceData(JSON.parse(localStorage.getItem(confId)));
+                //return
             }
 
             //now load the data from the server
@@ -251,16 +251,23 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
 
             //conference data
             function onConferenceData(confObj) {
-                localStorage.setItem('conference', confObj);
+                localStorage.setItem(confId, JSON.stringify(confObj));
+                var x = localStorage.getItem(confId)
                 var conf = models.Conference.fromObject(confObj);
                 self.conference(conf);
                 self.buildGroups();
                 //now load the abstract data
+                var abs = localStorage.getItem(confId+'_abs')
+                if (abs !==  null) {
+                    onAbstractData(JSON.parse(abs))
+                    return
+                }
                 $.getJSON(conf.abstracts, onAbstractData).fail(self.ioFailHandler);
             }
 
             //abstract data
             function onAbstractData(absArray) {
+                localStorage.setItem(confId+'_abs', JSON.stringify(absArray))
                 var absList = models.Abstract.fromArray(absArray);
                 self.abstractsData = absList;
                 self.buildMaps();
