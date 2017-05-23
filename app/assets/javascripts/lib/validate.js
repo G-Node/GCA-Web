@@ -39,6 +39,7 @@ define(["lib/tools"], function (tools) {
             abstract,
             must("title", notNothing, "The abstract has no title"),
             should("authors", notEmpty, "No authors are defined for this abstract"),
+            should("abstrTypes", notEmpty, "No presentation type selected"),
             should("authors", useAllAffiliations(getVal(abstract, "affiliations")), "Some affiliations are not used"),
             should("text", notNothing, "The abstract contains no text"),
             should("topic", notNothing, "No topic selected for the abstract")
