@@ -1,0 +1,16 @@
+CACHE MANIFEST
+http://localhost:9000/assets/lib/bootstrap/js/bootstrap.min.js
+http://localhost:9000/assets/stylesheets/g-node-bootstrap.play.css
+http://localhost:9000/assets/lib/jquery/jquery.min.js
+http://localhost:9000/assets/lib/jquery-ui/jquery-ui.min.css
+http://localhost:9000/assets/stylesheets/layout.css
+http://localhost:9000/assets/javascripts/require.js
+http://localhost:9000/assets/images/favicon.png
+http://localhost:9000/assets/javascripts/mob_abstract-list.js
+
+http://cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-debug.js
+NETWORK:
+
+
+
+#djkjsdas
