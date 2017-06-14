@@ -37,9 +37,6 @@
             <li>
                <p>Submission is <span class="text-success"><b>open</b></span>!</p>
             </li>
-             @if(conference.deadline != null) {
-                 <li><p><b>Deadline:</b> @conference.deadline.toString(conference.dateFormatter)</p></li>
-             }
             </ul>
 
             @if(account.isDefined) {
