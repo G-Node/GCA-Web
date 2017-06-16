@@ -38,7 +38,7 @@ define(["lib/tools"], function (tools) {
         return validate(
             abstract,
             must("title", notNothing, "The abstract has no title"),
-            must("abstrTypes", notEmpty, "No presentation type selected"),
+            should("abstrTypes", notEmpty, "No presentation type selected"),
             should("authors", notEmpty, "No authors are defined for this abstract"),            
             should("authors", useAllAffiliations(getVal(abstract, "affiliations")), "Some affiliations are not used"),
             should("text", notNothing, "The abstract contains no text"),
