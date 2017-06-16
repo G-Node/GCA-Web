@@ -60,8 +60,9 @@
                             <div data-bind="text:$data.short"></div>
                     <!-- /ko -->
                     </td>
-                    <td data-bind="text:topic.slice(0,3)"></td>
-                    
+                    <td data-bind="if: topic">
+                        <div data-bind="text: topic.slice(0,3)"></div>
+                    </td>
                     <td>
                         <div class="dropdown">
                             <button id="statemenu" type="button" class="btn btn-xs btn-default dropdown-toggle"
