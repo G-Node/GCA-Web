@@ -161,17 +161,14 @@
         
                 <div class="figure">
                     <h4>Figures</h4>
-                        <!-- ko foreach: abstract().figures() -->
-                    <div class="figure-box">
+                    <div><!-- ko foreach: abstract().figures() --><div class="figure-box">
                         <img class="figure-image" src="" data-bind="attr: {src: $data.URL}">
                         <div class="figure-caption">
                             <span>Figure <b data-bind="text:$index() + 1"></b>: </span>
                             <span data-bind="text: $data.caption"></span>
                         </div>
-                    </div>
-                        <!-- /ko -->
-                </div>
-    
+                    </div><!-- /ko --></div>
+                </div>    
             </div>
         }
 
