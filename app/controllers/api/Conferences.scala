@@ -70,7 +70,11 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
    */
   def listWithOwnAbstracts =  SecuredAction { implicit request =>
     val conferences = conferenceService.listWithAbstractsOfAccount(request.identity.account)
-    resultWithETag(conferences)
+    if (conferences.length==0) {
+      BadRequest("You have created no abstracts yet")
+    } else {
+      resultWithETag(conferences)
+    }
   }
 
   /**
