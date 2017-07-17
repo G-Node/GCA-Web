@@ -41,9 +41,9 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
 
         //Data IO
         self.ioFailHandler = function (jqxhr, textStatus, error) {
-            var err = textStatus + ", " + error;
+            var err = textStatus + ", " + error + ", " + jqxhr.responseText;
             console.log("Request Failed: " + err);
-            self.setError("danger", "Error while lading data [" + err + "]!");
+            self.setError("danger", "Error while loading data [" + err + "]!");
         };
 
         self.ensureDataAndThen = function (doAfter) {

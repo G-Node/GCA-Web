@@ -772,12 +772,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     "<ul>" +
                     "<li>Nothing will be stored on the server before the abstract is saved for" +
                     "    the first time, so it is ok to play around and explore this editor.</li>" +
-                    "<li>The 'Validation' field above indicates if there are issues with the" +
-                    "    required content of the abstract. Clicking on the <i>issues</i> button will " +
-                    "    bring up a dialog with issue details.</li>" +
                     "<li>After entering at least the abstract title, click the <b>Save</b> button" +
                     "    to store the abstract on the server. Subsequent changes will the be " +
                     "    saved automatically.</li>" +
+                    "<li>The 'Validation' field above indicates if there are issues with the" +
+                    "    required content of the abstract. Clicking on the <i>issues</i> button will " +
+                    "    bring up a dialog with issue details.</li>" +
                     "</ul>"
                 );
             } else if (self.abstract().state() == 'InPreparation') {
