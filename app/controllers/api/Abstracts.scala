@@ -159,10 +159,10 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     val oldAbstract = abstractService.getOwn(abs.uuid, request.identity.account)
     val conference = oldAbstract.conference
 
-    if(!conference.isOpen && oldAbstract.state != AbstractState.InRevision) {
+    if(!conference.isOpen && oldAbstract.state != AbstractState.InRevision && !request.identity.account.isAdmin) {
       throw new IllegalAccessException("Conference is closed and abstract not in 'InRevision' state!")
     }
-
+    
     val newAbstract = abstractService.update(abs, request.identity.account)
 
     Ok(Json.toJson(newAbstract)).withHeaders(ETAG -> newAbstract.eTag)
