@@ -17,7 +17,8 @@ object AbstractState extends Enumeration {
                                          InRevision    -> (Submitted :: Nil)),
                        "isClosed" -> Map(InRevision    -> (Submitted :: Nil)))
 
-  val adminStates = Map(Submitted  -> (InReview :: Nil),
+  val adminStates = Map(InPreparation -> (Submitted :: Nil),
+                        Submitted  -> (InReview :: Nil),
                         InReview   -> (Accepted :: Rejected :: InRevision :: Withdrawn :: Nil),
                         Accepted   -> (InRevision :: Withdrawn :: Nil),
                         Rejected   -> (InRevision :: Withdrawn :: Nil),
