@@ -837,7 +837,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         };
 
         self.doiLink = function() {
-            return self.doi ? 'http://dx.doi.org/' + self.doi : null;
+            return self.doi ? 'http://doi.org/' + self.doi : null;
         };
 
         self.formatAuthorsCitation = function() {
