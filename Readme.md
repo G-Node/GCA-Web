@@ -19,3 +19,4 @@ Please find the latest release notes in our [wiki release notes](https://github.
 --
 
 [![Build Status](https://travis-ci.org/G-Node/GCA-Web.png?branch=master)](https://travis-ci.org/G-Node/GCA-Web)
+[![StackShare](https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/cgars/gca-web)
