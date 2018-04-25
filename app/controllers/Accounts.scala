@@ -4,9 +4,10 @@ import java.util.UUID
 import javax.persistence.NoResultException
 
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
+import com.mohiva.play.silhouette.core.providers.PasswordInfo
 import com.mohiva.play.silhouette.core.{LoginInfo, Silhouette}
 import conf.GlobalEnvironment
-import forms.{EmailForm, ResetPasswordForm, SignInForm, SignUpForm}
+import forms._
 import models._
 import play.api.http.Status._
 import play.api.mvc.Action
@@ -16,6 +17,7 @@ import service.{AccountStore, CredentialsStore}
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration._
+import scala.reflect._
 
 /**
  * Controller serving login and sign up pages.
@@ -46,7 +48,38 @@ class Accounts(implicit val env: GlobalEnvironment)
       case _ => Ok(views.html.signup(SignUpForm.form))
     }
   }
+  
+  def emailchange = SecuredAction { implicit request =>
+    Ok(views.html.changemail(NewMailForm.newmailform))
+  }
 
+  def emailchangeCommit = SecuredAction { implicit request =>
+    NewMailForm.newmailform.bindFromRequest.fold(
+      formWithErrors => Redirect(routes.Accounts.emailchange()).flashing("error" -> "Could not change email address"),
+      nmailform => {
+        var loginInfo = LoginInfo(env.credentialsProvider.id, request.identity.account.mail)
+        val f = Await.result(env.authInfoService.retrieve(loginInfo)(classTag[PasswordInfo]), 10 seconds)
+        val pwInfo = f.get
+        // lets see whether passord is in corect. if so fail silently
+        if (!env.pwHasher.matches(pwInfo, nmailform._3)) {
+          Redirect(routes.Accounts.emailchange()).flashing("error" -> "Could not change email address")
+        } else {
+          // lets see whether mail exists. if so fail silently
+          Await.result(env.authInfoService.retrieve(LoginInfo(env.credentialsProvider.id, providerKey = nmailform._1))
+          (classTag[PasswordInfo]), 10 seconds) match {
+            case Some(x) =>
+              Redirect(routes.Accounts.emailchange()).flashing("error" -> "Could not change email address")
+            case _ =>
+              Await.result(credentialStore.update(LoginInfo(env.credentialsProvider.id, providerKey = nmailform._1), loginInfo,
+                pwInfo), 5 seconds)
+              Redirect(routes.Application.index()).flashing("success" ->
+                """Email successfully changed.""")
+          }
+        }
+      }
+    )
+  }  
+  
   def passwordResetPage = SecuredAction { implicit request =>
     Ok(views.html.passwordreset(ResetPasswordForm.passwordsForm))
   }

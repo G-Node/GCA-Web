@@ -87,3 +87,5 @@ GET           /password                                       @controllers.Accou
 POST          /password                                       @controllers.Accounts.passwordResetCommit
 GET           /forgotpassword                                 @controllers.Accounts.forgotPasswordPage
 POST          /forgotpassword                                 @controllers.Accounts.forgotPasswordCommit
+GET           /mail                                           @controllers.Accounts.emailchange
+POST          /mail                                           @controllers.Accounts.emailchangeCommit

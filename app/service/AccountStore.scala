@@ -148,7 +148,34 @@ class LoginStore extends IdentityService[Login] {
 
 class CredentialsStore extends DelegableAuthInfoDAO[PasswordInfo] {
 
-  override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
+  def update(nloginInfo: LoginInfo, ologinInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
+    Try {
+      transaction { (em, tx) =>
+        val queryStr =
+          """SELECT DISTINCT l FROM CredentialsLogin l
+             LEFT JOIN FETCH l.account a
+             WHERE LOWER(a.mail) = LOWER(:email)"""
+
+        val query: TypedQuery[CredentialsLogin] = em.createQuery(queryStr, classOf[CredentialsLogin])
+        query.setParameter("email", ologinInfo.providerKey)
+
+        val credentials = query.getSingleResult
+
+        credentials.hasher = authInfo.hasher
+        credentials.password = authInfo.password
+        credentials.salt = authInfo.salt match {
+          case Some(salt) => salt
+          case _ => null
+        }
+        credentials.account.mail=nloginInfo.providerKey
+        em.merge(credentials)
+      }
+    } match {
+      case Success(login) => Future.successful(PasswordInfo(login.hasher, login.password, Option(login.salt)))
+      case Failure(e) => Future.failed(e)
+    }
+  }
+    override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
     Try {
       transaction { (em, tx) =>
         val queryStr =
@@ -167,7 +194,7 @@ class CredentialsStore extends DelegableAuthInfoDAO[PasswordInfo] {
           case Some(salt) => salt
           case _ => null
         }
-
+        
         em.merge(credentials)
       }
     } match {

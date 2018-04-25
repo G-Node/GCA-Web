@@ -27,7 +27,7 @@
         }
         @if(conference.description != null) {
             <div class="jumbo-small">
-                @conference.description
+                @Html(conference.formatDescription)
             </div>
         }
         <p>@conference.formatDuration</p>

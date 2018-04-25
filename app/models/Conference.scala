@@ -19,6 +19,8 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.joda.time.format.DateTimeFormat
 import models.util.DateTimeConverter
 
+import org.owasp.html.Sanitizers
+
 
 /**
  * A model for that represents a conference.
@@ -110,6 +112,11 @@ class Conference extends Model with Owned with Tagged {
       val dateFormatter = DateTimeFormat.forPattern("MMMM d, yyyy")
       startDate.toString(dateFormatter) + " - " + endDate.toString(dateFormatter)
     }
+  }
+
+  def formatDescription : String = {
+    val sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS);
+    sanitizer.sanitize(description)
   }
 
   def eTag : String = DigestUtils.md5Hex(uuid + mtime.toString())

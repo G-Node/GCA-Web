@@ -1,0 +1,29 @@
+@(emailForm: Form[(String, String, String)])(implicit env: com.mohiva.play.silhouette.core.Environment[models.Login, _], request: RequestHeader)
+
+@import views.html.bootstrap._
+
+@template(None, None, "") {
+    
+
+  @flash(request)
+
+  <fieldset class="col-md-6 col-md-offset-3">
+    <legend>Change E-Mail</legend>
+
+    @helper.form(action = routes.Accounts.emailchangeCommit()) {
+
+      @text(emailForm("email1"), "Enter new E-Mail")
+      @text(emailForm("email2"), "Confirm new E-Mail")
+      @password(emailForm("password"), "Enter your password", icon = "key")
+
+
+
+        <div class="form-group">
+        <div>
+          <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Change E-Mail</button>
+        </div>
+      </div>
+    }
+  </fieldset>
+
+}
