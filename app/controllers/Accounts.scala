@@ -55,27 +55,27 @@ class Accounts(implicit val env: GlobalEnvironment)
 
   def emailchangeCommit = SecuredAction { implicit request =>
     NewMailForm.newmailform.bindFromRequest.fold(
-      formWithErrors => Redirect(routes.Accounts.emailchange()).flashing("error"->"Could not change email address"),
+      formWithErrors => Redirect(routes.Accounts.emailchange()).flashing("error" -> "Could not change email address"),
       nmailform => {
         var loginInfo = LoginInfo(env.credentialsProvider.id, request.identity.account.mail)
         val f = Await.result(env.authInfoService.retrieve(loginInfo)(classTag[PasswordInfo]), 10 seconds)
         val pwInfo = f.get
         // lets see whether passord is in corect. if so fail silently
-        if (!env.pwHasher.matches(pwInfo,nmailform._3)){
-          Redirect(routes.Application.index())
+        if (!env.pwHasher.matches(pwInfo, nmailform._3)) {
+          Redirect(routes.Accounts.emailchange()).flashing("error" -> "Could not change email address")
+        } else {
+          // lets see whether mail exists. if so fail silently
+          Await.result(env.authInfoService.retrieve(LoginInfo(env.credentialsProvider.id, providerKey = nmailform._1))
+          (classTag[PasswordInfo]), 10 seconds) match {
+            case Some(x) =>
+              Redirect(routes.Accounts.emailchange()).flashing("error" -> "Could not change email address")
+            case _ =>
+              Await.result(credentialStore.update(LoginInfo(env.credentialsProvider.id, providerKey = nmailform._1), loginInfo,
+                pwInfo), 5 seconds)
+              Redirect(routes.Application.index()).flashing("success" ->
+                """Email successfully changed.""")
+          }
         }
-        // lets see whether mail exists. if so fail silently
-        Await.result(env.authInfoService.retrieve(LoginInfo(env.credentialsProvider.id,providerKey=nmailform._1))
-        (classTag[PasswordInfo]), 10 seconds) match{
-          case  Some(x)=>
-            Redirect(routes.Accounts.emailchange()).flashing("error"->"Could not change email address")
-          case  _=>
-            Await.result(credentialStore.update(LoginInfo(env.credentialsProvider.id,providerKey=nmailform._1), loginInfo,
-              pwInfo), 5 seconds)
-            Redirect(routes.Application.index()).flashing("success" ->
-              """Email successfully changed.""")
-        }
-
       }
     )
   }  
