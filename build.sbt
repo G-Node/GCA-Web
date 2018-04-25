@@ -24,7 +24,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "bootstrap" % "3.1.1" exclude("org.webjars", "jquery"),
   "org.webjars" % "knockout" % "3.0.0" exclude("org.webjars", "jquery"),
   "org.webjars" % "sammy" % "0.7.4",
-  "org.webjars" % "momentjs" % "2.9.0"
+  "org.webjars" % "momentjs" % "2.9.0",
+  "com.googlecode.owasp-java-html-sanitizer" % "owasp-java-html-sanitizer" % "r136"
 )
 
 includeFilter in (Assets, LessKeys.less) := "*.less"
