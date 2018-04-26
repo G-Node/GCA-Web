@@ -123,6 +123,11 @@ class Conference extends Model with Owned with Tagged {
   def touch (): Unit = {
     this.mtime = new DateTime(DateTimeZone.UTC)
   }
+
+  override def canWrite(account: Account): Boolean = {
+    isOwner(account) || account.isAdmin
+  }
+}
 }
 
 object Conference extends Model {
