@@ -115,7 +115,7 @@ class Conference extends Model with Owned with Tagged {
   }
 
   def formatDescription : String = {
-    val sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS);
+    val sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS).and(Sanitizers.STYLES);
     sanitizer.sanitize(description)
   }
 
