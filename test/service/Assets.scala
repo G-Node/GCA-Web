@@ -186,6 +186,9 @@ class Assets() {
 
   var alice : Account = createAccount("Alice", "Goodchild", "alice@foo.com")
 
+  var alice_new : Account = createAccount("Alice", "Goodchild", "alice_new@foo.com")
+
+
   var bob: Account = createAccount("Bob", "Trusty", "bob@bar.com")
 
   var eve: Account = createAccount("Eve", "Sarevok", "eve@evil.com")
