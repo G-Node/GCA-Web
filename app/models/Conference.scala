@@ -128,7 +128,6 @@ class Conference extends Model with Owned with Tagged {
     isOwner(account) || account.isAdmin
   }
 }
-}
 
 object Conference extends Model {
 
