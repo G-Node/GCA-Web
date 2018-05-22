@@ -84,10 +84,6 @@
                             <a href="@routes.Application.conference(conf.short)"> @conference.get.short</a>
                         </li>
 
-                        <li class=@if(active.toLowerCase == "info") {"active"} else {""}>
-                            <a href="@routes.Application.info(conf.short)">Information</a>
-                        </li>
-
                         @if(conf.isPublished) {
                             <li class=@if(active.toLowerCase == "abstracts") {"active"} else {""}>
                                 <a href="@routes.Application.abstractsPublic(conf.short)">Abstracts</a>
