@@ -22,7 +22,7 @@ import models.util.DateTimeConverter
 import org.owasp.html.Sanitizers
 
 /*
- * Import the functionality needed for parsing commonmark data.
+ * Import the functionality needed for parsing Commonmark/Markdown data.
  */
 import org.commonmark.node._
 import org.commonmark.parser.Parser
@@ -131,19 +131,9 @@ class Conference extends Model with Owned with Tagged {
     this.mtime = new DateTime(DateTimeZone.UTC)
   }
 
-  /**
-    * Transform the Markdown formatted conference information to its HTML representation.
-    *
-    * @return the HTML representation of the conference information
-    */
   def getInfoAsHTML () : String = {
-    /*
-     * Create a HTML renderer and a Markdown parser using factory methods.
-     * Parse the Markdown formatted conference information and render it to HTML.
-     */
     // TODO: write test case
-    return HtmlRenderer.builder().build().render(Parser.builder().build().parse(this.info))
-  }
+    return Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(this.info))  }
 
   override def canWrite(account: Account): Boolean = {
     isOwner(account) || account.isAdmin
@@ -151,6 +141,9 @@ class Conference extends Model with Owned with Tagged {
 }
 
 object Conference extends Model {
+
+  val MARKDOWN_PARSER = Parser.builder().build();
+  val HTML_RENDERER = HtmlRenderer.builder().build();
 
   def apply(uuid: Option[String],
             name: Option[String],

@@ -43,17 +43,6 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
     Ok(views.html.submission(user, conf, None))
   }
 
-  /**
-    * Handles the display of the information tab for a specific conference.
-    *
-    * @param confId - the conference ID
-    */
-  def info(confId: String) = UserAwareAction { implicit request =>
-    val conference = conferenceService.get(confId)
-
-    Ok(views.html.info(request.identity.map{ _.account }, conference))
-  }
-
   def edit(id: String) = SecuredAction { implicit request =>
     val abstr = abstractService.getOwn(id, request.identity.account)
 

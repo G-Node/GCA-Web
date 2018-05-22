@@ -1,7 +1,5 @@
 @(account: Option[Account], conference: Conference)
 
-@template(account, Option(conference), "info") {
-
     <div class="hidden-data">
         <div id="conference-uuid">@conference.uuid</div>
     </div>
@@ -16,7 +14,7 @@
         <!-- The conference info page -->
     <div class="jumbotron">
         <div class="page-header">
-            <h1><a href="@conference.link">@conference.name</a></h1>
+            <h1>General Information</h1>
         </div>
 
         @if(conference.info != null) {
@@ -28,4 +26,3 @@
         }
 
     </div>
-}
