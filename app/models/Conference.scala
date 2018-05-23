@@ -133,7 +133,8 @@ class Conference extends Model with Owned with Tagged {
 
   def getInfoAsHTML () : String = {
     // TODO: write test case
-    return Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(this.info))  }
+    return Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(this.info))
+  }
 
   override def canWrite(account: Account): Boolean = {
     isOwner(account) || account.isAdmin

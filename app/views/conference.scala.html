@@ -78,7 +78,15 @@
         }
     </div>
 
+    <!-- The conference info panel -->
     @if(conference.info != null) {
-        @info(account, conference)
+        <div class="jumbotron">
+            <div class="page-header">
+                <h1>General Information</h1>
+            </div>
+            <div class="jumbo-small">
+                @Html(conference.getInfoAsHTML())
+            </div>
+        </div>
     }
 }
