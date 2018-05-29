@@ -79,7 +79,7 @@
     </div>
 
     <!-- The conference info panel -->
-    @if(conference.info != null) {
+    @if(conference.info != null && conference.info.length() > 0) {
         <div class="jumbotron">
             <div class="page-header">
                 <h1>General Information</h1>
