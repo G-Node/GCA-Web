@@ -132,12 +132,10 @@ class Conference extends Model with Owned with Tagged {
   }
 
   def getInfoAsHTML () : String = {
-    // TODO: write test case
     return Conference.convertMarkdownToHTML(this.info)
   }
 
   def getDescriptionAsHTML () : String = {
-    // TODO: write test case
     return Conference.convertMarkdownToHTML(this.description)
   }
 
