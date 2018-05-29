@@ -133,7 +133,12 @@ class Conference extends Model with Owned with Tagged {
 
   def getInfoAsHTML () : String = {
     // TODO: write test case
-    return Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(this.info))
+    return Conference.convertMarkdownToHTML(this.info)
+  }
+
+  def getDescriptionAsHTML () : String = {
+    // TODO: write test case
+    return Conference.convertMarkdownToHTML(this.description)
   }
 
 }
@@ -142,6 +147,10 @@ object Conference extends Model {
 
   val MARKDOWN_PARSER = Parser.builder().build();
   val HTML_RENDERER = HtmlRenderer.builder().build();
+
+  def convertMarkdownToHTML (markdownData : String) : String = {
+    return Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(markdownData))
+  }
 
   def apply(uuid: Option[String],
             name: Option[String],
