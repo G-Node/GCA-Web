@@ -95,8 +95,14 @@ class ConferenceTest extends JUnitSuite {
      * Mostly a placeholder for potential future changes, which need to be tested differently.
      */
     val r : Random = new Random()
+    // test empty markdown returning empty html
     var testingInfo : String = ""
     var testingConf : Conference = null
+    testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
+      None, None, Some(false), Some(true), Some(false), Some(true), None, None, None, info = Some(testingInfo))
+    assert(testingConf.getInfoAsHTML() == Conference.convertMarkdownToHTML(testingInfo))
+    assert(testingConf.getInfoAsHTML() == "")
+    // random tests
     for (i <- 0 to 10000) {
       testingInfo = ConferenceTest.generateRandomString(r.nextInt(200))
       testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
@@ -117,8 +123,14 @@ class ConferenceTest extends JUnitSuite {
      * Mostly a placeholder for potential future changes, which need to be tested differently.
      */
     val r : Random = new Random()
+    // test empty markdown returning empty html
     var testingDescription : String = ""
     var testingConf : Conference = null
+    testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
+      None, Some(testingDescription), Some(false), Some(true), Some(false), Some(true), None, None, None)
+    assert(testingConf.getDescriptionAsHTML() == Conference.convertMarkdownToHTML(testingDescription))
+    assert(testingConf.getDescriptionAsHTML() == "")
+    // random tests
     for (i <- 0 to 10000) {
       testingDescription = ConferenceTest.generateRandomString(r.nextInt(200))
       testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
