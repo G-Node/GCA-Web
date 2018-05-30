@@ -122,7 +122,7 @@ class Conference extends Model with Owned with Tagged {
   }
 
   def formatDescription : String = {
-    val sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS).and(Sanitizers.STYLES);
+    val sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS)
     sanitizer.sanitize(description)
   }
 
@@ -132,11 +132,11 @@ class Conference extends Model with Owned with Tagged {
   }
 
   def getInfoAsHTML () : String = {
-    return Conference.convertMarkdownToHTML(this.info)
+    Conference.convertMarkdownToHTML(this.info)
   }
 
   def getDescriptionAsHTML () : String = {
-    return Conference.convertMarkdownToHTML(this.description)
+    Conference.convertMarkdownToHTML(this.description)
   }
 
   override def canWrite(account: Account): Boolean = {
@@ -146,11 +146,11 @@ class Conference extends Model with Owned with Tagged {
 
 object Conference extends Model {
 
-  val MARKDOWN_PARSER = Parser.builder().build();
-  val HTML_RENDERER = HtmlRenderer.builder().build();
+  val MARKDOWN_PARSER : Parser = Parser.builder().build()
+  val HTML_RENDERER : HtmlRenderer = HtmlRenderer.builder().build()
 
   def convertMarkdownToHTML (markdownData : String) : String = {
-    return Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(markdownData))
+    Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(markdownData))
   }
 
   def apply(uuid: Option[String],
