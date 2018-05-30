@@ -24,7 +24,6 @@ import org.owasp.html.Sanitizers
 /*
  * Import the functionality needed for parsing Commonmark/Markdown data.
  */
-import org.commonmark.node._
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 
@@ -122,7 +121,7 @@ class Conference extends Model with Owned with Tagged {
   }
 
   def formatDescription : String = {
-    val sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS);
+    val sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS)
     sanitizer.sanitize(description)
   }
 
@@ -132,22 +131,22 @@ class Conference extends Model with Owned with Tagged {
   }
 
   def getInfoAsHTML () : String = {
-    return Conference.convertMarkdownToHTML(this.info)
+    Conference.convertMarkdownToHTML(this.info)
   }
 
   def getDescriptionAsHTML () : String = {
-    return Conference.convertMarkdownToHTML(this.description)
+    Conference.convertMarkdownToHTML(this.description)
   }
 
 }
 
 object Conference extends Model {
 
-  val MARKDOWN_PARSER = Parser.builder().build();
-  val HTML_RENDERER = HtmlRenderer.builder().build();
+  val MARKDOWN_PARSER : Parser = Parser.builder().build()
+  val HTML_RENDERER : HtmlRenderer = HtmlRenderer.builder().build()
 
   def convertMarkdownToHTML (markdownData : String) : String = {
-    return Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(markdownData))
+    Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(markdownData))
   }
 
   def apply(uuid: Option[String],
