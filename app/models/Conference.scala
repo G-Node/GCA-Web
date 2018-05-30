@@ -132,11 +132,29 @@ class Conference extends Model with Owned with Tagged {
   }
 
   def getInfoAsHTML () : String = {
-    Conference.convertMarkdownToHTML(this.info)
+    if (this.info != null && this.info.length() > 0) {
+      Conference.convertMarkdownToHTML(this.info)
+    } else {
+      /*
+       * Return an empty string to avoid an unnecessary and potentially, security-wise, unsafe
+       * exception to be thrown if null is passed.
+       * Additionally do not bother the parser, if there is nothing to parse.
+       */
+      ""
+    }
   }
 
   def getDescriptionAsHTML () : String = {
-    Conference.convertMarkdownToHTML(this.description)
+    if (this.description != null && this.description.length() > 0) {
+      Conference.convertMarkdownToHTML(this.description)
+    } else {
+      /*
+       * Return an empty string to avoid an unnecessary and potentially, security-wise, unsafe
+       * exception to be thrown if null is passed.
+       * Additionally do not bother the parser, if there is nothing to parse.
+       */
+      ""
+    }
   }
 
   override def canWrite(account: Account): Boolean = {

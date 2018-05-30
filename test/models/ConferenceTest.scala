@@ -109,12 +109,10 @@ class ConferenceTest extends JUnitSuite {
         None, None, Some(false), Some(true), Some(false), Some(true), None, None, None, info = Some(testingInfo))
       assert(testingConf.getInfoAsHTML() == Conference.convertMarkdownToHTML(testingInfo))
     }
-    // test nulls throwing a NullPointerException
+    // test null yielding an empty string
     testingConf = Conference(Some("uuid"), Some("wrongconf"), Some("XX"), Some("G"), Some("X"),
       None, None, Some(false), Some(true), Some(false), Some(true), None, None, None, info = null)
-    intercept[NullPointerException] {
-      testingConf.getInfoAsHTML()
-    }
+    assert(testingConf.getInfoAsHTML() == "")
   }
 
   @Test
@@ -137,12 +135,10 @@ class ConferenceTest extends JUnitSuite {
         None, Some(testingDescription), Some(false), Some(true), Some(false), Some(true), None, None, None)
       assert(testingConf.getDescriptionAsHTML() == Conference.convertMarkdownToHTML(testingDescription))
     }
-    // test nulls throwing a NullPointerException
+    // test null yielding an empty string
     testingConf = Conference(Some("uuid"), Some("wrongconf"), Some("XX"), Some("G"), Some("X"),
       None, null, Some(false), Some(true), Some(false), Some(true), None, None, None)
-    intercept[NullPointerException] {
-      testingConf.getDescriptionAsHTML()
-    }
+    assert(testingConf.getDescriptionAsHTML() == "")
   }
 
 }
