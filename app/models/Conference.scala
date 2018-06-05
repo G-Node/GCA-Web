@@ -120,11 +120,6 @@ class Conference extends Model with Owned with Tagged {
     }
   }
 
-  def formatDescription : String = {
-    val sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS)
-    sanitizer.sanitize(description)
-  }
-
   def eTag : String = DigestUtils.md5Hex(uuid + mtime.toString())
   def touch (): Unit = {
     this.mtime = new DateTime(DateTimeZone.UTC)
