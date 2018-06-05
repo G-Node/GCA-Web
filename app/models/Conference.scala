@@ -19,7 +19,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.joda.time.format.DateTimeFormat
 import models.util.DateTimeConverter
 
-import org.owasp.html.Sanitizers
+import org.owasp.html.{PolicyFactory, Sanitizers}
 
 /*
  * Import the functionality needed for parsing Commonmark/Markdown data.
@@ -127,7 +127,7 @@ class Conference extends Model with Owned with Tagged {
 
   def getInfoAsHTML () : String = {
     if (this.info != null && this.info.length() > 0) {
-      Conference.convertMarkdownToHTML(this.info)
+      Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(this.info))
     } else {
       /*
        * Return an empty string to avoid an unnecessary and potentially, security-wise, unsafe
@@ -140,7 +140,7 @@ class Conference extends Model with Owned with Tagged {
 
   def getDescriptionAsHTML () : String = {
     if (this.description != null && this.description.length() > 0) {
-      Conference.convertMarkdownToHTML(this.description)
+      Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(this.description))
     } else {
       /*
        * Return an empty string to avoid an unnecessary and potentially, security-wise, unsafe
@@ -157,6 +157,7 @@ object Conference extends Model {
 
   val MARKDOWN_PARSER : Parser = Parser.builder().build()
   val HTML_RENDERER : HtmlRenderer = HtmlRenderer.builder().build()
+  val HTML_SANITIZER : PolicyFactory = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS)
 
   def convertMarkdownToHTML (markdownData : String) : String = {
     Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(markdownData))
