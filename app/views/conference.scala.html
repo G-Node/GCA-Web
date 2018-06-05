@@ -77,4 +77,16 @@
             </div>
         }
     </div>
+
+    <!-- The conference info panel -->
+    @if(conference.getInfoAsHTML().length() > 0) {
+        <div class="jumbotron">
+            <div class="page-header">
+                <h1>General Information</h1>
+            </div>
+            <div class="jumbo-small">
+                @Html(conference.getInfoAsHTML())
+            </div>
+        </div>
+    }
 }

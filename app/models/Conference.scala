@@ -21,6 +21,12 @@ import models.util.DateTimeConverter
 
 import org.owasp.html.Sanitizers
 
+/*
+ * Import the functionality needed for parsing Commonmark/Markdown data.
+ */
+import org.commonmark.parser.Parser
+import org.commonmark.renderer.html.HtmlRenderer
+
 
 /**
  * A model for that represents a conference.
@@ -115,7 +121,7 @@ class Conference extends Model with Owned with Tagged {
   }
 
   def formatDescription : String = {
-    val sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS);
+    val sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS)
     sanitizer.sanitize(description)
   }
 
@@ -123,9 +129,43 @@ class Conference extends Model with Owned with Tagged {
   def touch (): Unit = {
     this.mtime = new DateTime(DateTimeZone.UTC)
   }
+
+  def getInfoAsHTML () : String = {
+    if (this.info != null && this.info.length() > 0) {
+      Conference.convertMarkdownToHTML(this.info)
+    } else {
+      /*
+       * Return an empty string to avoid an unnecessary and potentially, security-wise, unsafe
+       * exception to be thrown if null is passed.
+       * Additionally do not bother the parser, if there is nothing to parse.
+       */
+      ""
+    }
+  }
+
+  def getDescriptionAsHTML () : String = {
+    if (this.description != null && this.description.length() > 0) {
+      Conference.convertMarkdownToHTML(this.description)
+    } else {
+      /*
+       * Return an empty string to avoid an unnecessary and potentially, security-wise, unsafe
+       * exception to be thrown if null is passed.
+       * Additionally do not bother the parser, if there is nothing to parse.
+       */
+      ""
+    }
+  }
+
 }
 
 object Conference extends Model {
+
+  val MARKDOWN_PARSER : Parser = Parser.builder().build()
+  val HTML_RENDERER : HtmlRenderer = HtmlRenderer.builder().build()
+
+  def convertMarkdownToHTML (markdownData : String) : String = {
+    Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(markdownData))
+  }
 
   def apply(uuid: Option[String],
             name: Option[String],
