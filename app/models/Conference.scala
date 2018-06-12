@@ -18,8 +18,9 @@ import org.apache.commons.codec.digest.DigestUtils
 
 import org.joda.time.format.DateTimeFormat
 import models.util.DateTimeConverter
-
-import org.owasp.html.{PolicyFactory, Sanitizers}
+import org.commonmark.node.{Image, Node, Paragraph}
+import org.commonmark.renderer.html.{AttributeProvider, AttributeProviderContext, AttributeProviderFactory}
+import org.owasp.html.{HtmlPolicyBuilder, PolicyFactory, Sanitizers}
 
 /*
  * Import the functionality needed for parsing Commonmark/Markdown data.
@@ -156,8 +157,19 @@ class Conference extends Model with Owned with Tagged {
 object Conference extends Model {
 
   val MARKDOWN_PARSER : Parser = Parser.builder().build()
-  val HTML_RENDERER : HtmlRenderer = HtmlRenderer.builder().build()
-  val HTML_SANITIZER : PolicyFactory = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS)
+  val HTML_RENDERER : HtmlRenderer = HtmlRenderer.builder().attributeProviderFactory(new AttributeProviderFactory {
+    override def create(context: AttributeProviderContext): AttributeProvider = {
+      new AttributeProvider {
+        override def setAttributes(node: Node, tagName: java.lang.String, attributes: java.util.Map[java.lang.String, java.lang.String]): Unit = {
+          if (node.isInstanceOf[Paragraph]) {
+            attributes.put("class", "paragraph-small")
+          }
+        }
+      }
+    }
+  }).build()
+  val HTML_SANITIZER : PolicyFactory = new HtmlPolicyBuilder().allowCommonBlockElements().allowCommonInlineFormattingElements()
+    .allowAttributes("class").onElements("p").toFactory().and(Sanitizers.BLOCKS)
 
   def convertMarkdownToHTML (markdownData : String) : String = {
     Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(markdownData))
