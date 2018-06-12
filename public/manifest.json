@@ -1,0 +1,20 @@
+{
+  "short_name": "G-Node Conferences",
+  "name": "G-Node Conference Application Suite",
+  "start_url": "/conferences",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#456ba8",
+  "icons": [
+    {
+      "src": "/manifest/images/favicon.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "/manifest/images/bccn.png",
+      "type": "image/png",
+      "sizes": "200x200"
+    }
+  ]
+}
