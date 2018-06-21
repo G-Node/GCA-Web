@@ -308,7 +308,8 @@ package object serializer {
       (__ \ "conflictOfInterest").readNullable[String] and
       (__ \ "acknowledgements").readNullable[String] and
       (__ \ "isTalk").readNullable[Boolean] and
-      (__ \ "reasonForTalk").readNullable[String] and
+      (__ \ "hasAgreed").readNullable[Boolean] and
+        (__ \ "reasonForTalk").readNullable[String] and
       (__ \ "sortId").readNullable[Int] and
       (__ \ "state").readNullable[AbstractState.State] and
       (__ \ "authors").read[List[Author]].addPosition and
@@ -328,6 +329,7 @@ package object serializer {
         "conflictOfInterest" -> a.conflictOfInterest,
         "acknowledgements" -> a.acknowledgements,
         "isTalk" -> a.isTalk,
+        "hasAgreed" -> a.hasAgreed,
         "reasonForTalk" -> a.reasonForTalk,
         "sortId" -> a.sortId,
         "state" -> a.state,

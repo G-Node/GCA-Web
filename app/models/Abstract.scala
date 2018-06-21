@@ -34,6 +34,9 @@ class Abstract extends Model with Owned with Tagged {
   var acknowledgements: String = _
 
   var isTalk: Boolean = false
+ 
+  var hasAgreed: Boolean = false
+
   var reasonForTalk : String = _
 
   var sortId: Int = _
@@ -89,6 +92,7 @@ object Abstract {
             conflictOfInterest: Option[String],
             acknowledgements: Option[String],
             isTalk: Option[Boolean],
+            hasAgreed: Option[Boolean],
             reasonForTalk: Option[String],
             sortId: Option[Int],
             state: Option[AbstractState.State],
@@ -111,6 +115,7 @@ object Abstract {
     abstr.acknowledgements   = unwrapRef(acknowledgements)
     abstr.sortId             = sortId match { case Some(i) => i; case _ => 0 }
     abstr.isTalk             = isTalk match { case Some(i) => i; case _ => false}
+    abstr.hasAgreed          = hasAgreed match { case Some(i) => i; case _ => false}
     abstr.reasonForTalk      = unwrapRef(reasonForTalk)
     abstr.state              = unwrapRef(state)
 
