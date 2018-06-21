@@ -58,6 +58,17 @@
                 </button>
             </div>
 
+            <div class="form-group">
+                <label for="presentation" class="col-sm-2 control-label">I agree that my email adress and email adresses 
+                    added by me, or entities subsequntly granted direct or indirect access by me to add such, will be 
+                    shared with the conference organizers such that they may contact me about organizational details 
+                    regarding my abstract.</label>
+                <div class="col-sm-10">
+                    <input type="checkbox" class="form-control" id="hasAgreed" name="hasAgreed"
+                    data-bind="checked: hasAgreed, valueUpdate: 'afterkeydown', click: $root.changeHandler">
+                </div>
+            </div>
+
             <div class="modal" id="title-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
             <div  class="title">

@@ -793,12 +793,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                      acknowledgements, isTalk, reasonForTalk, owners, state, figures,
+                      acknowledgements, isTalk, hasAgreed, reasonForTalk, owners, state, figures,
                       authors, affiliations, references, abstrTypes) {
 
         if (! (this instanceof Abstract)) {
             return new Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                                acknowledgements, isTalk, reasonForTalk, owners, state,
+                                acknowledgements, isTalk, hasAgreed, reasonForTalk, owners, state,
                                 figures, authors, affiliations, references, abstrTypes);
         }
 
@@ -812,6 +812,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.conflictOfInterest = conflictOfInterest || null;
         self.acknowledgements = acknowledgements || null;
         self.isTalk = isTalk || false;
+        self.hasAgreed = hasAgreed || false;
         self.reasonForTalk = reasonForTalk || null;
         self.owners = owners || null;
         self.state = state || "InPreparation";
@@ -964,6 +965,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @param {string} [conflictOfInterest]
      * @param {string} [acknowledgements]
      * @param {Boolean} [isTalk]
+     * @param {Boolean} [hasAgreed]
      * @param {string} [reasonForTalk]
      * @param {string} [owners]     URL to abstract owners.
      * @param {string} [state]
@@ -977,12 +979,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                                acknowledgements, isTalk, reasonForTalk, owners, state, figures,
+                                acknowledgements, isTalk, hasAgreed, reasonForTalk, owners, state, figures,
                                 authors, affiliations, references, abstrTypes) {
 
         if (! (this instanceof ObservableAbstract)) {
             return new ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                                          acknowledgements, isTalk, reasonForTalk, owners, state,
+                                          acknowledgements, isTalk, hasAgreed,reasonForTalk, owners, state,
                                           figures, authors, affiliations, references, abstrTypes);
         }
 
@@ -995,6 +997,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.conflictOfInterest = ko.observable(conflictOfInterest || null);
         self.acknowledgements = ko.observable(acknowledgements || null);
         self.isTalk = ko.observable(isTalk || false);
+        self.hasAgreed = ko.observable(hasAgreed || false);
         self.reasonForTalk = ko.observable(reasonForTalk || null);
         self.owners = ko.observable(owners || null);
         self.state = ko.observable(state || "InPreparation");
@@ -1017,7 +1020,16 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             },
             owner: this
         });
-
+        this.hasAgreed.computed = ko.computed({
+            'read': function() {
+                return self.hasAgreed().toString();
+            },
+            'write': function(val) {
+                val = (val === "true");
+                self.hasAgreed(val);
+            },
+            owner: this
+        });
 
         self.indexedAuthors = ko.computed(
             function() {
