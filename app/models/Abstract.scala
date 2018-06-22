@@ -92,7 +92,6 @@ object Abstract {
             conflictOfInterest: Option[String],
             acknowledgements: Option[String],
             isTalk: Option[Boolean],
-            hasAgreed: Option[Boolean],
             reasonForTalk: Option[String],
             sortId: Option[Int],
             state: Option[AbstractState.State],
@@ -115,7 +114,7 @@ object Abstract {
     abstr.acknowledgements   = unwrapRef(acknowledgements)
     abstr.sortId             = sortId match { case Some(i) => i; case _ => 0 }
     abstr.isTalk             = isTalk match { case Some(i) => i; case _ => false}
-    abstr.hasAgreed          = hasAgreed match { case Some(i) => i; case _ => false}
+    abstr.hasAgreed          = true
     abstr.reasonForTalk      = unwrapRef(reasonForTalk)
     abstr.state              = unwrapRef(state)
 
