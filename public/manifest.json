@@ -4,7 +4,7 @@
   "start_url": "/conferences",
   "display": "fullscreen",
   "orientation": "any",
-  "background_color": "#456ba8",
+  "background_color": "#eaeaea",
   "icons": [
     {
       "src": "/manifest/images/favicon.png",
