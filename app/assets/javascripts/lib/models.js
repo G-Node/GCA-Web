@@ -1022,6 +1022,9 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         });
         this.hasAgreed.computed = ko.computed({
             'read': function() {
+                if (self.uuid){
+                    self.hasAgreed(true);
+                }
                 return self.hasAgreed().toString();
             },
             'write': function(val) {
