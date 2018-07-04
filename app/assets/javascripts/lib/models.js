@@ -1237,6 +1237,60 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     ObservableAbstractGroup.fromArray = function(array) {
         return Model.fromArray(array, ObservableAbstractGroup.fromObject);
     };
+
+    /**
+     * Model for conference schedules.
+     *
+     * @param {string} [uuid]
+     * @param {Array} [events]
+     * @param {Array} [tracks]
+     * @param {Array} [sessions]
+     *
+     * @returns {Schedule}
+     * @constructor
+     * @public
+     */
+    function Schedule (uuid, events, tracks, sessions) {
+
+        if (!(this instanceof Schedule)) {
+            return new Schedule(uuid, events, tracks, sessions);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.events = events || [];
+        self.tracks = tracks || [];
+        self.sessions = sessions || [];
+
+    }
+
+    /*
+     * Actually the data is an array of objects but since fromArray() is used in another context,
+     * I guess it is ok to use this term instead.
+     */
+    Schedule.fromObject = function(scheduleObject) {
+
+        var events = [];
+        var tracks = [];
+        var sessions = [];
+
+        var target = new Schedule();
+
+        for (var entry in scheduleObject) {
+            if (entry.hasOwnProperty("tracks")) { // only sessions have this property
+                // TODO: push sessions
+            } else if (entry.hasOwnProperty("events")) { // only tracks have this property
+                // TODO: push tracks
+            } else { // all the rest are simply events
+                // TODO: push events
+            }
+        }
+
+        // TODO: Does this work? There is no UUID, but it's only used for tools.inherit(), where I don't think it makes any difference.
+        return new Schedule("", events, tracks, sessions);
+
+    };
+
     return {
         Conference: Conference,
         Author: Author,
@@ -1251,6 +1305,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         ObservableAbstract: ObservableAbstract,
         ObservableAccount: ObservableAccount,
         AbstractGroup: AbstractGroup,
-        ObservableAbstractGroup:ObservableAbstractGroup
+        ObservableAbstractGroup:ObservableAbstractGroup,
+        Schedule: Schedule
     };
+
 });
