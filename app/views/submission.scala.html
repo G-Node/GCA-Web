@@ -49,9 +49,7 @@
     @components.messsagebox()
     @if(!abstr.isDefined){
     <div class="callout-info" data-bind="visible: !editedAbstract().hasAgreed()">
-        <div>I agree that my email adress and email adresses added by me, or entities subsequntly 
-            granted direct or indirect access by me to add such, will be shared with the conference organizers such 
-            that they may contact me about organizational details regarding my abstract.</div>
+        <div>I agree that my email address will be shared with the conference organizers such that they may contact me about organizational details regarding my abstract.</div>
         <div>
             <input type="checkbox" class="form-control" id="hasAgreed" name="hasAgreed"
             data-bind="checked: editedAbstract().hasAgreed">
