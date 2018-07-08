@@ -47,6 +47,11 @@
     <meta name="keywords" content="Abstracts">
     <meta name="author" content="German Neuroinformatics Node (G-Node)">
 
+    <!-- mobile webapp support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="/manifest.json">
+
     <!-- smart app banner -->
     @conference.map { conf =>
        @if(conf.iOSApp != null) {
