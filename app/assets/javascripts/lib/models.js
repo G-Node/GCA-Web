@@ -1238,6 +1238,196 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         return Model.fromArray(array, ObservableAbstractGroup.fromObject);
     };
 
+    function Track (title, subtitle, chair, events) {
+
+        if (!(this instanceof Track)) {
+            return new Track(title, subtitle, chair, events);
+        }
+
+        var self = this;
+
+        self.title = title || null;
+        self.subtitle = subtitle || null;
+        self.chair = chair || null;
+        self.events = events || null;
+
+        // look at all the events to find the starting date of the track
+        self.getStart = function () {
+            var startingDate = null;
+
+            for (var e in self.events) {
+                if (self.events.hasOwnProperty(e)) {
+                    if (startingDate === null) {
+                        startingDate = e.getStart();
+                    } else if (startingDate - e.getStart() > 0) {
+                        startingDate = e.getStart();
+                    }
+                }
+            }
+            return startingDate;
+        };
+
+        // look at all the events to find the ending date of the track
+        self.getEnd = function () {
+            var endingDate = null;
+
+            for (var e in self.events) {
+                if (self.events.hasOwnProperty(e)) {
+                    if (endingDate === null) {
+                        endingDate = e.getEnd();
+                    } else if (endingDate - e.getEnd() < 0) {
+                        endingDate = e.getEnd();
+                    }
+                }
+            }
+            return endingDate;
+        };
+
+    };
+
+    function Session (title, subtitle, tracks) {
+
+        if (!(this instanceof Session)) {
+            return new Session(title, subtitle, tracks);
+        }
+
+        var self = this;
+
+        self.title = title || null;
+        self.subtitle = subtitle || null;
+        self.tracks = tracks || null;
+
+        // look at all the tracks to find the starting date of the session
+        self.getStart = function () {
+            var startingDate = null;
+
+            for (var t in self.tracks) {
+                if (self.tracks.hasOwnProperty(t)) {
+                    if (startingDate === null) {
+                        startingDate = t.getStart();
+                    } else if (startingDate - t.getStart() > 0) {
+                        startingDate = t.getStart();
+                    }
+                }
+            }
+            return startingDate;
+        };
+
+        // look at all the tracks to find the ending date of the session
+        self.getEnd = function () {
+            var endingDate = null;
+
+            for (var t in self.tracks) {
+                if (self.tracks.hasOwnProperty(t)) {
+                    if (endingDate === null) {
+                        endingDate = t.getEnd();
+                    } else if (endingDate - t.getEnd() < 0) {
+                        endingDate = t.getEnd();
+                    }
+                }
+            }
+            return endingDate;
+        };
+
+    };
+
+    function Event (title, subtitle, start, end, date, location, authors, type, abstract) {
+
+        if (!(this instanceof Event)) {
+            return new Event(title, subtitle, start, end, date, location, authors, type, abstract);
+        }
+
+        var self = this;
+
+        self.title = title || null;
+        self.subtitle = subtitle || null;
+        self.start = start || null;
+        self.end = end || null;
+        self.date = date || null;
+        self.location = location || null;
+        self.authors = authors || null;
+        self.type = type || null;
+        self.abstract = abstract || null;
+
+        self.getStart = function () {
+            // format year-month-day
+            var ymd = self.date.split("-");
+            // format hour:minute
+            var time = self.start.split(":");
+            return new Date(parseInt(ymd[0]), parseInt(ymd[1]) - 1, parseInt(ymd[2]), parseInt(time[0]), parseInt(time[1]));
+        };
+
+        self.getEnd = function () {
+            // format year-month-day
+            var ymd = self.date.split("-");
+            // format hour:minute
+            var time = self.end.split(":");
+            return new Date(parseInt(ymd[0]), parseInt(ymd[1]) - 1, parseInt(ymd[2]), parseInt(time[0]), parseInt(time[1]));
+        };
+    };
+
+    Event.fromObject = function (eventObject) {
+        return Model.fromObject(eventObject, Event);
+    };
+
+    Event.fromArray = function (eventArray) {
+        return Model.fromArray(eventArray, Event.fromObject);
+    };
+
+    Track.fromObject = function (trackObject) {
+        var prop,
+            target = new Track();
+
+        for (prop in target) {
+            if (target.hasOwnProperty(prop)) {
+                var value = readProperty(prop, trackObject);
+
+                switch (prop) {
+                    case "events":
+                        target.events = Event.fromArray(value);
+                        break;
+                    default:
+                        if (tools.type(target[prop]) !== "function") {
+                            target[prop] = value;
+                        }
+                }
+            }
+        }
+
+        return target;
+    };
+
+    Track.fromArray = function (trackArray) {
+        return Model.fromArray(trackArray, Track.fromObject);
+    };
+
+    Session.fromObject = function (sessionObject) {
+        var prop,
+            target = new Session();
+
+        for (prop in target) {
+            if (target.hasOwnProperty(prop)) {
+                var value = readProperty(prop, sessionObject);
+
+                switch (prop) {
+                    case "tracks":
+                        target.tracks = Track.fromArray(value);
+                        break;
+                    default:
+                        if (tools.type(target[prop]) !== "function") {
+                            target[prop] = value;
+                        }
+                }
+            }
+        }
+
+        return target;
+    };
+
+    Session.fromArray = function (sessionArray) {
+        return Model.fromArray(sessionArray, Session.fromObject);
+    };
+
     /**
      * Model for conference schedules.
      *
@@ -1262,7 +1452,74 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.tracks = tracks || [];
         self.sessions = sessions || [];
 
-    }
+        // look at all the tracks to find the starting date of the session
+        self.getStart = function () {
+            var startingDate = null;
+
+            for (var t in self.events) {
+                if (self.events.hasOwnProperty(t)) {
+                    if (startingDate === null) {
+                        startingDate = t.getStart();
+                    } else if (startingDate - t.getStart() > 0) {
+                        startingDate = t.getStart();
+                    }
+                }
+            }
+            for (var t in self.tracks) {
+                if (self.tracks.hasOwnProperty(t)) {
+                    if (startingDate === null) {
+                        startingDate = t.getStart();
+                    } else if (startingDate - t.getStart() > 0) {
+                        startingDate = t.getStart();
+                    }
+                }
+            }
+            for (var t in self.sessions) {
+                if (self.sessions.hasOwnProperty(t)) {
+                    if (startingDate === null) {
+                        startingDate = t.getStart();
+                    } else if (startingDate - t.getStart() > 0) {
+                        startingDate = t.getStart();
+                    }
+                }
+            }
+            return startingDate;
+        };
+
+        // look at all the sessions, tracks and events to find the ending date of the schedule
+        self.getEnd = function () {
+            var endingDate = null;
+            for (var t in self.events) {
+                if (self.events.hasOwnProperty(t)) {
+                    if (endingDate === null) {
+                        endingDate = t.getEnd();
+                    } else if (endingDate - t.getEnd() < 0) {
+                        endingDate = t.getEnd();
+                    }
+                }
+            }
+            for (var t in self.tracks) {
+                if (self.tracks.hasOwnProperty(t)) {
+                    if (endingDate === null) {
+                        endingDate = t.getEnd();
+                    } else if (endingDate - t.getEnd() < 0) {
+                        endingDate = t.getEnd();
+                    }
+                }
+            }
+            for (var t in self.sessions) {
+                if (self.sessions.hasOwnProperty(t)) {
+                    if (endingDate === null) {
+                        endingDate = t.getEnd();
+                    } else if (endingDate - t.getEnd() < 0) {
+                        endingDate = t.getEnd();
+                    }
+                }
+            }
+            return endingDate;
+        };
+
+    };
 
     /*
      * Actually the data is an array of objects but since fromArray() is used in another context,
@@ -1276,15 +1533,15 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
         var target = new Schedule();
 
-        for (var entry in scheduleObject) {
+        scheduleObject.forEach( function(entry) {
             if (entry.hasOwnProperty("tracks")) { // only sessions have this property
-                // TODO: push sessions
+                sessions.push(Session.fromObject(entry));
             } else if (entry.hasOwnProperty("events")) { // only tracks have this property
-                // TODO: push tracks
+                tracks.push(Track.fromObject(entry));
             } else { // all the rest are simply events
-                // TODO: push events
+                events.push(Event.fromObject(entry));
             }
-        }
+        });
 
         // TODO: Does this work? There is no UUID, but it's only used for tools.inherit(), where I don't think it makes any difference.
         return new Schedule("", events, tracks, sessions);

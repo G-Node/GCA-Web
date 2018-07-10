@@ -19,9 +19,12 @@ require(["main"], function () {
             var self = this;
             self.isLoading = ko.observable("Loading conference schedule.");
             self.error = ko.observable(false);
+            self.schedule = null;
+            self.days = ko.observable(0); // number of days and thereby calendar instances of the conference
 
             self.init = function () {
                 ko.applyBindings(window.schedule);
+                self.loadConference(confId);
                 self.initScheduler();
             };
 
@@ -49,17 +52,17 @@ require(["main"], function () {
             };
 
             //conference data
-            function onConferenceData(confObj) {
+            self.onConferenceData = function (confObj) {
                 var conf = models.Conference.fromObject(confObj);
                 //now load the schedule data
-                $.getJSON(conf.schedule, onScheduleData).fail(self.ioFailHandler);
-            }
+                $.getJSON(conf.schedule, self.onScheduleData).fail(self.ioFailHandler);
+            };
 
             //schedule data
-            function onScheduleData(scheduleObj) {
-                // TODO: implement loading schedule data
+            self.onScheduleData = function (scheduleObj) {
+                self.schedule = models.Schedule.fromObject(scheduleObj);
                 self.isLoading(false);
-            }
+            };
 
             self.initScheduler = function () {
                 // Actually unnecessary, as the tab is not displayed anyways.
@@ -89,135 +92,6 @@ require(["main"], function () {
                 window.dhtmlXScheduler.init("conference_scheduler",new Date(2018,0,1),"conference_scheduler");
             }
         }
-
-
-        function Track (title, subtitle, chair, events) {
-
-            if (!(this instanceof Track)) {
-                return new Track(title, subtitle, chair, events);
-            }
-
-            var self = this;
-
-            self.title = title || null;
-            self.subtitle = subtitle || null;
-            self.chair = chair || null;
-            self.events = events || null;
-
-            // look at all the events to find the starting date of the track
-            self.getStart = function () {
-                var startingDate = null;
-
-                for (var e in self.events) {
-                    if (self.events.hasOwnProperty(e)) {
-                        if (startingDate === null) {
-                            startingDate = e.getStart();
-                        } else if (startingDate - e.getStart() > 0) {
-                            startingDate = e.getStart();
-                        }
-                    }
-                }
-                return startingDate;
-            };
-
-            // look at all the events to find the ending date of the track
-            self.getEnd = function () {
-                var endingDate = null;
-
-                for (var e in self.events) {
-                    if (self.events.hasOwnProperty(e)) {
-                        if (endingDate === null) {
-                            endingDate = e.getEnd();
-                        } else if (endingDate - e.getEnd() < 0) {
-                            endingDate = e.getEnd();
-                        }
-                    }
-                }
-                return endingDate;
-            };
-
-        };
-
-        function Session (title, subtitle, tracks) {
-
-            if (!(this instanceof Session)) {
-                return new Session(title, subtitle, tracks);
-            }
-
-            var self = this;
-
-            self.title = title || null;
-            self.subtitle = subtitle || null;
-            self.tracks = tracks || null;
-
-            // look at all the tracks to find the starting date of the session
-            self.getStart = function () {
-                var startingDate = null;
-
-                for (var t in self.tracks) {
-                    if (self.tracks.hasOwnProperty(t)) {
-                        if (startingDate === null) {
-                            startingDate = t.getStart();
-                        } else if (startingDate - t.getStart() > 0) {
-                            startingDate = t.getStart();
-                        }
-                    }
-                }
-                return startingDate;
-            };
-
-            // look at all the tracks to find the ending date of the session
-            self.getEnd = function () {
-                var endingDate = null;
-
-                for (var t in self.tracks) {
-                    if (self.tracks.hasOwnProperty(t)) {
-                        if (endingDate === null) {
-                            endingDate = t.getEnd();
-                        } else if (endingDate - t.getEnd() < 0) {
-                            endingDate = t.getEnd();
-                        }
-                    }
-                }
-                return endingDate;
-            };
-
-        };
-
-        function Event (title, subtitle, start, end, date, location, authors, type, abstract) {
-
-            if (!(this instanceof Event)) {
-                return new Event(title, subtitle, start, end, date, location, authors, type, abstract);
-            }
-
-            var self = this;
-
-            self.title = title || null;
-            self.subtitle = subtitle || null;
-            self.start = start || null;
-            self.end = end || null;
-            self.date = date || null;
-            self.location = location || null;
-            self.authors = authors || null;
-            self.type = type || null;
-            self.abstract = abstract || null;
-
-            self.getStart = function () {
-                // format year-month-day
-                var ymd = self.date.split("-");
-                // format hour:minute
-                var time = self.start.split(":");
-                return new Date(parseInt(ymd[0]), parseInt(ymd[1]), parseInt(ymd[2]), parseInt(time[0]), parseInt(time[1]));
-            };
-
-            self.getEnd = function () {
-                // format year-month-day
-                var ymd = self.date.split("-");
-                // format hour:minute
-                var time = self.end.split(":");
-                return new Date(parseInt(ymd[0]), parseInt(ymd[1]), parseInt(ymd[2]), parseInt(time[0]), parseInt(time[1]));
-            };
-        };
 
         $(document).ready(function() {
 
