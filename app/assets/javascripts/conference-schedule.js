@@ -1,5 +1,5 @@
 require(["main"], function () {
-    require(["lib/models", "lib/tools", "knockout"], function(models, tools, ko) {
+    require(["lib/models", "lib/tools", "knockout", "moment"], function(models, tools, ko, moment) {
         "use strict";
 
         /**
@@ -20,12 +20,11 @@ require(["main"], function () {
             self.isLoading = ko.observable("Loading conference schedule.");
             self.error = ko.observable(false);
             self.schedule = null;
-            self.days = ko.observable(0); // number of days and thereby calendar instances of the conference
+            self.days = ko.observableArray([]); // number of days and thereby calendar instances of the conference
 
             self.init = function () {
                 ko.applyBindings(window.schedule);
                 self.loadConference(confId);
-                self.initScheduler();
             };
 
             self.setError = function(level, text) {
@@ -61,37 +60,70 @@ require(["main"], function () {
             //schedule data
             self.onScheduleData = function (scheduleObj) {
                 self.schedule = models.Schedule.fromObject(scheduleObj);
+
+                var startingDate = self.schedule.getStart();
+                var numberOfDays = Math.ceil((self.schedule.getEnd() - startingDate) / (24*60*60*1000));
+
+                for (var i = 0; i < numberOfDays; i++) {
+                    self.days.push(startingDate.setDate(startingDate.getDate() + i));
+                }
+                /*
+                 * Initialising the scheduler must be the last step after loading
+                 * all the required data.
+                 */
+                self.initScheduler();
                 self.isLoading(false);
             };
 
             self.initScheduler = function () {
                 // Actually unnecessary, as the tab is not displayed anyways.
                 window.dhtmlXScheduler.locale.labels.conference_scheduler_tab = "Conference Scheduler";
-                window.dhtmlXScheduler.xy.nav_height = 0; // hide the navigation bar
+                window.dhtmlXScheduler.xy.nav_height = -1; // hide the navigation bar
+                window.dhtmlXScheduler.xy.scale_height = -1; // hide the day display
 
                 /*
                  * All the custom logic should be placed inside this event to ensure
                  * the templates are ready before the scheduler is initialised.
                  */
-                scheduler.attachEvent("onTemplatesReady",function(){
-                    window.dhtmlXScheduler.date.conference_scheduler_start = function (active_date) {
-                        return window.dhtmlXScheduler.date.week_start(active_date);
-                    };
-                    window.dhtmlXScheduler.date.get_conference_scheduler_end = function (start_date) {
-                        return window.dhtmlXScheduler.date.add(start_date,5,"day");
-                    };
-                    window.dhtmlXScheduler.date.add_conference_scheduler = function (date, inc) {
-                        return window.dhtmlXScheduler.date.add(date,inc*7,"day");
-                    };
-                    window.dhtmlXScheduler.templates.conference_scheduler_date = function(start, end){
-                        return window.dhtmlXScheduler.templates.day_date(start)+" &ndash; "+
-                            window.dhtmlXScheduler.templates.day_date(window.dhtmlXScheduler.date.add(end,-1,"day"));
-                    };
-                    window.dhtmlXScheduler.templates.conference_scheduler_scale_date = window.dhtmlXScheduler.templates.week_scale_date;
-                });
-                window.dhtmlXScheduler.init("conference_scheduler",new Date(2018,0,1),"conference_scheduler");
-            }
-        }
+                // scheduler.attachEvent("onTemplatesReady",function(){
+                //     window.dhtmlXScheduler.date.conference_scheduler_start = function (active_date) {
+                //         return window.dhtmlXScheduler.date.day_start(active_date);
+                //     };
+                //     window.dhtmlXScheduler.date.get_conference_scheduler_end = function (start_date) {
+                //         return window.dhtmlXScheduler.date.add(start_date,0,"day");
+                //     };
+                //     window.dhtmlXScheduler.date.add_conference_scheduler = function (date, inc) {
+                //         return window.dhtmlXScheduler.date.add(date,0,"day");
+                //     };
+                //     window.dhtmlXScheduler.templates.conference_scheduler_date = function(start, end){
+                //         return window.dhtmlXScheduler.templates.day_date(start)+" &ndash; "+
+                //             window.dhtmlXScheduler.templates.day_date(window.dhtmlXScheduler.date.add(end,-1,"day"));
+                //     };
+                //     // hide the date
+                //     window.dhtmlXScheduler.templates.conference_scheduler_scale_date = function (date) {
+                //          return "";
+                //     };
+                // });
+                for (var i = 0; i < self.days().length; i++) {
+                    window.dhtmlXScheduler.init("conference_scheduler_"+i,self.days()[i],"day");
+                }
+            };
+
+            /*
+             * Activate and deactivate the corresponding day's scheduler upon clicking.
+             */
+            self.toggleScheduler = function (index) {
+                var toggle = document.getElementById("conference_scheduler_" + index);
+                if (toggle !== null) {
+                    if (toggle.style.display === "none") {
+                        toggle.style.display = "block";
+                    } else {
+                        toggle.style.display = "none";
+                    }
+                }
+            };
+
+        };
 
         $(document).ready(function() {
 
@@ -99,6 +131,7 @@ require(["main"], function () {
 
             console.log(data.conferenceUuid);
 
+            window.moment = moment;
             window.schedule = ScheduleViewModel(data.conferenceUuid);
             window.schedule.init();
         });

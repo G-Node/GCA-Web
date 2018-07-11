@@ -42,17 +42,22 @@
             <div class="page-header">
                 <h1>@conference.name</h1>
             </div>
-
-            <div id="conference_scheduler" class="dhx_cal_container" style='width:100%; height:2000px;'>
-                <div class="dhx_cal_navline" style="display:none">
-                    <div class="dhx_cal_prev_button">&nbsp;</div>
-                    <div class="dhx_cal_next_button">&nbsp;</div>
-                    <div class="dhx_cal_today_button"></div>
-                    <div class="dhx_cal_date"></div>
-                    <div class="dhx_cal_tab" name="conference_scheduler_tab" style="right:204px;"></div>
+            <div data-bind="foreach: days">
+                <button type="button" data-bind="text: moment($data).format('dddd[, ]DD[. ]MMMM[ ]YYYY'),
+                    attr: {'id': 'scheduler_toggle_' + $index()},
+                    click: $parent.toggleScheduler($index())"></button>
+                <div data-bind="attr: {'id': 'conference_scheduler_' + $index()}" class="dhx_cal_container" style='width:100%; height:1056px;'>
+                    <div class="dhx_cal_navline" style="display:none">
+                        <div class="dhx_cal_prev_button">&nbsp;</div>
+                        <div class="dhx_cal_next_button">&nbsp;</div>
+                        <div class="dhx_cal_today_button"></div>
+                        <div class="dhx_cal_date"></div>
+                        <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+                        <div class="dhx_cal_tab" name="conference_scheduler_tab" style="right:204px;"></div>
+                    </div>
+                    <div class="dhx_cal_header"></div>
+                    <div class="dhx_cal_data"></div>
                 </div>
-                <div class="dhx_cal_header"></div>
-                <div class="dhx_cal_data"></div>
             </div>
         </div>
 
