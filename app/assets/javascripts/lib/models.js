@@ -1255,15 +1255,14 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.getStart = function () {
             var startingDate = null;
 
-            for (var e in self.events) {
-                if (self.events.hasOwnProperty(e)) {
-                    if (startingDate === null) {
-                        startingDate = e.getStart();
-                    } else if (startingDate - e.getStart() > 0) {
-                        startingDate = e.getStart();
-                    }
+            self.events.forEach(function (e) {
+                if (startingDate === null) {
+                    startingDate = e.getStart();
+                } else if (startingDate - e.getStart() > 0) {
+                    startingDate = e.getStart();
                 }
-            }
+            });
+
             return startingDate;
         };
 
@@ -1271,15 +1270,14 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.getEnd = function () {
             var endingDate = null;
 
-            for (var e in self.events) {
-                if (self.events.hasOwnProperty(e)) {
-                    if (endingDate === null) {
-                        endingDate = e.getEnd();
-                    } else if (endingDate - e.getEnd() < 0) {
-                        endingDate = e.getEnd();
-                    }
+            self.events.forEach(function (e) {
+                if (endingDate === null) {
+                    endingDate = e.getEnd();
+                } else if (endingDate - e.getEnd() < 0) {
+                    endingDate = e.getEnd();
                 }
-            }
+            });
+
             return endingDate;
         };
 
@@ -1301,15 +1299,14 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.getStart = function () {
             var startingDate = null;
 
-            for (var t in self.tracks) {
-                if (self.tracks.hasOwnProperty(t)) {
-                    if (startingDate === null) {
-                        startingDate = t.getStart();
-                    } else if (startingDate - t.getStart() > 0) {
-                        startingDate = t.getStart();
-                    }
+            self.tracks.forEach(function (t) {
+                if (startingDate === null) {
+                    startingDate = t.getStart();
+                } else if (startingDate - t.getStart() > 0) {
+                    startingDate = t.getStart();
                 }
-            }
+            });
+
             return startingDate;
         };
 
@@ -1317,15 +1314,14 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.getEnd = function () {
             var endingDate = null;
 
-            for (var t in self.tracks) {
-                if (self.tracks.hasOwnProperty(t)) {
-                    if (endingDate === null) {
-                        endingDate = t.getEnd();
-                    } else if (endingDate - t.getEnd() < 0) {
-                        endingDate = t.getEnd();
-                    }
+            self.tracks.forEach(function (t) {
+                if (endingDate === null) {
+                    endingDate = t.getEnd();
+                } else if (endingDate - t.getEnd() < 0) {
+                    endingDate = t.getEnd();
                 }
-            }
+            });
+
             return endingDate;
         };
 
@@ -1456,66 +1452,57 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.getStart = function () {
             var startingDate = null;
 
-            for (var t in self.events) {
-                if (self.events.hasOwnProperty(t)) {
-                    if (startingDate === null) {
-                        startingDate = t.getStart();
-                    } else if (startingDate - t.getStart() > 0) {
-                        startingDate = t.getStart();
-                    }
+            self.events.forEach(function (e) {
+                if (startingDate === null) {
+                    startingDate = e.getStart();
+                } else if (startingDate - e.getStart() > 0) {
+                    startingDate = e.getStart();
                 }
-            }
-            for (var t in self.tracks) {
-                if (self.tracks.hasOwnProperty(t)) {
-                    if (startingDate === null) {
-                        startingDate = t.getStart();
-                    } else if (startingDate - t.getStart() > 0) {
-                        startingDate = t.getStart();
-                    }
+            });
+            self.tracks.forEach(function (t) {
+                if (startingDate === null) {
+                    startingDate = t.getStart();
+                } else if (startingDate - t.getStart() > 0) {
+                    startingDate = t.getStart();
                 }
-            }
-            for (var t in self.sessions) {
-                if (self.sessions.hasOwnProperty(t)) {
-                    if (startingDate === null) {
-                        startingDate = t.getStart();
-                    } else if (startingDate - t.getStart() > 0) {
-                        startingDate = t.getStart();
-                    }
+            });
+            self.sessions.forEach(function (s) {
+                if (startingDate === null) {
+                    startingDate = s.getStart();
+                } else if (startingDate - s.getStart() > 0) {
+                    startingDate = s.getStart();
                 }
-            }
+            });
+
             return startingDate;
         };
 
         // look at all the sessions, tracks and events to find the ending date of the schedule
         self.getEnd = function () {
             var endingDate = null;
-            for (var t in self.events) {
-                if (self.events.hasOwnProperty(t)) {
-                    if (endingDate === null) {
-                        endingDate = t.getEnd();
-                    } else if (endingDate - t.getEnd() < 0) {
-                        endingDate = t.getEnd();
-                    }
+
+            self.events.forEach(function (e) {
+                if (endingDate === null) {
+                    endingDate = e.getEnd();
+                } else if (endingDate - e.getEnd() < 0) {
+                    endingDate = e.getEnd();
                 }
-            }
-            for (var t in self.tracks) {
-                if (self.tracks.hasOwnProperty(t)) {
-                    if (endingDate === null) {
-                        endingDate = t.getEnd();
-                    } else if (endingDate - t.getEnd() < 0) {
-                        endingDate = t.getEnd();
-                    }
+            });
+            self.tracks.forEach(function (t) {
+                if (endingDate === null) {
+                    endingDate = t.getEnd();
+                } else if (endingDate - t.getEnd() < 0) {
+                    endingDate = t.getEnd();
                 }
-            }
-            for (var t in self.sessions) {
-                if (self.sessions.hasOwnProperty(t)) {
-                    if (endingDate === null) {
-                        endingDate = t.getEnd();
-                    } else if (endingDate - t.getEnd() < 0) {
-                        endingDate = t.getEnd();
-                    }
+            });
+            self.sessions.forEach(function (s) {
+                if (endingDate === null) {
+                    endingDate = s.getEnd();
+                } else if (endingDate - s.getEnd() < 0) {
+                    endingDate = s.getEnd();
                 }
-            }
+            });
+
             return endingDate;
         };
 
