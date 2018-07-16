@@ -1251,10 +1251,10 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @constructor
      * @public
      */
-    function SchedulerEvent (id, text, startdate, enddate) {
+    function SchedulerEvent (id, text, startdate, enddate, baseevent) {
 
         if (!(this instanceof SchedulerEvent)) {
-            return new SchedulerEvent(id, text, startdate, enddate);
+            return new SchedulerEvent(id, text, startdate, enddate, baseevent);
         }
 
         var self = this;
@@ -1263,6 +1263,19 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.text = text || null;
         self.start_date = startdate || null;
         self.end_date = enddate || null;
+        self.baseevent = baseevent || null;
+
+        self.isTrack = function () {
+            self.baseevent instanceof Track;
+        };
+
+        self.isSession = function () {
+            self.baseevent instanceof Session;
+        };
+
+        self.isEvent = function () {
+            self.baseevent instanceof Event;
+        };
 
     };
 
@@ -1391,31 +1404,11 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         };
     };
 
+    /*
+     * Create a DHTMLX Scheduler event from an Event, Track or Session.
+     */
     SchedulerEvent.fromObject = function (eventObj) {
-        var prop,
-            target = new SchedulerEvent();
-
-        for (prop in eventObj) {
-            if (eventObj.hasOwnProperty(prop)) {
-                var value = readProperty(prop, eventObj);
-
-                switch (prop) {
-                    case "title":
-                        target.text = value;
-                        break;
-                    default:
-                        if (tools.type(target[prop]) !== "function") {
-                            target[prop] = value;
-                        }
-                }
-            }
-        }
-        target.start_date = eventObj.getStart();
-        target.end_date = eventObj.getEnd();
-        // target.start_date = moment(eventObj.getStart()).format('DD[-]MM[-]YYYY[ ]HH[:]mm');
-        // target.end_date = moment(eventObj.getEnd()).format('DD[-]MM[-]YYYY[ ]HH[:]mm');
-
-        return target;
+        return new SchedulerEvent(null, eventObj.title, eventObj.getStart(), eventObj.getEnd(), eventObj);
     };
 
     Event.fromObject = function (eventObject) {
