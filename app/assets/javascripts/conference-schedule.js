@@ -65,7 +65,7 @@ require(["main"], function () {
                 var numberOfDays = Math.ceil((self.schedule.getEnd() - startingDate) / (24*60*60*1000));
 
                 for (var i = 0; i < numberOfDays; i++) {
-                    self.days.push(startingDate.setDate(startingDate.getDate() + i));
+                    self.days.push(new Date(startingDate.getTime() + i*24*60*60*1000));
                 }
                 /*
                  * Initialising the scheduler must be the last step after loading
@@ -78,39 +78,39 @@ require(["main"], function () {
             self.initScheduler = function () {
                 // Actually unnecessary, as the tab is not displayed anyways.
                 window.dhtmlXScheduler.locale.labels.conference_scheduler_tab = "Conference Scheduler";
-                window.dhtmlXScheduler.xy.nav_height = -1; // hide the navigation bar
-                window.dhtmlXScheduler.xy.scale_height = -1; // hide the day display
+                // window.dhtmlXScheduler.xy.nav_height = -1; // hide the navigation bar
+                // window.dhtmlXScheduler.xy.scale_height = -1; // hide the day display
                 window.dhtmlXScheduler.config.readonly = true; // disable editing events
 
                 /*
                  * All the custom logic should be placed inside this event to ensure
                  * the templates are ready before the scheduler is initialised.
                  */
-                // scheduler.attachEvent("onTemplatesReady",function(){
-                //     window.dhtmlXScheduler.date.conference_scheduler_start = function (active_date) {
-                //         return window.dhtmlXScheduler.date.day_start(active_date);
-                //     };
-                //     window.dhtmlXScheduler.date.get_conference_scheduler_end = function (start_date) {
-                //         return window.dhtmlXScheduler.date.add(start_date,0,"day");
-                //     };
-                //     window.dhtmlXScheduler.date.add_conference_scheduler = function (date, inc) {
-                //         return window.dhtmlXScheduler.date.add(date,0,"day");
-                //     };
-                //     window.dhtmlXScheduler.templates.conference_scheduler_date = function(start, end){
-                //         return window.dhtmlXScheduler.templates.day_date(start)+" &ndash; "+
-                //             window.dhtmlXScheduler.templates.day_date(window.dhtmlXScheduler.date.add(end,-1,"day"));
-                //     };
-                //     // hide the date
-                //     window.dhtmlXScheduler.templates.conference_scheduler_scale_date = function (date) {
-                //          return "";
-                //     };
-                // });
+                window.dhtmlXScheduler.attachEvent("onTemplatesReady",function(){
+                    window.dhtmlXScheduler.date.conference_scheduler_start = function (active_date) {
+                        return window.dhtmlXScheduler.date.day_start(active_date);
+                    };
+                    window.dhtmlXScheduler.date.get_conference_scheduler_end = function (start_date) {
+                        return window.dhtmlXScheduler.date.add(start_date,0,"day");
+                    };
+                    window.dhtmlXScheduler.date.add_conference_scheduler = function (date, inc) {
+                        return window.dhtmlXScheduler.date.add(date,inc,"day");
+                    };
+                    window.dhtmlXScheduler.templates.conference_scheduler_date = function(start, end){
+                        return window.dhtmlXScheduler.templates.day_date(start)+" &ndash; "+
+                            window.dhtmlXScheduler.templates.day_date(window.dhtmlXScheduler.date.add(end,-1,"day"));
+                    };
+                    // hide the date
+                    window.dhtmlXScheduler.templates.conference_scheduler_scale_date = function (date) {
+                         return window.dhtmlXScheduler.templates.day_scale_date(date);
+                    };
+                });
 
                 // Initialise all scheduler views.
                 // for (var i = 0; i < self.days().length; i++) {
                 //     window.dhtmlXScheduler.init("conference_scheduler_"+i,self.days()[i],"day");
                 // }
-                window.dhtmlXScheduler.init("conference_scheduler_0",self.days()[0],"day");
+                window.dhtmlXScheduler.init("conference_scheduler",self.days()[0],"day");
                 /*
                  * Add all the events from the conference schedule.
                  * Event IDs correspond to the index of the element in the specified schedule
@@ -132,20 +132,6 @@ require(["main"], function () {
                     window.dhtmlXScheduler.addEvent(schedulerEvent);
                 });
 
-            };
-
-            /*
-             * Activate and deactivate the corresponding day's scheduler upon clicking.
-             */
-            self.toggleScheduler = function (index) {
-                var toggle = document.getElementById("conference_scheduler_" + index);
-                if (toggle !== null) {
-                    if (toggle.style.display === "none") {
-                        toggle.style.display = "block";
-                    } else {
-                        toggle.style.display = "none";
-                    }
-                }
             };
 
         };
