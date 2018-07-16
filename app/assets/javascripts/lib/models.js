@@ -1243,38 +1243,57 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      *
      * @param {string} [id]
      * @param {string} [text]
-     * @param {string} [startdate]
-     * @param {string} [enddate]
+     * @param {string} [startDate]
+     * @param {string} [endDate]
+     * @param {object} [baseEvent]
 
      *
      * @returns {SchedulerEvent}
      * @constructor
      * @public
      */
-    function SchedulerEvent (id, text, startdate, enddate, baseevent) {
+    function SchedulerEvent (id, text, startDate, endDate, baseEvent) {
 
         if (!(this instanceof SchedulerEvent)) {
-            return new SchedulerEvent(id, text, startdate, enddate, baseevent);
+            return new SchedulerEvent(id, text, startDate, endDate, baseEvent);
         }
 
         var self = this;
 
         self.id = id || null;
         self.text = text || null;
-        self.start_date = startdate || null;
-        self.end_date = enddate || null;
-        self.baseevent = baseevent || null;
+        self.start_date = startDate || null;
+        self.end_date = endDate || null;
+        self.baseEvent = baseEvent || null;
+        self.parentEvent = null; // used for split events to easily collapse them into the parent
 
         self.isTrack = function () {
-            self.baseevent instanceof Track;
+            return self.baseEvent.hasOwnProperty("events");
         };
 
         self.isSession = function () {
-            self.baseevent instanceof Session;
+            return self.baseEvent.hasOwnProperty("tracks");
         };
 
         self.isEvent = function () {
-            self.baseevent instanceof Event;
+            return self.isSession() || self.isTrack();
+        };
+
+        self.getSplitEvents = function () {
+            var splitEvents = [];
+            if (self.isTrack()) {
+                console.log("Events: ");
+                console.log(JSON.stringify(self.baseEvent.events, null, 4));
+                splitEvents = SchedulerEvent.fromArray(self.baseEvent.events);
+            } else if (self.isSession()) {
+                console.log("Session: ");
+                console.log(JSON.stringify(self.baseEvent.tracks, null, 4));
+                splitEvents = SchedulerEvent.fromArray(self.baseEvent.tracks);
+            }
+            splitEvents.forEach(function (element) {
+              element.parentEvent = self;
+            });
+            return splitEvents;
         };
 
     };
@@ -1411,6 +1430,10 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         return new SchedulerEvent(null, eventObj.title, eventObj.getStart(), eventObj.getEnd(), eventObj);
     };
 
+    SchedulerEvent.fromArray = function (eventArray) {
+      return Model.fromArray(eventArray, SchedulerEvent.fromObject);
+    };
+
     Event.fromObject = function (eventObject) {
         return Model.fromObject(eventObject, Event);
     };
@@ -1492,6 +1515,24 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         var self = tools.inherit(this, Model, uuid);
 
         self.content = content || [];
+
+        // Get all the events on the specific date.
+        self.getDailyEvents = function (date) {
+            var dailyEvents = [];
+            self.content.forEach(function (event) {
+                var start = event.getStart();
+                var end = event.getEnd();
+                if ((date.getDate() == start.getDate()
+                        && date.getMonth() == start.getMonth()
+                        && date.getFullYear() == start.getFullYear())
+                    ||(date.getDate() == end.getDate()
+                        && date.getMonth() == end.getMonth()
+                        && date.getFullYear() == end.getFullYear())) {
+                    dailyEvents.push(event);
+                }
+            });
+            return dailyEvents;
+        };
 
         // Get all the events present in the schedule.
         self.getEvents = function () {

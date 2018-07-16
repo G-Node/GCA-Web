@@ -40,7 +40,6 @@ require(["main"], function () {
             };
 
             self.loadConference = function(id) {
-                console.log("loadConference::");
                 if(!self.isLoading()) {
                     self.isLoading("Loading conference schedule.");
                 }
@@ -81,6 +80,48 @@ require(["main"], function () {
                 // window.dhtmlXScheduler.xy.nav_height = -1; // hide the navigation bar
                 // window.dhtmlXScheduler.xy.scale_height = -1; // hide the day display
                 window.dhtmlXScheduler.config.readonly = true; // disable editing events
+                // window.dhtmlXScheduler.config.hour_size_px = 200;
+
+                /*
+                 * Split up tracks and sessions upon clicking on the corresponding scheduler event.
+                 */
+                window.dhtmlXScheduler.attachEvent("onClick", function (id, e) {
+
+                    var splitEvents = (window.dhtmlXScheduler.getEvent(id)).getSplitEvents();
+                    if (splitEvents.length > 0) {
+                        splitEvents.forEach(function (splitEvent) {
+                            window.dhtmlXScheduler.addEvent(splitEvent);
+                        });
+                        window.dhtmlXScheduler.deleteEvent(id);
+                    }
+
+                    // TODO: display infos
+                    return true;
+                });
+
+                // dynamically scale the hour range for different days
+                window.dhtmlXScheduler.attachEvent("onViewChange", function (new_mode, new_date) {
+                    var dailyEvents = self.schedule.getDailyEvents(new_date);
+                    var startingDate = null;
+                    var endingDate = null;
+
+                    dailyEvents.forEach(function (c) {
+                        if (startingDate === null) {
+                            startingDate = c.getStart();
+                        } else if (startingDate - c.getStart() > 0) {
+                            startingDate = c.getStart();
+                        }
+                        if (endingDate === null) {
+                            endingDate = c.getEnd();
+                        } else if (endingDate - c.getEnd() < 0) {
+                            endingDate = c.getEnd();
+                        }
+                    });
+                    window.dhtmlXScheduler.config.first_hour = startingDate.getHours();
+                    // TODO: maybe restrict this to max 23 hours
+                    window.dhtmlXScheduler.config.last_hour = endingDate.getHours() + 1;
+                    window.dhtmlXScheduler.updateView();
+                });
 
                 /*
                  * All the custom logic should be placed inside this event to ensure
@@ -128,7 +169,6 @@ require(["main"], function () {
                 self.schedule.content.forEach(function (event) {
                     var schedulerEvent = models.SchedulerEvent.fromObject(event);
                     schedulerEvent.id = contentIndex++ + ":-1:-1";
-                    console.log(JSON.stringify(schedulerEvent, null, 4));
                     window.dhtmlXScheduler.addEvent(schedulerEvent);
                 });
 
