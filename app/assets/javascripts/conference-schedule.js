@@ -80,6 +80,7 @@ require(["main"], function () {
                 window.dhtmlXScheduler.locale.labels.conference_scheduler_tab = "Conference Scheduler";
                 window.dhtmlXScheduler.xy.nav_height = -1; // hide the navigation bar
                 window.dhtmlXScheduler.xy.scale_height = -1; // hide the day display
+                window.dhtmlXScheduler.config.readonly = true; // disable editing events
 
                 /*
                  * All the custom logic should be placed inside this event to ensure
@@ -104,9 +105,33 @@ require(["main"], function () {
                 //          return "";
                 //     };
                 // });
-                for (var i = 0; i < self.days().length; i++) {
-                    window.dhtmlXScheduler.init("conference_scheduler_"+i,self.days()[i],"day");
-                }
+
+                // Initialise all scheduler views.
+                // for (var i = 0; i < self.days().length; i++) {
+                //     window.dhtmlXScheduler.init("conference_scheduler_"+i,self.days()[i],"day");
+                // }
+                window.dhtmlXScheduler.init("conference_scheduler_0",self.days()[0],"day");
+                /*
+                 * Add all the events from the conference schedule.
+                 * Event IDs correspond to the index of the element in the specified schedule
+                 * in the format: "index of layer 1":"index of layer 2":"index of layer 3".
+                 * A negative value means the layer is not applicable for this element.
+                 *
+                 * Example schedule:
+                 * [Event0, Track1[Event1-0], Session2[Track2-0[Event2-0-0]]]
+                 *
+                 * Session2 is the third layer 1 element thereby its ID is 2:-1:-1. Layer 2 and 3 are not applicable.
+                 * Track2-0 is the first layer 2 element contained by the layer 1 element Session2 thereby its ID is 2:0:-1.
+                 * Event2-0-0 is the first layer 3 element contained by the layer 2 element Track2-0 thereby its ID is 2:0:0.
+                 */
+                var contentIndex = 0;
+                self.schedule.content.forEach(function (event) {
+                    var schedulerEvent = models.SchedulerEvent.fromObject(event);
+                    schedulerEvent.id = contentIndex++ + ":-1:-1";
+                    console.log(JSON.stringify(schedulerEvent, null, 4));
+                    window.dhtmlXScheduler.addEvent(schedulerEvent);
+                });
+
             };
 
             /*
