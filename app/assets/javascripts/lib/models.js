@@ -1238,6 +1238,35 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         return Model.fromArray(array, ObservableAbstractGroup.fromObject);
     };
 
+    /**
+     * Model for DHTMLX Scheduler events.
+     *
+     * @param {string} [id]
+     * @param {string} [text]
+     * @param {string} [startdate]
+     * @param {string} [enddate]
+
+     *
+     * @returns {SchedulerEvent}
+     * @constructor
+     * @public
+     */
+    function SchedulerEvent (id, text, startdate, enddate) {
+
+        if (!(this instanceof SchedulerEvent)) {
+            return new SchedulerEvent(id, text, startdate, enddate);
+        }
+
+        var self = this;
+
+        self.id = id || null;
+        self.text = text || null;
+        self.start_date = startdate || null;
+        self.end_date = enddate || null;
+
+    };
+
+
     function Track (title, subtitle, chair, events) {
 
         if (!(this instanceof Track)) {
@@ -1362,6 +1391,33 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         };
     };
 
+    SchedulerEvent.fromObject = function (eventObj) {
+        var prop,
+            target = new SchedulerEvent();
+
+        for (prop in eventObj) {
+            if (eventObj.hasOwnProperty(prop)) {
+                var value = readProperty(prop, eventObj);
+
+                switch (prop) {
+                    case "title":
+                        target.text = value;
+                        break;
+                    default:
+                        if (tools.type(target[prop]) !== "function") {
+                            target[prop] = value;
+                        }
+                }
+            }
+        }
+        target.start_date = eventObj.getStart();
+        target.end_date = eventObj.getEnd();
+        // target.start_date = moment(eventObj.getStart()).format('DD[-]MM[-]YYYY[ ]HH[:]mm');
+        // target.end_date = moment(eventObj.getEnd()).format('DD[-]MM[-]YYYY[ ]HH[:]mm');
+
+        return target;
+    };
+
     Event.fromObject = function (eventObject) {
         return Model.fromObject(eventObject, Event);
     };
@@ -1428,49 +1484,64 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * Model for conference schedules.
      *
      * @param {string} [uuid]
-     * @param {Array} [events]
-     * @param {Array} [tracks]
-     * @param {Array} [sessions]
+     * @param {Array} [content]
      *
      * @returns {Schedule}
      * @constructor
      * @public
      */
-    function Schedule (uuid, events, tracks, sessions) {
+    function Schedule (uuid, content) {
 
         if (!(this instanceof Schedule)) {
-            return new Schedule(uuid, events, tracks, sessions);
+            return new Schedule(uuid, content);
         }
 
         var self = tools.inherit(this, Model, uuid);
 
-        self.events = events || [];
-        self.tracks = tracks || [];
-        self.sessions = sessions || [];
+        self.content = content || [];
 
-        // look at all the tracks to find the starting date of the session
+        // Get all the events present in the schedule.
+        self.getEvents = function () {
+            var events = [];
+            self.content.forEach(function (c) {
+                if (c instanceof Event) {
+                    events.push(c);
+                }
+            });
+            return events;
+        };
+
+        // Get all the tracks present in the schedule.
+        self.getTracks = function () {
+            var tracks = [];
+            self.content.forEach(function (c) {
+                if (c instanceof Track) {
+                    tracks.push(c);
+                }
+            });
+            return tracks;
+        };
+
+        // Get all the sessions present in the schedule.
+        self.getSessions = function () {
+            var sessions = [];
+            self.content.forEach(function (c) {
+                if (c instanceof Session) {
+                    sessions.push(c);
+                }
+            });
+            return sessions;
+        };
+
+        // look at all the sessions, tracks and events to find the starting date of the session
         self.getStart = function () {
             var startingDate = null;
 
-            self.events.forEach(function (e) {
+            self.content.forEach(function (c) {
                 if (startingDate === null) {
-                    startingDate = e.getStart();
-                } else if (startingDate - e.getStart() > 0) {
-                    startingDate = e.getStart();
-                }
-            });
-            self.tracks.forEach(function (t) {
-                if (startingDate === null) {
-                    startingDate = t.getStart();
-                } else if (startingDate - t.getStart() > 0) {
-                    startingDate = t.getStart();
-                }
-            });
-            self.sessions.forEach(function (s) {
-                if (startingDate === null) {
-                    startingDate = s.getStart();
-                } else if (startingDate - s.getStart() > 0) {
-                    startingDate = s.getStart();
+                    startingDate = c.getStart();
+                } else if (startingDate - c.getStart() > 0) {
+                    startingDate = c.getStart();
                 }
             });
 
@@ -1481,25 +1552,11 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.getEnd = function () {
             var endingDate = null;
 
-            self.events.forEach(function (e) {
+            self.content.forEach(function (c) {
                 if (endingDate === null) {
-                    endingDate = e.getEnd();
-                } else if (endingDate - e.getEnd() < 0) {
-                    endingDate = e.getEnd();
-                }
-            });
-            self.tracks.forEach(function (t) {
-                if (endingDate === null) {
-                    endingDate = t.getEnd();
-                } else if (endingDate - t.getEnd() < 0) {
-                    endingDate = t.getEnd();
-                }
-            });
-            self.sessions.forEach(function (s) {
-                if (endingDate === null) {
-                    endingDate = s.getEnd();
-                } else if (endingDate - s.getEnd() < 0) {
-                    endingDate = s.getEnd();
+                    endingDate = c.getEnd();
+                } else if (endingDate - c.getEnd() < 0) {
+                    endingDate = c.getEnd();
                 }
             });
 
@@ -1514,24 +1571,20 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      */
     Schedule.fromObject = function(scheduleObject) {
 
-        var events = [];
-        var tracks = [];
-        var sessions = [];
-
-        var target = new Schedule();
+        var content = [];
 
         scheduleObject.forEach( function(entry) {
             if (entry.hasOwnProperty("tracks")) { // only sessions have this property
-                sessions.push(Session.fromObject(entry));
+                content.push(Session.fromObject(entry));
             } else if (entry.hasOwnProperty("events")) { // only tracks have this property
-                tracks.push(Track.fromObject(entry));
+                content.push(Track.fromObject(entry));
             } else { // all the rest are simply events
-                events.push(Event.fromObject(entry));
+                content.push(Event.fromObject(entry));
             }
         });
 
         // TODO: Does this work? There is no UUID, but it's only used for tools.inherit(), where I don't think it makes any difference.
-        return new Schedule("", events, tracks, sessions);
+        return new Schedule("", content);
 
     };
 
@@ -1550,7 +1603,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         ObservableAccount: ObservableAccount,
         AbstractGroup: AbstractGroup,
         ObservableAbstractGroup:ObservableAbstractGroup,
-        Schedule: Schedule
+        Schedule: Schedule,
+        SchedulerEvent: SchedulerEvent
     };
 
 });
