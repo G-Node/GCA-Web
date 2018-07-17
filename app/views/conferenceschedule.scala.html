@@ -42,16 +42,18 @@
             <div class="page-header">
                 <h1>@conference.name</h1>
             </div>
-            <div data-bind="attr: {'style': 'height:' + schedulerHeight() + 'px;'}" id="conference_scheduler" class="dhx_cal_container">
-                <div class="dhx_cal_navline">
-                    <div data-bind="attr: {'style': 'display:' + displayPrevious() + ';'}" class="dhx_cal_prev_button">&nbsp;</div>
-                    <div data-bind="attr: {'style': 'display:' + displayNext() + ';'}" class="dhx_cal_next_button">&nbsp;</div>
-                    <div class="dhx_cal_today_button" style="display:none;"></div>
-                    <div class="dhx_cal_date"></div>
-                    <div class="dhx_cal_tab" name="day_tab" style="right:204px; display: none;"></div>
+            <div class="conference-scheduler-border">
+                <div data-bind="attr: {'style': 'height:' + schedulerHeight() + 'px;'}" id="conference_scheduler" class="dhx_cal_container">
+                    <div class="dhx_cal_navline">
+                        <div data-bind="attr: {'style': 'display:' + displayPrevious() + ';'}" class="dhx_cal_prev_button">&nbsp;</div>
+                        <div data-bind="attr: {'style': 'display:' + displayNext() + ';'}" class="dhx_cal_next_button">&nbsp;</div>
+                        <div class="dhx_cal_today_button" style="display:none;"></div>
+                        <div class="dhx_cal_date"></div>
+                        <div class="dhx_cal_tab" name="day_tab" style="right:204px; display: none;"></div>
+                    </div>
+                    <div class="dhx_cal_header"></div>
+                    <div class="dhx_cal_data"></div>
                 </div>
-                <div class="dhx_cal_header"></div>
-                <div class="dhx_cal_data"></div>
             </div>
         </div>
 
