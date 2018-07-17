@@ -20,6 +20,8 @@ require(["main"], function () {
             self.isLoading = ko.observable("Loading conference schedule.");
             self.error = ko.observable(false);
             self.schedulerHeight = ko.observable(2000);
+            self.displayNext = ko.observable("block");
+            self.displayPrevious = ko.observable("block");
             self.schedule = null;
             self.days = ko.observableArray([]); // number of days and thereby calendar instances of the conference
 
@@ -108,6 +110,19 @@ require(["main"], function () {
 
                 // dynamically scale the hour range (y-axis) for different days
                 window.dhtmlXScheduler.attachEvent("onViewChange", function (new_mode, new_date) {
+                    // disable buttons if first or last day of the conference
+                    if (self.schedule.getStart().toDateString() === new_date.toDateString()) {
+                        self.displayPrevious("none");
+                    } else {
+                        self.displayPrevious("block");
+                    }
+                    if (self.schedule.getEnd().toDateString() === new_date.toDateString()) {
+                        self.displayNext("none");
+                    } else {
+                        self.displayNext("block");
+                    }
+
+                    // scale the scheduler
                     var dailyEvents = self.schedule.getDailyEvents(new_date);
                     var startingDate = null;
                     var endingDate = null;
