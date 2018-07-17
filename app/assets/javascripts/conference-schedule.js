@@ -1,5 +1,5 @@
 require(["main"], function () {
-    require(["lib/models", "lib/tools", "knockout", "moment"], function(models, tools, ko, moment) {
+    require(["lib/models", "lib/tools", "knockout"], function(models, tools, ko) {
         "use strict";
 
         /**
@@ -19,6 +19,7 @@ require(["main"], function () {
             var self = this;
             self.isLoading = ko.observable("Loading conference schedule.");
             self.error = ko.observable(false);
+            self.schedulerHeight = ko.observable(2000);
             self.schedule = null;
             self.days = ko.observableArray([]); // number of days and thereby calendar instances of the conference
 
@@ -75,13 +76,18 @@ require(["main"], function () {
             };
 
             self.initScheduler = function () {
-                // Actually unnecessary, as the tab is not displayed anyways.
-                window.dhtmlXScheduler.locale.labels.conference_scheduler_tab = "Conference Scheduler";
                 // window.dhtmlXScheduler.xy.nav_height = -1; // hide the navigation bar
-                // window.dhtmlXScheduler.xy.scale_height = -1; // hide the day display
+                window.dhtmlXScheduler.xy.scale_height = -1; // hide the day display
+                window.dhtmlXScheduler.xy.scroll_width = -1; // hide the scroll bar
                 window.dhtmlXScheduler.config.readonly = true; // disable editing events
+                window.dhtmlXScheduler.config.separate_short_events = true; // prevent short events from overlapping
                 // window.dhtmlXScheduler.config.mark_now = true; // mark the current time
-                // window.dhtmlXScheduler.config.hour_size_px = 200;
+                /*
+                 * Size of the x-axis hour steps.
+                 * Must be a multiple of 44 for proper alignment (default skin).
+                 * This number may vary between different skins.
+                 */
+                window.dhtmlXScheduler.config.hour_size_px = 264;
 
                 /*
                  * Split up tracks and sessions upon clicking on the corresponding scheduler event.
@@ -100,12 +106,12 @@ require(["main"], function () {
                     return true;
                 });
 
-                // dynamically scale the hour range for different days
+                // dynamically scale the hour range (y-axis) for different days
                 window.dhtmlXScheduler.attachEvent("onViewChange", function (new_mode, new_date) {
                     var dailyEvents = self.schedule.getDailyEvents(new_date);
                     var startingDate = null;
                     var endingDate = null;
-
+                    // process all events for the current day to find the start and end point
                     dailyEvents.forEach(function (c) {
                         if (startingDate === null) {
                             startingDate = c.getStart();
@@ -118,12 +124,20 @@ require(["main"], function () {
                             endingDate = c.getEnd();
                         }
                     });
+                    // adjust the y-axis of the scheduler if possible
                     if (startingDate !== null && endingDate !== null) {
                         window.dhtmlXScheduler.config.first_hour = startingDate.getHours();
                         // TODO: maybe restrict this to max 23 hours
                         window.dhtmlXScheduler.config.last_hour = endingDate.getHours() + 1;
-                        window.dhtmlXScheduler.updateView();
+                    } else {
+                        window.dhtmlXScheduler.config.first_hour = 0;
+                        window.dhtmlXScheduler.config.last_hour = 23;
                     }
+                    // adjust the height of the scheduler
+                    self.schedulerHeight(window.dhtmlXScheduler.xy.nav_height + 1 // + 1 pixel to prevent scroll bar display
+                        + (window.dhtmlXScheduler.config.last_hour - window.dhtmlXScheduler.config.first_hour)
+                        * window.dhtmlXScheduler.config.hour_size_px);
+                    window.dhtmlXScheduler.updateView(); // update scheduler to display all changes
                 });
 
                 /*
@@ -168,7 +182,6 @@ require(["main"], function () {
 
             console.log(data.conferenceUuid);
 
-            window.moment = moment;
             window.schedule = ScheduleViewModel(data.conferenceUuid);
             window.schedule.init();
         });
