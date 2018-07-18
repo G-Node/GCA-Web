@@ -104,7 +104,6 @@ require(["main"], function () {
                     });
                     window.dhtmlXScheduler.deleteEvent(id);
                 }
-                // TODO: change IDs
             };
 
             // check if a track or event can be collapsed
@@ -130,7 +129,6 @@ require(["main"], function () {
                         });
                     }
                 }
-                // TODO: change IDs
                 // TODO: ID based removal to fix bug with collapsing if sub elements are at different layers
             };
 
@@ -154,6 +152,7 @@ require(["main"], function () {
                  */
                 window.dhtmlXScheduler.attachEvent("onClick", function (id, e) {
                     var currentEvent = window.dhtmlXScheduler.getEvent(id);
+                    console.log(id);
                     if (currentEvent !== null && currentEvent !== undefined) {
                         // general info
                         self.infoID(id);

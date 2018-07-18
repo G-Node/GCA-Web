@@ -1282,16 +1282,25 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.getSplitEvents = function () {
             var splitEvents = [];
             if (self.isTrack()) {
-                console.log("Events: ");
-                console.log(JSON.stringify(self.baseEvent.events, null, 4));
                 splitEvents = SchedulerEvent.fromArray(self.baseEvent.events);
             } else if (self.isSession()) {
-                console.log("Session: ");
-                console.log(JSON.stringify(self.baseEvent.tracks, null, 4));
                 splitEvents = SchedulerEvent.fromArray(self.baseEvent.tracks);
             }
+            var childID = [];
+            var childIndex = 0;
+            self.id.split(":").forEach(function (idComponent) {
+                childID.push(parseInt(idComponent));
+                // track where the first negative number occurs to use as the new index
+                if (parseInt(idComponent) >= 0) {
+                    childIndex++;
+                }
+            });
+            // replace the corresponding part of the ID with the new index
+            var childIDComponent = 0;
             splitEvents.forEach(function (element) {
               element.parentEvent = self;
+              childID[childIndex] = childIDComponent++;
+              element.id = childID.join(":");
             });
             return splitEvents;
         };
