@@ -1,5 +1,5 @@
 require(["main"], function () {
-    require(["lib/models", "lib/tools", "knockout"], function(models, tools, ko) {
+    require(["lib/models", "lib/tools", "knockout", "moment"], function(models, tools, ko, moment) {
         "use strict";
 
         /**
@@ -22,8 +22,15 @@ require(["main"], function () {
             self.schedulerHeight = ko.observable(2000);
             self.displayNext = ko.observable("block");
             self.displayPrevious = ko.observable("block");
+            // info panel observables
+            self.infoEventType = ko.observable("Event");
+            self.infoID = ko.observable(null);
+            self.infoTitle = ko.observable(null);
+            self.infoSubtitle = ko.observable(null);
+            self.infoStartingDate = ko.observable(null);
+            self.infoEndingDate = ko.observable(null);
             self.schedule = null;
-            self.days = ko.observableArray([]); // number of days and thereby calendar instances of the conference
+            self.days = ko.observableArray([]); // dates of the conference
 
             self.init = function () {
                 ko.applyBindings(window.schedule);
@@ -77,6 +84,57 @@ require(["main"], function () {
                 self.isLoading(false);
             };
 
+            // check if a track or session can be split
+            self.canExpandEvent = function (id) {
+                var event = window.dhtmlXScheduler.getEvent(id);
+                if (event !== null && event !== undefined) {
+                    var splitEvents = event.getSplitEvents();
+                    if (splitEvents.length > 0) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            // split a track or session
+            self.expandEvent = function (id) {
+                if (self.canExpandEvent(id)) {
+                    var event = window.dhtmlXScheduler.getEvent(id);
+                    (window.dhtmlXScheduler.getEvent(id)).getSplitEvents().forEach(function (splitEvent) {
+                        window.dhtmlXScheduler.addEvent(splitEvent);
+                    });
+                    window.dhtmlXScheduler.deleteEvent(id);
+                }
+                // TODO: change IDs
+            };
+
+            // check if a track or event can be collapsed
+            self.canCollapseEvent = function (id) {
+                var event = window.dhtmlXScheduler.getEvent(id);
+                if (event !== null && event !== undefined) {
+                    return event.parentEvent !== null;
+                }
+                return false;
+            };
+
+            // collapse a track or event
+            self.collapseEvent = function (id) {
+                if (self.canCollapseEvent(id)) {
+                    var parentEvent = (window.dhtmlXScheduler.getEvent(id)).parentEvent;
+                    window.dhtmlXScheduler.addEvent(parentEvent);
+                    var allEvents = window.dhtmlXScheduler.getEvents();
+                    if (allEvents.length > 0) {
+                        allEvents.forEach(function (e) {
+                            if (e.parentEvent == parentEvent) {
+                                window.dhtmlXScheduler.deleteEvent(e.id);
+                            }
+                        });
+                    }
+                }
+                // TODO: change IDs
+                // TODO: ID based removal to fix bug with collapsing if sub elements are at different layers
+            };
+
             self.initScheduler = function () {
                 // window.dhtmlXScheduler.xy.nav_height = -1; // hide the navigation bar
                 window.dhtmlXScheduler.xy.scale_height = -1; // hide the day display
@@ -95,16 +153,22 @@ require(["main"], function () {
                  * Split up tracks and sessions upon clicking on the corresponding scheduler event.
                  */
                 window.dhtmlXScheduler.attachEvent("onClick", function (id, e) {
-
-                    var splitEvents = (window.dhtmlXScheduler.getEvent(id)).getSplitEvents();
-                    if (splitEvents.length > 0) {
-                        splitEvents.forEach(function (splitEvent) {
-                            window.dhtmlXScheduler.addEvent(splitEvent);
-                        });
-                        window.dhtmlXScheduler.deleteEvent(id);
+                    var currentEvent = window.dhtmlXScheduler.getEvent(id);
+                    // general info
+                    self.infoID(currentEvent.id);
+                    self.infoTitle(currentEvent.baseEvent.title);
+                    self.infoSubtitle(currentEvent.baseEvent.subtitle);
+                    self.infoStartingDate(currentEvent.baseEvent.getStart());
+                    self.infoEndingDate(currentEvent.baseEvent.getEnd());
+                    // specific info
+                    if (currentEvent.isSession()) {
+                        self.infoEventType("Session");
+                    } else if (currentEvent.isTrack()) {
+                        self.infoEventType("Track");
+                    } else {
+                        self.infoEventType("Event");
                     }
-                    // TODO: change IDs
-                    // TODO: display infos
+                    $("#conference-scheduler-info").modal("show");
                     return true;
                 });
 
@@ -197,6 +261,7 @@ require(["main"], function () {
 
             console.log(data.conferenceUuid);
 
+            window.moment = moment;
             window.schedule = ScheduleViewModel(data.conferenceUuid);
             window.schedule.init();
         });
