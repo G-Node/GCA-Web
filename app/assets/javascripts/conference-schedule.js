@@ -23,12 +23,11 @@ require(["main"], function () {
             self.displayNext = ko.observable("block");
             self.displayPrevious = ko.observable("block");
             // info panel observables
-            self.infoEventType = ko.observable("Event");
+            self.infoEventType = ko.observable(null);
             self.infoID = ko.observable(null);
-            self.infoTitle = ko.observable(null);
-            self.infoSubtitle = ko.observable(null);
-            self.infoStartingDate = ko.observable(null);
-            self.infoEndingDate = ko.observable(null);
+            self.infoBaseEvent = ko.observable(null);
+            self.infoChair = ko.observable(null);
+            self.infoAuthors = ko.observable(null);
             self.schedule = null;
             self.days = ko.observableArray([]); // dates of the conference
 
@@ -136,6 +135,7 @@ require(["main"], function () {
             };
 
             self.initScheduler = function () {
+                // TODO: create custom tabbed navbar
                 // window.dhtmlXScheduler.xy.nav_height = -1; // hide the navigation bar
                 window.dhtmlXScheduler.xy.scale_height = -1; // hide the day display
                 window.dhtmlXScheduler.xy.scroll_width = -1; // hide the scroll bar
@@ -154,22 +154,33 @@ require(["main"], function () {
                  */
                 window.dhtmlXScheduler.attachEvent("onClick", function (id, e) {
                     var currentEvent = window.dhtmlXScheduler.getEvent(id);
-                    // general info
-                    self.infoID(currentEvent.id);
-                    self.infoTitle(currentEvent.baseEvent.title);
-                    self.infoSubtitle(currentEvent.baseEvent.subtitle);
-                    self.infoStartingDate(currentEvent.baseEvent.getStart());
-                    self.infoEndingDate(currentEvent.baseEvent.getEnd());
-                    // specific info
-                    if (currentEvent.isSession()) {
-                        self.infoEventType("Session");
-                    } else if (currentEvent.isTrack()) {
-                        self.infoEventType("Track");
-                    } else {
-                        self.infoEventType("Event");
+                    if (currentEvent !== null && currentEvent !== undefined) {
+                        // general info
+                        self.infoID(id);
+                        self.infoBaseEvent(currentEvent.baseEvent);
+                        // specific info
+                        if (currentEvent.isSession()) {
+                            self.infoEventType("Session");
+                        } else if (currentEvent.isTrack()) {
+                            self.infoEventType("Track");
+                            var formattedChair = "";
+                            currentEvent.baseEvent.chair.forEach(function (person) {
+                                formattedChair += person + ", ";
+                            });
+                            formattedChair = formattedChair.replace(/, +$/, "");
+                            self.infoChair(formattedChair);
+                        } else {
+                            self.infoEventType("Event");
+                            var formattedAuthors = "";
+                            currentEvent.baseEvent.authors.forEach(function (person) {
+                                formattedAuthors += person + ", ";
+                            });
+                            formattedAuthors = formattedAuthors.replace(/, +$/, "");
+                            self.infoAuthors(formattedAuthors);
+                        }
+                        $("#conference-scheduler-info").modal("show");
                     }
-                    $("#conference-scheduler-info").modal("show");
-                    return true;
+                    return false;
                 });
 
                 // dynamically scale the hour range (y-axis) for different days

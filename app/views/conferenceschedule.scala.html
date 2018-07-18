@@ -63,24 +63,35 @@
     <div class="modal" id="conference-scheduler-info" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="btn btn-secondary btn-sm pull-right" data-bind="text: infoEventType()" disabled></button>
-                    <h3 class="modal-title" data-bind="text: infoTitle()"></h3>
-                    <h4 class="modal-title" data-bind="text: infoSubtitle()"></h4>
-                </div>
-                <div class="modal-body">
-                    <p data-bind="text: 'Date:   ' + moment(infoStartingDate()).format('D[ ]MMMM[ ]YYYY')"></p>
-                    <p data-bind="text: 'Time:   ' + moment(infoStartingDate()).format('HH[:]mm[ - ]') + moment(infoEndingDate()).format('HH[:]mm')"></p>
-                </div>
-                <div class="modal-footer">
-                    <!-- ko if: canExpandEvent(infoID()) -->
-                        <button type="button" class="btn btn-sm btn-danger" data-bind="click: function (data, event) {expandEvent(infoID())}" data-dismiss="modal">Expand</button>
-                    <!-- /ko -->
-                    <!-- ko if: canCollapseEvent(infoID()) -->
-                        <button type="button" class="btn btn-sm btn-success" data-bind="click: function (data, event) {collapseEvent(infoID())}" data-dismiss="modal">Collapse</button>
-                    <!-- /ko -->
-                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Ok</button>
-                </div>
+                <!-- ko if: infoBaseEvent() !== null && infoBaseEvent() !== undefined -->
+                    <div class="modal-header">
+                        <button type="button" class="btn btn-secondary btn-sm pull-right" data-bind="text: infoEventType()" disabled></button>
+                        <h3 class="modal-title" data-bind="text: infoBaseEvent().title"></h3>
+                        <h4 class="modal-title" data-bind="text: infoBaseEvent().subtitle"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <p data-bind="text: 'Date: ' + moment(infoBaseEvent().getStart()).format('D[ ]MMMM[ ]YYYY')"></p>
+                        <p data-bind="text: 'Time: ' + moment(infoBaseEvent().getStart()).format('HH[:]mm[ - ]') + moment(infoBaseEvent().getEnd()).format('HH[:]mm')"></p>
+                        <!-- ko if: infoEventType() === 'Event' -->
+                            <p data-bind="text: 'Location: ' + infoBaseEvent().location"></p>
+                            <p data-bind="text: 'Type: ' + infoBaseEvent().type"></p>
+                            <p>Abstract: <a data-bind="attr: {href: infoBaseEvent().abstract}, text: infoBaseEvent().abstract"></a></p>
+                            <p data-bind="text: 'Authors: ' + infoAuthors()"></p>
+                        <!-- /ko -->
+                        <!-- ko if: infoEventType() === 'Track' -->
+                            <p data-bind="text: 'Chair: ' + infoChair()"></p>
+                        <!-- /ko -->
+                    </div>
+                    <div class="modal-footer">
+                        <!-- ko if: canExpandEvent(infoID()) -->
+                            <button type="button" class="btn btn-sm btn-danger" data-bind="click: function (data, event) {expandEvent(infoID())}" data-dismiss="modal">Expand</button>
+                        <!-- /ko -->
+                        <!-- ko if: canCollapseEvent(infoID()) -->
+                            <button type="button" class="btn btn-sm btn-success" data-bind="click: function (data, event) {collapseEvent(infoID())}" data-dismiss="modal">Collapse</button>
+                        <!-- /ko -->
+                        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Ok</button>
+                    </div>
+                <!-- /ko -->
             </div>
         </div>
     </div>
