@@ -123,13 +123,14 @@ require(["main"], function () {
                     var allEvents = window.dhtmlXScheduler.getEvents();
                     if (allEvents.length > 0) {
                         allEvents.forEach(function (e) {
-                            if (e.parentEvent == parentEvent) {
+                            if (e.parentEvent === parentEvent
+                                || (e.parentEvent !== null && e.parentEvent.parentEvent === parentEvent)) {
                                 window.dhtmlXScheduler.deleteEvent(e.id);
                             }
                         });
                     }
                 }
-                // TODO: ID based removal to fix bug with collapsing if sub elements are at different layers
+                // TODO: maybe add ID based removal to improve the removal process
             };
 
             self.initScheduler = function () {
