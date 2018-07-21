@@ -280,7 +280,16 @@ require(["main"], function () {
                     window.dhtmlXScheduler.updateView(); // update scheduler to display all changes
                 });
 
-                window.dhtmlXScheduler.init("conference_scheduler",self.days()[0],"day");
+                /*
+                 * Dynamically initialise the current day if the conference is currently ongoing,
+                 * or the first day of the conference if not.
+                 */
+                var now = new Date();
+                if ((self.schedule.getStart() - now) <= 0 && (self.schedule.getEnd() - now) >= 0 ) {
+                    window.dhtmlXScheduler.init("conference_scheduler", now, "day");
+                } else {
+                    window.dhtmlXScheduler.init("conference_scheduler", self.days()[0], "day");
+                }
                 /*
                  * Add all the events from the conference schedule.
                  * Event IDs correspond to the index of the element in the specified schedule
