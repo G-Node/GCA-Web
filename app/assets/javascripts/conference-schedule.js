@@ -133,6 +133,40 @@ require(["main"], function () {
                 // TODO: maybe add ID based removal to improve the removal process
             };
 
+            /*
+             * Open an info view for the selected event, track or session.
+             */
+            self.displayEventInfo = function (id) {
+                console.log(id);
+                var currentEvent = window.dhtmlXScheduler.getEvent(id);
+                if (currentEvent !== null && currentEvent !== undefined) {
+                    // general info
+                    self.infoID(id);
+                    self.infoBaseEvent(currentEvent.baseEvent);
+                    // specific info
+                    if (currentEvent.isSession()) {
+                        self.infoEventType("Session");
+                    } else if (currentEvent.isTrack()) {
+                        self.infoEventType("Track");
+                        var formattedChair = "";
+                        currentEvent.baseEvent.chair.forEach(function (person) {
+                            formattedChair += person + ", ";
+                        });
+                        formattedChair = formattedChair.replace(/, +$/, "");
+                        self.infoChair(formattedChair);
+                    } else {
+                        self.infoEventType("Event");
+                        var formattedAuthors = "";
+                        currentEvent.baseEvent.authors.forEach(function (person) {
+                            formattedAuthors += person + ", ";
+                        });
+                        formattedAuthors = formattedAuthors.replace(/, +$/, "");
+                        self.infoAuthors(formattedAuthors);
+                    }
+                    $("#conference-scheduler-info").modal("show");
+                }
+            };
+
             self.initScheduler = function () {
                 // TODO: create custom tabbed navbar
                 // window.dhtmlXScheduler.xy.nav_height = -1; // hide the navigation bar
@@ -149,39 +183,55 @@ require(["main"], function () {
                 window.dhtmlXScheduler.config.hour_size_px = 264;
 
                 /*
-                 * Split up tracks and sessions upon clicking on the corresponding scheduler event.
+                 * Display a custom event box.
                  */
-                window.dhtmlXScheduler.attachEvent("onClick", function (id, e) {
-                    var currentEvent = window.dhtmlXScheduler.getEvent(id);
-                    console.log(id);
-                    if (currentEvent !== null && currentEvent !== undefined) {
-                        // general info
-                        self.infoID(id);
-                        self.infoBaseEvent(currentEvent.baseEvent);
-                        // specific info
-                        if (currentEvent.isSession()) {
-                            self.infoEventType("Session");
-                        } else if (currentEvent.isTrack()) {
-                            self.infoEventType("Track");
-                            var formattedChair = "";
-                            currentEvent.baseEvent.chair.forEach(function (person) {
-                                formattedChair += person + ", ";
-                            });
-                            formattedChair = formattedChair.replace(/, +$/, "");
-                            self.infoChair(formattedChair);
-                        } else {
-                            self.infoEventType("Event");
-                            var formattedAuthors = "";
-                            currentEvent.baseEvent.authors.forEach(function (person) {
-                                formattedAuthors += person + ", ";
-                            });
-                            formattedAuthors = formattedAuthors.replace(/, +$/, "");
-                            self.infoAuthors(formattedAuthors);
-                        }
-                        $("#conference-scheduler-info").modal("show");
+                window.dhtmlXScheduler.renderEvent = function(container, ev) {
+                    // define specific templates
+                    var templateBoarderClass = "";
+                    var templateEventType = "";
+                    if (ev.isSession()) {
+                        templateBoarderClass = "conference-scheduler-event-s";
+                        templateEventType = "Session";
+                    } else if (ev.isTrack()) {
+                        templateBoarderClass = "conference-scheduler-event-t";
+                        templateEventType = "Track";
+                    } else {
+                        templateBoarderClass = "conference-scheduler-event-e";
+                        templateEventType = "Event";
                     }
-                    return false;
-                });
+                    var html = "<div class='conference-scheduler-event " + templateBoarderClass + "'>";
+
+                    // the header with date and event type
+                    html += "<div class='conference-scheduler-header' data-bind='click: function (data, event) "
+                        + "{displayEventInfo(\"" + ev.id +"\")}'><button style='margin-left: 5px' type='button' "
+                        + "class='btn btn-secondary btn-sm pull-left' disabled>" + templateEventType + "</button>"
+                        + window.dhtmlXScheduler.templates.event_header(ev.start_date, ev.end_date, ev)
+                        + "</div>";
+
+                    // the modification bar for expanding and collapsing
+                    html += "<div>";
+                    if (self.canCollapseEvent(ev.id)) {
+                        html += "<span class='glyphicon glyphicon-minus pull-right conference-scheduler-mod' aria-hidden='true' "
+                            + "data-bind='click: function (data, event) {collapseEvent(\"" + ev.id + "\")}'></span>";
+                    }
+                    if (self.canExpandEvent(ev.id)) {
+                        html += "<span class='glyphicon glyphicon-plus pull-right conference-scheduler-mod' aria-hidden='true' "
+                            + "data-bind='click: function (data, event) {expandEvent(\"" + ev.id + "\")}'></span>";
+                    }
+                    html += "</div>";
+
+                    // the body with all the necessary information
+                    html += "<div class='conference-scheduler-body' data-bind='click: function (data, event) "
+                        + "{displayEventInfo(\"" + ev.id +"\")}'>";
+                    html += "<h4>" + window.dhtmlXScheduler.templates.event_text(ev.start_date, ev.end_date, ev) + "</h4></div>";
+
+                    // closing div
+                    html += "</div>";
+
+                    container.innerHTML = html;
+                    ko.applyBindings(self, container);
+                    return true;
+                };
 
                 // dynamically scale the hour range (y-axis) for different days
                 window.dhtmlXScheduler.attachEvent("onViewChange", function (new_mode, new_date) {
@@ -230,17 +280,6 @@ require(["main"], function () {
                     window.dhtmlXScheduler.updateView(); // update scheduler to display all changes
                 });
 
-                /*
-                 * All the custom logic should be placed inside this event to ensure
-                 * the templates are ready before the scheduler is initialised.
-                 */
-                // window.dhtmlXScheduler.attachEvent("onTemplatesReady",function(){
-                // });
-
-                // Initialise all scheduler views.
-                // for (var i = 0; i < self.days().length; i++) {
-                //     window.dhtmlXScheduler.init("conference_scheduler_"+i,self.days()[i],"day");
-                // }
                 window.dhtmlXScheduler.init("conference_scheduler",self.days()[0],"day");
                 /*
                  * Add all the events from the conference schedule.
