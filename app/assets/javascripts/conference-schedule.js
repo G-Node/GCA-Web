@@ -137,7 +137,6 @@ require(["main"], function () {
              * Open an info view for the selected event, track or session.
              */
             self.displayEventInfo = function (id) {
-                console.log(id);
                 var currentEvent = window.dhtmlXScheduler.getEvent(id);
                 if (currentEvent !== null && currentEvent !== undefined) {
                     // general info

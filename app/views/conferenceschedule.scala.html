@@ -70,16 +70,37 @@
                         <h4 class="modal-title" data-bind="text: infoBaseEvent().subtitle"></h4>
                     </div>
                     <div class="modal-body">
-                        <p data-bind="text: 'Date: ' + moment(infoBaseEvent().getStart()).format('D[ ]MMMM[ ]YYYY')"></p>
-                        <p data-bind="text: 'Time: ' + moment(infoBaseEvent().getStart()).format('HH[:]mm[ - ]') + moment(infoBaseEvent().getEnd()).format('HH[:]mm')"></p>
+                        <p>
+                            <strong>Date: </strong>
+                            <span data-bind="text: moment(infoBaseEvent().getStart()).format('D[ ]MMMM[ ]YYYY')"></span>
+                        </p>
+                        <p>
+                            <strong>Time: </strong>
+                            <span data-bind="text: moment(infoBaseEvent().getStart()).format('HH[:]mm[ - ]') + moment(infoBaseEvent().getEnd()).format('HH[:]mm')"></span>
+                        </p>
                         <!-- ko if: infoEventType() === 'Event' -->
-                            <p data-bind="text: 'Location: ' + infoBaseEvent().location"></p>
-                            <p data-bind="text: 'Type: ' + infoBaseEvent().type"></p>
-                            <p>Abstract: <a data-bind="attr: {href: infoBaseEvent().abstract}, text: infoBaseEvent().abstract"></a></p>
-                            <p data-bind="text: 'Authors: ' + infoAuthors()"></p>
+                            <p>
+                                <strong>Location: </strong>
+                                <span data-bind="text: infoBaseEvent().location"></span>
+                            </p>
+                            <p>
+                                <strong>Type: </strong>
+                                <span data-bind="text: infoBaseEvent().type"></span>
+                            </p>
+                            <p>
+                                <strong>Abstract: </strong>
+                                <a data-bind="attr: {href: infoBaseEvent().abstract}, text: infoBaseEvent().abstract"></a>
+                            </p>
+                            <p>
+                                <strong>Authors: </strong>
+                                <span data-bind="text: infoAuthors()"></span>
+                            </p>
                         <!-- /ko -->
                         <!-- ko if: infoEventType() === 'Track' -->
-                            <p data-bind="text: 'Chair: ' + infoChair()"></p>
+                            <p>
+                                <strong>Chair: </strong>
+                                <span data-bind="text: infoChair()"></span>
+                            </p>
                         <!-- /ko -->
                     </div>
                     <div class="modal-footer">
