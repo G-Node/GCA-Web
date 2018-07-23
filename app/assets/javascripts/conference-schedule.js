@@ -236,18 +236,26 @@ require(["main"], function () {
                     } else if (currentEvent.isTrack()) {
                         self.infoEventType("Track");
                         var formattedChair = "";
-                        currentEvent.baseEvent.chair.forEach(function (person) {
-                            formattedChair += person + ", ";
-                        });
-                        formattedChair = formattedChair.replace(/, +$/, "");
+                        if (Array.isArray(currentEvent.baseEvent.chair)) {
+                            currentEvent.baseEvent.chair.forEach(function (person) {
+                                formattedChair += person + ", ";
+                            });
+                            formattedChair = formattedChair.replace(/, +$/, "");
+                        } else {
+                            formattedChair = currentEvent.baseEvent.chair;
+                        }
                         self.infoChair(formattedChair);
                     } else {
                         self.infoEventType("Event");
                         var formattedAuthors = "";
-                        currentEvent.baseEvent.authors.forEach(function (person) {
-                            formattedAuthors += person + ", ";
-                        });
-                        formattedAuthors = formattedAuthors.replace(/, +$/, "");
+                        if (Array.isArray(currentEvent.baseEvent.authors)) {
+                            currentEvent.baseEvent.authors.forEach(function (person) {
+                                formattedAuthors += person + ", ";
+                            });
+                            formattedAuthors = formattedAuthors.replace(/, +$/, "");
+                        } else {
+                            formattedAuthors = currentEvent.baseEvent.authors;
+                        }
                         self.infoAuthors(formattedAuthors);
                     }
                     $("#conference-scheduler-info").modal("show");
