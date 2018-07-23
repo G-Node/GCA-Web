@@ -189,7 +189,7 @@ require(["main"], function () {
              * This will only work, if the date is during the schedule and has at least one event.
              */
             self.setSchedulerDate = function (date) {
-                if (self.schedule.isScheduledDate(date) && self.schedule.getDailyEvents(date).length > 0) {
+                if (self.schedule.isScheduledDate(date)) {
                     window.dhtmlXScheduler.setCurrentView(date);
                 }
             };
@@ -386,11 +386,14 @@ require(["main"], function () {
                     // adjust the y-axis of the scheduler if possible
                     if (startingDate !== null && endingDate !== null) {
                         window.dhtmlXScheduler.config.first_hour = startingDate.getHours();
-                        // TODO: maybe restrict this to max 23 hours
-                        window.dhtmlXScheduler.config.last_hour = endingDate.getHours() + 1;
+                        if (endingDate.getHours() < 24) {
+                            window.dhtmlXScheduler.config.last_hour = endingDate.getHours() + 1;
+                        } else {
+                            window.dhtmlXScheduler.config.last_hour = 24;
+                        }
                     } else {
                         window.dhtmlXScheduler.config.first_hour = 0;
-                        window.dhtmlXScheduler.config.last_hour = 23;
+                        window.dhtmlXScheduler.config.last_hour = 24;
                     }
                     // adjust the height of the scheduler
                     self.schedulerHeight(window.dhtmlXScheduler.xy.nav_height + 1 // + 1 pixel to prevent scroll bar display
@@ -427,6 +430,15 @@ require(["main"], function () {
                     var schedulerEvent = models.SchedulerEvent.fromObject(event);
                     schedulerEvent.id = contentIndex++ + ":-1:-1";
                     window.dhtmlXScheduler.addEvent(schedulerEvent);
+                });
+                // add dummy events for empty days
+                self.days().forEach(function (day) {
+                   if (self.schedule.getDailyEvents(day).length == 0) {
+                       var dummyEvent = models.SchedulerEvent.fromObject(
+                           new models.Event("No Events", null, "00:00", "23:59", moment(day).format('YYYY[-]MM[-]DD')));
+                       dummyEvent.id = contentIndex++ + ":-1:-1";
+                       window.dhtmlXScheduler.addEvent(dummyEvent);
+                   }
                 });
 
             };
