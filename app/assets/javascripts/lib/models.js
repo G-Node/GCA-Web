@@ -1419,7 +1419,10 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             // format year-month-day
             var ymd = self.date.split("-");
             // format hour:minute
-            var time = self.start.split(":");
+            var time = ["0", "0"];
+            if (self.start.length > 0) {
+                time = self.start.split(":");
+            }
             return new Date(parseInt(ymd[0]), parseInt(ymd[1]) - 1, parseInt(ymd[2]), parseInt(time[0]), parseInt(time[1]));
         };
 
@@ -1427,7 +1430,10 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             // format year-month-day
             var ymd = self.date.split("-");
             // format hour:minute
-            var time = self.end.split(":");
+            var time = ["23","59"];
+            if (self.end.length > 0) {
+                time = self.end.split(":");
+            }
             return new Date(parseInt(ymd[0]), parseInt(ymd[1]) - 1, parseInt(ymd[2]), parseInt(time[0]), parseInt(time[1]));
         };
     };
