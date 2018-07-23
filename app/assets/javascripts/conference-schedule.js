@@ -27,6 +27,7 @@ require(["main"], function () {
             self.displayDate = ko.observable("block");
             self.displayCustomNavbar = ko.observable("none");
             self.displayCustomDates = ko.observableArray([]);
+            self.displayHighlightDate = ko.observableArray([]);
             // info panel observables
             self.infoEventType = ko.observable(null);
             self.infoID = ko.observable(null);
@@ -164,13 +165,19 @@ require(["main"], function () {
                         break;
                      }
                   }
-                  var indexToAdd = currentIndex;
-                  while (indexToAdd >= 0 && dates.length < 3) {
-                      dates.push(self.days()[indexToAdd--]);
+                  // add the current date and the two previous dates if present
+                  var indexToAddPrev = currentIndex;
+                  while (indexToAddPrev >= 0 && dates.length < 3) {
+                      dates.push(self.days()[indexToAddPrev--]);
                   }
-                  indexToAdd = currentIndex + 1;
-                  while (indexToAdd < self.days().length && dates.length < 5) {
-                      dates.push(self.days()[indexToAdd++]);
+                  // add the next dates if present
+                  var indexToAddNext = currentIndex + 1;
+                  while (indexToAddNext < self.days().length && dates.length < 5) {
+                      dates.push(self.days()[indexToAddNext++]);
+                  }
+                  // fill up the remaining space with previous dates
+                  while (indexToAddPrev >= 0 && dates.length < 5) {
+                      dates.push(self.days()[indexToAddPrev--]);
                   }
                   dates.sort(function (a, b) { return a.getTime() - b.getTime() });
               }
@@ -347,6 +354,16 @@ require(["main"], function () {
                         }
                     } else {
                         self.displayCustomDates(self.getNavbarDates());
+                        // showing the active date is a bit hacky here
+                        var actives = [];
+                        self.displayCustomDates().forEach(function (d) {
+                            if (self.isCurrentDate(d)) {
+                                actives.push("active");
+                            } else {
+                                actives.push("");
+                            }
+                        });
+                        self.displayHighlightDate(actives);
                     }
 
                     // scale the scheduler

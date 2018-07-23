@@ -53,15 +53,10 @@
                                 <li><button data-bind="click: function(data, event) {modifySchedulerDate(-1)}" class="conference-scheduler-navbar-switch pull-left">
                                     <span class="glyphicon glyphicon-chevron-left" style="vertical-align: middle;"></span></button></li>
                                 <li><ul data-bind="foreach: displayCustomDates" class="conference-scheduler-navbar-days">
-                                        <!-- ko if: $root.isCurrentDate($data) -->
-                                            <li><button data-bind="text: moment($data).format('D[ ]MMMM[ ]YYYY')"
-                                            class="conference-scheduler-navbar-day pull-left active"></button></li>
-                                        <!-- /ko -->
-                                        <!-- ko ifnot: $root.isCurrentDate($data) -->
-                                            <li><button data-bind="text: moment($data).format('D[ ]MMMM[ ]YYYY'),
-                                            click: function(data, event) {$root.setSchedulerDate($data)}"
-                                            class="conference-scheduler-navbar-day pull-left"></button></li>
-                                        <!-- /ko -->
+                                    <li><button data-bind="text: moment($data).format('D[ ]MMMM[ ]YYYY'),
+                                    click: function(data, event) {$root.setSchedulerDate($data)},
+                                    attr: {'class': 'conference-scheduler-navbar-day pull-left '
+                                    + $root.displayHighlightDate()[$index()]}"></button></li>
                                 </ul></li>
                                 <li><button class="conference-scheduler-navbar-switch pull-right"
                                 data-bind="click: function(data, event) {lastSchedulerDate()}">
