@@ -1543,6 +1543,17 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             return dailyEvents;
         };
 
+        // Check if the specified date is part of the schedule.
+        self.isScheduledDate = function (date) {
+            // only compare date not exact time
+            var startDate = self.getStart();
+            startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+            var endDate = self.getEnd();
+            endDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+            var dateDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            return startDate - dateDate <= 0 && endDate - dateDate >= 0;
+        };
+
         // Get all the events present in the schedule.
         self.getEvents = function () {
             var events = [];

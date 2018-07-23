@@ -17,11 +17,16 @@ require(["main"], function () {
             }
 
             var self = this;
+            self.customNavbar = false;
             self.isLoading = ko.observable("Loading conference schedule.");
             self.error = ko.observable(false);
             self.schedulerHeight = ko.observable(2000);
+            // navbar observables
             self.displayNext = ko.observable("block");
             self.displayPrevious = ko.observable("block");
+            self.displayDate = ko.observable("block");
+            self.displayCustomNavbar = ko.observable("none");
+            self.displayCustomDates = ko.observableArray([]);
             // info panel observables
             self.infoEventType = ko.observable(null);
             self.infoID = ko.observable(null);
@@ -133,6 +138,89 @@ require(["main"], function () {
                 // TODO: maybe add ID based removal to improve the removal process
             };
 
+            // switch the custom navbar on or off
+            self.toggleCustomNavbar = function (toggle) {
+                self.customNavbar = toggle;
+                if (toggle) {
+                    self.displayDate("none");
+                    self.displayPrevious("none");
+                    self.displayNext("none");
+                    self.displayCustomNavbar("inline");
+                } else {
+                    self.displayCustomNavbar("none");
+                    self.displayDate("block");
+                }
+            };
+
+            /*
+             * Get all dates that should be displayed in the custom navbar.
+             */
+            self.getNavbarDates = function () {
+              var dates = [];
+              if (self.days().length > 0 && self.schedule.isScheduledDate(window.dhtmlXScheduler.getState().date)) {
+                  // find the starting index
+                  for(var currentIndex = 0; currentIndex < self.days().length; currentIndex++) {
+                     if (self.days()[currentIndex].toDateString() === window.dhtmlXScheduler.getState().date.toDateString()) {
+                        break;
+                     }
+                  }
+                  var indexToAdd = currentIndex;
+                  while (indexToAdd >= 0 && dates.length < 3) {
+                      dates.push(self.days()[indexToAdd--]);
+                  }
+                  indexToAdd = currentIndex + 1;
+                  while (indexToAdd < self.days().length && dates.length < 5) {
+                      dates.push(self.days()[indexToAdd++]);
+                  }
+                  dates.sort(function (a, b) { return a.getTime() - b.getTime() });
+              }
+              return dates;
+            };
+
+            /*
+             * Set the currently displayed date of the scheduler.
+             * This will only work, if the date is during the schedule and has at least one event.
+             */
+            self.setSchedulerDate = function (date) {
+                if (self.schedule.isScheduledDate(date) && self.schedule.getDailyEvents(date).length > 0) {
+                    window.dhtmlXScheduler.setCurrentView(date);
+                }
+            };
+
+            /*
+             * Modify the currently displayed date by the specified
+             * number of days.
+             */
+            self.modifySchedulerDate = function(modificationInDays) {
+                self.setSchedulerDate(new Date(window.dhtmlXScheduler.getState().date.getTime()
+                    + 24*60*60*1000*modificationInDays));
+            };
+
+            /*
+             * Set the current scheduler date to the first date of the conference.
+             */
+            self.firstSchedulerDate = function() {
+                if (self.days().length > 0) {
+                    self.setSchedulerDate(self.days()[0]);
+                }
+            };
+
+            /*
+             * Set the current scheduler date to the last date of the conference.
+             */
+            self.lastSchedulerDate = function() {
+                if (self.days().length > 0) {
+                    self.setSchedulerDate(self.days()[self.days().length - 1]);
+                }
+            };
+
+            /*
+             * Check whether the specified date is the date currently set in the scheduler.
+             */
+            self.isCurrentDate = function(date) {
+                return date.toDateString() === window.dhtmlXScheduler.getState().date.toDateString();
+            };
+
             /*
              * Open an info view for the selected event, track or session.
              */
@@ -180,6 +268,8 @@ require(["main"], function () {
                  * This number may vary between different skins.
                  */
                 window.dhtmlXScheduler.config.hour_size_px = 264;
+
+                self.toggleCustomNavbar(true);
 
                 /*
                  * Display a custom event box.
@@ -235,15 +325,19 @@ require(["main"], function () {
                 // dynamically scale the hour range (y-axis) for different days
                 window.dhtmlXScheduler.attachEvent("onViewChange", function (new_mode, new_date) {
                     // disable buttons if first or last day of the conference
-                    if (self.schedule.getStart().toDateString() === new_date.toDateString()) {
-                        self.displayPrevious("none");
+                    if (!self.customNavbar) {
+                        if (self.schedule.getStart().toDateString() === new_date.toDateString()) {
+                            self.displayPrevious("none");
+                        } else {
+                            self.displayPrevious("block");
+                        }
+                        if (self.schedule.getEnd().toDateString() === new_date.toDateString()) {
+                            self.displayNext("none");
+                        } else {
+                            self.displayNext("block");
+                        }
                     } else {
-                        self.displayPrevious("block");
-                    }
-                    if (self.schedule.getEnd().toDateString() === new_date.toDateString()) {
-                        self.displayNext("none");
-                    } else {
-                        self.displayNext("block");
+                        self.displayCustomDates(self.getNavbarDates());
                     }
 
                     // scale the scheduler

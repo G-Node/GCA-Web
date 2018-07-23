@@ -45,10 +45,35 @@
             <div class="conference-scheduler-border">
                 <div data-bind="attr: {'style': 'height:' + schedulerHeight() + 'px;'}" id="conference_scheduler" class="dhx_cal_container">
                     <div class="dhx_cal_navline">
+                        <div data-bind="attr: {'style': 'display:' + displayCustomNavbar() + ';'}" class="conference-scheduler-navbar">
+                            <ul class="conference-scheduler-navbar-selector">
+                                <li><button class="conference-scheduler-navbar-switch pull-left"
+                                data-bind="click: function(data, event) {firstSchedulerDate()}">
+                                    <span class="glyphicon glyphicon-step-backward" style="vertical-align: middle;"></span></button></li>
+                                <li><button data-bind="click: function(data, event) {modifySchedulerDate(-1)}" class="conference-scheduler-navbar-switch pull-left">
+                                    <span class="glyphicon glyphicon-chevron-left" style="vertical-align: middle;"></span></button></li>
+                                <li><ul data-bind="foreach: displayCustomDates" class="conference-scheduler-navbar-days">
+                                        <!-- ko if: $root.isCurrentDate($data) -->
+                                            <li><button data-bind="text: moment($data).format('D[ ]MMMM[ ]YYYY')"
+                                            class="conference-scheduler-navbar-day pull-left active"></button></li>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: $root.isCurrentDate($data) -->
+                                            <li><button data-bind="text: moment($data).format('D[ ]MMMM[ ]YYYY'),
+                                            click: function(data, event) {$root.setSchedulerDate($data)}"
+                                            class="conference-scheduler-navbar-day pull-left"></button></li>
+                                        <!-- /ko -->
+                                </ul></li>
+                                <li><button class="conference-scheduler-navbar-switch pull-right"
+                                data-bind="click: function(data, event) {lastSchedulerDate()}">
+                                    <span class=" glyphicon glyphicon-step-forward" style="vertical-align: middle;"></span></button></li>
+                                <li><button data-bind="click: function(data, event) {modifySchedulerDate(1)}" class="conference-scheduler-navbar-switch pull-right">
+                                    <span class="glyphicon glyphicon-chevron-right" style="vertical-align: middle;"></span></button></li>
+                            </ul>
+                        </div>
                         <div data-bind="attr: {'style': 'display:' + displayPrevious() + ';'}" class="dhx_cal_prev_button">&nbsp;</div>
                         <div data-bind="attr: {'style': 'display:' + displayNext() + ';'}" class="dhx_cal_next_button">&nbsp;</div>
                         <div class="dhx_cal_today_button" style="display:none;"></div>
-                        <div class="dhx_cal_date"></div>
+                        <div data-bind="attr: {'style': 'display:' + displayDate() + ';'}" class="dhx_cal_date"></div>
                         <div class="dhx_cal_tab" name="day_tab" style="right:204px; display: none;"></div>
                     </div>
                     <div class="dhx_cal_header"></div>
