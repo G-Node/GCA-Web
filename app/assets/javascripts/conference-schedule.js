@@ -269,6 +269,7 @@ require(["main"], function () {
                 window.dhtmlXScheduler.xy.scroll_width = -1; // hide the scroll bar
                 window.dhtmlXScheduler.config.readonly = true; // disable editing events
                 window.dhtmlXScheduler.config.separate_short_events = true; // prevent short events from overlapping
+                window.dhtmlXScheduler.config.multi_day = false;
                 // window.dhtmlXScheduler.config.mark_now = true; // mark the current time
                 /*
                  * Size of the x-axis hour steps.

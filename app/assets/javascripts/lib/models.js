@@ -1321,6 +1321,29 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.chair = chair || null;
         self.events = events || null;
 
+        /*
+         * Split this track into sub tracks spanning only a single day each.
+         */
+        self.splitByDays = function () {
+          var subtracks = [];
+          var start = this.getStart();
+          var end = this.getEnd();
+          var splitDate = start;
+          while (Schedule.isIntermediateDate(start, end, splitDate)) {
+              var splitEvents = [];
+              self.events.forEach(function (event) {
+                  if (Schedule.isSameDate(event.getStart(), splitDate)) {
+                      splitEvents.push(event);
+                  }
+              });
+              if (splitEvents.length > 0) { // do not process empty dates
+                  subtracks.push(new Track(self.title, self.subtitle, self.chair, splitEvents));
+              }
+              splitDate = new Date(splitDate.getTime() + 24*60*60*1000); // switch to the next day
+          };
+          return subtracks;
+        };
+
         // look at all the events to find the starting date of the track
         self.getStart = function () {
             var startingDate = null;
@@ -1364,6 +1387,36 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.title = title || null;
         self.subtitle = subtitle || null;
         self.tracks = tracks || null;
+
+        /*
+         * Split this session into sub session spanning only a single day each.
+         */
+        self.splitByDays = function () {
+            var subsessions = [];
+            var start = this.getStart();
+            var end = this.getEnd();
+            var splitDate = start;
+            // split all tracks of this session by days
+            var preSplitTracks = [];
+            self.tracks.forEach(function (track) {
+                    track.splitByDays().forEach(function (t) {
+                        preSplitTracks.push(t);
+                    });
+            });
+            while (Schedule.isIntermediateDate(start, end, splitDate)) {
+                var splitTracks = [];
+                preSplitTracks.forEach(function (track) {
+                    if (Schedule.isSameDate(track.getStart(), splitDate)) {
+                        splitTracks.push(track);
+                    }
+                });
+                if (splitTracks.length > 0) { // do not process empty dates
+                    subsessions.push(new Session(self.title, self.subtitle, splitTracks));
+                }
+                splitDate = new Date(splitDate.getTime() + 24*60*60*1000); // switch to the next day
+            };
+            return subsessions;
+        };
 
         // look at all the tracks to find the starting date of the session
         self.getStart = function () {
@@ -1552,12 +1605,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         // Check if the specified date is part of the schedule.
         self.isScheduledDate = function (date) {
             // only compare date not exact time
-            var startDate = self.getStart();
-            startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-            var endDate = self.getEnd();
-            endDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-            var dateDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-            return startDate - dateDate <= 0 && endDate - dateDate >= 0;
+            return Schedule.isIntermediateDate(this.getStart(), this.getEnd(), date);
         };
 
         // Get all the events present in the schedule.
@@ -1626,18 +1674,45 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     };
 
     /*
+     * Check whether the tow dates are on the same date.
+     */
+    Schedule.isSameDate = function (firstDate, secondDate) {
+        return firstDate.getFullYear() == secondDate.getFullYear()
+            && firstDate.getMonth() == secondDate.getMonth()
+            && firstDate.getDate() == secondDate.getDate();
+    };
+
+    /*
+     * Check whether the specified date is during the specified timespan.
+     * This is checked on basis of the date, hours and smaller time units are not
+     * taken into account.
+     */
+    Schedule.isIntermediateDate = function (start, end, date) {
+        var startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+        var endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+        var dateDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        return startDate - dateDate <= 0 && endDate - dateDate >= 0;
+    };
+
+    /*
      * Actually the data is an array of objects but since fromArray() is used in another context,
      * I guess it is ok to use this term instead.
      */
-    Schedule.fromObject = function(scheduleObject) {
+    Schedule.fromObject = function (scheduleObject) {
 
         var content = [];
 
         scheduleObject.forEach( function(entry) {
             if (entry.hasOwnProperty("tracks")) { // only sessions have this property
-                content.push(Session.fromObject(entry));
+                var session = Session.fromObject(entry);
+                session.splitByDays().forEach(function (s) {
+                    content.push(s);
+                });
             } else if (entry.hasOwnProperty("events")) { // only tracks have this property
-                content.push(Track.fromObject(entry));
+                var track = Track.fromObject(entry);
+                track.splitByDays().forEach(function (t) {
+                    content.push(t);
+                });
             } else { // all the rest are simply events
                 content.push(Event.fromObject(entry));
             }
