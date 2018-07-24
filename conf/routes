@@ -14,6 +14,7 @@ GET           /dashboard/accounts                             @controllers.Appli
 GET           /conferences                                    @controllers.Application.conferences
 GET           /conference/:id                                 @controllers.Application.conference(id: String)
 GET           /conference/:id/submission                      @controllers.Application.submission(id: String)
+GET           /conference/:id/locations                      @controllers.Application.locations(id: String)
 GET           /conference/:id/abstracts                       @controllers.Application.abstractsPublic(id: String)
 GET           /conference/:id/schedule                        @controllers.Application.schedule(id: String)
 GET           /myabstracts                                    @controllers.Application.abstractsPrivate

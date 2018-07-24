@@ -44,6 +44,10 @@
     <script src="http://cdn.dhtmlx.com/scheduler/edge/dhtmlxscheduler.js" type="text/javascript"></script>
     <script src="http://cdn.dhtmlx.com/scheduler/edge/ext/dhtmlxscheduler_readonly.js" type="text/javascript"></script>
     <link rel="stylesheet" href="http://cdn.dhtmlx.com/scheduler/edge/dhtmlxscheduler.css" type="text/css">
+    <!-- leaflet.js for open street map -->
+    <link rel="stylesheet" href="@routes.Assets.at("javascripts/lib/leaflet/leaflet.css")"/>
+    <script src="@routes.Assets.at("javascripts/lib/leaflet/leaflet.js")"></script>
+
 
     <!-- MathJax support -->
     @components.mathjax()
@@ -106,7 +110,13 @@
 
                         @if(conf.isPublished) {
                             <li class=@if(active.toLowerCase == "abstracts") {"active"} else {""}>
-                                <a href="@routes.Application.abstractsPublic(conf.short)">Abstracts</a>
+                            <a href="@routes.Application.abstractsPublic(conf.short)">Abstracts</a>
+                            </li>
+                        }
+
+                        @if(conf.isPublished) {
+                            <li class=@if(active.toLowerCase == "locations") {"active"} else {""}>
+                            <a href="@routes.Application.locations(conf.short)">Locations</a>
                             </li>
                         }
 
