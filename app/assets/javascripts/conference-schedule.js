@@ -308,8 +308,9 @@ require(["main"], function () {
 
                     // the header with date and event type
                     html += "<div class='conference-scheduler-header' data-bind='click: function (data, event) "
-                        + "{displayEventInfo(\"" + ev.id +"\")}'><button style='margin-left: 5px' type='button' "
+                        + "{displayEventInfo(\"" + ev.id +"\")}'><button type='button' "
                         + "class='btn btn-secondary btn-sm pull-left' disabled>" + templateEventType + "</button>"
+                        + "<h4>" + window.dhtmlXScheduler.templates.event_text(ev.start_date, ev.end_date, ev) + "</h4>"
                         + window.dhtmlXScheduler.templates.event_header(ev.start_date, ev.end_date, ev)
                         + "</div>";
 
@@ -327,8 +328,7 @@ require(["main"], function () {
 
                     // the body with all the necessary information
                     html += "<div class='conference-scheduler-body' data-bind='click: function (data, event) "
-                        + "{displayEventInfo(\"" + ev.id +"\")}'>";
-                    html += "<h4>" + window.dhtmlXScheduler.templates.event_text(ev.start_date, ev.end_date, ev) + "</h4></div>";
+                        + "{displayEventInfo(\"" + ev.id +"\")}'></div>";
 
                     // closing div
                     html += "</div>";
