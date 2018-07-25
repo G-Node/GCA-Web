@@ -270,7 +270,7 @@ require(["main"], function () {
             };
 
             self.initScheduler = function () {
-                window.dhtmlXScheduler.xy.scale_height = -1; // hide the day display
+                window.dhtmlXScheduler.xy.scale_height = -2; // hide the day display
                 window.dhtmlXScheduler.xy.scroll_width = -1; // hide the scroll bar
                 window.dhtmlXScheduler.config.readonly = true; // disable editing events
                 window.dhtmlXScheduler.config.separate_short_events = true; // prevent short events from overlapping
