@@ -1567,17 +1567,16 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     /**
      * Model for conference schedules.
      *
-     * @param {string} [uuid]
      * @param {Array} [content]
      *
      * @returns {Schedule}
      * @constructor
      * @public
      */
-    function Schedule (uuid, content) {
+    function Schedule (content) {
 
         if (!(this instanceof Schedule)) {
-            return new Schedule(uuid, content);
+            return new Schedule(content);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -1718,8 +1717,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             }
         });
 
-        // TODO: Does this work? There is no UUID, but it's only used for tools.inherit(), where I don't think it makes any difference.
-        return new Schedule("", content);
+        return new Schedule(content);
 
     };
 
