@@ -305,6 +305,9 @@ require(["main"], function () {
                         templateEventContent += "</table>";
                     } else if (ev.isTrack()) {
                         templateBoarderClass = "conference-scheduler-event-t";
+                        if (ev.parentEvent !== null) {
+                            templateBoarderClass += " conference-scheduler-event-st";
+                        }
                         templateEventType = "Track";
                         templateEventContent = "<table>";
                         ev.baseEvent.events.forEach(function (track) {
@@ -315,6 +318,9 @@ require(["main"], function () {
                         templateEventContent += "</table>";
                     } else {
                         templateBoarderClass = "conference-scheduler-event-e";
+                        if (ev.parentEvent !== null) {
+                            templateBoarderClass += " conference-scheduler-event-te";
+                        }
                         templateEventType = "Event";
                     }
                     var html = "<div class='conference-scheduler-event " + templateBoarderClass + "'>";
