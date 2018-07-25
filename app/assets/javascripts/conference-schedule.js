@@ -294,12 +294,27 @@ require(["main"], function () {
                     // define specific templates
                     var templateBoarderClass = "";
                     var templateEventType = "";
+                    var templateEventContent = "";
                     if (ev.isSession()) {
                         templateBoarderClass = "conference-scheduler-event-s";
                         templateEventType = "Session";
+                        templateEventContent = "<table>";
+                        ev.baseEvent.tracks.forEach(function (track) {
+                            templateEventContent += "<tr><td style='width: 20%'><strong>" + moment(track.getStart()).format("HH:mm")
+                                + "</br> - </br>" + moment(track.getEnd()).format("HH:mm") + "</strong></td>"
+                                + "<td><strong>" + track.title + "</strong></td></tr>";
+                        });
+                        templateEventContent += "</table>";
                     } else if (ev.isTrack()) {
                         templateBoarderClass = "conference-scheduler-event-t";
                         templateEventType = "Track";
+                        templateEventContent = "<table>";
+                        ev.baseEvent.events.forEach(function (track) {
+                            templateEventContent += "<tr><td style='width: 20%'><strong>" + moment(track.getStart()).format("HH:mm")
+                                + "</br> - </br>" + moment(track.getEnd()).format("HH:mm") + "</strong></td>"
+                                + "<td><strong>" + track.title + "</strong></td></tr>";
+                        });
+                        templateEventContent += "</table>";
                     } else {
                         templateBoarderClass = "conference-scheduler-event-e";
                         templateEventType = "Event";
@@ -328,7 +343,8 @@ require(["main"], function () {
 
                     // the body with all the necessary information
                     html += "<div class='conference-scheduler-body' data-bind='click: function (data, event) "
-                        + "{displayEventInfo(\"" + ev.id +"\")}'></div>";
+                        + "{displayEventInfo(\"" + ev.id +"\")}'>" + "</br>" +  templateEventContent
+                        + "</div>";
 
                     // closing div
                     html += "</div>";
