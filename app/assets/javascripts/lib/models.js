@@ -1676,9 +1676,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * Check whether the tow dates are on the same date.
      */
     Schedule.isSameDate = function (firstDate, secondDate) {
-        return firstDate.getFullYear() == secondDate.getFullYear()
-            && firstDate.getMonth() == secondDate.getMonth()
-            && firstDate.getDate() == secondDate.getDate();
+        if (firstDate !== null && secondDate !== null && firstDate !== undefined && secondDate !== undefined) {
+            return firstDate.getFullYear() == secondDate.getFullYear()
+                && firstDate.getMonth() == secondDate.getMonth()
+                && firstDate.getDate() == secondDate.getDate();
+        }
+        return false;
     };
 
     /*
@@ -1687,10 +1690,14 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * taken into account.
      */
     Schedule.isIntermediateDate = function (start, end, date) {
-        var startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-        var endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-        var dateDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-        return startDate - dateDate <= 0 && endDate - dateDate >= 0;
+        if (start !== null && end !== null && date !== null
+            && start !== undefined && end !== undefined && date !== undefined) {
+            var startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+            var endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+            var dateDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            return startDate - dateDate <= 0 && endDate - dateDate >= 0;
+        }
+        return false;
     };
 
     /*
