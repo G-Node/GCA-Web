@@ -270,8 +270,6 @@ require(["main"], function () {
             };
 
             self.initScheduler = function () {
-                // TODO: create custom tabbed navbar
-                // window.dhtmlXScheduler.xy.nav_height = -1; // hide the navigation bar
                 window.dhtmlXScheduler.xy.scale_height = -1; // hide the day display
                 window.dhtmlXScheduler.xy.scroll_width = -1; // hide the scroll bar
                 window.dhtmlXScheduler.config.readonly = true; // disable editing events
