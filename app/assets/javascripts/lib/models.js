@@ -1579,7 +1579,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             return new Schedule(content);
         }
 
-        var self = tools.inherit(this, Model, uuid);
+        var self = tools.inherit(this, Model);
 
         self.content = content || [];
 
