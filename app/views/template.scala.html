@@ -99,13 +99,19 @@
                             </li>
                         }
 
-                        @if(conf.isPublished) {
-                            <li class=@if(active.toLowerCase == "locations") {"active"} else {""}>
-                            <a href="@routes.Application.locations(conf.short)">Locations</a>
-                            </li>
-                        }
+                    @if(conf.isPublished) {
+                        <li class=@if(active.toLowerCase == "locations") {"active"} else {""}>
+                        <a href="@routes.Application.locations(conf.short)">Locations</a>
+                        </li>
+                    }
 
-                        @if(conference.get.isOpen && account.isDefined) {
+                    @if(conf.isPublished) {
+                        <li class=@if(active.toLowerCase == "floorplans") {"active"} else {""}>
+                        <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
+                        </li>
+                    }
+
+                    @if(conference.get.isOpen && account.isDefined) {
                             <li class=@if(active.toLowerCase == "submission") {"active"} else {""}>
                                 <a href="@routes.Application.submission(conf.short)">Submission</a>
                             </li>
