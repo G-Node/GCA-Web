@@ -439,7 +439,7 @@ require(["main"], function () {
                         window.dhtmlXScheduler.config.last_hour = 24;
                     }
                     // adjust the height of the scheduler
-                    self.schedulerHeight(window.dhtmlXScheduler.xy.nav_height + 1 // + 1 pixel to prevent scroll bar display
+                    self.schedulerHeight(window.dhtmlXScheduler.xy.nav_height
                         + (window.dhtmlXScheduler.config.last_hour - window.dhtmlXScheduler.config.first_hour)
                         * window.dhtmlXScheduler.config.hour_size_px);
                     window.dhtmlXScheduler.updateView(); // update scheduler to display all changes
