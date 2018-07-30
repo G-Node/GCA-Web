@@ -125,7 +125,6 @@ p.paragraph-small {
 }
 
 .conference-scheduler-body {
-  cursor: pointer;
   height: 100%;
   width: 100%;
   text-align: left;
@@ -137,16 +136,26 @@ p.paragraph-small {
 }
 
 .conference-scheduler-body table {
-  padding-left: 2%;
-  padding-right: 2%;
+  width: 100%;
 }
 
 .conference-scheduler-body td {
   text-align: center;
   font-size: small;
-  padding-bottom: 5%;
+  padding-top: 2.5%;
+  padding-bottom: 2.5%;
   overflow: visible;
   white-space: normal;
+  border-bottom: 1px solid @color-conference-schedule-table-border;
+}
+
+.conference-scheduler-body tr:last-child td {
+  border-bottom: none;
+}
+
+.conference-scheduler-body tr:hover {
+  cursor: pointer;
+  background-color: @color-conference-schedule-table-selector;
 }
 
 .jumbotron .conference-scheduler-body p {

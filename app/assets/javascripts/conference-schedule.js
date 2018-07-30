@@ -231,37 +231,47 @@ require(["main"], function () {
             /*
              * Open an info view for the selected event, track or session.
              */
-            self.displayEventInfo = function (id) {
+            self.displayEventInfo = function (id, childIndex) {
                 var currentEvent = window.dhtmlXScheduler.getEvent(id);
                 if (currentEvent !== null && currentEvent !== undefined) {
-                    // general info
-                    self.infoID(id);
-                    self.infoBaseEvent(currentEvent.baseEvent);
+                    if (childIndex !== null && childIndex !== undefined && childIndex >= 0) {
+                        // general info
+                        self.infoID(null);
+                        if (currentEvent.isTrack()) {
+                            self.infoBaseEvent(currentEvent.baseEvent.events[childIndex]);
+                        } else { // must be a session as events have no children
+                            self.infoBaseEvent(currentEvent.baseEvent.tracks[childIndex]);
+                        }
+                    } else {
+                        // general info
+                        self.infoID(id);
+                        self.infoBaseEvent(currentEvent.baseEvent);
+                    }
                     // specific info
-                    if (currentEvent.isSession()) {
+                    if (self.infoBaseEvent() instanceof models.Session) {
                         self.infoEventType("Session");
-                    } else if (currentEvent.isTrack()) {
+                    } else if (self.infoBaseEvent() instanceof models.Track) {
                         self.infoEventType("Track");
                         var formattedChair = "";
-                        if (Array.isArray(currentEvent.baseEvent.chair)) {
-                            currentEvent.baseEvent.chair.forEach(function (person) {
+                        if (Array.isArray(self.infoBaseEvent().chair)) {
+                            self.infoBaseEvent().chair.forEach(function (person) {
                                 formattedChair += person + ", ";
                             });
                             formattedChair = formattedChair.replace(/, +$/, "");
                         } else {
-                            formattedChair = currentEvent.baseEvent.chair;
+                            formattedChair = self.infoBaseEvent().chair;
                         }
                         self.infoChair(formattedChair);
                     } else {
                         self.infoEventType("Event");
                         var formattedAuthors = "";
-                        if (Array.isArray(currentEvent.baseEvent.authors)) {
-                            currentEvent.baseEvent.authors.forEach(function (person) {
+                        if (Array.isArray(self.infoBaseEvent().authors)) {
+                            self.infoBaseEvent().authors.forEach(function (person) {
                                 formattedAuthors += person + ", ";
                             });
                             formattedAuthors = formattedAuthors.replace(/, +$/, "");
                         } else {
-                            formattedAuthors = currentEvent.baseEvent.authors;
+                            formattedAuthors = self.infoBaseEvent().authors;
                         }
                         self.infoAuthors(formattedAuthors);
                     }
@@ -297,11 +307,18 @@ require(["main"], function () {
                         templateBoarderClass = "conference-scheduler-event-s";
                         templateEventType = "Session";
                         templateEventContent = "<table>";
-                        ev.baseEvent.tracks.forEach(function (track) {
-                            templateEventContent += "<tr><td style='width: 20%'><strong>" + moment(track.getStart()).format("HH:mm")
-                                + "</br> - </br>" + moment(track.getEnd()).format("HH:mm") + "</strong></td>"
-                                + "<td><strong>" + track.title + "</strong></td></tr>";
-                        });
+                        for (var eventIndex = 0; eventIndex < ev.baseEvent.tracks.length; eventIndex++) {
+                            templateEventContent += "<tr data-bind='click: function (data, event) {"
+                                + "displayEventInfo(\"" + ev.id + "\", " + eventIndex + ")}'>"
+                                + "<td style='border: none; width: 2%'></td>"
+                                + "<td style='width: 2%'></td>"
+                                + "<td><strong>" + moment(ev.baseEvent.tracks[eventIndex].getStart()).format("HH:mm")
+                                + "</br> - </br>" + moment(ev.baseEvent.tracks[eventIndex].getEnd()).format("HH:mm") + "</strong></td>"
+                                + "<td style='width: 2%'></td>"
+                                + "<td><strong>" + ev.baseEvent.tracks[eventIndex].title + "</strong></td>"
+                                + "<td style='width: 2%'></td>"
+                                + "<td style='border: none; width: 2%'></td></tr>";
+                        }
                         templateEventContent += "</table>";
                     } else if (ev.isTrack()) {
                         templateBoarderClass = "conference-scheduler-event-t";
@@ -310,11 +327,18 @@ require(["main"], function () {
                         }
                         templateEventType = "Track";
                         templateEventContent = "<table>";
-                        ev.baseEvent.events.forEach(function (track) {
-                            templateEventContent += "<tr><td style='width: 20%'><strong>" + moment(track.getStart()).format("HH:mm")
-                                + "</br> - </br>" + moment(track.getEnd()).format("HH:mm") + "</strong></td>"
-                                + "<td><strong>" + track.title + "</strong></td></tr>";
-                        });
+                        for (var eventIndex = 0; eventIndex < ev.baseEvent.events.length; eventIndex++) {
+                            templateEventContent += "<tr data-bind='click: function (data, event) {"
+                                + "displayEventInfo(\"" + ev.id + "\", " + eventIndex + ")}'>"
+                                + "<td style='border: none; width: 2%'></td>"
+                                + "<td style='width: 2%'></td>"
+                                + "<td><strong>" + moment(ev.baseEvent.events[eventIndex].getStart()).format("HH:mm")
+                                + "</br> - </br>" + moment(ev.baseEvent.events[eventIndex].getEnd()).format("HH:mm") + "</strong></td>"
+                                + "<td style='width: 2%'></td>"
+                                + "<td><strong>" + ev.baseEvent.events[eventIndex].title + "</strong></td>"
+                                + "<td style='width: 2%'></td>"
+                                + "<td style='border: none; width: 2%'></td></tr>";
+                        }
                         templateEventContent += "</table>";
                     } else {
                         templateBoarderClass = "conference-scheduler-event-e";
@@ -346,8 +370,7 @@ require(["main"], function () {
                     html += "</div>";
 
                     // the body with all the necessary information
-                    html += "<div class='conference-scheduler-body' data-bind='click: function (data, event) "
-                        + "{displayEventInfo(\"" + ev.id +"\")}'>" + "</br>" +  templateEventContent
+                    html += "<div class='conference-scheduler-body'>" + "</br>" +  templateEventContent
                         + "</div>";
 
                     // closing div
