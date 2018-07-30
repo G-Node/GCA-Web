@@ -311,12 +311,12 @@ require(["main"], function () {
                             templateEventContent += "<tr data-bind='click: function (data, event) {"
                                 + "displayEventInfo(\"" + ev.id + "\", " + eventIndex + ")}'>"
                                 + "<td style='border: none; width: 2%'></td>"
-                                + "<td style='width: 2%'></td>"
-                                + "<td><strong>" + moment(ev.baseEvent.tracks[eventIndex].getStart()).format("HH:mm")
+                                + "<td style='width: 12px'></td>"
+                                + "<td style='width: 1px'><strong>" + moment(ev.baseEvent.tracks[eventIndex].getStart()).format("HH:mm")
                                 + "</br> - </br>" + moment(ev.baseEvent.tracks[eventIndex].getEnd()).format("HH:mm") + "</strong></td>"
-                                + "<td style='width: 2%'></td>"
+                                + "<td style='width: 12px'></td>"
                                 + "<td><strong>" + ev.baseEvent.tracks[eventIndex].title + "</strong></td>"
-                                + "<td style='width: 2%'></td>"
+                                + "<td style='width: 12px'></td>"
                                 + "<td style='border: none; width: 2%'></td></tr>";
                         }
                         templateEventContent += "</table>";
@@ -331,12 +331,12 @@ require(["main"], function () {
                             templateEventContent += "<tr data-bind='click: function (data, event) {"
                                 + "displayEventInfo(\"" + ev.id + "\", " + eventIndex + ")}'>"
                                 + "<td style='border: none; width: 2%'></td>"
-                                + "<td style='width: 2%'></td>"
-                                + "<td><strong>" + moment(ev.baseEvent.events[eventIndex].getStart()).format("HH:mm")
+                                + "<td style='width: 12px'></td>"
+                                + "<td style='width: 1px'><strong>" + moment(ev.baseEvent.events[eventIndex].getStart()).format("HH:mm")
                                 + "</br> - </br>" + moment(ev.baseEvent.events[eventIndex].getEnd()).format("HH:mm") + "</strong></td>"
-                                + "<td style='width: 2%'></td>"
+                                + "<td style='width: 12px'></td>"
                                 + "<td><strong>" + ev.baseEvent.events[eventIndex].title + "</strong></td>"
-                                + "<td style='width: 2%'></td>"
+                                + "<td style='width: 12px'></td>"
                                 + "<td style='border: none; width: 2%'></td></tr>";
                         }
                         templateEventContent += "</table>";
