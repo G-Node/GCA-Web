@@ -1,6 +1,9 @@
 
 
 @(account: Option[Account], conference: Option[Conference], active: String)(content: Html)
+
+@import play.api.libs.json.{ Json, JsValue }
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -93,7 +96,9 @@
                             <a href="@routes.Application.conference(conf.short)"> @conference.get.short</a>
                         </li>
 
-                        @if(conf.schedule != null && conf.schedule.length > 0) {
+                        @if(conf.schedule != null && conf.schedule.length > 0
+                                && Json.parse(conf.schedule).asOpt[List[JsValue]] != None
+                                && Json.parse(conf.schedule).as[List[JsValue]].length > 0) {
                             <li class=@if(active.toLowerCase == "conferenceschedule") {"active"} else {""}>
                                 <a href="@routes.Application.schedule(conf.short)">Schedule</a>
                             </li>
