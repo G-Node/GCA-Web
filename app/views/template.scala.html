@@ -93,9 +93,11 @@
                             <a href="@routes.Application.conference(conf.short)"> @conference.get.short</a>
                         </li>
 
-                        <li class=@if(active.toLowerCase == "conferenceschedule") {"active"} else {""}>
-                            <a href="@routes.Application.schedule(conf.short)">Schedule</a>
-                        </li>
+                        @if(conf.schedule != null && conf.schedule.length > 0) {
+                            <li class=@if(active.toLowerCase == "conferenceschedule") {"active"} else {""}>
+                                <a href="@routes.Application.schedule(conf.short)">Schedule</a>
+                            </li>
+                        }
 
                         @if(conf.isPublished) {
                             <li class=@if(active.toLowerCase == "abstracts") {"active"} else {""}>
