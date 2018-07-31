@@ -99,25 +99,30 @@
                             <span data-bind="text: moment(infoBaseEvent().getStart()).format('HH[:]mm[ - ]') + moment(infoBaseEvent().getEnd()).format('HH[:]mm')"></span>
                         </p>
                         <!-- ko if: infoEventType() === 'Event' -->
-                            <p>
+                            <p data-bind="if: infoBaseEvent().location !== null && infoBaseEvent().location !== undefined
+                            && infoBaseEvent().location.length > 0">
                                 <strong>Location: </strong>
                                 <span data-bind="text: infoBaseEvent().location"></span>
                             </p>
-                            <p>
+                            <p data-bind="if: infoBaseEvent().type !== null && infoBaseEvent().type !== undefined
+                            && infoBaseEvent().type.length > 0">
                                 <strong>Type: </strong>
                                 <span data-bind="text: infoBaseEvent().type"></span>
                             </p>
-                            <p>
+                            <p data-bind="if: infoBaseEvent().abstract !== null && infoBaseEvent().abstract !== undefined
+                            && infoBaseEvent().abstract.length > 0">
                                 <strong>Abstract: </strong>
                                 <a data-bind="attr: {href: infoBaseEvent().abstract}, text: infoBaseEvent().abstract"></a>
                             </p>
-                            <p>
+                            <p data-bind="if: infoAuthors() !== null && infoAuthors() !== undefined
+                            && infoAuthors().length > 0">
                                 <strong>Authors: </strong>
                                 <span data-bind="text: infoAuthors()"></span>
                             </p>
                         <!-- /ko -->
                         <!-- ko if: infoEventType() === 'Track' -->
-                            <p>
+                            <p data-bind="if: infoChair() !== null && infoChair() !== undefined
+                            && infoChair().length > 0">
                                 <strong>Chair: </strong>
                                 <span data-bind="text: infoChair()"></span>
                             </p>
