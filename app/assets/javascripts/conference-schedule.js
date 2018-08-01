@@ -87,20 +87,25 @@ require(["main"], function () {
 
             //schedule data
             self.onScheduleData = function (scheduleObj) {
-                self.schedule = models.Schedule.fromObject(scheduleObj);
+                try {
+                    self.schedule = models.Schedule.fromObject(scheduleObj);
 
-                var startingDate = self.schedule.getStart();
-                var numberOfDays = Math.ceil((self.schedule.getEnd() - startingDate) / (24*60*60*1000));
+                    var startingDate = self.schedule.getStart();
+                    var numberOfDays = Math.ceil((self.schedule.getEnd() - startingDate) / (24*60*60*1000));
 
-                for (var i = 0; i < numberOfDays; i++) {
-                    self.days.push(new Date(startingDate.getTime() + i*24*60*60*1000));
+                    for (var i = 0; i < numberOfDays; i++) {
+                        self.days.push(new Date(startingDate.getTime() + i*24*60*60*1000));
+                    }
+                    /*
+                     * Initialising the scheduler must be the last step after loading
+                     * all the required data.
+                     */
+                    self.initScheduler();
+                    self.isLoading(false);
+                } catch (e) {
+                    self.setError("danger", "Error while parsing the conference schedule: Schedule Format Error");
+                    throw e;
                 }
-                /*
-                 * Initialising the scheduler must be the last step after loading
-                 * all the required data.
-                 */
-                self.initScheduler();
-                self.isLoading(false);
             };
 
             /*
