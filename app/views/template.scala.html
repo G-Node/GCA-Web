@@ -37,6 +37,10 @@
     <!-- Timepicker for jQuery -->
     <link rel="stylesheet" media="screen" href="//cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.1/jquery-ui-timepicker-addon.min.css">
 
+    <!-- leaflet.js for open street map -->
+    <link rel="stylesheet" href="@routes.Assets.at("javascripts/lib/leaflet/leaflet.css")"/>
+    <script src="@routes.Assets.at("javascripts/lib/leaflet/leaflet.js")"></script>
+
 
     <!-- MathJax support -->
     @components.mathjax()
@@ -94,6 +98,23 @@
                                 <a href="@routes.Application.abstractsPublic(conf.short)">Abstracts</a>
                             </li>
                         }
+
+                    @if(conf.geo != null && conf.geo.length > 0
+                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                            && Json.parse(conf.geo).as[List[JsValue]].length > 0){
+                        <li class=@if(active.toLowerCase == "locations") {"active"} else{""} >
+                            <a href="@routes.Application.locations(conf.short)">Locations</a>
+                        </li>
+                    }
+
+                    @if(conf.geo != null && conf.geo.length > 0
+                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                            && Json.parse(conf.geo).as[List[JsValue]].length > 0
+                            && (Json.parse(conf.geo) \\ "floorplans").size > 0){
+                        <li class=@if(active.toLowerCase == "floorplans") {"active"} else {""}>
+                            <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
+                        </li>
+                    }
 
                         @if(conference.get.isOpen && account.isDefined) {
                             <li class=@if(active.toLowerCase == "submission") {"active"} else {""}>
