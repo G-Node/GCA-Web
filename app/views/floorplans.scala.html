@@ -1,0 +1,18 @@
+@(account: Option[Account], conference: Conference)
+
+    @template(account, Some(conference), "Floorplans") {
+
+        <div class="hidden-data">
+            <div id="conference-uuid">@conference.uuid</div>
+            <div id="map-type">floorplans</div>
+        </div>
+
+    <script data-main="@routes.Assets.at("javascripts/locations.js")"
+        src="@routes.Assets.at("javascripts/require.js")"></script>
+
+        <!-- The locations of the conference -->
+        <div class="page-header">
+            <h1>Floorplans</h1>
+        </div>
+    <div class="col-md-12" id="floorplans-wrap" style="text-align:center"></div>
+}
