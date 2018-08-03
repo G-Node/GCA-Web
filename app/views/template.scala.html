@@ -1,4 +1,5 @@
 
+@import play.api.libs.json.{ Json, JsValue }
 
 @(account: Option[Account], conference: Option[Conference], active: String)(content: Html)
 <!DOCTYPE html>
@@ -99,15 +100,20 @@
                             </li>
                         }
 
-                    @if(conf.isPublished) {
-                        <li class=@if(active.toLowerCase == "locations") {"active"} else {""}>
-                        <a href="@routes.Application.locations(conf.short)">Locations</a>
+                    @if(conf.geo != null && conf.geo.length > 0
+                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                            && Json.parse(conf.geo).as[List[JsValue]].length > 0){
+                        <li class=@if(active.toLowerCase == "locations") {"active"} else{""} >
+                            <a href="@routes.Application.locations(conf.short)">Locations</a>
                         </li>
                     }
 
-                    @if(conf.isPublished) {
+                    @if(conf.geo != null && conf.geo.length > 0
+                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                            && Json.parse(conf.geo).as[List[JsValue]].length > 0
+                            && (Json.parse(conf.geo) \\ "floorplans").size > 0){
                         <li class=@if(active.toLowerCase == "floorplans") {"active"} else {""}>
-                        <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
+                            <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
                         </li>
                     }
 
