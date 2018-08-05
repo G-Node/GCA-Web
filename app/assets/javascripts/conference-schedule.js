@@ -32,6 +32,8 @@ require(["main"], function () {
             self.infoEventType = ko.observable(null);
             self.infoID = ko.observable(null);
             self.infoBaseEvent = ko.observable(null);
+            self.infoAbstract = ko.observable(null);
+            self.infoisLoadingAbstract = ko.observable(false);
             self.infoChair = ko.observable(null);
             self.infoAuthors = ko.observable(null);
             self.schedule = null;
@@ -87,6 +89,26 @@ require(["main"], function () {
                  */
                 self.initScheduler();
                 self.isLoading(false);
+            };
+
+            /*
+            * Load the abstract from a specific URL for display in the modal
+            * info popup. Execute some function afterwards if required.
+            */
+            self.infoLoadAbstract = function (abstractURL, doAfer) {
+                self.infoAbstract(null);
+                self.infoisLoadingAbstract(true);
+                $.getJSON(abstractURL, onAbstractData);
+
+                function onAbstractData (abstractObj) {
+                    if (abstractObj !== null && abstractObj !== undefined) {
+                        self.infoAbstract(models.Abstract.fromObject(abstractObj));
+                        if (doAfer !== null && doAfer !== undefined) {
+                            doAfer();
+                        }
+                        self.infoisLoadingAbstract(false);
+                    }
+                };
             };
 
             // check if a track or session can be split
