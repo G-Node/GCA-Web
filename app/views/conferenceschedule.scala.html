@@ -134,7 +134,7 @@
                                 </div>
                                 <p data-bind="if: !infoIsLoadingAbstract() && infoAbstract() !== null && infoAbstract() !== undefined">
                                     <strong>
-                                        <a data-bind="attr: {href: infoBaseEvent().abstract}, text: infoAbstract().title"></a>
+                                        <a data-bind="attr: {href: $root.createAbstractURL('@routes.Application.abstractsPublic(conference.short)')}, text: infoAbstract().title"></a>
                                     </strong>
                                     <textarea data-bind="text: infoAbstract().text" class="form-control" readonly></textarea>
                                 </p>

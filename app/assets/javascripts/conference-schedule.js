@@ -123,6 +123,13 @@ require(["main"], function () {
                 };
             };
 
+            /*
+             * Create the URL to the public abstract view based on the conference URL.
+             */
+            self.createAbstractURL = function (baseURL) {
+                return baseURL + "#/uuid/" + self.infoAbstract().uuid;
+            };
+
             // check if a track or session can be split
             self.canExpandEvent = function (id) {
                 var event = window.dhtmlXScheduler.getEvent(id);
