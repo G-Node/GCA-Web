@@ -18,7 +18,7 @@ require(["main"], function () {
 
             var self = this;
             self.customNavbar = false;
-            self.isLoading = ko.observable("Loading conference schedule.");
+            self.isLoading = ko.observable("Loading conference schedule");
             self.error = ko.observable(false);
             self.schedulerHeight = ko.observable(2000);
             // navbar observables
@@ -33,7 +33,8 @@ require(["main"], function () {
             self.infoID = ko.observable(null);
             self.infoBaseEvent = ko.observable(null);
             self.infoAbstract = ko.observable(null);
-            self.infoisLoadingAbstract = ko.observable(false);
+            self.infoIsLoadingAbstract = ko.observable(false);
+            self.infoError = ko.observable(false);
             self.infoChair = ko.observable(null);
             self.infoAuthors = ko.observable(null);
             self.schedule = null;
@@ -49,11 +50,22 @@ require(["main"], function () {
                 self.isLoading(false);
             };
 
+            self.infoSetError = function(level, text) {
+                self.infoError({message: text, level: 'alert-' + level});
+                self.infoIsLoadingAbstract(false);
+            };
+
             //Data IO
             self.ioFailHandler = function(jqxhr, textStatus, error) {
                 var err = textStatus + ", " + error;
                 console.log( "Request Failed: " + err );
                 self.setError("danger", "Error while fetching data from server: <br\\>" + error);
+            };
+
+            self.infoIoFailHandler = function(jqxhr, textStatus, error) {
+                var err = textStatus + ", " + error;
+                console.log( "Request Failed: " + err );
+                self.infoSetError("danger", "Error while fetching data from server: <br\\>" + error);
             };
 
             self.loadConference = function(id) {
@@ -97,8 +109,8 @@ require(["main"], function () {
             */
             self.infoLoadAbstract = function (abstractURL, doAfer) {
                 self.infoAbstract(null);
-                self.infoisLoadingAbstract(true);
-                $.getJSON(abstractURL, onAbstractData);
+                self.infoIsLoadingAbstract("Loading abstract");
+                $.getJSON(abstractURL, onAbstractData).fail(self.infoIoFailHandler);
 
                 function onAbstractData (abstractObj) {
                     if (abstractObj !== null && abstractObj !== undefined) {
@@ -106,7 +118,7 @@ require(["main"], function () {
                         if (doAfer !== null && doAfer !== undefined) {
                             doAfer();
                         }
-                        self.infoisLoadingAbstract(false);
+                        self.infoIsLoadingAbstract(false);
                     }
                 };
             };
@@ -296,6 +308,7 @@ require(["main"], function () {
                             formattedAuthors = self.infoBaseEvent().authors;
                         }
                         self.infoAuthors(formattedAuthors);
+                        self.infoLoadAbstract(self.infoBaseEvent().abstract);
                     }
                     $("#conference-scheduler-info").modal("show");
                 }

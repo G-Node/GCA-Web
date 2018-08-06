@@ -109,16 +109,36 @@
                                 <strong>Type: </strong>
                                 <span data-bind="text: infoBaseEvent().type"></span>
                             </p>
-                            <p data-bind="if: infoBaseEvent().abstract !== null && infoBaseEvent().abstract !== undefined
-                            && infoBaseEvent().abstract.length > 0">
-                                <strong>Abstract: </strong>
-                                <a data-bind="attr: {href: infoBaseEvent().abstract}, text: infoBaseEvent().abstract"></a>
-                            </p>
                             <p data-bind="if: infoAuthors() !== null && infoAuthors() !== undefined
-                            && infoAuthors().length > 0">
+                                && infoAuthors().length > 0">
                                 <strong>Authors: </strong>
                                 <span data-bind="text: infoAuthors()"></span>
                             </p>
+                            <!-- ko if: infoBaseEvent().abstract !== null && infoBaseEvent().abstract !== undefined
+                            && infoBaseEvent().abstract.length > 0 -->
+                                <!-- Loading box -->
+                                <div data-bind="if: infoIsLoadingAbstract">
+                                    <div class="alert alert-info fade in out">
+                                        <h4 data-bind="text: infoIsLoadingAbstract">Loading abstract</h4>
+                                        <p>Please wait...</p>
+                                    </div>
+                                </div>
+                                <!-- Error message box -->
+                                <div data-bind="visible: infoError">
+                                    <!-- ko with: infoError -->
+                                    <div class="alert fade in alert-dismissable" data-bind="css: level">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <strong data-bind="html: message"></strong>
+                                    </div>
+                                    <!-- /ko -->
+                                </div>
+                                <p data-bind="if: !infoIsLoadingAbstract() && infoAbstract() !== null && infoAbstract() !== undefined">
+                                    <strong>
+                                        <a data-bind="attr: {href: infoBaseEvent().abstract}, text: infoAbstract().title"></a>
+                                    </strong>
+                                    <textarea data-bind="text: infoAbstract().text" class="form-control" readonly></textarea>
+                                </p>
+                            <!-- /ko -->
                         <!-- /ko -->
                         <!-- ko if: infoEventType() === 'Track' -->
                             <p data-bind="if: infoChair() !== null && infoChair() !== undefined
