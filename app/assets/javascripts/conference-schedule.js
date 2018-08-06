@@ -32,7 +32,7 @@ require(["main"], function () {
             self.infoEventType = ko.observable(null);
             self.infoID = ko.observable(null);
             self.infoBaseEvent = ko.observable(null);
-            self.infoAbstract = ko.observable(null);
+            self.infoAbstract = ko.observable("");
             self.infoIsLoadingAbstract = ko.observable(false);
             self.infoError = ko.observable(false);
             self.infoChair = ko.observable(null);
@@ -108,7 +108,8 @@ require(["main"], function () {
             * info popup. Execute some function afterwards if required.
             */
             self.infoLoadAbstract = function (abstractURL, doAfer) {
-                self.infoAbstract(null);
+                self.infoAbstract("");
+                self.infoError(false);
                 self.infoIsLoadingAbstract("Loading abstract");
                 $.getJSON(abstractURL, onAbstractData).fail(self.infoIoFailHandler);
 
