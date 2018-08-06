@@ -116,6 +116,7 @@
                             </p>
                             <!-- ko if: infoBaseEvent().abstract !== null && infoBaseEvent().abstract !== undefined
                             && infoBaseEvent().abstract.length > 0 -->
+                                </br>
                                 <!-- Loading box -->
                                 <div data-bind="if: infoIsLoadingAbstract">
                                     <div class="alert alert-info fade in out">
@@ -132,12 +133,12 @@
                                     </div>
                                     <!-- /ko -->
                                 </div>
-                                <p data-bind="if: !infoIsLoadingAbstract() && infoAbstract() !== null && infoAbstract() !== undefined">
-                                    <strong>
+                                <div data-bind="visible: !infoError(), if: !infoIsLoadingAbstract() && infoAbstract() !== null && infoAbstract() !== undefined" class="conference-scheduler-abstract">
+                                    <strong class="conference-scheduler-abstract-header">
                                         <a data-bind="attr: {href: $root.createAbstractURL('@routes.Application.abstractsPublic(conference.short)')}, text: infoAbstract().title"></a>
                                     </strong>
-                                    <textarea data-bind="text: infoAbstract().text" class="form-control" readonly></textarea>
-                                </p>
+                                    <div data-bind="text: infoAbstract().text" class="conference-scheduler-abstract-body"></div>
+                                </div>
                             <!-- /ko -->
                         <!-- /ko -->
                         <!-- ko if: infoEventType() === 'Track' -->
