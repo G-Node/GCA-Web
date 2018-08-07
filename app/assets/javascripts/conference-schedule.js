@@ -18,7 +18,7 @@ require(["main"], function () {
 
             var self = this;
             self.customNavbar = false;
-            self.isLoading = ko.observable("Loading conference schedule.");
+            self.isLoading = ko.observable("Loading conference schedule");
             self.error = ko.observable(false);
             self.schedulerHeight = ko.observable(2000);
             // navbar observables
@@ -32,6 +32,9 @@ require(["main"], function () {
             self.infoEventType = ko.observable(null);
             self.infoID = ko.observable(null);
             self.infoBaseEvent = ko.observable(null);
+            self.infoAbstract = ko.observable("");
+            self.infoIsLoadingAbstract = ko.observable(false);
+            self.infoError = ko.observable(false);
             self.infoChair = ko.observable(null);
             self.infoAuthors = ko.observable(null);
             self.schedule = null;
@@ -47,11 +50,22 @@ require(["main"], function () {
                 self.isLoading(false);
             };
 
+            self.infoSetError = function(level, text) {
+                self.infoError({message: text, level: 'alert-' + level});
+                self.infoIsLoadingAbstract(false);
+            };
+
             //Data IO
             self.ioFailHandler = function(jqxhr, textStatus, error) {
                 var err = textStatus + ", " + error;
                 console.log( "Request Failed: " + err );
                 self.setError("danger", "Error while fetching data from server: <br\\>" + error);
+            };
+
+            self.infoIoFailHandler = function(jqxhr, textStatus, error) {
+                var err = textStatus + ", " + error;
+                console.log( "Request Failed: " + err );
+                self.infoSetError("danger", "Error while fetching data from server: <br\\>" + error);
             };
 
             self.loadConference = function(id) {
@@ -73,20 +87,53 @@ require(["main"], function () {
 
             //schedule data
             self.onScheduleData = function (scheduleObj) {
-                self.schedule = models.Schedule.fromObject(scheduleObj);
+                try {
+                    self.schedule = models.Schedule.fromObject(scheduleObj);
 
-                var startingDate = self.schedule.getStart();
-                var numberOfDays = Math.ceil((self.schedule.getEnd() - startingDate) / (24*60*60*1000));
+                    var startingDate = self.schedule.getStart();
+                    var numberOfDays = Math.ceil((self.schedule.getEnd() - startingDate) / (24*60*60*1000));
 
-                for (var i = 0; i < numberOfDays; i++) {
-                    self.days.push(new Date(startingDate.getTime() + i*24*60*60*1000));
+                    for (var i = 0; i < numberOfDays; i++) {
+                        self.days.push(new Date(startingDate.getTime() + i*24*60*60*1000));
+                    }
+                    /*
+                     * Initialising the scheduler must be the last step after loading
+                     * all the required data.
+                     */
+                    self.initScheduler();
+                    self.isLoading(false);
+                } catch (e) {
+                    self.setError("danger", "Error while parsing the conference schedule: Schedule Format Error");
+                    throw e;
                 }
-                /*
-                 * Initialising the scheduler must be the last step after loading
-                 * all the required data.
-                 */
-                self.initScheduler();
-                self.isLoading(false);
+            };
+
+            /*
+            * Load the abstract from a specific URL for display in the modal
+            * info popup. Execute some function afterwards if required.
+            */
+            self.infoLoadAbstract = function (abstractURL, doAfer) {
+                self.infoAbstract("");
+                self.infoError(false);
+                self.infoIsLoadingAbstract("Loading abstract");
+                $.getJSON(abstractURL, onAbstractData).fail(self.infoIoFailHandler);
+
+                function onAbstractData (abstractObj) {
+                    if (abstractObj !== null && abstractObj !== undefined) {
+                        self.infoAbstract(models.Abstract.fromObject(abstractObj));
+                        if (doAfer !== null && doAfer !== undefined) {
+                            doAfer();
+                        }
+                        self.infoIsLoadingAbstract(false);
+                    }
+                };
+            };
+
+            /*
+             * Create the URL to the public abstract view based on the conference URL.
+             */
+            self.createAbstractURL = function (baseURL) {
+                return baseURL + "#/uuid/" + self.infoAbstract().uuid;
             };
 
             // check if a track or session can be split
@@ -274,6 +321,7 @@ require(["main"], function () {
                             formattedAuthors = self.infoBaseEvent().authors;
                         }
                         self.infoAuthors(formattedAuthors);
+                        self.infoLoadAbstract(self.infoBaseEvent().abstract);
                     }
                     $("#conference-scheduler-info").modal("show");
                 }
@@ -312,10 +360,9 @@ require(["main"], function () {
                                 + "displayEventInfo(\"" + ev.id + "\", " + eventIndex + ")}'>"
                                 + "<td style='border: none; width: 2%'></td>"
                                 + "<td style='width: 12px'></td>"
-                                + "<td style='width: 1px'><strong>" + moment(ev.baseEvent.tracks[eventIndex].getStart()).format("HH:mm")
-                                + "</br> - </br>" + moment(ev.baseEvent.tracks[eventIndex].getEnd()).format("HH:mm") + "</strong></td>"
-                                + "<td style='width: 12px'></td>"
-                                + "<td><strong>" + ev.baseEvent.tracks[eventIndex].title + "</strong></td>"
+                                + "<td><strong>" + ev.baseEvent.tracks[eventIndex].title + "</strong></br>"
+                                + moment(ev.baseEvent.tracks[eventIndex].getStart()).format("HH:mm")
+                                + " - " + moment(ev.baseEvent.tracks[eventIndex].getEnd()).format("HH:mm") + "</td>"
                                 + "<td style='width: 12px'></td>"
                                 + "<td style='border: none; width: 2%'></td></tr>";
                         }
@@ -332,10 +379,9 @@ require(["main"], function () {
                                 + "displayEventInfo(\"" + ev.id + "\", " + eventIndex + ")}'>"
                                 + "<td style='border: none; width: 2%'></td>"
                                 + "<td style='width: 12px'></td>"
-                                + "<td style='width: 1px'><strong>" + moment(ev.baseEvent.events[eventIndex].getStart()).format("HH:mm")
-                                + "</br> - </br>" + moment(ev.baseEvent.events[eventIndex].getEnd()).format("HH:mm") + "</strong></td>"
-                                + "<td style='width: 12px'></td>"
-                                + "<td><strong>" + ev.baseEvent.events[eventIndex].title + "</strong></td>"
+                                + "<td><strong>" + ev.baseEvent.events[eventIndex].title + "</strong></br>"
+                                + moment(ev.baseEvent.events[eventIndex].getStart()).format("HH:mm")
+                                + " - " + moment(ev.baseEvent.events[eventIndex].getEnd()).format("HH:mm") + "</td>"
                                 + "<td style='width: 12px'></td>"
                                 + "<td style='border: none; width: 2%'></td></tr>";
                         }
