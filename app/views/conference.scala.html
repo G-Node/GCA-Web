@@ -25,9 +25,9 @@
                 </a>
             </div>
         }
-        @if(conference.description != null) {
+        @if(conference.getDescriptionAsHTML().length() > 0) {
             <div class="jumbo-small">
-                @Html(conference.formatDescription)
+                @Html(conference.getDescriptionAsHTML())
             </div>
         }
         <p>@conference.formatDuration</p>
@@ -77,4 +77,16 @@
             </div>
         }
     </div>
+
+    <!-- The conference info panel -->
+    @if(conference.getInfoAsHTML().length() > 0) {
+        <div class="jumbotron">
+            <div class="page-header">
+                <h1>General Information</h1>
+            </div>
+            <div class="jumbo-small">
+                @Html(conference.getInfoAsHTML())
+            </div>
+        </div>
+    }
 }

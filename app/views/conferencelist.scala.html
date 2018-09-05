@@ -18,10 +18,9 @@
                 <h3>
                     <a href="@routes.Application.conference(conference.short)">@conference.name</a>
                 </h3>
-                @if(conference.description != null) {
+                @if(conference.getDescriptionAsHTML().length() > 0) {
                     <div class="jumbo-small">
-                        @Html(conference.formatDescription)
-
+                        @Html(conference.getDescriptionAsHTML())
                     </div>
                 }
 

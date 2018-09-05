@@ -2,7 +2,7 @@
 
 @(account: Option[Account], conference: Option[Conference], active: String)(content: Html)
 <!DOCTYPE html>
-<html>
+<html manifest="@routes.Assets.at("cache/mobcache.appcache")" >
 <head>
     <!--
            ____       _   _           _
@@ -37,10 +37,6 @@
     <!-- Timepicker for jQuery -->
     <link rel="stylesheet" media="screen" href="//cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.1/jquery-ui-timepicker-addon.min.css">
 
-    <!-- leaflet.js for open street map -->
-    <link rel="stylesheet" href="@routes.Assets.at("javascripts/lib/leaflet/leaflet.css")"/>
-    <script src="@routes.Assets.at("javascripts/lib/leaflet/leaflet.js")"></script>
-
 
     <!-- MathJax support -->
     @components.mathjax()
@@ -50,11 +46,6 @@
     <meta name="description" content="Conference Abstracts">
     <meta name="keywords" content="Abstracts">
     <meta name="author" content="German Neuroinformatics Node (G-Node)">
-
-    <!-- mobile webapp support -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="/manifest.json">
 
     <!-- smart app banner -->
     @conference.map { conf =>
@@ -99,23 +90,6 @@
                             </li>
                         }
 
-                    @if(conf.geo != null && conf.geo.length > 0
-                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
-                            && Json.parse(conf.geo).as[List[JsValue]].length > 0){
-                        <li class=@if(active.toLowerCase == "locations") {"active"} else{""} >
-                            <a href="@routes.Application.locations(conf.short)">Locations</a>
-                        </li>
-                    }
-
-                    @if(conf.geo != null && conf.geo.length > 0
-                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
-                            && Json.parse(conf.geo).as[List[JsValue]].length > 0
-                            && (Json.parse(conf.geo) \\ "floorplans").size > 0){
-                        <li class=@if(active.toLowerCase == "floorplans") {"active"} else {""}>
-                            <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
-                        </li>
-                    }
-
                         @if(conference.get.isOpen && account.isDefined) {
                             <li class=@if(active.toLowerCase == "submission") {"active"} else {""}>
                                 <a href="@routes.Application.submission(conf.short)">Submission</a>
@@ -140,7 +114,7 @@
                     @account.map { acc =>
                         <li class="dropdown">
                             <a href="#" id="usermenu" role="button" class="dropdown-toggle" data-toggle="dropdown">
-                                @acc.firstName @acc.lastName (@acc.mail)
+                                @acc.firstName @acc.lastName
                             <b class="caret"></b>
                             </a>
 
@@ -152,7 +126,6 @@
                                 <li role="presentation" class="dropdown-header">My Settings</li>
                                 <li role="presentation">
                                     <a role="menuitem" tabindex="-1" href="/password">Change password</a>
-                                    <a role="menuitem" tabindex="-1" href="/mail">Change Email</a>
                                 </li>
                                 <li class="divider"></li>
                                 @if(acc.isAdmin) {
