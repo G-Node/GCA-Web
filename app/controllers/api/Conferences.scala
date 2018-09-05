@@ -63,13 +63,28 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
   }
 
   /**
-   * List all available conferences for which the current user is an owner
-   * of at least an abstract
-   *
-   * @return Ok with all conferences publicly available.
-   */
+    * List all available conferences for which the current user is an owner
+    * of at least an abstract
+    *
+    * @return Ok with all conferences publicly available.
+    */
   def listWithOwnAbstracts =  SecuredAction { implicit request =>
     val conferences = conferenceService.listWithAbstractsOfAccount(request.identity.account)
+    if (conferences.length==0) {
+      BadRequest("You have created no abstracts yet")
+    } else {
+      resultWithETag(conferences)
+    }
+  }
+
+  /**
+    * List all available conferences for which the current user is an owner
+    * of at least an abstract
+    *
+    * @return Ok with all conferences publicly available.
+    */
+  def listWithFavouriteAbstracts =  SecuredAction { implicit request =>
+    val conferences = conferenceService.listWithFavouriteAbstractsOfAccount(request.identity.account)
     if (conferences.length==0) {
       BadRequest("You have created no abstracts yet")
     } else {

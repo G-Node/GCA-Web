@@ -18,6 +18,7 @@ GET           /conference/:id/locations                       @controllers.Appli
 GET           /conference/:id/floorplans                      @controllers.Application.floorplans(id: String)
 GET           /conference/:id/abstracts                       @controllers.Application.abstractsPublic(id: String)
 GET           /myabstracts                                    @controllers.Application.abstractsPrivate
+GET           /favouriteabstracts                             @controllers.Application.abstractsFavourite
 GET           /myabstracts/:id/edit                           @controllers.Application.edit(id: String)
 GET           /submitted                                      @controllers.Application.abstractsPending
 

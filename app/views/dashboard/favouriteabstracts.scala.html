@@ -1,0 +1,58 @@
+@(account: Account)
+
+@template(Some(account), None, "Abstracts") {
+
+    <div class="hidden-data">
+        <div id="conference-uuid">@account.uuid</div>
+    </div>
+
+    <script data-main="@routes.Assets.at("javascripts/abstracts-favourite.js")"
+    src="@routes.Assets.at("javascripts/require.js")"></script>
+
+
+        <!-- Loading box -->
+    <div data-bind="if: isLoading">
+        <div class="alert alert-info fade in out">
+            <h4>Loading data</h4>
+            <p>Please wait...</p>
+        </div>
+    </div>
+
+        <!-- Knockout !flickerbox  -->
+    <div style="display: none" data-bind="visible: true">
+
+            <!-- Error message box -->
+        <div data-bind="visible: error">
+                <!-- ko with: error -->
+            <div class="alert alert-warning fade in alert-dismissable" data-bind="css: level">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <strong data-bind="html: message"></strong>
+            </div>
+                <!-- /ko -->
+        </div>
+
+
+        <div data-bind="foreach: conferences">
+            <div class="panel panel-default">
+                <div class="panel-heading" >
+                    <a data-bind="attr: { href: link }">
+                        <h4 class="panel-title" data-bind="text: name"></h4>
+                    </a>
+                </div>
+                <div class="panel-body">
+                    <span data-bind="text: cite"></span>
+                </div>
+                <ul id="abstract-list" class="list-group" data-bind="foreach: abstracts">
+                    <a data-bind="attr: { href: createLink().absLink }">
+                        <li id="abstract-list-item" class="list-group-item abstract">
+                            <span data-bind="text: title"></span>
+                            <!--<a class="badge" data-bind="href: unfavouritelink">Dislike</a>-->
+                        </li>
+                    </a>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+}
