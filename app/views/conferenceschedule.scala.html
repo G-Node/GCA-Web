@@ -49,9 +49,9 @@
                             <ul class="conference-scheduler-navbar-selector">
                                 <li><button class="conference-scheduler-navbar-switch pull-left"
                                 data-bind="click: function(data, event) {firstSchedulerDate()}">
-                                    <span class="glyphicon glyphicon-step-backward" style="vertical-align: middle;"></span></button></li>
+                                    <span class="glyphicon glyphicon-step-backward" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
                                 <li><button data-bind="click: function(data, event) {modifySchedulerDate(-1)}" class="conference-scheduler-navbar-switch pull-left">
-                                    <span class="glyphicon glyphicon-chevron-left" style="vertical-align: middle;"></span></button></li>
+                                    <span class="glyphicon glyphicon-chevron-left" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
                                 <li><ul data-bind="foreach: displayCustomDates" class="conference-scheduler-navbar-days">
                                     <li><button data-bind="text: moment($data).format('D[ ]MMMM[ ]YYYY'),
                                     click: function(data, event) {$root.setSchedulerDate($data)},
@@ -60,9 +60,9 @@
                                 </ul></li>
                                 <li><button class="conference-scheduler-navbar-switch pull-right"
                                 data-bind="click: function(data, event) {lastSchedulerDate()}">
-                                    <span class=" glyphicon glyphicon-step-forward" style="vertical-align: middle;"></span></button></li>
+                                    <span class=" glyphicon glyphicon-step-forward" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
                                 <li><button data-bind="click: function(data, event) {modifySchedulerDate(1)}" class="conference-scheduler-navbar-switch pull-right">
-                                    <span class="glyphicon glyphicon-chevron-right" style="vertical-align: middle;"></span></button></li>
+                                    <span class="glyphicon glyphicon-chevron-right" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
                             </ul>
                         </div>
                         <div data-bind="attr: {'style': 'display:' + displayPrevious() + ';'}" class="dhx_cal_prev_button">&nbsp;</div>
