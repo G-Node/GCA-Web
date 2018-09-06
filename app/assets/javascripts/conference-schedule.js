@@ -91,6 +91,8 @@ require(["main"], function () {
                     self.schedule = models.Schedule.fromObject(scheduleObj);
 
                     var startingDate = self.schedule.getStart();
+                    // Use the start of the day for comparisons.
+                    startingDate = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate())
                     var numberOfDays = Math.ceil((self.schedule.getEnd() - startingDate) / (24*60*60*1000));
 
                     for (var i = 0; i < numberOfDays; i++) {
