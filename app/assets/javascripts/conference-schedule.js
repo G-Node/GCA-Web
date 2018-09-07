@@ -336,7 +336,12 @@ require(["main"], function () {
                 window.dhtmlXScheduler.config.separate_short_events = true; // prevent short events from overlapping
                 window.dhtmlXScheduler.config.multi_day = false;
                 // window.dhtmlXScheduler.config.mark_now = true; // mark the current time
-                window.dhtmlXScheduler.config.touch_drag = false;
+                /*
+                 * Disable dragging events by touching.
+                 * This can also be set to "false" to completely disable dragging,
+                 * but some touch functionality will break that way.
+                 */
+                window.dhtmlXScheduler.config.touch_drag = 99999999;
                 /*
                  * Size of the x-axis hour steps.
                  * Must be a multiple of 44 for proper alignment (default skin).
