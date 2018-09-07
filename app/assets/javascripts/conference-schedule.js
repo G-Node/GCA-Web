@@ -358,10 +358,12 @@ require(["main"], function () {
                     // define specific templates
                     var templateBoarderClass = "";
                     var templateEventType = "";
+                    var templateButtonClass = "";
                     var templateEventContent = "";
                     if (ev.isSession()) {
                         templateBoarderClass = "conference-scheduler-event-s";
                         templateEventType = "Session";
+                        templateButtonClass = "conference-scheduler-header-button-session";
                         templateEventContent = "<table>";
                         for (var eventIndex = 0; eventIndex < ev.baseEvent.tracks.length; eventIndex++) {
                             templateEventContent += "<tr data-bind='click: function (data, event) {"
@@ -377,6 +379,7 @@ require(["main"], function () {
                         templateEventContent += "</table>";
                     } else if (ev.isTrack()) {
                         templateBoarderClass = "conference-scheduler-event-t";
+                        templateButtonClass = "conference-scheduler-header-button-track";
                         if (ev.parentEvent !== null) {
                             templateBoarderClass += " conference-scheduler-event-st";
                         }
@@ -396,6 +399,7 @@ require(["main"], function () {
                         templateEventContent += "</table>";
                     } else {
                         templateBoarderClass = "conference-scheduler-event-e";
+                        templateButtonClass = "conference-scheduler-header-button-event";
                         if (ev.parentEvent !== null) {
                             templateBoarderClass += " conference-scheduler-event-te";
                         }
@@ -406,7 +410,8 @@ require(["main"], function () {
                     // the header with date and event type
                     html += "<div class='conference-scheduler-header' data-bind='click: function (data, event) "
                         + "{displayEventInfo(\"" + ev.id +"\")}'><button type='button' "
-                        + "class='btn btn-secondary btn-sm pull-left' disabled>" + templateEventType + "</button>"
+                        + "class='btn btn-secondary btn-sm pull-left " + templateButtonClass + "' disabled>"
+                        + templateEventType + "</button>"
                         + "<h4>" + window.dhtmlXScheduler.templates.event_text(ev.start_date, ev.end_date, ev) + "</h4>"
                         + window.dhtmlXScheduler.templates.event_header(ev.start_date, ev.end_date, ev)
                         + "</div>";

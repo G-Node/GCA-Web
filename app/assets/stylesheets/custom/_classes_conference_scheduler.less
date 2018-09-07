@@ -43,12 +43,12 @@
 
 .conference-scheduler-event-st {
   border-radius: 6px;
-  box-shadow: inset 0px 0px 0px 1px @color-conference-schedule-scheduler-border, inset 0px 0px 0px 3px @color-conference-schedule-session;
+  box-shadow: inset 0px 0px 0px 1px @color-conference-schedule-scheduler-border, inset 0px 0px 0px 3px @color-conference-schedule-scheduler-border-contained-track;
 }
 
 .conference-scheduler-event-te {
   border-radius: 6px;
-  box-shadow: inset 0px 0px 0px 1px @color-conference-schedule-scheduler-border, inset 0px 0px 0px 3px @color-conference-schedule-track;
+  box-shadow: inset 0px 0px 0px 1px @color-conference-schedule-scheduler-border, inset 0px 0px 0px 3px @color-conference-schedule-scheduler-border-contained-event;
 }
 
 .conference-scheduler-header {
@@ -69,6 +69,21 @@
   text-align: left;
   padding: 5px 0px 10px 8px;
   margin: 0px 0px 0px 0px;
+}
+
+.conference-scheduler-header-button-event {
+  background-color: @color-conference-schedule-event-button;
+  color: @color-conference-schedule-event-button-font;
+}
+
+.conference-scheduler-header-button-track {
+  background-color: @color-conference-schedule-track-button;
+  color: @color-conference-schedule-track-button-font;
+}
+
+.conference-scheduler-header-button-session {
+  background-color: @color-conference-schedule-session-button;
+  color: @color-conference-schedule-session-button-font;
 }
 
 .conference-scheduler-body {
