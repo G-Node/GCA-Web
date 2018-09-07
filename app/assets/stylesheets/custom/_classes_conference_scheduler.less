@@ -55,7 +55,7 @@
   border-bottom: 1px solid @color-conference-schedule-header-border;
   font-size: large;
   text-align: right;
-  padding: 4px 1% 1% 4px;
+  padding: 4px 8px 4px 4px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -67,9 +67,8 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   text-align: left;
-  padding-left: 2%;
-  margin-top: 0px;
-  padding-top: 5px;
+  padding: 5px 0px 10px 8px;
+  margin: 0px 0px 0px 0px;
 }
 
 .conference-scheduler-body {
@@ -116,16 +115,19 @@
 
 .conference-scheduler-mod {
   cursor: pointer;
-  font-size: small;
+  font-size: 1.5em;
   text-align: right;
   float: right;
-  padding-top: 1%;
-  padding-bottom: 1%;
-  padding-right: 2%;
+  padding: 15px 12px 10px 0px;
+  margin: 0px 0px 0px 0px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   color: @color-conference-schedule-scheduler-mod;
+}
+
+.conference-scheduler-mod.glyphicon {
+  margin: 0px 0px 0px 0px;
 }
 
 .conference-scheduler-mod:hover {
@@ -144,6 +146,7 @@
 
 .conference-scheduler-navbar-switch {
   width: 5%;
+  padding: 0px 0px 0px 0px;
 }
 
 .conference-scheduler-navbar-selector {
@@ -175,6 +178,7 @@
 .conference-scheduler-navbar-day {
   height: 100%;
   width: 16%;
+  padding: 0px 0px 0px 0px;
 }
 
 .conference-scheduler-navbar-days li {
@@ -193,7 +197,7 @@
   border: 0px none @color-conference-schedule-navbar;
   height: 100%;
   overflow: hidden;
-  white-space: nowrap;
+  white-space: normal;
   text-overflow: ellipsis;
 }
 
