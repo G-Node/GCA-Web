@@ -217,21 +217,44 @@
   text-overflow: ellipsis;
 }
 
+/* The abstract display box in event info modal. */
 .conference-scheduler-abstract {
   border: 1px solid @color-conference-schedule-scheduler-border;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 2px 4px 0px, rgba(0, 0, 0, 0.12) 0px 2px 10px 0px;
   border-radius: 6px;
   text-align: left;
   overflow: hidden;
 }
 
+/* The abstract header in event info modal. */
 .conference-scheduler-abstract-header {
   text-align: left;
+  width: 100%;
   overflow: auto;
-  margin: 5px 5px 5px 5px;
+  border-bottom: 1px solid @color-conference-schedule-scheduler-border;
   white-space: normal;
 }
 
+/* The link to the header corresponding abstract in event info modal. */
+.conference-scheduler-abstract-header a {
+  padding: 5px 5px 5px 5px;
+  display: inline-block;
+  font-weight: bold;
+  width: 100%;
+  heigth: 100%;
+  color: inherit;
+}
+
+.conference-scheduler-abstract-header a:hover {
+  text-decoration: none;
+  background-color: @color-conference-schedule-abstract-selector;
+}
+
+.conference-scheduler-abstract-header a:active {
+  text-decoration: none;
+  background-color: @color-conference-schedule-abstract-selector;
+}
+
+/* The abstract content in event info modal. */
 .conference-scheduler-abstract-body {
   background-color: @color-conference-schedule-abstract;
   height: 150px;
