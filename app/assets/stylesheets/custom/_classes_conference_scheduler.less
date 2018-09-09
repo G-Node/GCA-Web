@@ -1,20 +1,24 @@
 @import "_colors";
 
+/* The border of the conference scheduler.*/
 .conference-scheduler-border {
   border: 1px solid @color-conference-schedule-scheduler-border;
   border-radius: 6px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 2px 4px 0px, rgba(0, 0, 0, 0.12) 0px 2px 10px 0px;
 }
 
+/* Disable the native border for the conference schedule header.*/
 .conference-scheduler-border .dhx_cal_header {
   border-top-width: 0px;
 }
 
+/* Rounded corners for the conference scheduler.*/
 .conference-scheduler-border .dhx_cal_container {
   border-radius: 6px;
 }
 
-.conference-scheduler-event {
+/* The border of conference scheduler events containing the actual event.*/
+.conference-scheduler-event-border {
   position: relative;
   width: 100%;
   height: 100%;
@@ -25,32 +29,49 @@
   text-overflow: ellipsis;
 }
 
+/* The conference scheduler event.*/
+.conference-scheduler-event {
+  width:  ~"calc(100% - 4px)";
+  height:  ~"calc(100% - 4px)";
+  border-radius: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Restoring touch support for scheduler events.*/
 .dhx_cal_container div {
   touch-action: auto;
 }
 
+/* Background colour for sessions.*/
 .conference-scheduler-event-s {
   background-color: @color-conference-schedule-session;
 }
 
+/* Background colour for events.*/
 .conference-scheduler-event-e {
   background-color: @color-conference-schedule-event;
 }
 
+/* Background colour for tracks.*/
 .conference-scheduler-event-t {
   background-color: @color-conference-schedule-track;
 }
 
+/* Border colour for tracks expanded from sessions.*/
 .conference-scheduler-event-st {
   border-radius: 6px;
   box-shadow: inset 0px 0px 0px 1px @color-conference-schedule-scheduler-border, inset 0px 0px 0px 3px @color-conference-schedule-scheduler-border-contained-track;
 }
 
+/* Border colour for events expanded from tracks.*/
 .conference-scheduler-event-te {
   border-radius: 6px;
   box-shadow: inset 0px 0px 0px 1px @color-conference-schedule-scheduler-border, inset 0px 0px 0px 3px @color-conference-schedule-scheduler-border-contained-event;
 }
 
+/* The header of conference schedule events.*/
 .conference-scheduler-header {
   border-bottom: 1px solid @color-conference-schedule-header-border;
   font-size: large;
@@ -62,6 +83,7 @@
   cursor: pointer;
 }
 
+/* The title inside the header of conference schedule events.*/
 .conference-scheduler-header h4 {
   overflow: hidden;
   white-space: nowrap;
@@ -71,21 +93,25 @@
   margin: 0px 0px 0px 0px;
 }
 
+/* The button marking events.*/
 .conference-scheduler-header-button-event {
   background-color: @color-conference-schedule-event-button;
   color: @color-conference-schedule-event-button-font;
 }
 
+/* The button marking tracks.*/
 .conference-scheduler-header-button-track {
   background-color: @color-conference-schedule-track-button;
   color: @color-conference-schedule-track-button-font;
 }
 
+/* The button marking sessions.*/
 .conference-scheduler-header-button-session {
   background-color: @color-conference-schedule-session-button;
   color: @color-conference-schedule-session-button-font;
 }
 
+/* The body of conference schedule events.*/
 .conference-scheduler-body {
   height: 100%;
   width: 100%;
@@ -97,6 +123,10 @@
   text-overflow: ellipsis;
 }
 
+/*
+ * The table of conference schedule events containing the information of
+ *contained events for tracks and sessions.
+ */
 .conference-scheduler-body table {
   width: 100%;
 }
@@ -121,6 +151,7 @@
   background-color: @color-conference-schedule-table-selector;
 }
 
+/* Fixing paragraphs in of conference schedule events.*/
 .jumbotron .conference-scheduler-body p {
   font-size: smaller;
   overflow: hidden;
@@ -128,6 +159,7 @@
   text-overflow: ellipsis;
 }
 
+/* The buttons for expanding and collapsing scheduler events.*/
 .conference-scheduler-mod {
   cursor: pointer;
   font-size: 1.5em;
@@ -141,6 +173,7 @@
   color: @color-conference-schedule-scheduler-mod;
 }
 
+/* The glyphicons for expanding and collapsing scheduler events.*/
 .conference-scheduler-mod.glyphicon {
   margin: 0px 0px 0px 0px;
 }
@@ -149,21 +182,25 @@
   color: darken(@color-conference-schedule-scheduler-mod, 20%);
 }
 
+/* The conference scheduler navbar.*/
 .conference-scheduler-navbar {
   width: 100%;
   height: 100%;
   display: inline;
 }
 
+/* Fixing a gap in the navbar.*/
 .dhx_cal_navline div.conference-scheduler-navbar {
   top: 0px;
 }
 
+/* The buttons in the scheduler navbar for changing dates excluding date buttons itself.*/
 .conference-scheduler-navbar-switch {
   width: 5%;
   padding: 0px 0px 0px 0px;
 }
 
+/* The list containing all navbar buttons.*/
 .conference-scheduler-navbar-selector {
   height: 100%;
   width: 100%;
@@ -182,6 +219,7 @@
   background-color: @color-conference-schedule-navbar-selector;
 }
 
+/* The area in the scheduler navbar for displaying dates.*/
 .conference-scheduler-navbar-days {
   height: 100%;
   width: 80%;
@@ -190,6 +228,7 @@
   display: inline;
 }
 
+/* The buttons in the scheduler navbar for displaying dates.*/
 .conference-scheduler-navbar-day {
   font-size: 11px;
   height: 100%;
@@ -207,6 +246,7 @@
   background-color: darken(@color-conference-schedule-navbar-selector, 30%);
 }
 
+/* The button design in the scheduler navbar.*/
 .conference-scheduler-navbar button {
   outline: 0px none @color-conference-schedule-navbar;
   background-color: @color-conference-schedule-navbar;

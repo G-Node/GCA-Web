@@ -409,7 +409,8 @@ require(["main"], function () {
                         }
                         templateEventType = "Event";
                     }
-                    var html = "<div class='conference-scheduler-event " + templateBoarderClass + "'>";
+                    var html = "<div class='conference-scheduler-event-border " + templateBoarderClass + "'>";
+                    html += "<div class='conference-scheduler-event'>";
 
                     // the header with date and event type
                     html += "<div class='conference-scheduler-header' data-bind='click: function (data, event) "
@@ -436,8 +437,8 @@ require(["main"], function () {
                     html += "<div class='conference-scheduler-body'>" + "</br>" +  templateEventContent
                         + "</div>";
 
-                    // closing div
-                    html += "</div>";
+                    // closing divs
+                    html += "</div></div>";
 
                     container.innerHTML = html;
                     ko.applyBindings(self, container);
