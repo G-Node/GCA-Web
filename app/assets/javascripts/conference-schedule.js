@@ -368,13 +368,15 @@ require(["main"], function () {
                         for (var eventIndex = 0; eventIndex < ev.baseEvent.tracks.length; eventIndex++) {
                             templateEventContent += "<tr data-bind='click: function (data, event) {"
                                 + "displayEventInfo(\"" + ev.id + "\", " + eventIndex + ")}'>"
-                                + "<td style='border: none; width: 2%'></td>"
-                                + "<td style='width: 12px'></td>"
-                                + "<td><strong>" + ev.baseEvent.tracks[eventIndex].title + "</strong></br>"
-                                + moment(ev.baseEvent.tracks[eventIndex].getStart()).format("HH:mm")
-                                + " - " + moment(ev.baseEvent.tracks[eventIndex].getEnd()).format("HH:mm") + "</td>"
-                                + "<td style='width: 12px'></td>"
-                                + "<td style='border: none; width: 2%'></td></tr>";
+                                + "<td style='border: none; min-width: 12px'></td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='width: 100%'><strong>" + ev.baseEvent.tracks[eventIndex].title + "</strong></td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='text-align: center'>"
+                                + moment(ev.baseEvent.tracks[eventIndex].getStart()).format("HH:mm") + "</br>"
+                                + moment(ev.baseEvent.tracks[eventIndex].getEnd()).format("HH:mm") + "</td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='border: none; min-width: 12px'></td></tr>";
                         }
                         templateEventContent += "</table>";
                     } else if (ev.isTrack()) {
@@ -388,13 +390,15 @@ require(["main"], function () {
                         for (var eventIndex = 0; eventIndex < ev.baseEvent.events.length; eventIndex++) {
                             templateEventContent += "<tr data-bind='click: function (data, event) {"
                                 + "displayEventInfo(\"" + ev.id + "\", " + eventIndex + ")}'>"
-                                + "<td style='border: none; width: 2%'></td>"
-                                + "<td style='width: 12px'></td>"
-                                + "<td><strong>" + ev.baseEvent.events[eventIndex].title + "</strong></br>"
-                                + moment(ev.baseEvent.events[eventIndex].getStart()).format("HH:mm")
-                                + " - " + moment(ev.baseEvent.events[eventIndex].getEnd()).format("HH:mm") + "</td>"
-                                + "<td style='width: 12px'></td>"
-                                + "<td style='border: none; width: 2%'></td></tr>";
+                                + "<td style='border: none; min-width: 12px'></td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='width: 100%'><strong>" + ev.baseEvent.events[eventIndex].title + "</strong></td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='text-align: center'>"
+                                + moment(ev.baseEvent.events[eventIndex].getStart()).format("HH:mm") + "</br>"
+                                + moment(ev.baseEvent.events[eventIndex].getEnd()).format("HH:mm") + "</td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='border: none; min-width: 12px'></td></tr>";
                         }
                         templateEventContent += "</table>";
                     } else {
