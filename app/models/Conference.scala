@@ -18,8 +18,16 @@ import org.apache.commons.codec.digest.DigestUtils
 
 import org.joda.time.format.DateTimeFormat
 import models.util.DateTimeConverter
+import org.commonmark.node.{Image, Node, Paragraph}
+import org.commonmark.renderer.html.{AttributeProvider, AttributeProviderContext, AttributeProviderFactory}
+import org.owasp.html.{HtmlPolicyBuilder, PolicyFactory, Sanitizers}
 
-import org.owasp.html.Sanitizers
+/*
+ * Import the functionality needed for parsing Commonmark/Markdown data.
+ */
+import org.commonmark.node._
+import org.commonmark.parser.Parser
+import org.commonmark.renderer.html.HtmlRenderer
 
 
 /**
@@ -114,18 +122,62 @@ class Conference extends Model with Owned with Tagged {
     }
   }
 
-  def formatDescription : String = {
-    val sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS);
-    sanitizer.sanitize(description)
-  }
-
   def eTag : String = DigestUtils.md5Hex(uuid + mtime.toString())
   def touch (): Unit = {
     this.mtime = new DateTime(DateTimeZone.UTC)
   }
+
+  def getInfoAsHTML () : String = {
+    if (this.info != null && this.info.length() > 0) {
+      Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(this.info))
+    } else {
+      /*
+       * Return an empty string to avoid an unnecessary and potentially, security-wise, unsafe
+       * exception to be thrown if null is passed.
+       * Additionally do not bother the parser, if there is nothing to parse.
+       */
+      ""
+    }
+  }
+
+  def getDescriptionAsHTML () : String = {
+    if (this.description != null && this.description.length() > 0) {
+      Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(this.description))
+    } else {
+      /*
+       * Return an empty string to avoid an unnecessary and potentially, security-wise, unsafe
+       * exception to be thrown if null is passed.
+       * Additionally do not bother the parser, if there is nothing to parse.
+       */
+      ""
+    }
+  }
+
+  override def canWrite(account: Account): Boolean = {
+    isOwner(account) || account.isAdmin
+  }
 }
 
 object Conference extends Model {
+
+  val MARKDOWN_PARSER : Parser = Parser.builder().build()
+  val HTML_RENDERER : HtmlRenderer = HtmlRenderer.builder().attributeProviderFactory(new AttributeProviderFactory {
+    override def create(context: AttributeProviderContext): AttributeProvider = {
+      new AttributeProvider {
+        override def setAttributes(node: Node, tagName: java.lang.String, attributes: java.util.Map[java.lang.String, java.lang.String]): Unit = {
+          if (node.isInstanceOf[Paragraph]) {
+            attributes.put("class", "paragraph-small")
+          }
+        }
+      }
+    }
+  }).build()
+  val HTML_SANITIZER : PolicyFactory = new HtmlPolicyBuilder().allowCommonBlockElements().allowCommonInlineFormattingElements()
+    .allowAttributes("class").onElements("p").toFactory().and(Sanitizers.BLOCKS)
+
+  def convertMarkdownToHTML (markdownData : String) : String = {
+    Conference.HTML_RENDERER.render(Conference.MARKDOWN_PARSER.parse(markdownData))
+  }
 
   def apply(uuid: Option[String],
             name: Option[String],

@@ -47,7 +47,16 @@
     </div>
 
     @components.messsagebox()
-
+    @if(!abstr.isDefined){
+    <div class="callout-info" data-bind="visible: !editedAbstract().hasAgreed()">
+        <div>I agree that my email address will be shared with the conference organizers such that they may contact me about organizational details regarding my abstract.</div>
+        <div>
+            <input type="checkbox" class="form-control" id="hasAgreed" name="hasAgreed"
+            data-bind="checked: editedAbstract().hasAgreed">
+        </div>
+    </div>
+    }
+    
     <div id="abstract">
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">

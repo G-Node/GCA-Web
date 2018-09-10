@@ -17,6 +17,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-mailer" % "2.4.0",
   "com.mohiva" %% "play-silhouette" % "1.0",
   "org.postgresql" % "postgresql" % "9.3-1100-jdbc4",
+  "com.atlassian.commonmark" % "commonmark" % "0.11.0",
   // web jars
   "org.webjars" % "requirejs" % "2.1.15",
   "org.webjars" % "jquery" % "1.11.2",

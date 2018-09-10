@@ -66,7 +66,7 @@ class AccountsCtrlTest extends BaseCtrlTest {
 
     val newpass = "foofoofoo"
     val postR = FakeRequest(POST, "/password").withCookies(cookie)
-      .withFormUrlEncodedBody("password1" -> newpass, "password2" -> newpass)
+      .withFormUrlEncodedBody("passwordold" -> "testtest","password1" -> newpass, "password2" -> newpass)
 
     response = route(AccountsCtrlTest.app, postR).get
     assert(status(response) == SEE_OTHER || status(response) == OK)
@@ -99,7 +99,39 @@ class AccountsCtrlTest extends BaseCtrlTest {
       case _:RuntimeException => // Expected, continue
     }
   }
+  
+  @Test
+  def testChangeMail(): Unit = {
+    cookie = getCookie(assets.alice, "testtest")
+
+    val req = FakeRequest(GET, "/mail").withCookies(cookie)
+
+    var response = route(AccountsCtrlTest.app, req).get
+    assert(status(response) == OK)
+
+    val postR = FakeRequest(POST, "/mail")
+      .withFormUrlEncodedBody("email1" -> "alice_new@foo.com", "email2" -> "alice_new@foo.com", "password"-> "testtest")
+      .withCookies(cookie)
+
+    response = route(AccountsCtrlTest.app, postR).get
+    assert(status(response) == SEE_OTHER || status(response) == OK)
+
+    try {
+      val new_cookie = getCookie(assets.alice_new, "testtest")
+      val postR = FakeRequest(POST, "/mail")
+        .withFormUrlEncodedBody("email1" -> "alice@foo.com", "email2" -> "alice@foo.com", "password"-> "testtest")
+        .withCookies(new_cookie)
+        response = route(AccountsCtrlTest.app, postR).get
+        assert(status(response) == SEE_OTHER || status(response) == OK)
+    }
+    catch {
+      case _:RuntimeException => fail("Could not reset mail")
+    }
+  }
+  
 }
+
+
 
 
 object AccountsCtrlTest {

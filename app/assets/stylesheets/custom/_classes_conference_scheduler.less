@@ -1,0 +1,306 @@
+@import "_colors";
+
+/* The border of the conference scheduler.*/
+.conference-scheduler-border {
+  border: 1px solid @color-conference-schedule-scheduler-border;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 2px 4px 0px, rgba(0, 0, 0, 0.12) 0px 2px 10px 0px;
+}
+
+/* Disable the native border for the conference schedule header.*/
+.conference-scheduler-border .dhx_cal_header {
+  border-top-width: 0px;
+}
+
+/* Rounded corners for the conference scheduler.*/
+.conference-scheduler-border .dhx_cal_container {
+  border-radius: 6px;
+}
+
+/* The border of conference scheduler events containing the actual event.*/
+.conference-scheduler-event-border {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  box-shadow: inset 0px 0px 0px 1px @color-conference-schedule-scheduler-border;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* The conference scheduler event.*/
+.conference-scheduler-event {
+  width:  ~"calc(100% - 4px)";
+  height:  ~"calc(100% - 4px)";
+  border-radius: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Restoring touch support for scheduler events.*/
+.dhx_cal_container div {
+  touch-action: auto;
+}
+
+/* Background colour for sessions.*/
+.conference-scheduler-event-s {
+  background-color: @color-conference-schedule-session;
+}
+
+/* Background colour for events.*/
+.conference-scheduler-event-e {
+  background-color: @color-conference-schedule-event;
+}
+
+/* Background colour for tracks.*/
+.conference-scheduler-event-t {
+  background-color: @color-conference-schedule-track;
+}
+
+/* Border colour for tracks expanded from sessions.*/
+.conference-scheduler-event-st {
+  border-radius: 6px;
+  box-shadow: inset 0px 0px 0px 1px @color-conference-schedule-scheduler-border, inset 0px 0px 0px 3px @color-conference-schedule-scheduler-border-contained-track;
+}
+
+/* Border colour for events expanded from tracks.*/
+.conference-scheduler-event-te {
+  border-radius: 6px;
+  box-shadow: inset 0px 0px 0px 1px @color-conference-schedule-scheduler-border, inset 0px 0px 0px 3px @color-conference-schedule-scheduler-border-contained-event;
+}
+
+/* The header of conference schedule events.*/
+.conference-scheduler-header {
+  border-bottom: 1px solid @color-conference-schedule-header-border;
+  font-size: large;
+  text-align: right;
+  padding: 4px 8px 4px 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+/* The title inside the header of conference schedule events.*/
+.conference-scheduler-header h4 {
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: ellipsis;
+  text-align: left;
+  padding: 5px 0px 10px 8px;
+  margin: 0px 0px 0px 0px;
+}
+
+/* The button marking events.*/
+.conference-scheduler-header-button-event {
+  background-color: @color-conference-schedule-event-button;
+  color: @color-conference-schedule-event-button-font;
+}
+
+/* The button marking tracks.*/
+.conference-scheduler-header-button-track {
+  background-color: @color-conference-schedule-track-button;
+  color: @color-conference-schedule-track-button-font;
+}
+
+/* The button marking sessions.*/
+.conference-scheduler-header-button-session {
+  background-color: @color-conference-schedule-session-button;
+  color: @color-conference-schedule-session-button-font;
+}
+
+/* The body of conference schedule events.*/
+.conference-scheduler-body {
+  height: 100%;
+  width: 100%;
+  text-align: left;
+  padding-top: auto;
+  padding-bottom: auto;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/*
+ * The table of conference schedule events containing the information of
+ *contained events for tracks and sessions.
+ */
+.conference-scheduler-body table {
+  width: 100%;
+}
+
+.conference-scheduler-body td {
+  line-height: 150%;
+  text-align: left;
+  font-size: small;
+  padding-top: 2.5%;
+  padding-bottom: 2.5%;
+  overflow: visible;
+  white-space: normal;
+  border-bottom: 1px solid @color-conference-schedule-table-border;
+}
+
+.conference-scheduler-body tr:last-child td {
+  border-bottom: none;
+}
+
+.conference-scheduler-body tr:hover {
+  cursor: pointer;
+  background-color: @color-conference-schedule-table-selector;
+}
+
+/* Fixing paragraphs in of conference schedule events.*/
+.jumbotron .conference-scheduler-body p {
+  font-size: smaller;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* The buttons for expanding and collapsing scheduler events.*/
+.conference-scheduler-mod {
+  cursor: pointer;
+  font-size: 1.5em;
+  text-align: right;
+  float: right;
+  padding: 15px 12px 10px 0px;
+  margin: 0px 0px 0px 0px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: @color-conference-schedule-scheduler-mod;
+}
+
+/* The glyphicons for expanding and collapsing scheduler events.*/
+.conference-scheduler-mod.glyphicon {
+  margin: 0px 0px 0px 0px;
+}
+
+.conference-scheduler-mod:hover {
+  color: darken(@color-conference-schedule-scheduler-mod, 20%);
+}
+
+/* The conference scheduler navbar.*/
+.conference-scheduler-navbar {
+  width: 100%;
+  height: 100%;
+  display: inline;
+}
+
+/* Fixing a gap in the navbar.*/
+.dhx_cal_navline div.conference-scheduler-navbar {
+  top: 0px;
+}
+
+/* The buttons in the scheduler navbar for changing dates excluding date buttons itself.*/
+.conference-scheduler-navbar-switch {
+  width: 5%;
+  padding: 0px 0px 0px 0px;
+}
+
+/* The list containing all navbar buttons.*/
+.conference-scheduler-navbar-selector {
+  height: 100%;
+  width: 100%;
+  margin-bottom: 0px;
+  padding-right: 0px;
+  padding-left: 0px;
+}
+
+.conference-scheduler-navbar-selector li {
+  height: 100%;
+  width: 20%;
+  display: inline;
+}
+
+.conference-scheduler-navbar-selector li button:hover:not(.active) {
+  background-color: @color-conference-schedule-navbar-selector;
+}
+
+/* The area in the scheduler navbar for displaying dates.*/
+.conference-scheduler-navbar-days {
+  height: 100%;
+  width: 80%;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  display: inline;
+}
+
+/* The buttons in the scheduler navbar for displaying dates.*/
+.conference-scheduler-navbar-day {
+  font-size: 11px;
+  height: 100%;
+  width: 16%;
+  padding: 0px 0px 0px 0px;
+}
+
+.conference-scheduler-navbar-days li {
+  height: 100%;
+  width: 20%;
+  display: inline;
+}
+
+.conference-scheduler-navbar-days li button.active {
+  background-color: darken(@color-conference-schedule-navbar-selector, 30%);
+}
+
+/* The button design in the scheduler navbar.*/
+.conference-scheduler-navbar button {
+  outline: 0px none @color-conference-schedule-navbar;
+  background-color: @color-conference-schedule-navbar;
+  border: 0px none @color-conference-schedule-navbar;
+  height: 100%;
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: ellipsis;
+}
+
+/* The abstract display box in event info modal. */
+.conference-scheduler-abstract {
+  border: 1px solid @color-conference-schedule-scheduler-border;
+  border-radius: 6px;
+  text-align: left;
+  overflow: hidden;
+}
+
+/* The abstract header in event info modal. */
+.conference-scheduler-abstract-header {
+  text-align: left;
+  width: 100%;
+  overflow: auto;
+  border-bottom: 1px solid @color-conference-schedule-scheduler-border;
+  white-space: normal;
+}
+
+/* The link to the header corresponding abstract in event info modal. */
+.conference-scheduler-abstract-header a {
+  padding: 5px 5px 5px 5px;
+  display: inline-block;
+  font-weight: bold;
+  width: 100%;
+  heigth: 100%;
+  color: inherit;
+}
+
+.conference-scheduler-abstract-header a:hover {
+  text-decoration: none;
+  background-color: @color-conference-schedule-abstract-selector;
+}
+
+.conference-scheduler-abstract-header a:active {
+  text-decoration: none;
+  background-color: @color-conference-schedule-abstract-selector;
+}
+
+/* The abstract content in event info modal. */
+.conference-scheduler-abstract-body {
+  background-color: @color-conference-schedule-abstract;
+  height: 150px;
+  padding: 5px 5px 5px 5px;
+  text-align: left;
+  overflow: auto;
+  white-space: normal;
+}

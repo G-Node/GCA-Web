@@ -10,3 +10,53 @@
 @color-fg-warn: rgb(180, 70, 70);
 
 @color-bg: white;
+
+/*
+ * Background colour for scheduler events.
+ */
+@color-conference-schedule-event: white;
+@color-conference-schedule-track: white;
+@color-conference-schedule-session: white;
+/*
+ * Background colour of buttons marking scheduler events.
+ */
+@color-conference-schedule-event-button: blue;
+@color-conference-schedule-track-button: green;
+@color-conference-schedule-session-button: red;
+/*
+ * Font colour of buttons marking scheduler events.
+ */
+@color-conference-schedule-event-button-font: white;
+@color-conference-schedule-track-button-font: white;
+@color-conference-schedule-session-button-font: white;
+/*
+ * Border colours for events or tracks expanded from tracks
+ * or sessions.
+ */
+@color-conference-schedule-scheduler-border-contained-event: @color-conference-schedule-track-button;
+@color-conference-schedule-scheduler-border-contained-track: @color-conference-schedule-session-button;
+/* Border colour of the scheduler. */
+@color-conference-schedule-scheduler-border: rgb(206, 206, 206);
+/* Colour of the expand-/collapse-icons for scheduler events. */
+@color-conference-schedule-scheduler-mod: rgb(90, 90, 90);
+/* Background colour of the navbar. */
+@color-conference-schedule-navbar: white;
+/* Background colour for selected and hovered buttons in the navbar. */
+@color-conference-schedule-navbar-selector: rgba(190, 190, 190, 0.2);
+/*
+ * Colour of the line separating the scheduler event header
+ * from the schedule event body.
+ */
+@color-conference-schedule-header-border: rgba(120, 120, 120, 0.4);
+/*
+ * Colour of the lines separating the table entries shown on
+ * track or session event bodies.
+ */
+@color-conference-schedule-table-border: rgba(120, 120, 120, 0.4);
+/* Background colour for selected and hovered table entries in the event body. */
+@color-conference-schedule-table-selector: rgba(140, 140, 140, 0.2);
+/* Background colour for displaying the abstract in the event's info modal. */
+@color-conference-schedule-abstract: white;
+/* Background colour for hovered abstract header in the event's info modal. */
+@color-conference-schedule-abstract-selector: @color-conference-schedule-table-selector;
+

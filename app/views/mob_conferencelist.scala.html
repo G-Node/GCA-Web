@@ -1,0 +1,27 @@
+@(list_active: Seq[Conference])(implicit request: RequestHeader)
+
+@import views.html.bootstrap._
+
+@mob_template(None, None, "") {
+
+    @flash(request)
+
+    @if(list_active.nonEmpty) {
+
+        @for(conference <- list_active) {
+            <div class="jumbotron">
+                <h3>
+                    <a href="@routes.Mobile.Conference(conference.short)">@conference.name</a>
+                </h3>
+                @if(conference.description != null) {
+                    <div class="jumbo-small">
+                        @conference.description
+                    </div>
+                }
+
+                <p>@conference.formatDuration</p>
+
+            </div>
+        }
+    }
+}

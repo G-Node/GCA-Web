@@ -1,0 +1,82 @@
+@(conference: Conference)
+
+@mob_template(None, Option(conference), "Mobile Conference View") {
+
+    <div class="hidden-data">
+        <div id="conference-uuid">@conference.uuid</div>
+    </div>
+
+    <script data-main="@routes.Assets.at("javascripts/mob_abstract-list.js")"
+            src="@routes.Assets.at("javascripts/require.js")"></script>
+
+    <!-- Loading box -->
+    <div data-bind="if: isLoading">
+        <div class="alert alert-info fade in out">
+            <h4>Loading data</h4>
+            <p>Please wait...</p>
+        </div>
+    </div>
+
+    <!-- Knockout non-flicker  -->
+    <div style="display: none" data-bind="visible: true">
+
+    <!-- Error message box -->
+    <div data-bind="visible: error">
+        <!-- ko with: error -->
+        <div class="alert alert-warning fade in alert-dismissable" data-bind="css: level">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong data-bind="html: message"></strong>
+        </div>
+        <!-- /ko -->
+    </div>
+
+    <div class="page-header">
+        <h1><a href="@conference.link">@conference.name</a></h1>
+    </div>
+
+    <div>
+        <ul class="nav nav-tabs" data-bind="foreach: groups">
+            <li data-bind="attr: {class: state}"><a data-bind="attr: { href: link }, text: name"></a></li>
+        </ul>
+    </div>
+
+    <!-- The abstract list -->
+    <div id="abstract-list" class="list-group" data-bind="foreach: abstracts">
+        <div class="list-group-item" id="abstract-list-item" data-bind="click: $root.selectAbstract">
+            <div class="abstract">
+                <div class="sortId" data-bind="html: $parent.makeAbstractID($data)"></div>
+                <div class="box">
+                    <h4 class="list-group-item-heading" data-bind="text: title"></h4>
+                    <div class="list-group-item-text">
+                        <ul class="authors" data-bind="foreach: authors">
+                            <li data-bind="text: $data.formatCitation()"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The abstract viewer -->
+
+    @components.singleabstract("selectedAbstract", Some("conference")) {
+        <!-- the header of the singleabstract viewer -->
+        <ul class="pager">
+            <li class="previous" data-bind="css: { disabled: $parent.prevAbstract($data) == null }">
+                <a data-bind="attr: {href : $parent.prevAbstract($data)}">&larr; Previous</a>
+            </li>
+            <li>
+               <!-- ko with: $root.conference -->
+               <span data-bind="html: formatSortId($parent.sortId)"></span>
+               <!-- /ko -->
+            </li>
+            <li class="next" data-bind="css: { disabled: $parent.nextAbstract($data) == null }">
+                <a data-bind="attr: {href : $parent.nextAbstract($data)}">Next &rarr;</a>
+            </li>
+        </ul>
+    } {
+        <!-- footer -->
+    }
+
+    </div> <!-- KO !flickerbox -->
+}

@@ -793,12 +793,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                      acknowledgements, isTalk, reasonForTalk, owners, state, figures,
+                      acknowledgements, isTalk, hasAgreed, reasonForTalk, owners, state, figures,
                       authors, affiliations, references, abstrTypes) {
 
         if (! (this instanceof Abstract)) {
             return new Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                                acknowledgements, isTalk, reasonForTalk, owners, state,
+                                acknowledgements, isTalk, hasAgreed, reasonForTalk, owners, state,
                                 figures, authors, affiliations, references, abstrTypes);
         }
 
@@ -812,6 +812,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.conflictOfInterest = conflictOfInterest || null;
         self.acknowledgements = acknowledgements || null;
         self.isTalk = isTalk || false;
+        self.hasAgreed = hasAgreed || false;
         self.reasonForTalk = reasonForTalk || null;
         self.owners = owners || null;
         self.state = state || "InPreparation";
@@ -964,6 +965,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @param {string} [conflictOfInterest]
      * @param {string} [acknowledgements]
      * @param {Boolean} [isTalk]
+     * @param {Boolean} [hasAgreed]
      * @param {string} [reasonForTalk]
      * @param {string} [owners]     URL to abstract owners.
      * @param {string} [state]
@@ -977,12 +979,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                                acknowledgements, isTalk, reasonForTalk, owners, state, figures,
+                                acknowledgements, isTalk, hasAgreed, reasonForTalk, owners, state, figures,
                                 authors, affiliations, references, abstrTypes) {
 
         if (! (this instanceof ObservableAbstract)) {
             return new ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
-                                          acknowledgements, isTalk, reasonForTalk, owners, state,
+                                          acknowledgements, isTalk, hasAgreed,reasonForTalk, owners, state,
                                           figures, authors, affiliations, references, abstrTypes);
         }
 
@@ -995,6 +997,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.conflictOfInterest = ko.observable(conflictOfInterest || null);
         self.acknowledgements = ko.observable(acknowledgements || null);
         self.isTalk = ko.observable(isTalk || false);
+        self.hasAgreed = ko.observable(hasAgreed || false);
         self.reasonForTalk = ko.observable(reasonForTalk || null);
         self.owners = ko.observable(owners || null);
         self.state = ko.observable(state || "InPreparation");
@@ -1017,7 +1020,19 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             },
             owner: this
         });
-
+        this.hasAgreed.computed = ko.computed({
+            'read': function() {
+                if (self.uuid){
+                    self.hasAgreed(true);
+                }
+                return self.hasAgreed().toString();
+            },
+            'write': function(val) {
+                val = (val === "true");
+                self.hasAgreed(val);
+            },
+            owner: this
+        });
 
         self.indexedAuthors = ko.computed(
             function() {
@@ -1222,6 +1237,497 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     ObservableAbstractGroup.fromArray = function(array) {
         return Model.fromArray(array, ObservableAbstractGroup.fromObject);
     };
+
+    /**
+     * Model for DHTMLX Scheduler events.
+     *
+     * @param {string} [id]
+     * @param {string} [text]
+     * @param {string} [startDate]
+     * @param {string} [endDate]
+     * @param {object} [baseEvent]
+
+     *
+     * @returns {SchedulerEvent}
+     * @constructor
+     * @public
+     */
+    function SchedulerEvent (id, text, startDate, endDate, baseEvent) {
+
+        if (!(this instanceof SchedulerEvent)) {
+            return new SchedulerEvent(id, text, startDate, endDate, baseEvent);
+        }
+
+        var self = this;
+
+        self.id = id || null;
+        self.text = text || null;
+        self.start_date = startDate || null;
+        self.end_date = endDate || null;
+        self.baseEvent = baseEvent || null;
+        self.parentEvent = null; // used for split events to easily collapse them into the parent
+
+        self.isTrack = function () {
+            return self.baseEvent.hasOwnProperty("events");
+        };
+
+        self.isSession = function () {
+            return self.baseEvent.hasOwnProperty("tracks");
+        };
+
+        self.isEvent = function () {
+            return self.isSession() || self.isTrack();
+        };
+
+        self.getSplitEvents = function () {
+            var splitEvents = [];
+            if (self.isTrack()) {
+                splitEvents = SchedulerEvent.fromArray(self.baseEvent.events);
+            } else if (self.isSession()) {
+                splitEvents = SchedulerEvent.fromArray(self.baseEvent.tracks);
+            }
+            var childID = [];
+            var childIndex = 0;
+            self.id.split(":").forEach(function (idComponent) {
+                childID.push(parseInt(idComponent));
+                // track where the first negative number occurs to use as the new index
+                if (parseInt(idComponent) >= 0) {
+                    childIndex++;
+                }
+            });
+            // replace the corresponding part of the ID with the new index
+            var childIDComponent = 0;
+            splitEvents.forEach(function (element) {
+              element.parentEvent = self;
+              childID[childIndex] = childIDComponent++;
+              element.id = childID.join(":");
+            });
+            return splitEvents;
+        };
+
+    };
+
+
+    function Track (title, subtitle, chair, events) {
+
+        if (!(this instanceof Track)) {
+            return new Track(title, subtitle, chair, events);
+        }
+
+        var self = this;
+
+        self.title = title || null;
+        self.subtitle = subtitle || null;
+        self.chair = chair || null;
+        self.events = events || null;
+
+        /*
+         * Split this track into sub tracks spanning only a single day each.
+         */
+        self.splitByDays = function () {
+          var subtracks = [];
+          var start = self.getStart();
+          var end = self.getEnd();
+          var splitDate = start;
+          while (Schedule.isIntermediateDate(start, end, splitDate)) {
+              var splitEvents = [];
+              self.events.forEach(function (event) {
+                  if (Schedule.isSameDate(event.getStart(), splitDate)) {
+                      splitEvents.push(event);
+                  }
+              });
+              if (splitEvents.length > 0) { // do not process empty dates
+                  subtracks.push(new Track(self.title, self.subtitle, self.chair, splitEvents));
+              }
+              splitDate = new Date(splitDate.getTime() + 24*60*60*1000); // switch to the next day
+          };
+          return subtracks;
+        };
+
+        // look at all the events to find the starting date of the track
+        self.getStart = function () {
+            var startingDate = null;
+
+            self.events.forEach(function (e) {
+                if (startingDate === null) {
+                    startingDate = e.getStart();
+                } else if (startingDate - e.getStart() > 0) {
+                    startingDate = e.getStart();
+                }
+            });
+
+            return startingDate;
+        };
+
+        // look at all the events to find the ending date of the track
+        self.getEnd = function () {
+            var endingDate = null;
+
+            self.events.forEach(function (e) {
+                if (endingDate === null) {
+                    endingDate = e.getEnd();
+                } else if (endingDate - e.getEnd() < 0) {
+                    endingDate = e.getEnd();
+                }
+            });
+
+            return endingDate;
+        };
+
+    };
+
+    function Session (title, subtitle, tracks) {
+
+        if (!(this instanceof Session)) {
+            return new Session(title, subtitle, tracks);
+        }
+
+        var self = this;
+
+        self.title = title || null;
+        self.subtitle = subtitle || null;
+        self.tracks = tracks || null;
+
+        /*
+         * Split this session into sub session spanning only a single day each.
+         */
+        self.splitByDays = function () {
+            var subsessions = [];
+            var start = self.getStart();
+            var end = self.getEnd();
+            var splitDate = start;
+            // split all tracks of this session by days
+            var preSplitTracks = [];
+            self.tracks.forEach(function (track) {
+                    track.splitByDays().forEach(function (t) {
+                        preSplitTracks.push(t);
+                    });
+            });
+            while (Schedule.isIntermediateDate(start, end, splitDate)) {
+                var splitTracks = [];
+                preSplitTracks.forEach(function (track) {
+                    if (Schedule.isSameDate(track.getStart(), splitDate)) {
+                        splitTracks.push(track);
+                    }
+                });
+                if (splitTracks.length > 0) { // do not process empty dates
+                    subsessions.push(new Session(self.title, self.subtitle, splitTracks));
+                }
+                splitDate = new Date(splitDate.getTime() + 24*60*60*1000); // switch to the next day
+            };
+            return subsessions;
+        };
+
+        // look at all the tracks to find the starting date of the session
+        self.getStart = function () {
+            var startingDate = null;
+
+            self.tracks.forEach(function (t) {
+                if (startingDate === null) {
+                    startingDate = t.getStart();
+                } else if (startingDate - t.getStart() > 0) {
+                    startingDate = t.getStart();
+                }
+            });
+
+            return startingDate;
+        };
+
+        // look at all the tracks to find the ending date of the session
+        self.getEnd = function () {
+            var endingDate = null;
+
+            self.tracks.forEach(function (t) {
+                if (endingDate === null) {
+                    endingDate = t.getEnd();
+                } else if (endingDate - t.getEnd() < 0) {
+                    endingDate = t.getEnd();
+                }
+            });
+
+            return endingDate;
+        };
+
+    };
+
+    function Event (title, subtitle, start, end, date, location, authors, type, abstract) {
+
+        if (!(this instanceof Event)) {
+            return new Event(title, subtitle, start, end, date, location, authors, type, abstract);
+        }
+
+        var self = this;
+
+        self.title = title || null;
+        self.subtitle = subtitle || null;
+        self.start = start || null;
+        self.end = end || null;
+        self.date = date || null;
+        self.location = location || null;
+        self.authors = authors || null;
+        self.type = type || null;
+        self.abstract = abstract || null;
+
+        self.getStart = function () {
+            // format year-month-day
+            var ymd = self.date.split("-");
+            // format hour:minute
+            var time = ["0", "0"];
+            if (self.start.length > 0) {
+                time = self.start.split(":");
+            }
+            return new Date(parseInt(ymd[0]), parseInt(ymd[1]) - 1, parseInt(ymd[2]), parseInt(time[0]), parseInt(time[1]));
+        };
+
+        self.getEnd = function () {
+            // format year-month-day
+            var ymd = self.date.split("-");
+            // format hour:minute
+            var time = ["23","59"];
+            if (self.end.length > 0) {
+                time = self.end.split(":");
+            }
+            return new Date(parseInt(ymd[0]), parseInt(ymd[1]) - 1, parseInt(ymd[2]), parseInt(time[0]), parseInt(time[1]));
+        };
+    };
+
+    /*
+     * Create a DHTMLX Scheduler event from an Event, Track or Session.
+     */
+    SchedulerEvent.fromObject = function (eventObj) {
+        return new SchedulerEvent(null, eventObj.title, eventObj.getStart(), eventObj.getEnd(), eventObj);
+    };
+
+    SchedulerEvent.fromArray = function (eventArray) {
+      return Model.fromArray(eventArray, SchedulerEvent.fromObject);
+    };
+
+    Event.fromObject = function (eventObject) {
+        return Model.fromObject(eventObject, Event);
+    };
+
+    Event.fromArray = function (eventArray) {
+        return Model.fromArray(eventArray, Event.fromObject);
+    };
+
+    Track.fromObject = function (trackObject) {
+        var prop,
+            target = new Track();
+
+        for (prop in target) {
+            if (target.hasOwnProperty(prop)) {
+                var value = readProperty(prop, trackObject);
+
+                switch (prop) {
+                    case "events":
+                        target.events = Event.fromArray(value);
+                        break;
+                    default:
+                        if (tools.type(target[prop]) !== "function") {
+                            target[prop] = value;
+                        }
+                }
+            }
+        }
+
+        return target;
+    };
+
+    Track.fromArray = function (trackArray) {
+        return Model.fromArray(trackArray, Track.fromObject);
+    };
+
+    Session.fromObject = function (sessionObject) {
+        var prop,
+            target = new Session();
+
+        for (prop in target) {
+            if (target.hasOwnProperty(prop)) {
+                var value = readProperty(prop, sessionObject);
+
+                switch (prop) {
+                    case "tracks":
+                        target.tracks = Track.fromArray(value);
+                        break;
+                    default:
+                        if (tools.type(target[prop]) !== "function") {
+                            target[prop] = value;
+                        }
+                }
+            }
+        }
+
+        return target;
+    };
+
+    Session.fromArray = function (sessionArray) {
+        return Model.fromArray(sessionArray, Session.fromObject);
+    };
+
+    /**
+     * Model for conference schedules.
+     *
+     * @param {Array} [content]
+     *
+     * @returns {Schedule}
+     * @constructor
+     * @public
+     */
+    function Schedule (content) {
+
+        if (!(this instanceof Schedule)) {
+            return new Schedule(content);
+        }
+
+        var self = tools.inherit(this, Model);
+
+        self.content = content || [];
+
+        // Get all the events on the specific date.
+        self.getDailyEvents = function (date) {
+            var dailyEvents = [];
+            self.content.forEach(function (event) {
+                var start = event.getStart();
+                var end = event.getEnd();
+                if ((date.getDate() == start.getDate()
+                        && date.getMonth() == start.getMonth()
+                        && date.getFullYear() == start.getFullYear())
+                    ||(date.getDate() == end.getDate()
+                        && date.getMonth() == end.getMonth()
+                        && date.getFullYear() == end.getFullYear())) {
+                    dailyEvents.push(event);
+                }
+            });
+            return dailyEvents;
+        };
+
+        // Check if the specified date is part of the schedule.
+        self.isScheduledDate = function (date) {
+            // only compare date not exact time
+            return Schedule.isIntermediateDate(self.getStart(), self.getEnd(), date);
+        };
+
+        // Get all the events present in the schedule.
+        self.getEvents = function () {
+            var events = [];
+            self.content.forEach(function (c) {
+                if (c instanceof Event) {
+                    events.push(c);
+                }
+            });
+            return events;
+        };
+
+        // Get all the tracks present in the schedule.
+        self.getTracks = function () {
+            var tracks = [];
+            self.content.forEach(function (c) {
+                if (c instanceof Track) {
+                    tracks.push(c);
+                }
+            });
+            return tracks;
+        };
+
+        // Get all the sessions present in the schedule.
+        self.getSessions = function () {
+            var sessions = [];
+            self.content.forEach(function (c) {
+                if (c instanceof Session) {
+                    sessions.push(c);
+                }
+            });
+            return sessions;
+        };
+
+        // look at all the sessions, tracks and events to find the starting date of the session
+        self.getStart = function () {
+            var startingDate = null;
+
+            self.content.forEach(function (c) {
+                if (startingDate === null) {
+                    startingDate = c.getStart();
+                } else if (startingDate - c.getStart() > 0) {
+                    startingDate = c.getStart();
+                }
+            });
+
+            return startingDate;
+        };
+
+        // look at all the sessions, tracks and events to find the ending date of the schedule
+        self.getEnd = function () {
+            var endingDate = null;
+
+            self.content.forEach(function (c) {
+                if (endingDate === null) {
+                    endingDate = c.getEnd();
+                } else if (endingDate - c.getEnd() < 0) {
+                    endingDate = c.getEnd();
+                }
+            });
+
+            return endingDate;
+        };
+
+    };
+
+    /*
+     * Check whether the tow dates are on the same date.
+     */
+    Schedule.isSameDate = function (firstDate, secondDate) {
+        if (firstDate !== null && secondDate !== null && firstDate !== undefined && secondDate !== undefined) {
+            return firstDate.getFullYear() == secondDate.getFullYear()
+                && firstDate.getMonth() == secondDate.getMonth()
+                && firstDate.getDate() == secondDate.getDate();
+        }
+        return false;
+    };
+
+    /*
+     * Check whether the specified date is during the specified timespan.
+     * This is checked on basis of the date, hours and smaller time units are not
+     * taken into account.
+     */
+    Schedule.isIntermediateDate = function (start, end, date) {
+        if (start !== null && end !== null && date !== null
+            && start !== undefined && end !== undefined && date !== undefined) {
+            var startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+            var endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+            var dateDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            return startDate - dateDate <= 0 && endDate - dateDate >= 0;
+        }
+        return false;
+    };
+
+    /*
+     * Actually the data is an array of objects but since fromArray() is used in another context,
+     * I guess it is ok to use this term instead.
+     */
+    Schedule.fromObject = function (scheduleObject) {
+
+        var content = [];
+
+        scheduleObject.forEach( function(entry) {
+            if (entry.hasOwnProperty("tracks")) { // only sessions have this property
+                var session = Session.fromObject(entry);
+                session.splitByDays().forEach(function (s) {
+                    content.push(s);
+                });
+            } else if (entry.hasOwnProperty("events")) { // only tracks have this property
+                var track = Track.fromObject(entry);
+                track.splitByDays().forEach(function (t) {
+                    content.push(t);
+                });
+            } else { // all the rest are simply events
+                content.push(Event.fromObject(entry));
+            }
+        });
+
+        return new Schedule(content);
+
+    };
+
     return {
         Conference: Conference,
         Author: Author,
@@ -1236,6 +1742,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         ObservableAbstract: ObservableAbstract,
         ObservableAccount: ObservableAccount,
         AbstractGroup: AbstractGroup,
-        ObservableAbstractGroup:ObservableAbstractGroup
+        ObservableAbstractGroup:ObservableAbstractGroup,
+        Schedule: Schedule,
+        Event: Event,
+        Track: Track,
+        Session: Session,
+        SchedulerEvent: SchedulerEvent
     };
+
 });

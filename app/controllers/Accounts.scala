@@ -60,7 +60,7 @@ class Accounts(implicit val env: GlobalEnvironment)
         var loginInfo = LoginInfo(env.credentialsProvider.id, request.identity.account.mail)
         val f = Await.result(env.authInfoService.retrieve(loginInfo)(classTag[PasswordInfo]), 10 seconds)
         val pwInfo = f.get
-        // lets see whether passord is in corect. if so fail silently
+        // lets see whether password is corect. if not fail silently
         if (!env.pwHasher.matches(pwInfo, nmailform._3)) {
           Redirect(routes.Accounts.emailchange()).flashing("error" -> "Could not change email address")
         } else {
@@ -78,7 +78,7 @@ class Accounts(implicit val env: GlobalEnvironment)
         }
       }
     )
-  }  
+  }
   
   def passwordResetPage = SecuredAction { implicit request =>
     Ok(views.html.passwordreset(ResetPasswordForm.passwordsForm))
@@ -88,13 +88,19 @@ class Accounts(implicit val env: GlobalEnvironment)
     ResetPasswordForm.passwordsForm.bindFromRequest.fold(
       formWithErrors => Ok(views.html.passwordreset(formWithErrors)),
       passwords => {
-        val loginInfo = LoginInfo(env.credentialsProvider.id, request.identity.account.mail)
-        val pwInfo = env.pwHasher.hash(passwords._1)
-
-        Await.result(env.authInfoService.save(loginInfo, pwInfo), 5 seconds)
-        Redirect(routes.Application.index()).flashing("success" ->
-          """Password successfully changed.
+        var loginInfo = LoginInfo(env.credentialsProvider.id, request.identity.account.mail)
+        val f = Await.result(env.authInfoService.retrieve(loginInfo)(classTag[PasswordInfo]), 10 seconds)
+        val pwInfo = f.get
+        // lets see whether old password is corect. if not fail silently
+        if (!env.pwHasher.matches(pwInfo, passwords._1)) {
+          Redirect(routes.Accounts.emailchange()).flashing("error" -> "Could not change email address")
+        }else {
+          val newPwInfo = env.pwHasher.hash(passwords._2)
+          Await.result(env.authInfoService.save(loginInfo, newPwInfo), 5 seconds)
+          Redirect(routes.Application.index()).flashing("success" ->
+            """Password successfully changed.
           If you don't get a confirmation email in a few moments, Please check your spam folder.""")
+        }
       }
     )
   }
