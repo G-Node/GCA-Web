@@ -91,6 +91,8 @@ require(["main"], function () {
                     self.schedule = models.Schedule.fromObject(scheduleObj);
 
                     var startingDate = self.schedule.getStart();
+                    // Use the start of the day for comparisons.
+                    startingDate = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate())
                     var numberOfDays = Math.ceil((self.schedule.getEnd() - startingDate) / (24*60*60*1000));
 
                     for (var i = 0; i < numberOfDays; i++) {
@@ -335,6 +337,12 @@ require(["main"], function () {
                 window.dhtmlXScheduler.config.multi_day = false;
                 // window.dhtmlXScheduler.config.mark_now = true; // mark the current time
                 /*
+                 * Disable dragging events by touching.
+                 * This can also be set to "false" to completely disable dragging,
+                 * but some touch functionality will break that way.
+                 */
+                window.dhtmlXScheduler.config.touch_drag = 99999999;
+                /*
                  * Size of the x-axis hour steps.
                  * Must be a multiple of 44 for proper alignment (default skin).
                  * This number may vary between different skins.
@@ -350,25 +358,30 @@ require(["main"], function () {
                     // define specific templates
                     var templateBoarderClass = "";
                     var templateEventType = "";
+                    var templateButtonClass = "";
                     var templateEventContent = "";
                     if (ev.isSession()) {
                         templateBoarderClass = "conference-scheduler-event-s";
                         templateEventType = "Session";
+                        templateButtonClass = "conference-scheduler-header-button-session";
                         templateEventContent = "<table>";
                         for (var eventIndex = 0; eventIndex < ev.baseEvent.tracks.length; eventIndex++) {
                             templateEventContent += "<tr data-bind='click: function (data, event) {"
                                 + "displayEventInfo(\"" + ev.id + "\", " + eventIndex + ")}'>"
-                                + "<td style='border: none; width: 2%'></td>"
-                                + "<td style='width: 12px'></td>"
-                                + "<td><strong>" + ev.baseEvent.tracks[eventIndex].title + "</strong></br>"
-                                + moment(ev.baseEvent.tracks[eventIndex].getStart()).format("HH:mm")
-                                + " - " + moment(ev.baseEvent.tracks[eventIndex].getEnd()).format("HH:mm") + "</td>"
-                                + "<td style='width: 12px'></td>"
-                                + "<td style='border: none; width: 2%'></td></tr>";
+                                + "<td style='border: none; min-width: 12px'></td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='width: 100%'><strong>" + ev.baseEvent.tracks[eventIndex].title + "</strong></td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='text-align: center'>"
+                                + moment(ev.baseEvent.tracks[eventIndex].getStart()).format("HH:mm") + "</br>"
+                                + moment(ev.baseEvent.tracks[eventIndex].getEnd()).format("HH:mm") + "</td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='border: none; min-width: 12px'></td></tr>";
                         }
                         templateEventContent += "</table>";
                     } else if (ev.isTrack()) {
                         templateBoarderClass = "conference-scheduler-event-t";
+                        templateButtonClass = "conference-scheduler-header-button-track";
                         if (ev.parentEvent !== null) {
                             templateBoarderClass += " conference-scheduler-event-st";
                         }
@@ -377,28 +390,33 @@ require(["main"], function () {
                         for (var eventIndex = 0; eventIndex < ev.baseEvent.events.length; eventIndex++) {
                             templateEventContent += "<tr data-bind='click: function (data, event) {"
                                 + "displayEventInfo(\"" + ev.id + "\", " + eventIndex + ")}'>"
-                                + "<td style='border: none; width: 2%'></td>"
-                                + "<td style='width: 12px'></td>"
-                                + "<td><strong>" + ev.baseEvent.events[eventIndex].title + "</strong></br>"
-                                + moment(ev.baseEvent.events[eventIndex].getStart()).format("HH:mm")
-                                + " - " + moment(ev.baseEvent.events[eventIndex].getEnd()).format("HH:mm") + "</td>"
-                                + "<td style='width: 12px'></td>"
-                                + "<td style='border: none; width: 2%'></td></tr>";
+                                + "<td style='border: none; min-width: 12px'></td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='width: 100%'><strong>" + ev.baseEvent.events[eventIndex].title + "</strong></td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='text-align: center'>"
+                                + moment(ev.baseEvent.events[eventIndex].getStart()).format("HH:mm") + "</br>"
+                                + moment(ev.baseEvent.events[eventIndex].getEnd()).format("HH:mm") + "</td>"
+                                + "<td style='min-width: 12px'></td>"
+                                + "<td style='border: none; min-width: 12px'></td></tr>";
                         }
                         templateEventContent += "</table>";
                     } else {
                         templateBoarderClass = "conference-scheduler-event-e";
+                        templateButtonClass = "conference-scheduler-header-button-event";
                         if (ev.parentEvent !== null) {
                             templateBoarderClass += " conference-scheduler-event-te";
                         }
                         templateEventType = "Event";
                     }
-                    var html = "<div class='conference-scheduler-event " + templateBoarderClass + "'>";
+                    var html = "<div class='conference-scheduler-event-border " + templateBoarderClass + "'>";
+                    html += "<div class='conference-scheduler-event'>";
 
                     // the header with date and event type
                     html += "<div class='conference-scheduler-header' data-bind='click: function (data, event) "
                         + "{displayEventInfo(\"" + ev.id +"\")}'><button type='button' "
-                        + "class='btn btn-secondary btn-sm pull-left' disabled>" + templateEventType + "</button>"
+                        + "class='btn btn-secondary btn-sm pull-left " + templateButtonClass + "' disabled>"
+                        + templateEventType + "</button>"
                         + "<h4>" + window.dhtmlXScheduler.templates.event_text(ev.start_date, ev.end_date, ev) + "</h4>"
                         + window.dhtmlXScheduler.templates.event_header(ev.start_date, ev.end_date, ev)
                         + "</div>";
@@ -419,8 +437,8 @@ require(["main"], function () {
                     html += "<div class='conference-scheduler-body'>" + "</br>" +  templateEventContent
                         + "</div>";
 
-                    // closing div
-                    html += "</div>";
+                    // closing divs
+                    html += "</div></div>";
 
                     container.innerHTML = html;
                     ko.applyBindings(self, container);

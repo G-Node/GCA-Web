@@ -49,9 +49,9 @@
                             <ul class="conference-scheduler-navbar-selector">
                                 <li><button class="conference-scheduler-navbar-switch pull-left"
                                 data-bind="click: function(data, event) {firstSchedulerDate()}">
-                                    <span class="glyphicon glyphicon-step-backward" style="vertical-align: middle;"></span></button></li>
+                                    <span class="glyphicon glyphicon-step-backward" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
                                 <li><button data-bind="click: function(data, event) {modifySchedulerDate(-1)}" class="conference-scheduler-navbar-switch pull-left">
-                                    <span class="glyphicon glyphicon-chevron-left" style="vertical-align: middle;"></span></button></li>
+                                    <span class="glyphicon glyphicon-chevron-left" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
                                 <li><ul data-bind="foreach: displayCustomDates" class="conference-scheduler-navbar-days">
                                     <li><button data-bind="text: moment($data).format('D[ ]MMMM[ ]YYYY'),
                                     click: function(data, event) {$root.setSchedulerDate($data)},
@@ -60,9 +60,9 @@
                                 </ul></li>
                                 <li><button class="conference-scheduler-navbar-switch pull-right"
                                 data-bind="click: function(data, event) {lastSchedulerDate()}">
-                                    <span class=" glyphicon glyphicon-step-forward" style="vertical-align: middle;"></span></button></li>
+                                    <span class=" glyphicon glyphicon-step-forward" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
                                 <li><button data-bind="click: function(data, event) {modifySchedulerDate(1)}" class="conference-scheduler-navbar-switch pull-right">
-                                    <span class="glyphicon glyphicon-chevron-right" style="vertical-align: middle;"></span></button></li>
+                                    <span class="glyphicon glyphicon-chevron-right" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
                             </ul>
                         </div>
                         <div data-bind="attr: {'style': 'display:' + displayPrevious() + ';'}" class="dhx_cal_prev_button">&nbsp;</div>
@@ -85,7 +85,7 @@
             <div class="modal-content">
                 <!-- ko if: infoBaseEvent() !== null && infoBaseEvent() !== undefined -->
                     <div class="modal-header">
-                        <button type="button" class="btn btn-secondary btn-sm pull-right" data-bind="text: infoEventType()" disabled></button>
+                        <button type="button" class="btn btn-secondary btn-sm pull-right" data-bind="text: infoEventType()" style="margin-left: 5px" disabled></button>
                         <h3 class="modal-title" data-bind="text: infoBaseEvent().title"></h3>
                         <h4 class="modal-title" data-bind="text: infoBaseEvent().subtitle"></h4>
                     </div>
@@ -134,9 +134,9 @@
                                     <!-- /ko -->
                                 </div>
                                 <div data-bind="visible: !infoError(), if: !infoIsLoadingAbstract() && infoAbstract() !== null && infoAbstract() !== undefined" class="conference-scheduler-abstract">
-                                    <strong class="conference-scheduler-abstract-header">
+                                    <div class="conference-scheduler-abstract-header">
                                         <a data-bind="attr: {href: $root.createAbstractURL('@routes.Application.abstractsPublic(conference.short)')}, text: infoAbstract().title"></a>
-                                    </strong>
+                                    </div>
                                     <div data-bind="text: infoAbstract().text" class="conference-scheduler-abstract-body"></div>
                                 </div>
                             <!-- /ko -->
