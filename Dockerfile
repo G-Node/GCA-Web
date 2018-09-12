@@ -21,15 +21,21 @@ ADD project/build.properties /srv/gca/project/
 ADD public /srv/gca/public
 ADD test /srv/gca/test
 ADD build.sbt /srv/gca/
+ADD startup.sh /srv/gca
 
 RUN mkdir -p /srv/gca/db
 RUN echo "db.default.url=\"jdbc:h2:/srv/gca/db/gca-web\"" >> /srv/gca/conf/application.dev.conf
 
 # test and stage
 WORKDIR /srv/gca
+# Required to get dependencies before running the startup script.
 RUN activator test stage
 
 VOLUME ["/srv/gca/db"]
+VOLUME ["/srv/gca/conf"]
 
 EXPOSE 9000
-ENTRYPOINT ["target/universal/stage/bin/gca-web"]
+ENTRYPOINT ["/bin/bash", "startup.sh"]
+
+# Previous entrypoint using the staged binary
+#ENTRYPOINT ["target/universal/stage/bin/gca-web"]

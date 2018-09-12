@@ -1,5 +1,5 @@
 require(["main"], function () {
-require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools, ko, Sammy) {
+require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], function(models, tools, ko, Sammy, offline) {
     "use strict";
 
 
@@ -243,7 +243,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
 
             //now load the data from the server
             var confURL ="/api/conferences/" + confId;
-            $.getJSON(confURL, onConferenceData).fail(self.ioFailHandler);
+            offline.requestJSON(confId, confURL, onConferenceData, self.ioFailHandler);
 
             //conference data
             function onConferenceData(confObj) {
@@ -251,7 +251,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
                 self.conference(conf);
                 self.buildGroups();
                 //now load the abstract data
-                $.getJSON(conf.abstracts, onAbstractData).fail(self.ioFailHandler);
+                offline.requestJSON(conf.uuid + "abstracts", conf.abstracts, onAbstractData, self.ioFailHandler);
             }
 
             //abstract data
