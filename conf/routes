@@ -29,6 +29,7 @@ GET           /abstracts/:id                                  @controllers.Appli
 GET           /assets/*file                                   controllers.Assets.at(path="/public", file)
 GET           /manifest.json                                  controllers.Assets.at(path="/public", file="manifest.json")
 GET           /manifest/*file                                 controllers.Assets.at(path="/public", file)
+GET           /service-worker.js                              controllers.Assets.at(path="/public", file="service-worker.js")
 
 # API ------------------------------------------------------------------------------------------------------------------
 # Conference interface

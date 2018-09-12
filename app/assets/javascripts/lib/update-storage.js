@@ -4,6 +4,15 @@ var _updateKey = "lastUpdated";
 // The local storage is checked and ,if necessary, updated every time a page is loaded.
 updateStorage();
 
+// Start the service worker.
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register('/service-worker.js').then(function(reg) {
+        console.log("Registered service worker with scope: " + reg.scope);
+    }).catch(function(error) {
+        console.log("Registering service worker failed with error: " + error);
+    });
+};
+
 /*
  * Update the local storage and try to store all possible requests
  * in there.
