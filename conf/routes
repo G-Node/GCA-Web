@@ -14,7 +14,10 @@ GET           /dashboard/accounts                             @controllers.Appli
 GET           /conferences                                    @controllers.Application.conferences
 GET           /conference/:id                                 @controllers.Application.conference(id: String)
 GET           /conference/:id/submission                      @controllers.Application.submission(id: String)
+GET           /conference/:id/locations                       @controllers.Application.locations(id: String)
+GET           /conference/:id/floorplans                      @controllers.Application.floorplans(id: String)
 GET           /conference/:id/abstracts                       @controllers.Application.abstractsPublic(id: String)
+GET           /conference/:id/schedule                        @controllers.Application.schedule(id: String)
 GET           /myabstracts                                    @controllers.Application.abstractsPrivate
 GET           /myabstracts/:id/edit                           @controllers.Application.edit(id: String)
 GET           /submitted                                      @controllers.Application.abstractsPending
@@ -24,6 +27,8 @@ GET           /abstracts/:id                                  @controllers.Appli
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                   controllers.Assets.at(path="/public", file)
+GET           /manifest.json                                  controllers.Assets.at(path="/public", file="manifest.json")
+GET           /manifest/*file                                 controllers.Assets.at(path="/public", file)
 
 # API ------------------------------------------------------------------------------------------------------------------
 # Conference interface
@@ -89,3 +94,8 @@ GET           /forgotpassword                                 @controllers.Accou
 POST          /forgotpassword                                 @controllers.Accounts.forgotPasswordCommit
 GET           /mail                                           @controllers.Accounts.emailchange
 POST          /mail                                           @controllers.Accounts.emailchangeCommit
+
+# Mobile ---------------------------------------------------------------------------------------------------------------
+
+GET            /mob/conferences                               @controllers.Mobile.Conferences
+GET            /mob/conference/:id                            @controllers.Mobile.Conference(id: String)

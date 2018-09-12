@@ -197,7 +197,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     postR = FakeRequest(PUT, s"/api/conferences/$confid/owners").withCookies(adminCookie).withJsonBody(body)
     response = routeWithErrors(ConferenceCtrlTest.app, postR).get
 
-    assert(status(response) == FORBIDDEN)
+    assert(status(response) == OK)
   }
 
   @Test
@@ -291,7 +291,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     val req = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap")
     val responseNoUser = route(ConferenceCtrlTest.app, req).get
 
-    assert(status(responseNoUser) == UNAUTHORIZED)
+    assert(status(responseNoUser) == OK)
 
     val eveCookie = getCookie(assets.eve, "testtest")
     val reqEve = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(eveCookie)

@@ -55,6 +55,18 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
     Ok(views.html.abstractlist(request.identity.map{ _.account }, conference))
   }
 
+  def locations(confId: String) = UserAwareAction { implicit request =>
+    val conference = conferenceService.get(confId)
+
+    Ok(views.html.locations(request.identity.map{ _.account }, conference))
+  }
+
+  def floorplans(confId: String) = UserAwareAction { implicit request =>
+    val conference = conferenceService.get(confId)
+
+    Ok(views.html.floorplans(request.identity.map{ _.account }, conference))
+  }
+
   def abstractsPrivate = SecuredAction { implicit request =>
 
     Ok(views.html.dashboard.user(request.identity.account))
@@ -80,6 +92,12 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
     val conference = conferenceService.get(confId)
 
     Ok(views.html.conference(request.identity.map{ _.account }, conference))
+  }
+
+  def schedule(confId: String) = UserAwareAction { implicit request =>
+    val conference = conferenceService.get(confId)
+
+    Ok(views.html.conferenceschedule(request.identity.map{ _.account }, conference))
   }
 
   def contact = UserAwareAction { implicit request =>

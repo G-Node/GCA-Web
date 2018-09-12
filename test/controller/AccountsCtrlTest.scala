@@ -66,7 +66,7 @@ class AccountsCtrlTest extends BaseCtrlTest {
 
     val newpass = "foofoofoo"
     val postR = FakeRequest(POST, "/password").withCookies(cookie)
-      .withFormUrlEncodedBody("password1" -> newpass, "password2" -> newpass)
+      .withFormUrlEncodedBody("passwordold" -> "testtest","password1" -> newpass, "password2" -> newpass)
 
     response = route(AccountsCtrlTest.app, postR).get
     assert(status(response) == SEE_OTHER || status(response) == OK)

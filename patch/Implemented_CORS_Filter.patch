@@ -1,0 +1,114 @@
+Index: app/conf/Global.scala
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/conf/Global.scala	(date 1536108075000)
++++ app/conf/Global.scala	(date 1535990103000)
+@@ -12,8 +12,10 @@
+ import play.api.mvc.Results._
+ import play.api.mvc._
+ import scala.concurrent.Future
++import play.api.http.HeaderNames
++import scala.concurrent.ExecutionContext.Implicits.global
+ 
+-object Global extends GlobalSettings with SecuredSettings {
++object Global extends WithFilters(CorsFilter) with GlobalSettings with SecuredSettings {
+ 
+   import play.api.Play.current
+   implicit lazy val globalEnv = new GlobalEnvironment()
+@@ -92,3 +94,19 @@
+   }
+ 
+ }
++
++object CorsFilter extends Filter {
++
++  def apply (nextFilter: (RequestHeader) => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
++
++    nextFilter(requestHeader).map { result =>
++      result.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*",
++        HeaderNames.ALLOW -> "*",
++        HeaderNames.ACCESS_CONTROL_ALLOW_METHODS -> "POST, GET, PUT, DELETE, OPTIONS",
++        HeaderNames.ACCESS_CONTROL_ALLOW_HEADERS -> "Origin, X-Requested-With, X-Json, Content-Type, Accept, Referer, User-Agent",
++        HeaderNames.ACCESS_CONTROL_EXPOSE_HEADERS -> "[Access-Control-Allow-Origin,Access-Control-Expose-Headers,Access-Control-Allow-Credentials,Access-Control-Allow-Methods,Access-Control-Allow-Headers]",
++        HeaderNames.ACCESS_CONTROL_ALLOW_CREDENTIALS -> "true"
++      )
++    }
++  }
++}
+\ No newline at end of file
+Index: app/controllers/Application.scala
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/controllers/Application.scala	(date 1536108075000)
++++ app/controllers/Application.scala	(date 1535990103000)
+@@ -9,6 +9,11 @@
+ import java.net._
+ import org.joda.time.DateTime
+ 
++import play.Play
++import play.api.http.HeaderNames
++import scala.concurrent.ExecutionContext.Implicits.global
++import scala.concurrent.Future
++
+ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator])
+   extends Silhouette[Login, CachedCookieAuthenticator] {
+ 
+@@ -158,4 +163,25 @@
+     Ok(views.html.abstractviewer(request.identity.map{ _.account }, abstr.conference, abstr))
+   }
+ 
++  def options(path: String) = CorsAction {
++    Action { request =>
++      Ok.withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> Seq(AUTHORIZATION, CONTENT_TYPE, "Target-URL").mkString(","))
++    }
++  }
++
++}
++
++// Adds the CORS header
++case class CorsAction[A](action: Action[A]) extends Action[A] {
++
++  def apply(request: Request[A]): Future[Result] = {
++    action(request).map(result => result.withHeaders(HeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN -> "*",
++      HeaderNames.ALLOW -> "*",
++      HeaderNames.ACCESS_CONTROL_ALLOW_METHODS -> "POST, GET, PUT, DELETE, OPTIONS",
++      HeaderNames.ACCESS_CONTROL_ALLOW_HEADERS -> "Origin, X-Requested-With, Content-Type, Accept, Referer, User-Agent"
++    ))
++  }
++
++  lazy val parser = action.parser
++
+ }
+Index: build.sbt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- build.sbt	(date 1536108075000)
++++ build.sbt	(date 1535990103000)
+@@ -8,6 +8,7 @@
+ scalaVersion := "2.11.1"
+ 
+ libraryDependencies ++= Seq(
++  filters,
+   jdbc,
+   anorm,
+   cache,
+Index: conf/routes
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- conf/routes	(date 1536108075000)
++++ conf/routes	(date 1535990103000)
+@@ -99,3 +99,6 @@
+ 
+ GET            /mob/conferences                               @controllers.Mobile.Conferences
+ GET            /mob/conference/:id                            @controllers.Mobile.Conference(id: String)
++
++OPTIONS        /                                              @controllers.Application.options(path="")
++OPTIONS        /*path                                         @controllers.Application.options(path)

@@ -200,7 +200,7 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     * @param id Conference id of the required schedule entry.
     * @return OK | NotFound
     */
-  def getSchedule(id: String) = SecuredAction { implicit request =>
+  def getSchedule(id: String) = UserAwareAction { implicit request =>
     val schedule = conferenceService.get(id).schedule
     if (schedule == null) {
       NotFound(Json.obj("message" -> "Schedule entry not found."))
