@@ -7,25 +7,47 @@ class RoutesResolver {
   lazy val baseUrl = sys.env.get("GCA_BASEURL").orElse(conf.getString("baseurl")).getOrElse("http://localhost:9000")
 
   /**
-   * Builds an URL to the related abstracts from a given object ID.
-   *
-   * @param id an ID of a Conference object to insert into the URL
-   *
-   * @return URL for related abstracts, like "/conferences/HNOPSADMHV/abstracts"
-   */
+    * Builds an URL to the related abstracts from a given object ID.
+    *
+    * @param id an ID of a Conference object to insert into the URL
+    *
+    * @return URL for related abstracts, like "/conferences/HNOPSADMHV/abstracts"
+    */
   def ownersUrl(id: String) = {
     new URL(baseUrl + s"/api/abstracts/$id/owners")
   }
 
   /**
-   * Builds an URL to the related abstracts from a given object ID.
-   *
-   * @param id an ID of a Conference object to insert into the URL
-   *
-   * @return URL for related abstracts, like "/api/conferences/HNOPSADMHV/abstracts"
-   */
+    * Builds an URL to the related abstracts from a given object ID.
+    *
+    * @param id an ID of a Conference object to insert into the URL
+    *
+    * @return URL for related abstracts, like "/conferences/HNOPSADMHV/abstracts"
+    */
+  def favUsersUrl(id: String) = {
+    new URL(baseUrl + s"/api/abstracts/$id/favusers")
+  }
+
+  /**
+    * Builds an URL to the related abstracts from a given object ID.
+    *
+    * @param id an ID of a Conference object to insert into the URL
+    *
+    * @return URL for related abstracts, like "/api/conferences/HNOPSADMHV/abstracts"
+    */
   def abstractsUrl(id: String) = {
     new URL(baseUrl + s"/api/conferences/$id/abstracts")
+  }
+
+  /**
+    * Builds an URL to the related abstracts from a given object ID.
+    *
+    * @param id an ID of a User object to insert into the URL
+    *
+    * @return URL for related abstracts, like "/api/user/HNOPSADMHV/favouriteabstracts"
+    */
+  def favAbstractsUrl(id: String) = {
+    new URL(baseUrl + s"/api/user/$id/favouriteabstracts")
   }
 
   /**

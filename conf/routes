@@ -58,6 +58,7 @@ POST          /api/abstracts/:id/figures                      @controllers.api.F
 GET           /api/abstracts/:id/figures                      @controllers.api.Figures.list(id: String)
 PUT           /api/abstracts/:id/owners                       @controllers.api.Abstracts.setPermissions(id: String)
 GET           /api/abstracts/:id/owners                       @controllers.api.Abstracts.getPermissions(id: String)
+GET           /api/abstracts/:id/favusers                     @controllers.api.Abstracts.favouriteUsers(id: String)
 GET           /api/abstracts/:id/stateLog                     @controllers.api.Abstracts.listState(id: String)
 PUT           /api/abstracts/:id/state                        @controllers.api.Abstracts.setState(id: String)
 
@@ -73,6 +74,7 @@ DELETE        /api/figures/:id                                @controllers.api.F
 GET           /api/users                                      @controllers.api.Accounts.accountsByEmail(email: String)
 GET           /api/user/list                                  @controllers.api.Accounts.listAccounts()
 GET           /api/user/:id/abstracts                         @controllers.api.Abstracts.listByAccount(id: String)
+GET           /api/user/:id/favouriteabstracts                @controllers.api.Abstracts.listFavByAccount(id: String)
 GET           /api/user/self/conferences/:id/abstracts        @controllers.api.Abstracts.listOwn(id: String)
 GET           /api/user/self/conferences                      @controllers.api.Conferences.listWithOwnAbstracts
 

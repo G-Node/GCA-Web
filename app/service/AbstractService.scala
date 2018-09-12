@@ -127,25 +127,53 @@ class AbstractService(figPath: String) extends PermissionsBase {
     }
   }
 
+  /**
+    * List all published and unpublished abstracts that belong to an account.
+    *
+    * @param account The account for which to list the abstracts.
+    * @return All abstracts that belong to an account.
+    */
+  def listFavourite(account: Account) : Seq[Abstract] = {
+    query { em =>
+      val queryStr =
+        """SELECT DISTINCT a FROM Abstract a
+           LEFT JOIN FETCH a.owners
+           LEFT JOIN FETCH a.favUsers f
+           LEFT JOIN FETCH a.authors
+           LEFT JOIN FETCH a.affiliations
+           LEFT JOIN FETCH a.conference
+           LEFT JOIN FETCH a.figures
+           LEFT JOIN FETCH a.references
+           WHERE f.uuid = :uuid
+          ORDER BY a.sortId, a.title"""
+
+      val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
+      query.setParameter("uuid", account.uuid)
+      asScalaBuffer(query.getResultList)
+    }
+  }
+
   def listFavourite(conference: Conference, account: Account) : Seq[Abstract] = {
     query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
-           LEFT JOIN FETCH a.owners o
+           LEFT JOIN FETCH a.owners
+           LEFT JOIN FETCH a.favUsers f
            LEFT JOIN FETCH a.authors
            LEFT JOIN FETCH a.affiliations
            LEFT JOIN FETCH a.conference c
            LEFT JOIN FETCH a.figures
            LEFT JOIN FETCH a.references
-           WHERE c.uuid = :ConfUuid AND o.uuid = :OwnerUuid
+           WHERE c.uuid = :ConfUuid AND f.uuid = :FavUserUuid
            ORDER BY a.sortId, a.title"""
 
       val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
       query.setParameter("ConfUuid", conference.uuid)
-      query.setParameter("OwnerUuid", account.uuid)
+      query.setParameter("FavUserUuid", account.uuid)
       asScalaBuffer(query.getResultList)
     }
   }
+
 
   /**
    * Return a published (= Accepted && Conference.isPublished) abstract by id.
@@ -218,6 +246,70 @@ class AbstractService(figPath: String) extends PermissionsBase {
       abstr
     }
   }
+
+  /**
+    * Return an abstract with a certain id, that is accessible for an account.
+    * The abstract doesnt need to be published if the account has appropriate
+    * access.
+    *
+    * @param id      The id of the abstract.
+    * @param account The account who wants to request the abstract.
+    * @return The abstract with the specified id.
+    * @throws EntityNotFoundException If the account does not exist
+    * @throws IllegalAccessException if not accessible
+    * @throws NoResultException If was not found
+    */
+  def getFav(id: String, account: Account) : Abstract = {
+    query { em =>
+      val queryStr =
+        """SELECT DISTINCT a FROM Abstract a
+           LEFT JOIN FETCH a.owners
+           LEFT JOIN FETCH a.favUsers
+           LEFT JOIN FETCH a.authors
+           LEFT JOIN FETCH a.affiliations
+           LEFT JOIN FETCH a.conference
+           LEFT JOIN FETCH a.figures
+           LEFT JOIN FETCH a.references
+           WHERE a.uuid = :uuid"""
+
+      // this apparently useless query is needed to avoid strange caching behaviour related to #285
+      val queryUserStr =  """SELECT acc FROM Account acc LEFT JOIN acc.favAbstracts a WHERE a.uuid = :uuid"""
+      em.createQuery(queryUserStr, classOf[Account])
+        .setParameter("uuid", id)
+        .getResultList
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
+      query.setParameter("uuid", id)
+      val abstr = query.getSingleResult
+
+      abstr
+    }
+  }
+
+  /**
+    * Get permissions of an existing object.
+    * This is only permitted if the account owns the object.
+    *
+    * @param obj        object with certain permissions.
+    * @param account    The account who wants to access permissions.
+    */
+  def getFavouriteUsers(obj: Abstract, account: Account) : List[Account] = {
+    transaction { (em, tx) =>
+      if (obj.uuid == null)
+        throw new IllegalArgumentException("Unable to update an object without uuid")
+
+      val objChecked = em.find(obj.getClass, obj.uuid)
+      if (objChecked == null)
+        throw new EntityNotFoundException("Unable to find conference with uuid = " + obj.uuid)
+
+      objChecked.favUsers.toList
+    }
+  }
+
 
   /**
    * Create a new abstract.

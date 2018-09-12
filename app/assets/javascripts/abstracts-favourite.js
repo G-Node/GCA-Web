@@ -68,7 +68,7 @@ require(["main"], function () {
 
                     if (confs !== null) {
                         confs.forEach(function (current) {
-                            var absUrl = "/api/user/self/conferences/" + current.uuid + "/abstracts";
+                            var absUrl = "/api/user/self/favouriteabstracts";
                             self.currConfShort = current.short;
                             $.getJSON(absUrl, onAbstractData(current)).fail(self.ioFailHandler);
                         });
