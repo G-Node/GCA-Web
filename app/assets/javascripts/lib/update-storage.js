@@ -22,7 +22,12 @@ function onConferences(confs) {
     if (confs !== null) {
         confs.forEach(function (conf) {
             localStorage.setItem(conf.uuid, JSON.stringify(conf));
-            // $.getJSON(conf.abstracts, onAbstracts);
+            // TODO: fix exception on emtpy abstracts
+            $.getJSON(conf.abstracts, function (confUuid) {
+                return function(data) {
+                    onAbstracts(confUuid, data);
+                };
+            }(conf.uuid));
             $.getJSON(conf.geo, function (confUuid) {
                 return function(data) {
                     onLocation(confUuid, data);
@@ -45,7 +50,8 @@ function onConferences(confs) {
 }
 
 // Write all abstracts to the local storage.
-function onAbstracts(abs) {
+function onAbstracts(confUuid, abs) {
+    localStorage.setItem(confUuid+"abstracts", JSON.stringify(abs));
     if (abs !== null) {
         abs.forEach(function (abstract) {
             localStorage.setItem(abstract.uuid, JSON.stringify(abstract));
