@@ -1,5 +1,5 @@
 require(["main"], function () {
-require(["lib/models", "lib/tools", "lib/leaflet/leaflet", "lib/msg", "lib/astate", "knockout"], function(models, tools, msg, leaflet, astate, ko) {
+require(["lib/models", "lib/tools", "lib/leaflet/leaflet", "lib/msg", "lib/astate", "knockout", "lib/offline"], function(models, tools, msg, leaflet, astate, ko, offline) {
     "use strict";
 
     function LocationsViewModel(confId, mapType) {
@@ -31,12 +31,12 @@ require(["lib/models", "lib/tools", "lib/leaflet/leaflet", "lib/msg", "lib/astat
         self.loadConference = function(confId) {
             var confUrl = "/api/conferences/" + confId; // we should be reading this from the conference
 
-            $.getJSON(confUrl, onConferenceData).fail(self.ioFailHandler);
+            offline.requestJSON(confId, confUrl, onConferenceData, self.ioFailHandler);
 
             function onConferenceData(confObj) {
                 var conf = models.Conference.fromObject(confObj);
                 self.conference(conf);
-                $.getJSON(self.conference().geo, onGeoData).fail(self.ioFailHandler);
+                offline.requestJSON(conf.uuid + "geo", self.conference().geo, onGeoData, self.ioFailHandler);
 
                 function onGeoData(geojson) {
                     //depending on whether locations or floor plan page

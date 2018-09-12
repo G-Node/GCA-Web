@@ -5,7 +5,7 @@
 @import play.api.libs.json.{ Json, JsValue }
 
 <!DOCTYPE html>
-<html>
+<html manifest="@routes.Assets.at("cache/mobcache.appcache")">
 <head>
     <!--
            ____       _   _           _
@@ -62,6 +62,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="/manifest.json">
+
+    <!-- offline support -->
+    <script src="@routes.Assets.at("javascripts/lib/update-storage.js")" type="text/javascript"></script>
 
     <!-- smart app banner -->
     @conference.map { conf =>
