@@ -76,6 +76,7 @@ GET           /api/user/list                                  @controllers.api.A
 GET           /api/user/:id/abstracts                         @controllers.api.Abstracts.listByAccount(id: String)
 GET           /api/user/:id/favouriteabstracts                @controllers.api.Abstracts.listFavByAccount(id: String)
 GET           /api/user/self/conferences/:id/abstracts        @controllers.api.Abstracts.listOwn(id: String)
+GET           /api/user/self/conferences/:id/favouriteabstracts        @controllers.api.Abstracts.listFavByConf(id: String)
 GET           /api/user/self/conferences                      @controllers.api.Conferences.listWithOwnAbstracts
 
 
