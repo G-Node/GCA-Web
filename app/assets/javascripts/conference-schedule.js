@@ -1,5 +1,5 @@
 require(["main"], function () {
-    require(["lib/models", "lib/tools", "knockout", "moment"], function(models, tools, ko, moment) {
+    require(["lib/models", "lib/tools", "knockout", "moment", "lib/offline"], function(models, tools, ko, moment, offline) {
         "use strict";
 
         /**
@@ -75,14 +75,14 @@ require(["main"], function () {
 
                 //now load the data from the server
                 var confURL ="/api/conferences/" + id;
-                $.getJSON(confURL, self.onConferenceData).fail(self.ioFailHandler);
+                offline.requestJSON(id, confURL, self.onConferenceData, self.ioFailHandler);
             };
 
             //conference data
             self.onConferenceData = function (confObj) {
                 var conf = models.Conference.fromObject(confObj);
                 //now load the schedule data
-                $.getJSON(conf.schedule, self.onScheduleData).fail(self.ioFailHandler);
+                offline.requestJSON(confObj.uuid + "schedule", confObj.schedule, self.onScheduleData, self.ioFailHandler);
             };
 
             //schedule data
@@ -118,7 +118,9 @@ require(["main"], function () {
                 self.infoAbstract("");
                 self.infoError(false);
                 self.infoIsLoadingAbstract("Loading abstract");
-                $.getJSON(abstractURL, onAbstractData).fail(self.infoIoFailHandler);
+                var abstractUuid = abstractURL.substring(abstractURL.lastIndexOf("/") + 1);
+                console.log(abstractUuid);
+                offline.requestJSON(abstractUuid, abstractURL, onAbstractData, self.infoIoFailHandler);
 
                 function onAbstractData (abstractObj) {
                     if (abstractObj !== null && abstractObj !== undefined) {
