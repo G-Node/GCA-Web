@@ -20,7 +20,8 @@
             moment: ["../lib/momentjs/moment"],
             jsroutes: ["/jsroutes"],
             datetimepicker: ["//cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.1/jquery-ui-timepicker-addon.min"],
-            dhtmlxscheduler: ["../lib/scheduler/dhtmlxscheduler"]
+            dhtmlxscheduler: ["../lib/scheduler/dhtmlxscheduler"],
+            offline: ["../lib/offline"]
         }
     });
 

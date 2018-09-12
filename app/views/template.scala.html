@@ -63,8 +63,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="/manifest.json">
 
-    <!-- mobile webapp support -->
-    <script data-main="@routes.Assets.at("javascripts/lib/offline.js")" src="@routes.Assets.at("javascripts/require.js")" type="text/javascript"></script>
+    <!-- offline support -->
+    <script src="@routes.Assets.at("javascripts/lib/update-storage.js")" type="text/javascript"></script>
 
     <!-- smart app banner -->
     @conference.map { conf =>
