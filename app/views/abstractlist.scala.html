@@ -54,6 +54,8 @@
                             <li data-bind="text: $data.formatCitation()"></li>
                         </ul>
                     </div>
+                    <p class="list-group-item-heading" data-bind="text: $root.favUsers"></p>
+
                 </div>
             </div>
         </div>
@@ -68,9 +70,9 @@
                 <a data-bind="attr: {href : $parent.prevAbstract($data)}">&larr; Previous</a>
             </li>
             <li>
-               <!-- ko with: $root.conference -->
-               <span data-bind="html: formatSortId($parent.sortId)"></span>
-               <!-- /ko -->
+                    <!-- ko with: $root.conference -->
+                <span data-bind="html: formatSortId($parent.sortId)"></span>
+                    <!-- /ko -->
             </li>
             <li class="next" data-bind="css: { disabled: $parent.nextAbstract($data) == null }">
                 <a data-bind="attr: {href : $parent.nextAbstract($data)}">Next &rarr;</a>

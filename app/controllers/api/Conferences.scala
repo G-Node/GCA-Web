@@ -83,10 +83,10 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     *
     * @return Ok with all conferences publicly available.
     */
-  def listWithFavouriteAbstracts =  SecuredAction { implicit request =>
+  def listWithFavAbstracts =  SecuredAction { implicit request =>
     val conferences = conferenceService.listWithFavouriteAbstractsOfAccount(request.identity.account)
     if (conferences.length==0) {
-      BadRequest("You have created no abstracts yet")
+      BadRequest("You have no favourite abstracts yet")
     } else {
       resultWithETag(conferences)
     }

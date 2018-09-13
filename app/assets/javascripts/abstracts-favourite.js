@@ -50,7 +50,7 @@ require(["main"], function () {
                 console.log("ensureDataAndThen::");
 
                 //now load the data from the server
-                var confURL = "/api/user/self/conferences";
+                var confURL = "/api/user/self/conffavouriteabstracts";
                 $.getJSON(confURL, onConferenceData).fail(self.ioFailHandler);
 
                 //conference data
@@ -60,6 +60,7 @@ require(["main"], function () {
                     if (confs !== null) {
                         confs.forEach(function (current) {
                             current.abstracts = ko.observableArray(null);
+                            console.log(current.short);
                         });
 
                     }
@@ -69,7 +70,7 @@ require(["main"], function () {
                     if (confs !== null) {
                         confs.forEach(function (current) {
                             //needs some fix to include "conferences/" + current.uuid
-                            var absUrl = "/api/user/self/favouriteabstracts";
+                            var absUrl = "/api/user/self/conferences/" + current.uuid + "/favouriteabstracts";
                             self.currConfShort = current.short;
                             $.getJSON(absUrl, onAbstractData(current)).fail(self.ioFailHandler);
                         });

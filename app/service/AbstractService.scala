@@ -422,6 +422,50 @@ class AbstractService(figPath: String) extends PermissionsBase {
   }
 
   /**
+   * Update an existing abstract.
+   * This is only permitted if the account is one of the owners.
+   *
+   * @param abstr   The Abstract to update.
+   * @param account The account who wants to perform the update.
+    * @return The updated and persisted abstract.
+   */
+  def addFavUser(abstr : Abstract, account: Account) : Abstract = {
+
+    val abstrUpdated = transaction { (em, tx) =>
+
+    abstr.favUsers.add(account)
+
+      val merged = em.merge(abstr)
+
+      merged
+    }
+
+    get(abstrUpdated.uuid)
+  }
+
+  /**
+   * Update an existing abstract.
+   * This is only permitted if the account is one of the owners.
+   *
+   * @param abstr   The Abstract to update.
+   * @param account The account who wants to perform the update.
+    * @return The updated and persisted abstract.
+   */
+  def removeFavUser(abstr : Abstract, account: Account) : Abstract = {
+
+    val abstrUpdated = transaction { (em, tx) =>
+
+    abstr.favUsers.remove(account)
+
+      val merged = em.merge(abstr)
+
+      merged
+    }
+
+    get(abstrUpdated.uuid)
+  }
+
+  /**
    * Delete an abstract.
    * This is only permitted if the account is one of the owners.
    *

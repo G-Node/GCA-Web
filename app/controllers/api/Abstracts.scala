@@ -269,6 +269,34 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     ))
   }
 
+    /**
+    * Get permissions of the abstract.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
+   def addFavUser(id: String) = SecuredAction { implicit request =>
+    Logger.debug(s"Liking abstract with uuid: [$id]")
+
+     val abstr = abstractService.get(id)
+    abstractService.addFavUser(abstr, request.identity.account)
+
+    Ok(views.html.dashboard.favouriteabstracts(request.identity.account)) //FIXME: JSON
+  }
+
+    /**
+    * Get permissions of the abstract.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
+   def removeFavUser(id: String) = SecuredAction { implicit request =>
+    Logger.debug(s"Disliking abstract with uuid: [$id]")
+
+     val abstr = abstractService.get(id)
+    abstractService.removeFavUser(abstr, request.identity.account)
+
+    Ok(views.html.dashboard.favouriteabstracts(request.identity.account)) //FIXME: JSON
+  }
+
   def listState(id: String) = SecuredAction { implicit request =>
     implicit val logWrites = new StateLogWrites()
 

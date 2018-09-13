@@ -16,7 +16,11 @@
     </div>
 
     <div class="like">
-        <button>I like this!</button>
+        <a data-bind="attr:{href : $root.favourAbstract($data)}">I like this!</a>
+    </div>
+
+    <div class="like">
+        <a data-bind="attr:{href : $root.disfavourAbstract($data)}">I don't like this anymore!</a>
     </div>
 
     <div class="affiliations">

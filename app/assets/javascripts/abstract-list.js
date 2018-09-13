@@ -92,6 +92,22 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
             MathJax.Hub.Queue(["Typeset",MathJax.Hub]); //re-render equations
         };
 
+        self.favourAbstract = function(abstract) {
+            console.log("Liking abstract " + abstract.uuid + " " + abstract.toString());
+            /*window.location = self.makeLink(abstract);*/
+            var absUrl = "/api/abstracts/" + abstract.uuid + "/addfavuser";
+
+            return absUrl;
+        };
+
+        self.disfavourAbstract = function(abstract) {
+            console.log("Disliking abstract " + abstract.uuid + " " + abstract.toString());
+            /*window.location = self.makeLink(abstract);*/
+            var absUrl = "/api/abstracts/" + abstract.uuid + "/removefavuser";
+
+            return absUrl;
+        };
+
         self.showAbstractByUUID = function(uuid) {
 
             if(!uuid in self.uuidMap) {
