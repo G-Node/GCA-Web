@@ -44,6 +44,7 @@
     <script src="@routes.Assets.at("javascripts/lib/scheduler/dhtmlxscheduler.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("javascripts/lib/scheduler/ext/dhtmlxscheduler_readonly.js")" type="text/javascript"></script>
     <link rel="stylesheet" href="@routes.Assets.at("javascripts/lib/scheduler/dhtmlxscheduler.css")" type="text/css">
+
     <!-- leaflet.js for open street map -->
     <link rel="stylesheet" href="@routes.Assets.at("javascripts/lib/leaflet/leaflet.css")"/>
     <script src="@routes.Assets.at("javascripts/lib/leaflet/leaflet.js")"></script>
@@ -117,15 +118,20 @@
                             </li>
                         }
 
-                    @if(conf.isPublished) {
-                        <li class=@if(active.toLowerCase == "locations") {"active"} else {""}>
-                        <a href="@routes.Application.locations(conf.short)">Locations</a>
+                    @if(conf.geo != null && conf.geo.length > 0
+                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                            && Json.parse(conf.geo).as[List[JsValue]].length > 0){
+                        <li class=@if(active.toLowerCase == "locations") {"active"} else{""} >
+                            <a href="@routes.Application.locations(conf.short)">Locations</a>
                         </li>
                     }
 
-                    @if(conf.isPublished) {
+                    @if(conf.geo != null && conf.geo.length > 0
+                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                            && Json.parse(conf.geo).as[List[JsValue]].length > 0
+                            && (Json.parse(conf.geo) \\ "floorplans").size > 0){
                         <li class=@if(active.toLowerCase == "floorplans") {"active"} else {""}>
-                        <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
+                            <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
                         </li>
                     }
 
