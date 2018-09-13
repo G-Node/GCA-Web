@@ -269,6 +269,18 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     ))
   }
 
+  /**
+    * Get permissions of the abstract.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
+  def isFavouriteUser(id: String) = SecuredAction { implicit request =>
+
+    val abstr = abstractService.get(id)
+    //find better way to give only "True"
+    Ok(Json.toJson(abstr.favUsers.contains(request.identity.account)))
+  }
+
     /**
     * Get permissions of the abstract.
     *

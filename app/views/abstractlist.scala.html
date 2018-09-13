@@ -54,8 +54,6 @@
                             <li data-bind="text: $data.formatCitation()"></li>
                         </ul>
                     </div>
-                    <p class="list-group-item-heading" data-bind="text: $root.favUsers"></p>
-
                 </div>
             </div>
         </div>
@@ -74,6 +72,14 @@
                 <span data-bind="html: formatSortId($parent.sortId)"></span>
                     <!-- /ko -->
             </li>
+            <li class="like" data-bind="css: { disabled: $root.isFavourite($data) == false }">
+                <a data-bind="attr:{href : $root.favourAbstract($data)}">I like this!</a>
+            </li>
+
+            <li class="like" data-bind="css: { disabled: $root.isFavourite($data) == true }">
+                <a data-bind="attr:{href : $root.disfavourAbstract($data)}">I don't like this anymore!</a>
+            </li>
+
             <li class="next" data-bind="css: { disabled: $parent.nextAbstract($data) == null }">
                 <a data-bind="attr: {href : $parent.nextAbstract($data)}">Next &rarr;</a>
             </li>

@@ -93,16 +93,12 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
         };
 
         self.favourAbstract = function(abstract) {
-            console.log("Liking abstract " + abstract.uuid + " " + abstract.toString());
-            /*window.location = self.makeLink(abstract);*/
             var absUrl = "/api/abstracts/" + abstract.uuid + "/addfavuser";
 
             return absUrl;
         };
 
         self.disfavourAbstract = function(abstract) {
-            console.log("Disliking abstract " + abstract.uuid + " " + abstract.toString());
-            /*window.location = self.makeLink(abstract);*/
             var absUrl = "/api/abstracts/" + abstract.uuid + "/removefavuser";
 
             return absUrl;
@@ -239,6 +235,26 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
             }
 
             return self.neighbours[uuid].prev;
+        };
+
+        self.isFavourite = function(abstract) {
+            var uuid = abstract.uuid;
+
+            //var favUsersUrl = "/api/abstracts/" + uuid + "/favusers";
+            var favUsersUrl = "/api/user/self/abstract/" + uuid + "/isfavuser";
+            $.getJSON(favUsersUrl, onFavUserData).fail(self.ioFailHandler);
+
+            //conference data
+            function onFavUserData(favUserArray) {
+                console.log('FavAccount UUid '+ favUserArray);
+               // self.abstractsData = absList;
+                //var absList = models.Abstract.fromArray(favUserArray);
+
+                //now load the abstract data
+                //$.getJSON(conf.abstracts, onAbstractData).fail(self.ioFailHandler);
+            }
+
+
         };
 
         //Data IO

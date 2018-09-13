@@ -153,6 +153,21 @@ class AbstractService(figPath: String) extends PermissionsBase {
     }
   }
 
+  def isFavourite(conference: Conference, account: Account) : Seq[Abstract] = {
+    query { em =>
+      val queryStr =
+        """SELECT DISTINCT a FROM Abstract a
+           LEFT JOIN FETCH a.favUsers f
+           WHERE a.uuid = :AbstrUuid AND f.uuid = :FavUserUuid
+           ORDER BY a.sortId, a.title"""
+
+      val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
+      query.setParameter("ConfUuid", conference.uuid)
+      query.setParameter("FavUserUuid", account.uuid)
+      asScalaBuffer(query.getResultList)
+    }
+  }
+
   def listFavourite(conference: Conference, account: Account) : Seq[Abstract] = {
     query { em =>
       val queryStr =
