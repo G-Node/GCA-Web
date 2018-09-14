@@ -86,7 +86,7 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
   def listWithFavAbstracts =  SecuredAction { implicit request =>
     val conferences = conferenceService.listWithFavouriteAbstractsOfAccount(request.identity.account)
     if (conferences.length==0) {
-      BadRequest("You have no favourite abstracts yet")
+      BadRequest("No favourite abstracts")
     } else {
       resultWithETag(conferences)
     }

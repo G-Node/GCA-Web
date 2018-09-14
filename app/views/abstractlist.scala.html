@@ -4,6 +4,7 @@
 
     <div class="hidden-data">
         <div id="conference-uuid">@conference.uuid</div>
+        <div id="logged-in">@if(account.isDefined) {"true"} else {"false"}</div>
     </div>
 
     <script data-main="@routes.Assets.at("javascripts/abstract-list.js")"
@@ -72,13 +73,16 @@
                 <span data-bind="html: formatSortId($parent.sortId)"></span>
                     <!-- /ko -->
             </li>
-            <li class="like" data-bind="css: { disabled: $root.isFavourite($data) == false }">
-                <a data-bind="attr:{href : $root.favourAbstract($data)}">I like this!</a>
-            </li>
 
-            <li class="like" data-bind="css: { disabled: $root.isFavourite($data) == true }">
-                <a data-bind="attr:{href : $root.disfavourAbstract($data)}">I don't like this anymore!</a>
-            </li>
+            @if(account.isDefined) {
+                <li data-bind="visible: !$root.isFavouriteAbstract()">
+                    <a class="favour" data-bind="attr:{href : $root.favourAbstract($data)}">&#9733</a>
+                </li>
+
+                <li data-bind="visible: $root.isFavouriteAbstract">
+                    <a class="disfavour" data-bind="attr:{href : $root.disfavourAbstract($data)}">&#9733</a>
+                </li>
+            }
 
             <li class="next" data-bind="css: { disabled: $parent.nextAbstract($data) == null }">
                 <a data-bind="attr: {href : $parent.nextAbstract($data)}">Next &rarr;</a>

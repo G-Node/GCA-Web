@@ -1,6 +1,6 @@
 @(account: Account)
 
-@template(Some(account), None, "Abstracts") {
+@template(Some(account), None, "Favourite Abstracts") {
 
     <div class="hidden-data">
         <div id="conference-uuid">@account.uuid</div>
@@ -15,6 +15,13 @@
         <div class="alert alert-info fade in out">
             <h4>Loading data</h4>
             <p>Please wait...</p>
+        </div>
+    </div>
+
+        <!-- If no Favourites -->
+    <div data-bind="if: noFavouriteAbstracts">
+        <div class="alert alert-info fade in out">
+            <h4>You have no favourite abstracts yet. Click the star button shown for abstracts to add them.</h4>
         </div>
     </div>
 
@@ -46,7 +53,6 @@
                     <a data-bind="attr: { href: createLink().absLink }">
                         <li id="abstract-list-item" class="list-group-item abstract">
                             <span data-bind="text: title"></span>
-                            <!--<a class="badge" data-bind="href: unfavouritelink">Dislike</a>-->
                         </li>
                     </a>
                 </ul>

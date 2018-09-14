@@ -21,6 +21,7 @@ require(["main"], function () {
 
             self.conferences = ko.observableArray(null);
             self.isLoading = ko.observable(true);
+            self.noFavouriteAbstracts = ko.observable(false);
             self.error = ko.observable(false);
 
 
@@ -41,9 +42,14 @@ require(["main"], function () {
 
             //Data IO
             self.ioFailHandler = function (jqxhr, textStatus, error) {
-                var err = textStatus + ", " + error + ", " + jqxhr.responseText;
-                console.log("Request Failed: " + err);
-                self.setError("danger", "Error while loading data [" + err + "]!");
+                if(find(jqxhr.responseText,"No favourite abstracts") != -1){
+                    self.noFavouriteAbstracts(true);
+                    self.isLoading(false);
+                }else {
+                    var err = textStatus + ", " + error + ", " + jqxhr.responseText;
+                    console.log("Request Failed: " + err);
+                    self.setError("danger", "Error while loading data [" + err + "]!");
+                }
             };
 
             self.ensureDataAndThen = function (doAfter) {

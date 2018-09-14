@@ -11,10 +11,10 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
      * @returns {AbstractListViewModel}
      * @constructor
      */
-    function AbstractListViewModel(confId) {
+    function AbstractListViewModel(confId,loggedIn) {
 
         if (! (this instanceof AbstractListViewModel)) {
-            return new AbstractListViewModel(confId);
+            return new AbstractListViewModel(confId,loggedIn);
         }
 
         var self = this;
@@ -23,6 +23,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
         self.conference = ko.observable();
         self.abstracts = ko.observableArray(null);
         self.selectedAbstract = ko.observable(null);
+        self.isFavouriteAbstract = ko.observable(false);
         self.groups = ko.observableArray(null);
         self.error = ko.observable(false);
 
@@ -89,6 +90,9 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
             self.abstracts(null);
             self.selectedAbstract(abstract);
             document.title = abstract.title; //FIXME add conference
+            if(find(loggedIn,'true')!=-1){
+                self.isFavourite(abstract);
+            }
             MathJax.Hub.Queue(["Typeset",MathJax.Hub]); //re-render equations
         };
 
@@ -239,22 +243,15 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
 
         self.isFavourite = function(abstract) {
             var uuid = abstract.uuid;
-
-            //var favUsersUrl = "/api/abstracts/" + uuid + "/favusers";
             var favUsersUrl = "/api/user/self/abstract/" + uuid + "/isfavuser";
-            $.getJSON(favUsersUrl, onFavUserData).fail(self.ioFailHandler);
+            $.get(favUsersUrl,onFavUserData).fail(self.ioFailHandler);
 
-            //conference data
-            function onFavUserData(favUserArray) {
-                console.log('FavAccount UUid '+ favUserArray);
-               // self.abstractsData = absList;
-                //var absList = models.Abstract.fromArray(favUserArray);
-
-                //now load the abstract data
-                //$.getJSON(conf.abstracts, onAbstractData).fail(self.ioFailHandler);
+            function onFavUserData(isFavUser) {
+                console.log('FavAccount UUid '+ isFavUser);
+                var IFUBool = (isFavUser == 'true');
+                console.log('FavAccount UUid2 '+ IFUBool);
+                self.isFavouriteAbstract(IFUBool);
             }
-
-
         };
 
         //Data IO
@@ -335,9 +332,9 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
 
         var data = tools.hiddenData();
 
-        console.log(data.conferenceUuid);
+        console.log(data.conferenceUuid,data.loggedIn);
 
-        window.abstractList = AbstractListViewModel(data.conferenceUuid);
+        window.abstractList = AbstractListViewModel(data.conferenceUuid,data.loggedIn);
         window.abstractList.init();
     });
 

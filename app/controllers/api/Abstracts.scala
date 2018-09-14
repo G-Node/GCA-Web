@@ -278,7 +278,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
 
     val abstr = abstractService.get(id)
     //find better way to give only "True"
-    Ok(Json.toJson(abstr.favUsers.contains(request.identity.account)))
+    Ok(abstr.favUsers.contains(request.identity.account).toString)
   }
 
     /**
