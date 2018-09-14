@@ -1,4 +1,4 @@
-self._cacheVersion = "v11";
+self._cacheVersion = "v15";
 
 self.resourcesToCache = [
     // Views
@@ -69,7 +69,7 @@ self.resourcesToCache = [
     "https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.1/jquery-ui-timepicker-addon.min.css",
     "https://fonts.googleapis.com/css?family=EB+Garamond|Open+Sans",
     "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js?delayStartupUntil=configured",
-    "http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/extensions/MathMenu.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/extensions/MathMenu.js",
 
     // Styles
     "/assets/stylesheets/_g-node-bootstrap.less",
@@ -101,7 +101,6 @@ self.addEventListener("install", function(event) {
             return cache.addAll(self.resourcesToCache);
         })
     );
-
 });
 
 // Get a promise containing all dynamic conference and abstract views.
@@ -120,6 +119,12 @@ self.loadDynamicViews = function () {
                     dynamicViews.push("/conference/" + conf.short + "/floorplans");
                     dynamicViews.push("/conference/" + conf.short + "/locations");
                     dynamicViews.push("/conference/" + conf.short + "/abstracts");
+                    /*
+                     * TODO: The logo and the thumbnail are out of scope of the service worker
+                     * so they will cause an error and need to be stored locally.
+                     */
+                    // dynamicViews.push(conf.logo);
+                    // dynamicViews.push(conf.thumbnail);
                     accordingAbstracts.push(self.loadDynamicAbstracts(conf.abstracts));
                 }
             });
@@ -206,7 +211,7 @@ self.handleFetch = function(initialRequest) {
           }).catch(function (reason) { // The resource could not be loaded. Return a default one.
               console.log("Retrieval of " + JSON.stringify(initialRequest.url, null, 4) + " from cache " +
                   "failed because of: " + JSON.stringify(reason, null, 4));
-              return caches.match("/");
+              return caches.match("/conferences");
           });
       }
   });
