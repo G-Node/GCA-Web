@@ -117,15 +117,21 @@
                             </li>
                         }
 
-                    @if(conf.isPublished) {
-                        <li class=@if(active.toLowerCase == "locations") {"active"} else {""}>
-                        <a href="@routes.Application.locations(conf.short)">Locations</a>
+                    @if(conf.isPublished && conf.geo != null && conf.geo.length > 0
+                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                            && Json.parse(conf.geo).as[List[JsValue]].length > 0){
+                        <li class=@if(active.toLowerCase == "locations") {"active"} else{""} >
+                            <a href="@routes.Application.locations(conf.short)">Locations</a>
                         </li>
                     }
 
-                    @if(conf.isPublished) {
+                    @if(conf.isPublished && conf.geo != null && conf.geo.length > 0
+                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                            && Json.parse(conf.geo).as[List[JsValue]].length > 0
+                            && (Json.parse(conf.geo) \\ "floorplans").size > 0){
                         <li class=@if(active.toLowerCase == "floorplans") {"active"} else {""}>
-                        <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
+                            <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
+
                         </li>
                     }
 
@@ -138,6 +144,12 @@
                         @account.map { acc =>
                             <li class=@if(active.toLowerCase == "myabstracts") {"active"} else {""}>
                                 <a href="@routes.Application.abstractsPrivate()">My Abstracts</a>
+                            </li>
+                        }
+
+                        @account.map { acc =>
+                            <li class=@if(active.toLowerCase == "favouriteabstracts") {"active"} else {""}>
+                                <a href="@routes.Application.abstractsFavourite()">Favourite Abstracts</a>
                             </li>
                         }
                     }

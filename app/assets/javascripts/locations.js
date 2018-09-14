@@ -101,7 +101,8 @@ require(["lib/models", "lib/tools", "lib/leaflet/leaflet", "lib/msg", "lib/astat
                                 }
                             }
                         }
-                        if($('.floorplan-divs').length == 0){
+
+                      if($('.floorplan-divs').length == 0){
                             $('#floorplans-wrap').append('<p>No floorplans available for this conference.</p>');
                         }
                     }

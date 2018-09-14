@@ -91,28 +91,66 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
   }
 
   /**
-   * List all abstracts for a given user.
-   *
-   * @return All (accessible) abstracts for a given user.
-   */
+    * List all abstracts for a given user.
+    *
+    * @return All (accessible) abstracts for a given user.
+    */
   def listByAccount(id: String) = SecuredAction { implicit request =>
     val ownAbstracts = abstractService.listOwn(request.identity.account)
     resultWithETag(ownAbstracts)
   }
 
+  /**
+    * List all favourite abstracts for a given user.
+    *
+    * replace Own by Favourite
+    *
+    * @return All (accessible) abstracts for a given user.
+    */
+  def listFavByAccount(id: String) = SecuredAction { implicit request =>
+    val favAbstracts = abstractService.listFavourite(request.identity.account)
+    resultWithETag(favAbstracts)
+  }
+
 
   /**
-   * List all abstracts for a given conference and a given user
-   *
-   * @return All (accessible) abstracts for a given user.
-   */
+    * List all abstracts for a given conference and a given user
+    *
+    * @return All (accessible) abstracts for a given user.
+    */
   def listOwn(conferenceId: String) = SecuredAction { implicit request =>
 
-  val conference = conferenceService.get(conferenceId)
-  val abstracts = abstractService.listOwn(conference, request.identity.account)
+    val conference = conferenceService.get(conferenceId)
+    val abstracts = abstractService.listOwn(conference, request.identity.account)
 
-  resultWithETag(abstracts)
-}
+    resultWithETag(abstracts)
+  }
+
+  /**
+    * List all abstracts for a given conference and a given user
+    *
+    * @return All (accessible) abstracts for a given user.
+    */
+  def listFavByConf(conferenceId: String) = SecuredAction { implicit request =>
+
+    val conference = conferenceService.get(conferenceId)
+    val abstracts = abstractService.listFavourite(conference, request.identity.account)
+
+    resultWithETag(abstracts)
+  }
+
+  /**
+    * List all favourite abstracts for a given conference and a given user
+    *
+    * @return All (accessible) favourite abstracts for a given user.
+    */
+  /**def listFavourite(conferenceId: String) = SecuredAction { implicit request =>
+
+    val conference = conferenceService.get(conferenceId)
+    val abstracts = abstractService.listFavourite(conference, request.identity.account)
+
+    resultWithETag(abstracts)
+  }*/
 
   /**
    * An abstract info by id.
@@ -202,10 +240,10 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
   }
 
   /**
-   * Get permissions of the abstract.
-   *
-   * @return a list of updated permissions (accounts) as JSON
-   */
+    * Get permissions of the abstract.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
   def getPermissions(id: String) = SecuredAction { implicit request =>
 
     val abstr = abstractService.getOwn(id, request.identity.account)
@@ -214,6 +252,61 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     Ok(JsArray(
       for (acc <- owners) yield accountFormat.writes(acc)
     ))
+  }
+
+  /**
+    * Get permissions of the abstract.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
+  def favouriteUsers(id: String) = SecuredAction { implicit request =>
+
+    val abstr = abstractService.getFav(id, request.identity.account)
+    val favUsers = abstractService.getFavouriteUsers(abstr, request.identity.account)
+
+    Ok(JsArray(
+      for (acc <- favUsers) yield accountFormat.writes(acc)
+    ))
+  }
+
+  /**
+    * Get permissions of the abstract.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
+  def isFavouriteUser(id: String) = SecuredAction { implicit request =>
+
+    val abstr = abstractService.get(id)
+    //find better way to give only "True"
+    Ok(abstr.favUsers.contains(request.identity.account).toString)
+  }
+
+    /**
+    * Get permissions of the abstract.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
+   def addFavUser(id: String) = SecuredAction { implicit request =>
+    Logger.debug(s"Liking abstract with uuid: [$id]")
+
+     val abstr = abstractService.get(id)
+    abstractService.addFavUser(abstr, request.identity.account)
+
+    Ok(views.html.dashboard.favouriteabstracts(request.identity.account)) //FIXME: JSON
+  }
+
+    /**
+    * Get permissions of the abstract.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
+   def removeFavUser(id: String) = SecuredAction { implicit request =>
+    Logger.debug(s"Disliking abstract with uuid: [$id]")
+
+     val abstr = abstractService.get(id)
+    abstractService.removeFavUser(abstr, request.identity.account)
+
+    Ok(views.html.dashboard.favouriteabstracts(request.identity.account)) //FIXME: JSON
   }
 
   def listState(id: String) = SecuredAction { implicit request =>
