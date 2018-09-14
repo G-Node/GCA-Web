@@ -90,6 +90,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
             self.abstracts(null);
             self.selectedAbstract(abstract);
             document.title = abstract.title; //FIXME add conference
+            //if user is not logged in
             if(find(loggedIn,'true')!=-1){
                 self.isFavourite(abstract);
             }
