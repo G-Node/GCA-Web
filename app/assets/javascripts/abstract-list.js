@@ -91,7 +91,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             self.selectedAbstract(abstract);
             document.title = abstract.title; //FIXME add conference
             //if user is not logged in
-            if(find(loggedIn,'true')!=-1){
+            if(loggedIn.indexOf('true')>=0){
                 self.isFavourite(abstract);
             }
             MathJax.Hub.Queue(["Typeset",MathJax.Hub]); //re-render equations
