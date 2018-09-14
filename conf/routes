@@ -30,6 +30,7 @@ GET           /assets/*file                                   controllers.Assets
 GET           /manifest.json                                  controllers.Assets.at(path="/public", file="manifest.json")
 GET           /manifest/*file                                 controllers.Assets.at(path="/public", file)
 GET           /service-worker.js                              controllers.Assets.at(path="/public", file="service-worker.js")
+GET           /cache/mobcache.appcache                        @controllers.Application.createAppCacheManifest
 
 # API ------------------------------------------------------------------------------------------------------------------
 # Conference interface
