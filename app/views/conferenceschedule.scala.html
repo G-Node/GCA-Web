@@ -1,0 +1,165 @@
+@(account: Option[Account], conference: Conference)
+
+@template(account, Option(conference), "conferenceschedule") {
+
+    <script data-main="@routes.Assets.at("javascripts/conference-schedule.js")"
+        src="@routes.Assets.at("javascripts/require.js")"></script>
+
+    <div class="hidden-data">
+        <div id="conference-uuid">@conference.uuid</div>
+    </div>
+
+    <div class="hidden-data">
+        <div id="account-uuid">@if(account.isDefined) {
+            @account.get.uuid
+        }
+        </div>
+    </div>
+
+    <!-- Loading box -->
+    <div data-bind="if: isLoading">
+        <div class="alert alert-info fade in out">
+            <h4 data-bind="text: isLoading">Loading data</h4>
+            <p>Please wait...</p>
+        </div>
+    </div>
+
+    <!-- Knockout non-flicker  -->
+    <div style="display: none" data-bind="visible: true">
+
+        <!-- Error message box -->
+        <div data-bind="visible: error">
+            <!-- ko with: error -->
+            <div class="alert fade in alert-dismissable" data-bind="css: level">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <strong data-bind="html: message"></strong>
+            </div>
+            <!-- /ko -->
+        </div>
+
+        <!-- The conference schedule page -->
+        <div class="jumbotron">
+            <div class="page-header">
+                <h1>@conference.name</h1>
+            </div>
+            <div class="conference-scheduler-border">
+                <div data-bind="attr: {'style': 'height:' + schedulerHeight() + 'px;'}" id="conference_scheduler" class="dhx_cal_container">
+                    <div class="dhx_cal_navline">
+                        <div data-bind="attr: {'style': 'display:' + displayCustomNavbar() + ';'}" class="conference-scheduler-navbar">
+                            <ul class="conference-scheduler-navbar-selector">
+                                <li><button class="conference-scheduler-navbar-switch pull-left"
+                                data-bind="click: function(data, event) {firstSchedulerDate()}">
+                                    <span class="glyphicon glyphicon-step-backward" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
+                                <li><button data-bind="click: function(data, event) {modifySchedulerDate(-1)}" class="conference-scheduler-navbar-switch pull-left">
+                                    <span class="glyphicon glyphicon-chevron-left" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
+                                <li><ul data-bind="foreach: displayCustomDates" class="conference-scheduler-navbar-days">
+                                    <li><button data-bind="text: moment($data).format('D[ ]MMMM[ ]YYYY'),
+                                    click: function(data, event) {$root.setSchedulerDate($data)},
+                                    attr: {'class': 'conference-scheduler-navbar-day pull-left '
+                                    + $root.displayHighlightDate()[$index()]}"></button></li>
+                                </ul></li>
+                                <li><button class="conference-scheduler-navbar-switch pull-right"
+                                data-bind="click: function(data, event) {lastSchedulerDate()}">
+                                    <span class=" glyphicon glyphicon-step-forward" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
+                                <li><button data-bind="click: function(data, event) {modifySchedulerDate(1)}" class="conference-scheduler-navbar-switch pull-right">
+                                    <span class="glyphicon glyphicon-chevron-right" style="vertical-align: middle; margin: 0px 0px 0px 0px;"></span></button></li>
+                            </ul>
+                        </div>
+                        <div data-bind="attr: {'style': 'display:' + displayPrevious() + ';'}" class="dhx_cal_prev_button">&nbsp;</div>
+                        <div data-bind="attr: {'style': 'display:' + displayNext() + ';'}" class="dhx_cal_next_button">&nbsp;</div>
+                        <div class="dhx_cal_today_button" style="display:none;"></div>
+                        <div data-bind="attr: {'style': 'display:' + displayDate() + ';'}" class="dhx_cal_date"></div>
+                        <div class="dhx_cal_tab" name="day_tab" style="right:204px; display: none;"></div>
+                    </div>
+                    <div class="dhx_cal_header"></div>
+                    <div class="dhx_cal_data"></div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- KO !flickerbox -->
+
+    <!-- Info popup -->
+    <div class="modal" id="conference-scheduler-info" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- ko if: infoBaseEvent() !== null && infoBaseEvent() !== undefined -->
+                    <div class="modal-header">
+                        <button type="button" class="btn btn-secondary btn-sm pull-right" data-bind="text: infoEventType()" style="margin-left: 5px" disabled></button>
+                        <h3 class="modal-title" data-bind="text: infoBaseEvent().title"></h3>
+                        <h4 class="modal-title" data-bind="text: infoBaseEvent().subtitle"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <strong>Date: </strong>
+                            <span data-bind="text: moment(infoBaseEvent().getStart()).format('D[ ]MMMM[ ]YYYY')"></span>
+                        </p>
+                        <p>
+                            <strong>Time: </strong>
+                            <span data-bind="text: moment(infoBaseEvent().getStart()).format('HH[:]mm[ - ]') + moment(infoBaseEvent().getEnd()).format('HH[:]mm')"></span>
+                        </p>
+                        <!-- ko if: infoEventType() === 'Event' -->
+                            <p data-bind="if: infoBaseEvent().location !== null && infoBaseEvent().location !== undefined
+                            && infoBaseEvent().location.length > 0">
+                                <strong>Location: </strong>
+                                <span data-bind="text: infoBaseEvent().location"></span>
+                            </p>
+                            <p data-bind="if: infoBaseEvent().type !== null && infoBaseEvent().type !== undefined
+                            && infoBaseEvent().type.length > 0">
+                                <strong>Type: </strong>
+                                <span data-bind="text: infoBaseEvent().type"></span>
+                            </p>
+                            <p data-bind="if: infoAuthors() !== null && infoAuthors() !== undefined
+                                && infoAuthors().length > 0">
+                                <strong>Authors: </strong>
+                                <span data-bind="text: infoAuthors()"></span>
+                            </p>
+                            <!-- ko if: infoBaseEvent().abstract !== null && infoBaseEvent().abstract !== undefined
+                            && infoBaseEvent().abstract.length > 0 -->
+                                </br>
+                                <!-- Loading box -->
+                                <div data-bind="if: infoIsLoadingAbstract">
+                                    <div class="alert alert-info fade in out">
+                                        <h4 data-bind="text: infoIsLoadingAbstract">Loading abstract</h4>
+                                        <p>Please wait...</p>
+                                    </div>
+                                </div>
+                                <!-- Error message box -->
+                                <div data-bind="visible: infoError">
+                                    <!-- ko with: infoError -->
+                                    <div class="alert fade in alert-dismissable" data-bind="css: level">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <strong data-bind="html: message"></strong>
+                                    </div>
+                                    <!-- /ko -->
+                                </div>
+                                <div data-bind="visible: !infoError(), if: !infoIsLoadingAbstract() && infoAbstract() !== null && infoAbstract() !== undefined" class="conference-scheduler-abstract">
+                                    <div class="conference-scheduler-abstract-header">
+                                        <a data-bind="attr: {href: $root.createAbstractURL('@routes.Application.abstractsPublic(conference.short)')}, text: infoAbstract().title"></a>
+                                    </div>
+                                    <div data-bind="text: infoAbstract().text" class="conference-scheduler-abstract-body"></div>
+                                </div>
+                            <!-- /ko -->
+                        <!-- /ko -->
+                        <!-- ko if: infoEventType() === 'Track' -->
+                            <p data-bind="if: infoChair() !== null && infoChair() !== undefined
+                            && infoChair().length > 0">
+                                <strong>Chair: </strong>
+                                <span data-bind="text: infoChair()"></span>
+                            </p>
+                        <!-- /ko -->
+                    </div>
+                    <div class="modal-footer">
+                        <!-- ko if: canExpandEvent(infoID()) -->
+                            <button type="button" class="btn btn-sm btn-danger" data-bind="click: function (data, event) {expandEvent(infoID())}" data-dismiss="modal">Expand</button>
+                        <!-- /ko -->
+                        <!-- ko if: canCollapseEvent(infoID()) -->
+                            <button type="button" class="btn btn-sm btn-success" data-bind="click: function (data, event) {collapseEvent(infoID())}" data-dismiss="modal">Collapse</button>
+                        <!-- /ko -->
+                        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Ok</button>
+                    </div>
+                <!-- /ko -->
+            </div>
+        </div>
+    </div>
+}

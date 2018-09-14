@@ -2,6 +2,7 @@
   "short_name": "G-Node Conferences",
   "name": "G-Node Conference Application Suite",
   "start_url": "/conferences",
+  "scope": "/",
   "display": "fullscreen",
   "orientation": "any",
   "background_color": "#eaeaea",

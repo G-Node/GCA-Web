@@ -25,6 +25,7 @@ import org.owasp.html.{HtmlPolicyBuilder, PolicyFactory, Sanitizers}
 /*
  * Import the functionality needed for parsing Commonmark/Markdown data.
  */
+import org.commonmark.node._
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 
@@ -152,6 +153,9 @@ class Conference extends Model with Owned with Tagged {
     }
   }
 
+  override def canWrite(account: Account): Boolean = {
+    isOwner(account) || account.isAdmin
+  }
 }
 
 object Conference extends Model {

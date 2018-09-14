@@ -17,6 +17,7 @@ GET           /conference/:id/submission                      @controllers.Appli
 GET           /conference/:id/locations                       @controllers.Application.locations(id: String)
 GET           /conference/:id/floorplans                      @controllers.Application.floorplans(id: String)
 GET           /conference/:id/abstracts                       @controllers.Application.abstractsPublic(id: String)
+GET           /conference/:id/schedule                        @controllers.Application.schedule(id: String)
 GET           /myabstracts                                    @controllers.Application.abstractsPrivate
 GET           /favouriteabstracts                             @controllers.Application.abstractsFavourite
 GET           /myabstracts/:id/edit                           @controllers.Application.edit(id: String)

@@ -157,10 +157,6 @@ class ConferenceServiceTest extends JUnitSuite {
 
     assert(!srv.getPermissions(conference, bob).contains(alice))
 
-    intercept[IllegalAccessException] {
-      srv.setPermissions(conference, alice, List[Account](alice, bob))
-    }
-
     intercept[IllegalArgumentException] {
       srv.setPermissions(conference, bob, List[Account]())
     }

@@ -99,6 +99,12 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
     Ok(views.html.conference(request.identity.map{ _.account }, conference))
   }
 
+  def schedule(confId: String) = UserAwareAction { implicit request =>
+    val conference = conferenceService.get(confId)
+
+    Ok(views.html.conferenceschedule(request.identity.map{ _.account }, conference))
+  }
+
   def contact = UserAwareAction { implicit request =>
     Ok(views.html.contact(request.identity.map{ _.account }))
   }

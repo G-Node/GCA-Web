@@ -1,5 +1,5 @@
 require(["main"], function () {
-require(["lib/models", "lib/tools", "lib/msg", "lib/astate", "knockout"], function(models, tools, msg, astate, ko) {
+require(["lib/models", "lib/tools", "lib/msg", "lib/astate", "knockout", "lib/offline"], function(models, tools, msg, astate, ko, offline) {
     "use strict";
 
     function AbstractViewerViewModel(confId, abstrId, isAdmin, isOwner) {
@@ -28,7 +28,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate", "knockout"], functi
 
             self.isLoading(true);
             var absURL ="/api/abstracts/" + abstrId;
-            $.getJSON(absURL, onAbstractData).fail(self.ioFailHandler);
+            offline.requestJSON(abstrId, absURL, onAbstractData, self.ioFailHandler);
 
             //conference data
             function onAbstractData(abstrObj) {
@@ -56,7 +56,7 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate", "knockout"], functi
 
         self.loadConference = function() {
             var confUrl = "/api/conferences/" + confId; // we should be reading this from the abstract
-            $.getJSON(confUrl, onConferenceData).fail(self.ioFailHandler);
+            offline.requestJSON(confId, confUrl, onConferenceData, self.ioFailHandler);
 
             function onConferenceData(confObj) {
                 var conf = models.Conference.fromObject(confObj);

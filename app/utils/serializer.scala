@@ -15,10 +15,10 @@ package object serializer {
 
   implicit class PositionedListReads[A <: PositionedModel](r: Reads[List[A]]) {
     def addPosition(): Reads[List[A]] = { r.map { l =>
-        for { (element, i) <- l.zipWithIndex } yield {
-          element.position = i; element
-        }
+      for { (element, i) <- l.zipWithIndex } yield {
+        element.position = i; element
       }
+    }
     }
   }
 
@@ -43,7 +43,7 @@ package object serializer {
 
   private implicit val dateFormat = new Format[DateTime] {
     private val dateFormatter = ISODateTimeFormat.dateTime().withZoneUTC()
-    
+
     def writes(date: DateTime) = {
       Json.toJson(dateFormatter.print(date))
     }
@@ -61,9 +61,9 @@ package object serializer {
   class AbstractGroupFormat() extends Format[AbstractGroup] {
     override def reads(json: JsValue): JsResult[AbstractGroup] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "prefix").readNullable[Int] and
-      (__ \ "name").readNullable[String] and
-      (__ \ "short").readNullable[String]
+        (__ \ "prefix").readNullable[Int] and
+        (__ \ "name").readNullable[String] and
+        (__ \ "short").readNullable[String]
       )(AbstractGroup(_, _, _, _)).reads(json)
 
     override def writes(g: AbstractGroup): JsValue = {
@@ -85,10 +85,10 @@ package object serializer {
   }
 
   /**url
-   * Conference serializer.
-   *
-   * @param routesResolver a RoutesResolver to resolve urls
-   */
+    * Conference serializer.
+    *
+    * @param routesResolver a RoutesResolver to resolve urls
+    */
   class ConferenceFormat(implicit routesResolver: RoutesResolver) extends Format[Conference] {
 
     implicit val agf = new AbstractGroupFormat()
@@ -96,27 +96,27 @@ package object serializer {
 
     override def reads(json: JsValue): JsResult[Conference] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "name").readNullable[String] and
-      (__ \ "short").readNullable[String] and
-      (__ \ "group").readNullable[String] and
-      (__ \ "cite").readNullable[String] and
-      (__ \ "link").readNullable[String] and
-      (__ \ "description").readNullable[String] and
-      (__ \ "isOpen").readNullable[Boolean] and
-      (__ \ "isPublished").readNullable[Boolean] and
-      (__ \ "isActive").readNullable[Boolean] and
-      (__ \ "hasPresentationPrefs").readNullable[Boolean] and
-      (__ \ "start").readNullable[DateTime] and
-      (__ \ "end").readNullable[DateTime] and
-      (__ \ "deadline").readNullable[DateTime] and
-      (__ \ "logo").readNullable[String] and
-      (__ \ "thumbnail").readNullable[String] and
-      (__ \ "iOSApp").readNullable[String] and
-      (__ \ "groups").read[List[AbstractGroup]] and
-      (__ \ "topics").read[List[Topic]].addPosition and
+        (__ \ "name").readNullable[String] and
+        (__ \ "short").readNullable[String] and
+        (__ \ "group").readNullable[String] and
+        (__ \ "cite").readNullable[String] and
+        (__ \ "link").readNullable[String] and
+        (__ \ "description").readNullable[String] and
+        (__ \ "isOpen").readNullable[Boolean] and
+        (__ \ "isPublished").readNullable[Boolean] and
+        (__ \ "isActive").readNullable[Boolean] and
+        (__ \ "hasPresentationPrefs").readNullable[Boolean] and
+        (__ \ "start").readNullable[DateTime] and
+        (__ \ "end").readNullable[DateTime] and
+        (__ \ "deadline").readNullable[DateTime] and
+        (__ \ "logo").readNullable[String] and
+        (__ \ "thumbnail").readNullable[String] and
+        (__ \ "iOSApp").readNullable[String] and
+        (__ \ "groups").read[List[AbstractGroup]] and
+        (__ \ "topics").read[List[Topic]].addPosition and
         (__ \ "mAbsLeng").readNullable[Int] and
         (__ \ "mFigs").readNullable[Int]
-    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _,
+      )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _,
       null,null,null,_,_)).reads(json)
 
     override def writes(c: Conference): JsValue = {
@@ -153,16 +153,16 @@ package object serializer {
   }
 
   /**
-   * Account serializer.
-   *
-   * @param routesResolver a RoutesResolver to resolve urls
-   */
+    * Account serializer.
+    *
+    * @param routesResolver a RoutesResolver to resolve urls
+    */
   class AccountFormat(implicit routesResolver: RoutesResolver) extends Format[Account] {
 
     override def reads(json: JsValue): JsResult[Account] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "mail").readNullable[String]
-    )(Account(_, _)).reads(json)
+        (__ \ "mail").readNullable[String]
+      )(Account(_, _)).reads(json)
 
     override def writes(account: Account): JsValue = {
       Json.obj(
@@ -177,18 +177,18 @@ package object serializer {
   }
 
   /**
-   * Author serializer.
-   */
+    * Author serializer.
+    */
   class AuthorFormat extends Format[Author] {
 
     override def reads(json: JsValue): JsResult[Author] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "mail").readNullable[String] and
-      (__ \ "firstName").readNullable[String] and
-      (__ \ "middleName").readNullable[String] and
-      (__ \ "lastName").readNullable[String] and
-      (__ \ "affiliations").read[Seq[Int]]
-    )(Author(_, _, _, _, _, None, Nil, _)).reads(json)
+        (__ \ "mail").readNullable[String] and
+        (__ \ "firstName").readNullable[String] and
+        (__ \ "middleName").readNullable[String] and
+        (__ \ "lastName").readNullable[String] and
+        (__ \ "affiliations").read[Seq[Int]]
+      )(Author(_, _, _, _, _, None, Nil, _)).reads(json)
 
     override def writes(a: Author): JsValue = {
       Json.obj(
@@ -204,17 +204,17 @@ package object serializer {
   }
 
   /**
-   * Affiliation serializer.
-   */
+    * Affiliation serializer.
+    */
   class AffiliationFormat extends Format[Affiliation] {
 
     override def reads(json: JsValue): JsResult[Affiliation] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "address").readNullable[String] and
-      (__ \ "country").readNullable[String] and
-      (__ \ "department").readNullable[String] and
-      (__ \ "section").readNullable[String]
-    )(Affiliation(_, _, _, _, _)).reads(json)
+        (__ \ "address").readNullable[String] and
+        (__ \ "country").readNullable[String] and
+        (__ \ "department").readNullable[String] and
+        (__ \ "section").readNullable[String]
+      )(Affiliation(_, _, _, _, _)).reads(json)
 
     override def writes(a: Affiliation): JsValue = {
       Json.obj(
@@ -229,16 +229,16 @@ package object serializer {
   }
 
   /**
-   * Reference serializer.
-   */
+    * Reference serializer.
+    */
   class ReferenceFormat extends Format[Reference] {
 
     override def reads(json: JsValue): JsResult[Reference] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "text").readNullable[String] and
-      (__ \ "link").readNullable[String] and
-      (__ \ "doi").readNullable[String]
-    )(Reference(_, _, _, _)).reads(json)
+        (__ \ "text").readNullable[String] and
+        (__ \ "link").readNullable[String] and
+        (__ \ "doi").readNullable[String]
+      )(Reference(_, _, _, _)).reads(json)
 
     override def writes(a: Reference): JsValue = {
       Json.obj(
@@ -251,15 +251,15 @@ package object serializer {
   }
 
   /**
-   * Figure serializer.
-   */
+    * Figure serializer.
+    */
   class FigureFormat(implicit routesResolver: RoutesResolver) extends Format[Figure] {
 
     override def reads(json: JsValue): JsResult[Figure] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "caption").readNullable[String] and
-      (__ \ "position").readNullable[Int]
-    )(Figure(_, _, _)).reads(json)
+        (__ \ "caption").readNullable[String] and
+        (__ \ "position").readNullable[Int]
+      )(Figure(_, _, _)).reads(json)
 
     override def writes(a: Figure): JsValue = {
       if (a == null) {
@@ -288,10 +288,10 @@ package object serializer {
   }
 
   /**
-   * Abstract serializer.
-   *
-   * @param routesResolver a RoutesResolver to resolve urls
-   */
+    * Abstract serializer.
+    *
+    * @param routesResolver a RoutesResolver to resolve urls
+    */
   class AbstractFormat(implicit routesResolver: RoutesResolver) extends Format[Abstract] with ConstraintReads {
 
     implicit val authorF = new AuthorFormat()
@@ -302,21 +302,21 @@ package object serializer {
 
     override def reads(json: JsValue): JsResult[Abstract] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "title").readNullable[String] and
-      (__ \ "topic").readNullable[String] and
-      (__ \ "text").readNullable[String] and
-      (__ \ "doi").readNullable[String] and
-      (__ \ "conflictOfInterest").readNullable[String] and
-      (__ \ "acknowledgements").readNullable[String] and
-      (__ \ "isTalk").readNullable[Boolean] and
-      (__ \ "reasonForTalk").readNullable[String] and
-      (__ \ "sortId").readNullable[Int] and
-      (__ \ "state").readNullable[AbstractState.State] and
-      (__ \ "authors").read[List[Author]].addPosition and
-      (__ \ "affiliations").read[List[Affiliation]].addPosition and
-      (__ \ "references").read[List[Reference]].addPosition and
+        (__ \ "title").readNullable[String] and
+        (__ \ "topic").readNullable[String] and
+        (__ \ "text").readNullable[String] and
+        (__ \ "doi").readNullable[String] and
+        (__ \ "conflictOfInterest").readNullable[String] and
+        (__ \ "acknowledgements").readNullable[String] and
+        (__ \ "isTalk").readNullable[Boolean] and
+        (__ \ "reasonForTalk").readNullable[String] and
+        (__ \ "sortId").readNullable[Int] and
+        (__ \ "state").readNullable[AbstractState.State] and
+        (__ \ "authors").read[List[Author]].addPosition and
+        (__ \ "affiliations").read[List[Affiliation]].addPosition and
+        (__ \ "references").read[List[Reference]].addPosition and
         (__ \ "abstrTypes").read[List[AbstractGroup]]
-    )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, Nil, _, _, _,_)).reads(json)
+      )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, Nil, _, _, _,_)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
 
