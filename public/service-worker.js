@@ -1,3 +1,5 @@
+var _cacheVersion = "v3";
+
 self.addEventListener("install", function(event) {
     var resourcesToCache = [
         // Views
@@ -8,12 +10,18 @@ self.addEventListener("install", function(event) {
         "/impressum",
         "/login",
         // Assets
+        "assets/lib/momentjs/moment.js",
         "/assets/lib/bootstrap/js/bootstrap.min.js",
+        "assets/lib/bootstrap/js/bootstrap.js",
         "/assets/stylesheets/g-node-bootstrap.play.css",
+        "assets/lib/jquery/jquery.js",
         "/assets/lib/jquery/jquery.min.js",
         "/assets/lib/jquery-ui/jquery-ui.min.css",
+        "/assets/lib/jquery-ui/jquery-ui.js",
         "/assets/stylesheets/layout.css",
         "/assets/javascripts/require.js",
+        "assets/lib/requirejs/require.js",
+        "assets/lib/sammy/sammy.js",
         "/assets/images/favicon.png",
         "/assets/images/bccn.png",
         "/assets/images/gnode_logo.png",
@@ -35,8 +43,6 @@ self.addEventListener("install", function(event) {
         "/assets/javascripts/lib/scheduler/dhtmlxscheduler.css",
         "/assets/javascripts/lib/scheduler/dhtmlxscheduler.js",
         "/assets/javascripts/lib/scheduler/ext/dhtmlxscheduler_readonly.js",
-        "/assets/javascripts/lib/scheduler/sources/dhtmlxscheduler.js.map",
-        "/assets/javascripts/lib/scheduler/sources/ext/dhtmlxscheduler_readonly.js.map",
         // libs
         "/assets/javascripts/lib/accessors.js",
         "/assets/javascripts/lib/astate.js",
@@ -75,6 +81,7 @@ self.addEventListener("install", function(event) {
         "/assets/stylesheets/custom/bootstrap/_custom-fonts.less",
         "/assets/stylesheets/custom/bootstrap/_custom-vars.less"
     ];
+    // event.waitUntil(
     fetch("/api/conferences").then(function (response) {
         return response.json();
     }).then(function (conferences) {
@@ -87,70 +94,122 @@ self.addEventListener("install", function(event) {
                 resourcesToCache.push("/conference/" + conf.short + "/floorplans");
                 resourcesToCache.push("/conference/" + conf.short + "/locations");
                 resourcesToCache.push("/conference/" + conf.short + "/abstracts");
-                fetch(conf.abstracts).then(function (response) {
+                // event.waitUntil(
+                    fetch(conf.abstracts).then(function (response) {
                     return response.json();
                 }).then(function (abstracts) {
                     if (abstracts) {
                         abstracts.forEach(function (abstract) {
                             if (abstract) {
-                                caches.open("v1").then(function(cache) {
+                                caches.open(_cacheVersion).then(function(cache) {
                                     return cache.add("/abstracts/" + abstract.uuid);
                                 });
                             }
                         });
                     }
-                });
+                    // return new Promise();
+                });//);
             }
+            // return new Promise();
         });
 
+
         event.waitUntil(
-            caches.open("v1").then(function(cache) {
+            caches.open(_cacheVersion).then(function(cache) {
                 return cache.addAll(resourcesToCache);
             })
         );
-    });
+    });//);
 
 });
-
-// self.addEventListener('fetch', function(event) {
-//     console.log("in");
-//     event.respondWith(caches.match(event.request).then(function(response) {
-//         if (response) {
-//             return response;
-//         } else {
-//             return fetch(event.request).then(function (response) {
-//                 var responseClone = response.clone();
-//         //         if (responseClone.redirected) {
-//         //             responseClone = cleanResponse(responseClone);
-//         //         }
-//                 caches.open("v1").then(function (cache) {
-//                     cache.put(event.request, responseClone);
-//                 });
-//                 return response;
-//             }).catch(function () {
-//                 console.log("Retrieval of " + event.request + " from cache failed.");
-//                 return caches.match("/conferences");
-//             });
-//         }
-//     }));
-// });
 
 self.addEventListener("fetch", function(event) {
-    event.respondWith(caches.match(event.request).then(function(response) {
-        if (response) {
-            return response;
-        } else {
-            return fetch(event.request).then(function (response) {
-
+    canConnectToServer().then(function (connected) {
+        if (connected) {
+            console.log("Online");
+            caches.match(event.request).then(function(response) {
                 var responseClone = response.clone();
-
-                caches.open("v1").then(function (cache) {
-                    cache.put(event.request, responseClone);
-                });
-                return response;
-            }).catch(function () {
-                return caches.match("/conferences");
+                if (!responseClone) {
+                    caches.open(_cacheVersion).then(function (cache) {
+                        cache.put(event.request, responseClone);
+                    });
+                }
             });
+            return event.response;
+        } else {
+            event.respondWith(caches.match(event.request).then(function(response) {
+                var responseClone = response.clone();
+                console.log("Offline!");
+                console.log(JSON.stringify(responseClone,null,4));
+                if (responseClone) {
+                    console.log(JSON.stringify(responseClone.url,null,4));
+                    console.log(JSON.stringify(responseClone.redirected,null,4));
+                    if (responseClone.redirected) { // Fix redirected links.
+                        console.log("Redirect");
+                        return unredirect(responseClone);
+                    }else {
+                        console.log("Normal response");
+                        return responseClone;
+                    }
+                } else { // The resource could not be loaded.
+                    console.log("Failed!");
+                    return caches.match("/conferences");
+                }
+            }));
         }
-    }));
+
+    });
+
+
+
+    // Normally load the stuff from the server and only fallback to cache if loading is not working.
+    // if (event.response && event.response.ok) {
+    //     return event.response;
+    // } else {
+    //     event.respondWith(caches.match(event.request).then(function(response) {
+    //         if (response) {
+    //             if (response.redirected) { // Fix redirected links.
+    //                 return unredirect(response);
+    //             }else {
+    //                 return response;
+    //             }
+    //         } else { // The resource could not be loaded.
+    //             return event.response;
+    //             // return fetch(event.request).then(function (response) {
+    //             //
+    //             //     var responseClone = response.clone();
+    //             //
+    //             //     caches.open(_cacheVersion).then(function (cache) {
+    //             //         cache.put(event.request, responseClone);
+    //             //     });
+    //             //     return response;
+    //             // }).catch(function () {
+    //             //     console.log("Retrieval of " + JSON.stringify(event.request,null,4) + " from cache failed.");
+    //             //     return caches.match("/conferences");
+    //             // });
+    //         }
+    //     }));
+    // }
 });
+
+// Helper function to clean redirected responses.
+function unredirect(response) {
+    return response.text().then(function (text) {
+        return new Response(text, {
+            headers: response.headers,
+            status: response.status,
+            statusText: response.statusText
+        });
+    });
+}
+
+// Check if a connection to the server can be established.
+function canConnectToServer () {
+    return new Promise(function (resolve, reject) {
+        fetch("/").then(function (response) {
+            resolve(true);
+        }).catch(function (reason) {
+            resolve(false);
+        });
+    });
+}
