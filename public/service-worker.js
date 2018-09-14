@@ -1,6 +1,6 @@
-var _cacheVersion = "v8";
+self._cacheVersion = "v11";
 
-var resourcesToCache = [
+self.resourcesToCache = [
     // Views
     "/",
     "/conferences",
@@ -66,6 +66,11 @@ var resourcesToCache = [
 
     "https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.1/jquery-ui-timepicker-addon.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-debug.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.1/jquery-ui-timepicker-addon.min.css",
+    "https://fonts.googleapis.com/css?family=EB+Garamond|Open+Sans",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js?delayStartupUntil=configured",
+    "http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/extensions/MathMenu.js",
+
     // Styles
     "/assets/stylesheets/_g-node-bootstrap.less",
     "/assets/stylesheets/g-node-bootstrap.play.less",
@@ -83,42 +88,39 @@ var resourcesToCache = [
 
 self.addEventListener("install", function(event) {
     event.waitUntil(
-        loadDynamicViews().then(function (views) {
+        self.loadDynamicViews().then(function (views) {
             if (views) {
                 views.forEach(function (view) {
                     if (view) {
-                        resourcesToCache.push(view);
+                        self.resourcesToCache.push(view);
                     }
                 })
             }
-            return caches.open(_cacheVersion);
+            return caches.open(self._cacheVersion);
         }).then(function(cache) {
-            console.log(resourcesToCache);
-            return cache.addAll(resourcesToCache);
+            return cache.addAll(self.resourcesToCache);
         })
     );
 
 });
 
-/*
- * Get a promise containing all dynamic conference and abstract views.
- */
-function loadDynamicViews () {
+// Get a promise containing all dynamic conference and abstract views.
+self.loadDynamicViews = function () {
     return new Promise(function (resolve, reject) {
-        var dynamicConferences = [];
+        var dynamicViews = [];
         var accordingAbstracts = [];
         fetch("/api/conferences").then(function (response) {
             return response.json();
         }).then(function (conferences) {
             conferences.forEach(function (conf) {
                 if (conf) {
-                    dynamicConferences.push("/conference/" + conf.short);
-                    dynamicConferences.push("/conference/" + conf.short + "/schedule");
-                    dynamicConferences.push("/conference/" + conf.short + "/submission");
-                    dynamicConferences.push("/conference/" + conf.short + "/floorplans");
-                    dynamicConferences.push("/conference/" + conf.short + "/locations");
-                    dynamicConferences.push("/conference/" + conf.short + "/abstracts");
-                    accordingAbstracts.push(loadDynamicAbstracts(conf.abstracts));
+                    dynamicViews.push("/conference/" + conf.short);
+                    dynamicViews.push("/conference/" + conf.short + "/schedule");
+                    dynamicViews.push("/conference/" + conf.short + "/submission");
+                    dynamicViews.push("/conference/" + conf.short + "/floorplans");
+                    dynamicViews.push("/conference/" + conf.short + "/locations");
+                    dynamicViews.push("/conference/" + conf.short + "/abstracts");
+                    accordingAbstracts.push(self.loadDynamicAbstracts(conf.abstracts));
                 }
             });
             Promise.all(accordingAbstracts).then(function (allAbstracts) {
@@ -126,21 +128,21 @@ function loadDynamicViews () {
                     if (abstracts) {
                         abstracts.forEach(function (abs) {
                             if (abs) {
-                                dynamicConferences.push(abs);
+                                dynamicViews.push(abs);
                             }
                         });
                     }
                 });
-                resolve(dynamicConferences);
+                resolve(dynamicViews);
             });
         }).catch(function (reason) {
             reject(reason);
         });
     });
-}
+};
 
 // Get a promise containing all abstracts for the given URL.
-function loadDynamicAbstracts (abstractsURL) {
+self.loadDynamicAbstracts = function (abstractsURL) {
     return new Promise(function (resolve, reject) {
         var dynamicAbstracts = [];
         fetch(abstractsURL).then(function (response) {
@@ -159,79 +161,10 @@ function loadDynamicAbstracts (abstractsURL) {
             resolve(false);
         });
     });
-}
-
-self.addEventListener("fetch", function(event) {
-    canConnectToServer().then(function (connected) {
-        if (connected) {
-            console.log("Online");
-            caches.match(event.request).then(function(response) {
-                var responseClone = response.clone();
-                if (!responseClone) {
-                    caches.open(_cacheVersion).then(function (cache) {
-                        cache.put(event.request, responseClone);
-                    });
-                }
-            });
-            return event.response;
-        } else {
-            event.respondWith(caches.match(event.request).then(function(response) {
-                var responseClone = response.clone();
-                console.log("Offline!");
-                console.log(JSON.stringify(responseClone,null,4));
-                if (responseClone) {
-                    console.log(JSON.stringify(responseClone.url,null,4));
-                    console.log(JSON.stringify(responseClone.redirected,null,4));
-                    if (responseClone.redirected) { // Fix redirected links.
-                        console.log("Redirect");
-                        return unredirect(responseClone);
-                    }else {
-                        console.log("Normal response");
-                        return responseClone;
-                    }
-                } else { // The resource could not be loaded.
-                    console.log("Failed!");
-                    return caches.match("/conferences");
-                }
-            }));
-        }
-
-    });
-
-
-
-    // Normally load the stuff from the server and only fallback to cache if loading is not working.
-    // if (event.response && event.response.ok) {
-    //     return event.response;
-    // } else {
-    //     event.respondWith(caches.match(event.request).then(function(response) {
-    //         if (response) {
-    //             if (response.redirected) { // Fix redirected links.
-    //                 return unredirect(response);
-    //             }else {
-    //                 return response;
-    //             }
-    //         } else { // The resource could not be loaded.
-    //             return event.response;
-    //             // return fetch(event.request).then(function (response) {
-    //             //
-    //             //     var responseClone = response.clone();
-    //             //
-    //             //     caches.open(_cacheVersion).then(function (cache) {
-    //             //         cache.put(event.request, responseClone);
-    //             //     });
-    //             //     return response;
-    //             // }).catch(function () {
-    //             //     console.log("Retrieval of " + JSON.stringify(event.request,null,4) + " from cache failed.");
-    //             //     return caches.match("/conferences");
-    //             // });
-    //         }
-    //     }));
-    // }
-});
+};
 
 // Helper function to clean redirected responses.
-function unredirect(response) {
+self.unredirect = function (response) {
     return response.text().then(function (text) {
         return new Response(text, {
             headers: response.headers,
@@ -239,10 +172,10 @@ function unredirect(response) {
             statusText: response.statusText
         });
     });
-}
+};
 
 // Check if a connection to the server can be established.
-function canConnectToServer () {
+self.canConnectToServer = function () {
     return new Promise(function (resolve, reject) {
         fetch("/").then(function (response) {
             resolve(true);
@@ -250,4 +183,31 @@ function canConnectToServer () {
             resolve(false);
         });
     });
-}
+};
+
+self.addEventListener("fetch", function(event) {
+    event.respondWith(self.handleFetch(event.request));
+});
+
+// Handles all fetches and redirects them to the cache if offline.
+self.handleFetch = function(initialRequest) {
+  return self.canConnectToServer().then(function (connected) {
+      // Normally load the stuff from the server and only fallback to cache if loading is not working.
+      if (connected) {
+          return fetch(initialRequest);
+      } else {
+          return caches.match(initialRequest).then(function (response) {
+              var clonedResponse = response.clone();
+              if (clonedResponse.redirected) {
+                  return self.unredirect(clonedResponse);
+              } else {
+                  return clonedResponse;
+              }
+          }).catch(function (reason) { // The resource could not be loaded. Return a default one.
+              console.log("Retrieval of " + JSON.stringify(initialRequest.url, null, 4) + " from cache " +
+                  "failed because of: " + JSON.stringify(reason, null, 4));
+              return caches.match("/");
+          });
+      }
+  });
+};
