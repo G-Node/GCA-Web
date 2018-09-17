@@ -1,4 +1,4 @@
-self._cacheVersion = "v15";
+self._cacheVersion = "v18";
 
 self.resourcesToCache = [
     // Views
@@ -70,6 +70,10 @@ self.resourcesToCache = [
     "https://fonts.googleapis.com/css?family=EB+Garamond|Open+Sans",
     "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js?delayStartupUntil=configured",
     "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/extensions/MathMenu.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/extensions/tex2jax.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/jax/output/HTML-CSS/config.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/jax/input/TeX/config.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/extensions/MathZoom.js",
 
     // Styles
     "/assets/stylesheets/_g-node-bootstrap.less",
@@ -98,7 +102,26 @@ self.addEventListener("install", function(event) {
             }
             return caches.open(self._cacheVersion);
         }).then(function(cache) {
-            return cache.addAll(self.resourcesToCache);
+            var externalResources = [];
+            var internalResources = [];
+            self.resourcesToCache.forEach(function (resource) {
+                if (resource.startsWith("https://") || resource.startsWith("http://")) {
+                    externalResources.push(resource);
+                } else {
+                    internalResources.push(resource);
+                }
+            });
+            // Cache internal resources.
+            return cache.addAll(internalResources).then(function (nothing) {
+                // Cache external resources.
+                return Promise.all(
+                    externalResources.map(function (url) {
+                        return fetch(url, { mode: "no-cors" }).then( function (response) {
+                            return cache.put(new Request(url, { mode: "no-cors" }), response);
+                        });
+                    })
+                );
+            });
         })
     );
 });
@@ -119,12 +142,8 @@ self.loadDynamicViews = function () {
                     dynamicViews.push("/conference/" + conf.short + "/floorplans");
                     dynamicViews.push("/conference/" + conf.short + "/locations");
                     dynamicViews.push("/conference/" + conf.short + "/abstracts");
-                    /*
-                     * TODO: The logo and the thumbnail are out of scope of the service worker
-                     * so they will cause an error and need to be stored locally.
-                     */
-                    // dynamicViews.push(conf.logo);
-                    // dynamicViews.push(conf.thumbnail);
+                    dynamicViews.push(conf.logo);
+                    dynamicViews.push(conf.thumbnail);
                     accordingAbstracts.push(self.loadDynamicAbstracts(conf.abstracts));
                 }
             });
@@ -161,7 +180,7 @@ self.loadDynamicAbstracts = function (abstractsURL) {
             resolve(dynamicAbstracts);
         }).catch(function (reason) {
             console.log("Could not fetch " + abstractsURL + " for the following reason:"
-            + JSON.stringify(reason, null, 4));
+            + reason);
             // This must resolve anyhow and not get rejected for the rest of the code to work.
             resolve(false);
         });
@@ -210,7 +229,7 @@ self.handleFetch = function(initialRequest) {
               }
           }).catch(function (reason) { // The resource could not be loaded. Return a default one.
               console.log("Retrieval of " + JSON.stringify(initialRequest.url, null, 4) + " from cache " +
-                  "failed because of: " + JSON.stringify(reason, null, 4));
+                  "failed because of: " + reason);
               return caches.match("/conferences");
           });
       }
