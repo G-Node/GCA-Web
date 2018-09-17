@@ -1,4 +1,4 @@
-self._cacheVersion = "v18";
+self._cacheVersion = "v19";
 
 self.resourcesToCache = [
     // Views
@@ -112,16 +112,50 @@ self.addEventListener("install", function(event) {
                 }
             });
             // Cache internal resources.
-            return cache.addAll(internalResources).then(function (nothing) {
+            return Promise.all(
+                internalResources.map(function (url) {
+                    return fetch(url).then( function (response) {
+                        return cache.put(new Request(url), response);
+                    }).catch(function (reason) {
+                        /*
+                         * Print an error message, but do not stop execution as a resource
+                         * can easily not be available.
+                         */
+                        console.log("The internal resource + " + url
+                            + " could not be cached for reason: " + reason);
+                        return Promise.resolve(false);
+                    });
+                })).then(function () {
                 // Cache external resources.
                 return Promise.all(
                     externalResources.map(function (url) {
                         return fetch(url, { mode: "no-cors" }).then( function (response) {
                             return cache.put(new Request(url, { mode: "no-cors" }), response);
+                        }).catch(function (reason) {
+                            /*
+                             * Print an error message, but do not stop execution as a resource
+                             * can easily not be available.
+                             */
+                            console.log("The external resource + " + url
+                                + " could not be cached for reason: " + reason);
+                            return Promise.resolve(false);
                         });
                     })
-                );
+                ).catch(function (reason) {
+                    console.log("The external resources could not be cached for reason: " + reason);
+                    return Promise.reject(reason);
+                });
+            }).catch(function (reason) {
+                 //Print an error message and stop execution.
+                console.log("The resources + " + self.resourcesToCache
+                    + " could not be cached for reason: " + reason);
+                return Promise.reject(false);
             });
+        }).catch(function (reason) {
+            //Print an error message and stop execution.
+            console.log("The initialisation of the service worker "
+                + "did fail for reason: " + reason);
+            return Promise.resolve(false);
         })
     );
 });
@@ -160,6 +194,8 @@ self.loadDynamicViews = function () {
                 resolve(dynamicViews);
             });
         }).catch(function (reason) {
+            console.log("Could not fetch /api/conferences for the following reason: "
+                + reason);
             reject(reason);
         });
     });
@@ -172,23 +208,25 @@ self.loadDynamicAbstracts = function (abstractsURL) {
         fetch(abstractsURL).then(function (response) {
             return response.json();
         }).then(function (abstracts) {
-            abstracts.forEach(function (abs) {
-                if (abs) {
-                    // Add the abstract URL.
-                    dynamicAbstracts.push("/abstracts/" + abs.uuid);
-                    // Add all the figure URLs.
-                    if (abs.figures) {
-                        abs.figures.forEach(function (figure) {
-                           if (figure) {
-                               dynamicAbstracts.push(figure.URL);
-                           }
-                        });
+            if (abstracts) {
+                abstracts.forEach(function (abs) {
+                    if (abs) {
+                        // Add the abstract URL.
+                        dynamicAbstracts.push("/abstracts/" + abs.uuid);
+                        // Add all the figure URLs.
+                        if (abs.figures) {
+                            abs.figures.forEach(function (figure) {
+                                if (figure) {
+                                    dynamicAbstracts.push(figure.URL);
+                                }
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }
             resolve(dynamicAbstracts);
         }).catch(function (reason) {
-            console.log("Could not fetch " + abstractsURL + " for the following reason:"
+            console.log("Could not fetch " + abstractsURL + " for the following reason: "
             + reason);
             // This must resolve anyhow and not get rejected for the rest of the code to work.
             resolve(false);
