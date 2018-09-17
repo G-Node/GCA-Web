@@ -174,7 +174,16 @@ self.loadDynamicAbstracts = function (abstractsURL) {
         }).then(function (abstracts) {
             abstracts.forEach(function (abs) {
                 if (abs) {
+                    // Add the abstract URL.
                     dynamicAbstracts.push("/abstracts/" + abs.uuid);
+                    // Add all the figure URLs.
+                    if (abs.figures) {
+                        abs.figures.forEach(function (figure) {
+                           if (figure) {
+                               dynamicAbstracts.push(figure.URL);
+                           }
+                        });
+                    }
                 }
             });
             resolve(dynamicAbstracts);
