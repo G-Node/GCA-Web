@@ -172,7 +172,7 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     * @param id Conference id of the required geo entry.
     * @return OK | NotFound
     */
-  def getGeo(id: String) = SecuredAction { implicit request =>
+  def getGeo(id: String) = UserAwareAction { implicit request =>
     val geo = conferenceService.get(id).geo
     if (geo == null) {
       NotFound(Json.obj("message" -> "Geo entry not found."))
@@ -227,7 +227,7 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     * @param id Conference id of the required info entry.
     * @return OK | NotFound
     */
-  def getInfo(id: String) = SecuredAction { implicit request =>
+  def getInfo(id: String) = UserAwareAction { implicit request =>
     val info = conferenceService.get(id).info
     if (info == null) {
       NotFound(Json.obj("message" -> "Info entry not found."))

@@ -210,7 +210,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     val req = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap")
     val responseNoUser = route(ConferenceCtrlTest.app, req).get
 
-    assert(status(responseNoUser) == UNAUTHORIZED)
+    assert(status(responseNoUser) == OK)
 
     val eveCookie = getCookie(assets.eve, "testtest")
     val reqEve = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(eveCookie)
@@ -372,7 +372,7 @@ class ConferenceCtrlTest extends BaseCtrlTest {
     val req = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap")
     val responseNoUser = route(ConferenceCtrlTest.app, req).get
 
-    assert(status(responseNoUser) == UNAUTHORIZED)
+    assert(status(responseNoUser) == OK)
 
     val eveCookie = getCookie(assets.eve, "testtest")
     val reqEve = FakeRequest(GET, s"/$mainUrl/$uuid/$urlCap").withCookies(eveCookie)

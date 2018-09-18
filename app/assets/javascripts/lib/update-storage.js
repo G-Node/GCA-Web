@@ -4,6 +4,15 @@ var _updateKey = "lastUpdated";
 // The local storage is checked and ,if necessary, updated every time a page is loaded.
 updateStorage();
 
+// Start the service worker.
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register('/service-worker.js').then(function(reg) {
+        console.log("Registered service worker with scope: " + reg.scope);
+    }).catch(function(error) {
+        console.log("Registering service worker failed with error: " + error);
+    });
+};
+
 /*
  * Update the local storage and try to store all possible requests
  * in there.
@@ -19,7 +28,7 @@ function updateStorage () {
 
 // Write all conferences to the local storage.
 function onConferences(confs) {
-    if (confs !== null) {
+    if (confs) {
         confs.forEach(function (conf) {
             localStorage.setItem(conf.uuid, JSON.stringify(conf));
             // TODO: fix exception on emtpy abstracts
@@ -52,7 +61,7 @@ function onConferences(confs) {
 // Write all abstracts to the local storage.
 function onAbstracts(confUuid, abs) {
     localStorage.setItem(confUuid+"abstracts", JSON.stringify(abs));
-    if (abs !== null) {
+    if (abs) {
         abs.forEach(function (abstract) {
             localStorage.setItem(abstract.uuid, JSON.stringify(abstract));
         });

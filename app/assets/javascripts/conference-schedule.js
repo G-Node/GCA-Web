@@ -117,10 +117,13 @@ require(["main"], function () {
             self.infoLoadAbstract = function (abstractURL, doAfer) {
                 self.infoAbstract("");
                 self.infoError(false);
-                self.infoIsLoadingAbstract("Loading abstract");
-                var abstractUuid = abstractURL.substring(abstractURL.lastIndexOf("/") + 1);
-                console.log(abstractUuid);
-                offline.requestJSON(abstractUuid, abstractURL, onAbstractData, self.infoIoFailHandler);
+                if (abstractURL) {
+                    self.infoIsLoadingAbstract("Loading abstract");
+                    var abstractUuid = abstractURL.substring(abstractURL.lastIndexOf("/") + 1);
+                    offline.requestJSON(abstractUuid, abstractURL, onAbstractData, self.infoIoFailHandler);
+                } else {
+                    self.infoIsLoadingAbstract(false);
+                }
 
                 function onAbstractData (abstractObj) {
                     if (abstractObj !== null && abstractObj !== undefined) {
