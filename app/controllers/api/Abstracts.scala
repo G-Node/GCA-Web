@@ -51,7 +51,10 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
 
   def resultWithETag[A](abstracts: Seq[Abstract])(implicit request: Request[A]) = {
     val theirs = request.headers.get("If-None-Match")
-    val eTag = abstracts.map(_.eTag).reduce((a, b) => DigestUtils.md5Hex(a + b))
+    var eTag = DigestUtils.md5Hex("empty")
+    if (!abstracts.isEmpty) {
+      eTag = abstracts.map(_.eTag).reduce((a, b) => DigestUtils.md5Hex(a + b))
+    }
 
     if (theirs.contains(eTag)) {
       NotModified
