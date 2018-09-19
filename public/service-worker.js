@@ -2,13 +2,12 @@ self._cacheVersion = "v19";
 
 self.resourcesToCache = [
     // Views
-    "/",
     "/conferences",
     "/contact",
     "/about",
     "/impressum",
-    "/login",
     // Assets
+    "/assets/manifest.json",
     "/assets/lib/momentjs/moment.js",
     "/assets/lib/bootstrap/js/bootstrap.min.js",
     "/assets/lib/bootstrap/js/bootstrap.js",
