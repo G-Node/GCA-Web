@@ -159,7 +159,7 @@ self.addEventListener("install", function(event) {
     );
 });
 
-// Get a promise containing all dynamic conference and abstract views.
+// Get a promise containing the first served conference and abstract views.
 self.loadDynamicViews = function () {
     return new Promise(function (resolve, reject) {
         var dynamicViews = [];
@@ -167,19 +167,18 @@ self.loadDynamicViews = function () {
         fetch("/api/conferences").then(function (response) {
             return response.json();
         }).then(function (conferences) {
-            conferences.forEach(function (conf) {
-                if (conf) {
-                    dynamicViews.push("/conference/" + conf.short);
-                    dynamicViews.push("/conference/" + conf.short + "/schedule");
-                    dynamicViews.push("/conference/" + conf.short + "/submission");
-                    dynamicViews.push("/conference/" + conf.short + "/floorplans");
-                    dynamicViews.push("/conference/" + conf.short + "/locations");
-                    dynamicViews.push("/conference/" + conf.short + "/abstracts");
-                    dynamicViews.push(conf.logo);
-                    dynamicViews.push(conf.thumbnail);
-                    accordingAbstracts.push(self.loadDynamicAbstracts(conf.abstracts));
-                }
-            });
+            var conf = conferences[0];
+            if (conf) {
+                dynamicViews.push("/conference/" + conf.short);
+                dynamicViews.push("/conference/" + conf.short + "/schedule");
+                dynamicViews.push("/conference/" + conf.short + "/submission");
+                dynamicViews.push("/conference/" + conf.short + "/floorplans");
+                dynamicViews.push("/conference/" + conf.short + "/locations");
+                dynamicViews.push("/conference/" + conf.short + "/abstracts");
+                dynamicViews.push(conf.logo);
+                dynamicViews.push(conf.thumbnail);
+                accordingAbstracts.push(self.loadDynamicAbstracts(conf.abstracts));
+            };
             Promise.all(accordingAbstracts).then(function (allAbstracts) {
                 allAbstracts.forEach(function (abstracts) {
                     if (abstracts) {
