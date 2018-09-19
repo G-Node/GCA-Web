@@ -187,13 +187,12 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
       s"""CACHE MANIFEST
          |# v1.0.1
          |# Views
-         |/
          |/conferences
          |/contact
          |/about
          |/impressum
-         |/login
          |# Assets
+         |/assets/manifest.json
          |/assets/lib/momentjs/moment.js
          |/assets/lib/bootstrap/js/bootstrap.min.js
          |/assets/lib/bootstrap/js/bootstrap.js
