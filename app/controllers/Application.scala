@@ -161,27 +161,26 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
 
   def createAppCacheManifest() = UserAwareAction { implicit request =>
     var dynamicViews: String = "";
-    conferenceService.list().foreach(conf => {
-      dynamicViews += s"""
-           |/conference/${conf.short}
-           |/conference/${conf.short}/schedule
-           |/conference/${conf.short}/submission
-           |/conference/${conf.short}/floorplans
-           |/conference/${conf.short}/locations
-           |/conference/${conf.short}/abstracts
-           |${conf.logo}
-           |${conf.thumbnail}""".stripMargin
-      for (abs: Abstract <- conf.abstracts.asScala) {
+    var conf = conferenceService.list().head
+    dynamicViews += s"""
+                       |/conference/${conf.short}
+                       |/conference/${conf.short}/schedule
+                       |/conference/${conf.short}/submission
+                       |/conference/${conf.short}/floorplans
+                       |/conference/${conf.short}/locations
+                       |/conference/${conf.short}/abstracts
+                       |${conf.logo}
+                       |${conf.thumbnail}""".stripMargin
+    for (abs: Abstract <- conf.abstracts.asScala) {
+      dynamicViews +=
+        s"""
+           |/abstracts/${abs.uuid}""".stripMargin
+      for (fig: Figure <- abs.figures.asScala) {
         dynamicViews +=
           s"""
-             |/abstracts/${abs.uuid}""".stripMargin
-        for (fig: Figure <- abs.figures.asScala) {
-          dynamicViews +=
-            s"""
-               |/api/figures/${fig.uuid}/image""".stripMargin
-        }
+             |/api/figures/${fig.uuid}/image""".stripMargin
       }
-    })
+    }
 
     Ok(
       s"""CACHE MANIFEST
