@@ -38,7 +38,6 @@ define(["lib/tools"], function (tools) {
         return validate(
             abstract,
             must("title", notNothing, "The abstract has no title"),
-            must("hasAgreed", notFalse, "You have not agreed to the mail exchange"),
             should("abstrTypes", notEmpty, "No presentation type selected"),
             should("authors", notEmpty, "No authors are defined for this abstract"),            
             should("authors", useAllAffiliations(getVal(abstract, "affiliations")), "Some affiliations are not used"),
@@ -208,17 +207,6 @@ define(["lib/tools"], function (tools) {
      */
     function notEmpty(val) {
         return val ? val.length > 0 : false;
-    }
-
-    /**
-     * Checks if a value is false.
-     *
-     * @param val   The value to check.
-     *
-     * @returns {boolean}
-     */
-    function notFalse(val) {
-        return val !== false;
     }
 
     /**

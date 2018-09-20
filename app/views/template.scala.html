@@ -15,7 +15,7 @@
           \____|     |_| \_|\___/ \__,_|\___|
 
           Brought to you by the German Neuroinformatics Node (G-Node) @@gnode
-          Copyright (c) 2013,2014,2017 G-Node
+          Copyright (c) 2013,2014,2018 G-Node
           License: BSD-4 clause and Apache 2.0 (see http://www.apache.org/licenses/LICENSE-2.0.html)
           Authors: Christian Garbers <christian@@stuebeweg50.de>
                    Christian Kellner <kellner@@bio.lmu.de>
@@ -44,6 +44,7 @@
     <script src="@routes.Assets.at("javascripts/lib/scheduler/dhtmlxscheduler.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("javascripts/lib/scheduler/ext/dhtmlxscheduler_readonly.js")" type="text/javascript"></script>
     <link rel="stylesheet" href="@routes.Assets.at("javascripts/lib/scheduler/dhtmlxscheduler.css")" type="text/css">
+
     <!-- leaflet.js for open street map -->
     <link rel="stylesheet" href="@routes.Assets.at("javascripts/lib/leaflet/leaflet.css")"/>
     <script src="@routes.Assets.at("javascripts/lib/leaflet/leaflet.js")"></script>
@@ -117,15 +118,20 @@
                             </li>
                         }
 
-                    @if(conf.isPublished) {
-                        <li class=@if(active.toLowerCase == "locations") {"active"} else {""}>
-                        <a href="@routes.Application.locations(conf.short)">Locations</a>
+                    @if(conf.geo != null && conf.geo.length > 0
+                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                            && Json.parse(conf.geo).as[List[JsValue]].length > 0){
+                        <li class=@if(active.toLowerCase == "locations") {"active"} else{""} >
+                            <a href="@routes.Application.locations(conf.short)">Locations</a>
                         </li>
                     }
 
-                    @if(conf.isPublished) {
+                    @if(conf.geo != null && conf.geo.length > 0
+                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                            && Json.parse(conf.geo).as[List[JsValue]].length > 0
+                            && (Json.parse(conf.geo) \\ "floorplans").size > 0){
                         <li class=@if(active.toLowerCase == "floorplans") {"active"} else {""}>
-                        <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
+                            <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
                         </li>
                     }
 
@@ -226,7 +232,7 @@
                         <li><a href="@routes.Application.about">About</a></li>
                     </ul>
                 </div>
-                <div class="pull-right"><p>The G-Node Conference Site &mdash; © <a href="http://www.g-node.org">G-Node</a> 2017 </p></div>
+                <div class="pull-right"><p>The G-Node Conference Site &mdash; © <a href="http://www.g-node.org">G-Node</a> 2018 </p></div>
             </div>
         </div>
     </div>

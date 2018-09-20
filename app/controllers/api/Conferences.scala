@@ -177,7 +177,13 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     if (geo == null) {
       NotFound(Json.obj("message" -> "Geo entry not found."))
     } else {
-      Ok(Json.parse(geo))
+      val theirs = request.headers.get("If-None-Match")
+      val eTag = DigestUtils.md5Hex(geo)
+      if (theirs.contains(eTag)) {
+        NotModified
+      } else {
+        Ok(Json.parse(geo)).withHeaders(ETAG -> eTag)
+      }
     }
   }
 
@@ -205,7 +211,13 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     if (schedule == null) {
       NotFound(Json.obj("message" -> "Schedule entry not found."))
     } else {
-      Ok(Json.parse(schedule))
+      val theirs = request.headers.get("If-None-Match")
+      val eTag = DigestUtils.md5Hex(schedule)
+      if (theirs.contains(eTag)) {
+        NotModified
+      } else {
+        Ok(Json.parse(schedule)).withHeaders(ETAG -> eTag)
+      }
     }
   }
 
@@ -232,7 +244,13 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
     if (info == null) {
       NotFound(Json.obj("message" -> "Info entry not found."))
     } else {
-      Ok(info)
+      val theirs = request.headers.get("If-None-Match")
+      val eTag = DigestUtils.md5Hex(info)
+      if (theirs.contains(eTag)) {
+        NotModified
+      } else {
+        Ok(info).withHeaders(ETAG -> eTag)
+      }
     }
   }
 

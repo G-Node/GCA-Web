@@ -60,7 +60,7 @@
             }
         } else {
             @if(conference.isPublished) {
-                <p>Abstract submission is <span class="text-danger"><b>closed</b></span>.</p>
+                <a href="@routes.Application.abstractsPublic(conference.short)" class="btn btn-primary">Abstracts</a>
             } else {
                 <p>Submission is <span class="text-danger"><b>closed</b></span>.<br>
                     Please check the <a href="@conference.link">conference homepage</a> for details.
