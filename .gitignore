@@ -15,6 +15,7 @@ dist
 /.settings
 *.db
 figures
+figures_mobile
 
 # provided via cdn but keeping a local copy
 # makes auto completion available
