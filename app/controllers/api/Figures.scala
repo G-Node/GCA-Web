@@ -3,7 +3,7 @@ package controllers.api
 import play.api._
 import play.api.libs.json.{JsArray, _}
 import play.api.mvc._
-import service.{AbstractService, FigureService}
+import service.{AbstractService, FigureService, FigureMobileService}
 import utils.DefaultRoutesResolver._
 import utils.serializer.FigureFormat
 import models._
@@ -23,6 +23,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
   implicit val figFormat = new FigureFormat()
   val abstractService = AbstractService()
   val figureService = FigureService()
+  val figureMobileService = FigureMobileService()
 
   /**
    * Upload file with a figure to the specified abstract (id).
@@ -114,4 +115,16 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     Ok(Json.obj("error" -> false))
   }
 
+  /**
+    * Download mobile figure file from the specified figure object (id).
+    *
+    * @param id  The id of the figure.
+    *
+    * @return  OK / Failed
+    */
+  def downloadmobile(id: String) = UserAwareAction { implicit request =>
+    Ok.sendFile(figureMobileService.openFile(
+      figureMobileService.get(id)
+    ))
+  }
 }
