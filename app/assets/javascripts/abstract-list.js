@@ -87,6 +87,13 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.showAbstract = function(abstract) {
 
             self.abstracts(null);
+            var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (isMobile) {
+                console.log("Mobile figure hotfix in progress, adjusting URL")
+                for (let fig of abstract.figures) {
+                    fig.URL = fig.URL + "mobile"
+                }
+            }
             self.selectedAbstract(abstract);
             document.title = abstract.title; //FIXME add conference
             MathJax.Hub.Queue(["Typeset",MathJax.Hub]); //re-render equations
