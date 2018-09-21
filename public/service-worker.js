@@ -215,7 +215,8 @@ self.loadDynamicAbstracts = function (abstractsURL) {
                         if (abs.figures) {
                             abs.figures.forEach(function (figure) {
                                 if (figure) {
-                                    dynamicAbstracts.push(figure.URL);
+                                    //dynamicAbstracts.push(figure.URL);
+                                    dynamicAbstracts.push("/api/figures/"+figure.uuid+"/imagemobile");
                                 }
                             });
                         }

@@ -178,7 +178,7 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
       for (fig: Figure <- abs.figures.asScala) {
         dynamicViews +=
           s"""
-             |/api/figures/${fig.uuid}/image""".stripMargin
+             |/api/figures/${fig.uuid}/imagemobile""".stripMargin
       }
     }
 
