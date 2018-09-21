@@ -22,6 +22,8 @@ ADD public /srv/gca/public
 ADD test /srv/gca/test
 ADD build.sbt /srv/gca/
 ADD startup.sh /srv/gca
+ADD figures /srv/gca/figures
+ADD figures_mobile /srv/gca/figures_mobile
 
 RUN mkdir -p /srv/gca/db
 RUN echo "db.default.url=\"jdbc:h2:/srv/gca/db/gca-web\"" >> /srv/gca/conf/application.dev.conf
@@ -33,6 +35,8 @@ RUN activator test stage
 
 VOLUME ["/srv/gca/db"]
 VOLUME ["/srv/gca/conf"]
+VOLUME ["/srv/gca/figures"]
+VOLUME ["/srv/gca/figures_mobile"]
 
 EXPOSE 9000
 ENTRYPOINT ["/bin/bash", "startup.sh"]
