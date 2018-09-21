@@ -158,7 +158,9 @@ class FigureMobileService(figPath: String) {
   }
 
   /**
-   * Open the image file that belongs to the figure.
+   * Open the mobile image file that belongs to the figure;
+   * if the mobile figure cannot be found, fallback to the
+   * original figure.
    *
    * @param fig The figure to open.
    *
@@ -168,10 +170,13 @@ class FigureMobileService(figPath: String) {
     if (fig.uuid == null)
       throw new IllegalArgumentException("Unable to open file for figure without uuid")
 
-    val file = new File(figPath, fig.uuid)
+    var file = new File(figPath, fig.uuid)
 
     if (!file.exists || !file.canRead)
-      throw new FileNotFoundException("Unable to open the file for reading: " + file.toString)
+      // If a lowres file cannot be found, get back to the original file
+      file = new File(Play.application().configuration().getString("file.fig_path", "./figures"), fig.uuid)
+      if (!file.exists || !file.canRead)
+        throw new FileNotFoundException("Unable to open the file for reading: " + file.toString)
 
     file
   }
