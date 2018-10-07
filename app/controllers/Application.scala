@@ -73,6 +73,11 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
     Ok(views.html.dashboard.user(request.identity.account))
   }
 
+  def abstractsFavourite = SecuredAction { implicit request =>
+
+    Ok(views.html.dashboard.favouriteabstracts(request.identity.account))
+  }
+
   def abstractsPending = SecuredAction { implicit request =>
     val conference = conferenceService.list()(0)
 
