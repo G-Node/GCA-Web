@@ -7,14 +7,14 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
      * AbstractList view model.
      *
      *
-     * @param confId
+     * @param confId, loggedIn
      * @returns {AbstractListViewModel}
      * @constructor
      */
-    function AbstractListViewModel(confId) {
+    function AbstractListViewModel(confId,loggedIn) {
 
         if (! (this instanceof AbstractListViewModel)) {
-            return new AbstractListViewModel(confId);
+            return new AbstractListViewModel(confId,loggedIn);
         }
 
         var self = this;
@@ -23,6 +23,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
         self.conference = ko.observable();
         self.abstracts = ko.observableArray(null);
         self.selectedAbstract = ko.observable(null);
+        self.isFavouriteAbstract = ko.observable(false);
         self.groups = ko.observableArray(null);
         self.error = ko.observable(false);
 
@@ -89,7 +90,23 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
             self.abstracts(null);
             self.selectedAbstract(abstract);
             document.title = abstract.title; //FIXME add conference
+            //if user is not logged in
+            if(loggedIn.indexOf('true')>=0){
+                self.isFavourite(abstract);
+            }
             MathJax.Hub.Queue(["Typeset",MathJax.Hub]); //re-render equations
+        };
+
+        self.favourAbstract = function(abstract) {
+            var absUrl = "/api/abstracts/" + abstract.uuid + "/addfavuser";
+
+            return absUrl;
+        };
+
+        self.disfavourAbstract = function(abstract) {
+            var absUrl = "/api/abstracts/" + abstract.uuid + "/removefavuser";
+
+            return absUrl;
         };
 
         self.showAbstractByUUID = function(uuid) {
@@ -225,6 +242,19 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
             return self.neighbours[uuid].prev;
         };
 
+        self.isFavourite = function(abstract) {
+            var uuid = abstract.uuid;
+            var favUsersUrl = "/api/user/self/abstract/" + uuid + "/isfavuser";
+            $.get(favUsersUrl,onFavUserData).fail(self.ioFailHandler);
+
+            function onFavUserData(isFavUser) {
+                console.log('IsFavUser '+ isFavUser);
+                var IFUBool = (isFavUser == 'true');
+                console.log('IsFavUser IFUBool '+ IFUBool);
+                self.isFavouriteAbstract(IFUBool);
+            }
+        };
+
         //Data IO
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
@@ -303,9 +333,9 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function(models, tools
 
         var data = tools.hiddenData();
 
-        console.log(data.conferenceUuid);
+        console.log(data.conferenceUuid,data.loggedIn);
 
-        window.abstractList = AbstractListViewModel(data.conferenceUuid);
+        window.abstractList = AbstractListViewModel(data.conferenceUuid,data.loggedIn);
         window.abstractList.init();
     });
 

@@ -54,6 +54,9 @@ POST          /api/abstracts/:id/figures                      @controllers.api.F
 GET           /api/abstracts/:id/figures                      @controllers.api.Figures.list(id: String)
 PUT           /api/abstracts/:id/owners                       @controllers.api.Abstracts.setPermissions(id: String)
 GET           /api/abstracts/:id/owners                       @controllers.api.Abstracts.getPermissions(id: String)
+GET           /api/abstracts/:id/favusers                     @controllers.api.Abstracts.favouriteUsers(id: String)
+GET           /api/abstracts/:id/addfavuser                   @controllers.api.Abstracts.addFavUser(id: String)
+GET           /api/abstracts/:id/removefavuser                @controllers.api.Abstracts.removeFavUser(id: String)
 GET           /api/abstracts/:id/stateLog                     @controllers.api.Abstracts.listState(id: String)
 PUT           /api/abstracts/:id/state                        @controllers.api.Abstracts.setState(id: String)
 
@@ -74,6 +77,7 @@ GET           /api/user/self/conferences/:id/abstracts        @controllers.api.A
 GET           /api/user/self/conferences/:id/favouriteabstracts        @controllers.api.Abstracts.listFavByConf(id: String)
 GET           /api/user/self/conferences                      @controllers.api.Conferences.listWithOwnAbstracts
 GET           /api/user/self/conffavouriteabstracts           @controllers.api.Conferences.listWithFavAbstracts
+GET           /api/user/self/abstract/:id/isfavuser           @controllers.api.Abstracts.isFavouriteUser(id: String)
 
 
 # Auth -----------------------------------------------------------------------------------------------------------------

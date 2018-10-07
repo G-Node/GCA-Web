@@ -241,6 +241,60 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     ))
   }
 
+  /**
+    * Get favourite users of the abstract.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
+  def favouriteUsers(id: String) = SecuredAction { implicit request =>
+
+    val abstr = abstractService.getFav(id, request.identity.account)
+    val favUsers = abstractService.getFavouriteUsers(abstr, request.identity.account)
+
+    Ok(JsArray(
+      for (acc <- favUsers) yield accountFormat.writes(acc)
+    ))
+  }
+
+  /**
+    * Check, whether current user is has the abstract as a favourite.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
+  def isFavouriteUser(id: String) = SecuredAction { implicit request =>
+
+    val abstr = abstractService.get(id)
+    Ok(abstr.favUsers.contains(request.identity.account).toString)
+  }
+
+  /**
+    * Add favourite users of the abstract.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
+  def addFavUser(id: String) = SecuredAction { implicit request =>
+    Logger.debug(s"Liking abstract with uuid: [$id]")
+
+    val abstr = abstractService.get(id)
+    abstractService.addFavUser(abstr, request.identity.account)
+
+    Ok(views.html.dashboard.favouriteabstracts(request.identity.account))
+  }
+
+  /**
+    * Remove favourite users of the abstract.
+    *
+    * @return a list of updated permissions (accounts) as JSON
+    */
+  def removeFavUser(id: String) = SecuredAction { implicit request =>
+    Logger.debug(s"Disliking abstract with uuid: [$id]")
+
+    val abstr = abstractService.get(id)
+    abstractService.removeFavUser(abstr, request.identity.account)
+
+    Ok(views.html.dashboard.favouriteabstracts(request.identity.account))
+  }
+
   def listState(id: String) = SecuredAction { implicit request =>
     implicit val logWrites = new StateLogWrites()
 
