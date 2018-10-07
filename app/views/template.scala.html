@@ -101,6 +101,12 @@
                                 <a href="@routes.Application.abstractsPrivate()">My Abstracts</a>
                             </li>
                         }
+
+                        @account.map { acc =>
+                            <li class=@if(active.toLowerCase == "favouriteabstracts") {"active"} else {""}>
+                                <a href="@routes.Application.abstractsFavourite()">Favourite Abstracts</a>
+                            </li>
+                        }
                     }
 
                     @if(conference.isEmpty && active) {

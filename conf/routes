@@ -16,6 +16,7 @@ GET           /conference/:id                                 @controllers.Appli
 GET           /conference/:id/submission                      @controllers.Application.submission(id: String)
 GET           /conference/:id/abstracts                       @controllers.Application.abstractsPublic(id: String)
 GET           /myabstracts                                    @controllers.Application.abstractsPrivate
+GET           /favouriteabstracts                             @controllers.Application.abstractsFavourite
 GET           /myabstracts/:id/edit                           @controllers.Application.edit(id: String)
 GET           /submitted                                      @controllers.Application.abstractsPending
 
@@ -68,8 +69,11 @@ DELETE        /api/figures/:id                                @controllers.api.F
 GET           /api/users                                      @controllers.api.Accounts.accountsByEmail(email: String)
 GET           /api/user/list                                  @controllers.api.Accounts.listAccounts()
 GET           /api/user/:id/abstracts                         @controllers.api.Abstracts.listByAccount(id: String)
+GET           /api/user/:id/favouriteabstracts                @controllers.api.Abstracts.listFavByAccount(id: String)
 GET           /api/user/self/conferences/:id/abstracts        @controllers.api.Abstracts.listOwn(id: String)
+GET           /api/user/self/conferences/:id/favouriteabstracts        @controllers.api.Abstracts.listFavByConf(id: String)
 GET           /api/user/self/conferences                      @controllers.api.Conferences.listWithOwnAbstracts
+GET           /api/user/self/conffavouriteabstracts           @controllers.api.Conferences.listWithFavAbstracts
 
 
 # Auth -----------------------------------------------------------------------------------------------------------------

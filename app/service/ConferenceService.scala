@@ -108,6 +108,22 @@ class ConferenceService() extends PermissionsBase {
     }
   }
 
+  def listWithFavouriteAbstractsOfAccount(account: Account) : Seq[Conference] = {
+    query { em =>
+      val queryStr =
+        """SELECT DISTINCT c FROM Conference c
+           INNER JOIN c.abstracts a
+           INNER JOIN a.owners af
+           WHERE af.uuid = :uuid
+           ORDER BY c.startDate DESC"""
+
+      val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
+      query.setParameter("uuid", account.uuid)
+
+      asScalaBuffer(query.getResultList)
+    }
+  }
+
   /**
    * Get a conference specified by its id.
    *
