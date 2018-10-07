@@ -137,7 +137,8 @@ class AbstractService(figPath: String) extends PermissionsBase {
     query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
-           LEFT JOIN FETCH a.owners f
+           LEFT JOIN FETCH a.owners
+           LEFT JOIN FETCH a.favUsers f
            LEFT JOIN FETCH a.authors
            LEFT JOIN FETCH a.affiliations
            LEFT JOIN FETCH a.conference
@@ -156,7 +157,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
     query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
-           LEFT JOIN FETCH a.owners f
+           LEFT JOIN FETCH a.favUsers f
            WHERE a.uuid = :AbstrUuid AND f.uuid = :FavUserUuid
            ORDER BY a.sortId, a.title"""
 
@@ -171,7 +172,8 @@ class AbstractService(figPath: String) extends PermissionsBase {
     query { em =>
       val queryStr =
         """SELECT DISTINCT a FROM Abstract a
-           LEFT JOIN FETCH a.owners f
+           LEFT JOIN FETCH a.owners
+           LEFT JOIN FETCH a.favUsers f
            LEFT JOIN FETCH a.authors
            LEFT JOIN FETCH a.affiliations
            LEFT JOIN FETCH a.conference c
