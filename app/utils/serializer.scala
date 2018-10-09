@@ -170,7 +170,8 @@ package object serializer {
         "mail" -> account.mail,
         "fullName" -> account.fullName,
         "ctime" -> account.ctime,
-        "abstracts" -> routesResolver.abstractsUrl(account.uuid)
+        "abstracts" -> routesResolver.abstractsUrl(account.uuid),
+        "favAbstracts" -> routesResolver.favAbstractsUrl(account.uuid)
       )
     }
   }
@@ -315,7 +316,7 @@ package object serializer {
       (__ \ "affiliations").read[List[Affiliation]].addPosition and
       (__ \ "references").read[List[Reference]].addPosition and
         (__ \ "abstrTypes").read[List[AbstractGroup]]
-    )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, _, _, _,_)).reads(json)
+    )(Abstract(_, _, _, _, _, _, _, _, _, _, _, None, Nil, Nil, Nil, _, _, _,_)).reads(json)
 
     override def writes(a: Abstract): JsValue = {
 
@@ -335,6 +336,7 @@ package object serializer {
         "conference" -> routesResolver.conferenceUrl(a.conference.uuid),
         "figures" -> asScalaSet(a.figures).toSeq.sorted[Model],
         "owners" -> routesResolver.ownersUrl(a.uuid),
+        "favUsers" -> routesResolver.favUsersUrl(a.uuid),
         "authors" -> asScalaSet(a.authors).toSeq.sorted[Model],
         "affiliations" -> asScalaSet(a.affiliations).toSeq.sorted[Model],
         "references" -> asScalaSet(a.references).toSeq.sorted[Model],

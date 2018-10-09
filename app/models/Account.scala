@@ -40,6 +40,11 @@ class Account extends Model {
 
   @ManyToMany(mappedBy = "owners")
   var abstracts: JSet[Abstract] = new JTreeSet[Abstract]()
+  /**
+    * here ManyToMany, to get number of likes/author access to liking persons
+    */
+  @ManyToMany(mappedBy = "favUsers")
+  var favAbstracts: JSet[Abstract] = new JTreeSet[Abstract]()
   @ManyToMany(mappedBy = "owners")
   var conferences: JSet[Conference] = new JTreeSet[Conference]()
 
@@ -58,6 +63,7 @@ object Account {
   def apply(uuid: Option[String],
             mail: Option[String],
             abstracts: Seq[Abstract] = Nil,
+            favAbstracts: Seq[Abstract] = Nil,
             conferences: Seq[Conference] = Nil) : Account = {
 
     val account = new Account()
@@ -67,6 +73,7 @@ object Account {
 
     account.conferences = toJSet(conferences)
     account.abstracts   = toJSet(abstracts)
+    account.favAbstracts   = toJSet(favAbstracts)
 
     account
   }
@@ -90,6 +97,7 @@ object Account {
 
     account.conferences = toJSet(Nil)
     account.abstracts   = toJSet(Nil)
+    account.favAbstracts   = toJSet(Nil)
 
     account
   }

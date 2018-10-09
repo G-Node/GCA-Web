@@ -282,6 +282,8 @@ class Assets() {
         abstr.owners.add(alice)
         abstr.owners.add(bob)
 
+        abstr.favUsers.add(bob)
+
         abstr.authors.foreach { author =>
           author.abstr = abstr
         }

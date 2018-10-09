@@ -18,6 +18,17 @@ class RoutesResolver {
   }
 
   /**
+    * Builds an URL to the related favourite abstracts from a given object ID.
+    *
+    * @param id an ID of a Conference object to insert into the URL
+    *
+    * @return URL for related abstracts, like "/conferences/HNOPSADMHV/favouriteabstracts"
+    */
+  def favUsersUrl(id: String) = {
+    new URL(baseUrl + s"/api/abstracts/$id/favusers")
+  }
+
+  /**
    * Builds an URL to the related abstracts from a given object ID.
    *
    * @param id an ID of a Conference object to insert into the URL
@@ -38,6 +49,18 @@ class RoutesResolver {
   def allAbstractsUrl(id: String) = {
     new URL(baseUrl + s"/api/conferences/$id/allAbstracts")
   }
+
+  /**
+    * Builds an URL to the related abstracts from a given object ID.
+    *
+    * @param id an ID of a User object to insert into the URL
+    *
+    * @return URL for related abstracts, like "/api/user/HNOPSADMHV/favouriteabstracts"
+    */
+  def favAbstractsUrl(id: String) = {
+    new URL(baseUrl + s"/api/user/$id/favouriteabstracts")
+  }
+
 
   /**
    * Builds an URL to figure file.
