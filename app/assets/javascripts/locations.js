@@ -73,36 +73,41 @@ require(["lib/models", "lib/tools", "lib/leaflet/leaflet", "lib/msg", "lib/astat
 
                                 for(var j=0; j<geojson[i].floorplans.length; j++) {
 
-                                    $('#floorplans-wrap').append('<div id="floorplan-div-' + i + + j + '" class="floorplan-divs" style="margin-bottom: 1em;"></div>');
-
                                     //create image in order to get actual image dimensions cross browser
-                                    var img = $("<img>").attr("src", geojson[i].floorplans[j]);
-                                    var nw = img.prop('naturalWidth');
-                                    var nh = img.prop('naturalHeight');
+                                    var img = new Image();
+                                    img.src = geojson[i].floorplans[j];
+                                    img.onload = handleLoad;
 
-                                    var floor = L.map('floorplan-div-' + i + j, {
-                                        crs: L.CRS.Simple,
-                                        minZoom: 0
-                                    });
+                                    function handleLoad(response) {
 
-                                    if(nh>nw){
-                                        $('#floorplan-div-'+i+j).height($('#floorplan-div-'+i+j).width());
-                                        $('#floorplan-div-'+i+j).width(nw/nh*$('#floorplan-div-'+i+j).height());
-                                    }else{
-                                        $('#floorplan-div-'+i+j).height(nh/nw*$('#floorplan-div-'+i+j).width());
+                                        $('#floorplans-wrap').append('<div id="floorplan-div-' + i + + j + '" class="floorplan-divs" style="margin-bottom: 1em;"></div>');
+
+                                        // Get accurate measurements from that.
+                                        var nw = img.width;
+                                        var nh = img.height;
+
+                                        console.log(nw+' '+nh+' '+img.src);
+                                        var floor = L.map('floorplan-div-' + i + j, {
+                                            crs: L.CRS.Simple,
+                                            minZoom: 0
+                                        });
+
+                                        if(nh>nw){
+                                            $('#floorplan-div-'+i+j).height($('#floorplan-div-'+i+j).width());
+                                            $('#floorplan-div-'+i+j).width(nw/nh*$('#floorplan-div-'+i+j).height());
+                                        }else{
+                                            $('#floorplan-div-'+i+j).height(nh/nw*$('#floorplan-div-'+i+j).width());
+                                        }
+
+                                        var bounds  = [[0, 0], [$('#floorplan-div-'+i+j).height(), $('#floorplan-div-'+i+j).width()]];
+                                        var image = L.imageOverlay(img.src, bounds).addTo(floor);
+                                        floor.fitBounds(bounds);
                                     }
-
-                                    var bounds  = [[0, 0], [$('#floorplan-div-'+i+j).height(), $('#floorplan-div-'+i+j).width()]];
-                                    var image = L.imageOverlay(geojson[i].floorplans[j], bounds).addTo(floor);
-                                    floor.fitBounds(bounds);
                                     //possible to incorporate rooms with coordinates just as above,
                                     //just be sure to use right coordinate system (cf. leaflet page)
                                     //and mapping probably needed for room number vs. location
                                 }
                             }
-                        }
-                        if($('.floorplan-divs').length == 0){
-                            $('#floorplans-wrap').append('<p>No floorplans available for this conference.</p>');
                         }
                     }
                     //add addresses as text
