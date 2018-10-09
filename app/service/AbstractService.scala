@@ -128,6 +128,50 @@ class AbstractService(figPath: String) extends PermissionsBase {
   }
 
   /**
+    * List all published and unpublished favourite abstracts that belong to an account.
+    *
+    * @param account The account for which to list the abstracts.
+    * @return All abstracts that are favourites of the current account.
+    */
+  def listFavourite(account: Account) : Seq[Abstract] = {
+    query { em =>
+      val queryStr =
+        """SELECT DISTINCT a FROM Abstract a
+           LEFT JOIN FETCH a.owners f
+           LEFT JOIN FETCH a.authors
+           LEFT JOIN FETCH a.affiliations
+           LEFT JOIN FETCH a.conference
+           LEFT JOIN FETCH a.figures
+           LEFT JOIN FETCH a.references
+           WHERE f.uuid = :uuid
+          ORDER BY a.sortId, a.title"""
+      val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
+      query.setParameter("uuid", account.uuid)
+      asScalaBuffer(query.getResultList)
+    }
+  }
+
+  def listFavourite(conference: Conference, account: Account) : Seq[Abstract] = {
+    query { em =>
+      val queryStr =
+        """SELECT DISTINCT a FROM Abstract a
+           LEFT JOIN FETCH a.owners f
+           LEFT JOIN FETCH a.authors
+           LEFT JOIN FETCH a.affiliations
+           LEFT JOIN FETCH a.conference c
+           LEFT JOIN FETCH a.figures
+           LEFT JOIN FETCH a.references
+           WHERE c.uuid = :ConfUuid AND f.uuid = :FavUserUuid
+           ORDER BY a.sortId, a.title"""
+      val query: TypedQuery[Abstract] = em.createQuery(queryStr, classOf[Abstract])
+      query.setParameter("ConfUuid", conference.uuid)
+      query.setParameter("FavUserUuid", account.uuid)
+      asScalaBuffer(query.getResultList)
+    }
+  }
+
+
+  /**
    * Return a published (= Accepted && Conference.isPublished) abstract by id.
    *
    * @param id The id of the abstract.

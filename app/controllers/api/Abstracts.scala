@@ -103,6 +103,17 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     resultWithETag(ownAbstracts)
   }
 
+  /**
+    * List all favourite abstracts for a given user.
+    *
+    * replace Own by Favourite
+    *
+    * @return All (accessible) abstracts for a given user.
+    */
+  def listFavByAccount(id: String) = SecuredAction { implicit request =>
+    val favAbstracts = abstractService.listFavourite(request.identity.account)
+    resultWithETag(favAbstracts)
+  }
 
   /**
    * List all abstracts for a given conference and a given user
@@ -111,11 +122,22 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
    */
   def listOwn(conferenceId: String) = SecuredAction { implicit request =>
 
-  val conference = conferenceService.get(conferenceId)
-  val abstracts = abstractService.listOwn(conference, request.identity.account)
+    val conference = conferenceService.get(conferenceId)
+    val abstracts = abstractService.listOwn(conference, request.identity.account)
 
-  resultWithETag(abstracts)
-}
+    resultWithETag(abstracts)
+  }
+
+  /**
+    * List all favourite abstracts for a given conference and a given user
+    *
+    * @return All (accessible) favourite abstracts for a given user.
+    */
+  def listFavByConf(conferenceId: String) = SecuredAction { implicit request =>
+    val conference = conferenceService.get(conferenceId)
+    val abstracts = abstractService.listFavourite(conference, request.identity.account)
+    resultWithETag(abstracts)
+  }
 
   /**
    * An abstract info by id.
