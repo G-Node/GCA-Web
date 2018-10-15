@@ -78,31 +78,7 @@ require(["lib/models", "lib/tools", "lib/leaflet/leaflet", "lib/msg", "lib/astat
                                     img.src = geojson[i].floorplans[j];
                                     img.onload = handleLoad;
 
-                                    function handleLoad(response) {
 
-                                        $('#floorplans-wrap').append('<div id="floorplan-div-' + i + + j + '" class="floorplan-divs" style="margin-bottom: 1em;"></div>');
-
-                                        // Get accurate measurements from that.
-                                        var nw = img.width;
-                                        var nh = img.height;
-
-                                        console.log(nw+' '+nh+' '+img.src);
-                                        var floor = L.map('floorplan-div-' + i + j, {
-                                            crs: L.CRS.Simple,
-                                            minZoom: 0
-                                        });
-
-                                        if(nh>nw){
-                                            $('#floorplan-div-'+i+j).height($('#floorplan-div-'+i+j).width());
-                                            $('#floorplan-div-'+i+j).width(nw/nh*$('#floorplan-div-'+i+j).height());
-                                        }else{
-                                            $('#floorplan-div-'+i+j).height(nh/nw*$('#floorplan-div-'+i+j).width());
-                                        }
-
-                                        var bounds  = [[0, 0], [$('#floorplan-div-'+i+j).height(), $('#floorplan-div-'+i+j).width()]];
-                                        var image = L.imageOverlay(img.src, bounds).addTo(floor);
-                                        floor.fitBounds(bounds);
-                                    }
                                     //possible to incorporate rooms with coordinates just as above,
                                     //just be sure to use right coordinate system (cf. leaflet page)
                                     //and mapping probably needed for room number vs. location
@@ -112,6 +88,32 @@ require(["lib/models", "lib/tools", "lib/leaflet/leaflet", "lib/msg", "lib/astat
                     }
                     //add addresses as text
                     //self.geoContent(texts);
+
+                    function handleLoad(response) {
+
+                        $('#floorplans-wrap').append('<div id="floorplan-div-' + i + + j + '" class="floorplan-divs" style="margin-bottom: 1em;"></div>');
+
+                        // Get accurate measurements from that.
+                        var nw = img.width;
+                        var nh = img.height;
+
+                        console.log(nw+' '+nh+' '+img.src);
+                        var floor = L.map('floorplan-div-' + i + j, {
+                            crs: L.CRS.Simple,
+                            minZoom: 0
+                        });
+
+                        if(nh>nw){
+                            $('#floorplan-div-'+i+j).height($('#floorplan-div-'+i+j).width());
+                            $('#floorplan-div-'+i+j).width(nw/nh*$('#floorplan-div-'+i+j).height());
+                        }else{
+                            $('#floorplan-div-'+i+j).height(nh/nw*$('#floorplan-div-'+i+j).width());
+                        }
+
+                        var bounds  = [[0, 0], [$('#floorplan-div-'+i+j).height(), $('#floorplan-div-'+i+j).width()]];
+                        var image = L.imageOverlay(img.src, bounds).addTo(floor);
+                        floor.fitBounds(bounds);
+                    }
 
                 }
             }
