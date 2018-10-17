@@ -1,5 +1,5 @@
 require(["main"], function () {
-    require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tools, ko, Sammy) {
+    require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], function (models, tools, ko, Sammy, offline) {
         "use strict";
 
 
@@ -75,10 +75,10 @@ require(["main"], function () {
 
                     if (confs !== null) {
                         confs.forEach(function (current) {
-                            //needs some fix to include "conferences/" + current.uuid
                             var absUrl = "/api/user/self/conferences/" + current.uuid + "/favouriteabstracts";
-                            self.currConfShort = current.short;
-                            $.getJSON(absUrl, onAbstractData(current)).fail(self.ioFailHandler);
+                            //$.getJSON(absUrl, onAbstractData(current)).fail(self.ioFailHandler);
+                            offline.requestJSON(current.uuid, absUrl, onAbstractData(current), self.ioFailHandler);
+
                         });
                     }
 
@@ -88,26 +88,12 @@ require(["main"], function () {
                 function onAbstractData(currentConf) {
                     return function (abstractList) {
                         var absList = models.Abstract.fromArray(abstractList);
-
                         absList.forEach(function (abstr) {
                             abstr.createLink = ko.computed(function () {
                                 return {
-                                    absLink: "/conference/" + self.currConfShort + "/abstracts#/uuid/" + abstr.uuid
+                                    absLink: "/conference/" + currentConf.short + "/abstracts#/uuid/" + abstr.uuid
                                 };
                             });
-                            /*abstr.viewEditCtx = ko.computed(function () {
-                                var confIsOpen = currentConf.isOpen;
-                                var canEdit = abstr.state == "InRevision" ||
-                                    (confIsOpen && (abstr.state == "InPreparation" ||
-                                        abstr.state == "Submitted" ||
-                                        abstr.state == "Withdrawn"));
-
-                                return {
-                                    link: canEdit ? "/myabstracts/" + abstr.uuid + "/edit" : "/abstracts/" + abstr.uuid,
-                                    label: canEdit ? "Edit" : "View",
-                                    btn: canEdit ? "btn-danger" : "btn-primary"
-                                };
-                            });*/
                         });
 
                         currentConf.abstracts(absList);
