@@ -58,6 +58,9 @@ class Abstract extends Model with Owned with Tagged {
   @ManyToMany
   @JoinTable(name = "abstract_owners")
   var owners:  JSet[Account] = new JTreeSet[Account]()
+  @ManyToMany
+  @JoinTable(name = "abstract_favUsers")
+  var favUsers:  JSet[Account] = new JTreeSet[Account]()
   @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var authors: JSet[Author] = new JTreeSet[Author]()
   @OneToMany(mappedBy = "abstr", cascade = Array(CascadeType.ALL), orphanRemoval = true)
@@ -95,6 +98,7 @@ object Abstract {
             conference: Option[Conference] = None,
             figures: Seq[Figure] = Nil,
             owners:  Seq[Account] = Nil,
+            favUsers:  Seq[Account] = Nil,
             authors: Seq[Author] = Nil,
             affiliations: Seq[Affiliation] = Nil,
             references: Seq[Reference] = Nil,
@@ -117,6 +121,7 @@ object Abstract {
     abstr.conference  = unwrapRef(conference)
     abstr.figures      = toJSet(figures)
     abstr.owners      = toJSet(owners)
+    abstr.favUsers      = toJSet(owners)
     abstr.authors     = toJSet(authors)
     abstr.affiliations = toJSet(affiliations)
     abstr.references  = toJSet(references)
