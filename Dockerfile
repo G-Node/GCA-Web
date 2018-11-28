@@ -33,6 +33,11 @@ WORKDIR /srv/gca
 # Required to get dependencies before running the startup script.
 RUN activator test stage
 
+# Make sure we always have the latest routes file available
+# even if we use a config folder from outside the container.
+RUN mkdir -p /srv/tmp
+RUN cp /srv/gca/conf/routes /srv/tmp/routes
+
 VOLUME ["/srv/gca/db"]
 VOLUME ["/srv/gca/conf"]
 VOLUME ["/srv/gca/figures"]
