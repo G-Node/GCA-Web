@@ -13,6 +13,8 @@ ENV PATH /usr/local/activator-${ACTIVATOR_VERSION}-minimal:$PATH
 
 # install to srv gca
 RUN mkdir -p /srv/gca
+RUN mkdir -p /srv/gca/figures
+RUN mkdir -p /srv/gca/figures_mobile
 
 ADD app /srv/gca/app
 ADD conf /srv/gca/conf
@@ -25,6 +27,7 @@ ADD startup.sh /srv/gca
 ADD figures /srv/gca/figures
 ADD figures_mobile /srv/gca/figures_mobile
 
+# only required for local tests
 RUN mkdir -p /srv/gca/db
 RUN echo "db.default.url=\"jdbc:h2:/srv/gca/db/gca-web\"" >> /srv/gca/conf/application.dev.conf
 
