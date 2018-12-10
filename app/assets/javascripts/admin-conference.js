@@ -241,6 +241,9 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             //check for
             if(self.conference().mAbsLeng() == null){ self.conference().mAbsLeng(3500); }
             if( Array.isArray(self.conference().mFigs()) ){ self.conference().mFigs(0); }
+            if(self.conference().short() == null){
+                self.conference().short( self.conference().name().match(/\b(\w)/g).join('').toUpperCase() );
+            }
             var method = self.conference().uuid === null ? "POST" : "PUT";
             var url = "/api/conferences" + (self.conference().uuid === null ? "" : "/" + self.conference().uuid);
             var confData = self.conference().toJSON();
