@@ -153,14 +153,19 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             var name = $("#ngName");
             var prefix = $("#ngPrefix");
             var short = $("#ngShort");
+            if(! /^\d+$/.test(prefix.val())){self.setError("danger", "Prefix can only contain numbers!");}
+            else if(/^\d+$/.test(name.val())){self.setError("danger", "Name cannot contain only numbers!");}
+            else if(/^\d+$/.test(short.val())){self.setError("danger", "Short cannot contain only numbers!");}
+            else {
+                var grp = models.AbstractGroup(null, prefix.val(), name.val(), short.val());
+                self.makeGroupObservable(grp);
+                self.conference().groups.push(grp);
 
-            var grp = models.AbstractGroup(null, prefix.val(), name.val(), short.val());
-            self.makeGroupObservable(grp);
-            self.conference().groups.push(grp);
-
-            name.val('');
-            prefix.val('');
-            short.val('');
+                name.val('');
+                prefix.val('');
+                short.val('');
+                self.setError("info", 'New group added, click "Save"!');
+            }
         };
 
         self.removeGroup = function(data) {
