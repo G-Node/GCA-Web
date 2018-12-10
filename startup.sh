@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Use tests to set up a database in a test environment
-activator test stage
-activator start
+cp /srv/tmp/routes /srv/gca/conf/routes
+
+activator run
 
