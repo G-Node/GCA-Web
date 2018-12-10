@@ -243,27 +243,32 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.saveConference = function() {
             console.log("saveConference::");
-            //check for
-            if(self.conference().mAbsLeng() == null){ self.conference().mAbsLeng(3500); }
+
             if( Array.isArray(self.conference().mFigs()) ){ self.conference().mFigs(0); }
-            if(self.conference().short() == null){
-                self.conference().short( self.conference().name().match(/\b(\w)/g).join('').toUpperCase() );
+            if(self.conference().mAbsLeng() == null){ self.conference().mAbsLeng(500); }
+            else if(self.conference().mAbsLeng() == 0){
+                self.setError("danger", "Max. Abs. Len. has to be larger than 0.")
+            }else {
+
+                if (self.conference().short() == null) {
+                    self.conference().short(self.conference().name().match(/\b(\w)/g).join('').toUpperCase());
+                }
+                var method = self.conference().uuid === null ? "POST" : "PUT";
+                var url = "/api/conferences" + (self.conference().uuid === null ? "" : "/" + self.conference().uuid);
+                var confData = self.conference().toJSON();
+                console.log(confData);
+                self.isLoading("Saving conference data.");
+                $.ajax(url, {
+                    data: confData,
+                    type: method,
+                    contentType: "application/json",
+                    success: function (result) {
+                        self.onConferenceData(result);
+                        self.setError("info", "Changes saved")
+                    },
+                    error: self.ioFailHandler
+                });
             }
-            var method = self.conference().uuid === null ? "POST" : "PUT";
-            var url = "/api/conferences" + (self.conference().uuid === null ? "" : "/" + self.conference().uuid);
-            var confData = self.conference().toJSON();
-            console.log(confData);
-            self.isLoading("Saving conference data.");
-            $.ajax(url, {
-                data: confData,
-                type: method,
-                contentType: "application/json",
-                success: function(result) {
-                    self.onConferenceData(result);
-                    self.setError("info", "Changes saved")
-                },
-                error: self.ioFailHandler
-            });
         };
 
         self.isConferenceSaved = ko.computed(function() {
