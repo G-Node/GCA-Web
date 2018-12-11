@@ -24,8 +24,6 @@ ADD public /srv/gca/public
 ADD test /srv/gca/test
 ADD build.sbt /srv/gca/
 ADD startup.sh /srv/gca
-ADD figures /srv/gca/figures
-ADD figures_mobile /srv/gca/figures_mobile
 
 # only required for local tests
 RUN mkdir -p /srv/gca/db
