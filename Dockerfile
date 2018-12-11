@@ -45,4 +45,5 @@ VOLUME ["/srv/gca/figures"]
 VOLUME ["/srv/gca/figures_mobile"]
 
 EXPOSE 9000
-ENTRYPOINT ["/bin/bash", "startup.sh"]
+RUN chmod +x ./startup.sh
+ENTRYPOINT ["./startup.sh"]
