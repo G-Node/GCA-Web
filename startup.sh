@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-cp /srv/tmp/routes /srv/gca/conf/routes
+# copy any external config files to the frameworks config folder
+cp /srv/ext_conf/* /srv/gca/conf/
 
 activator start
 
