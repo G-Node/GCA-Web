@@ -29,6 +29,9 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.scheduleContent = ko.observable(null);
         self.infoContent = ko.observable(null);
 
+        self.otherConfShorts = ko.observable(null);
+        self.oldshort = '';
+
         ko.bindingHandlers.datetimepicker = {
             init: function(element, valueAccessor, allBindingsAccessor) {
 
@@ -85,6 +88,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 self.conference(conf);
                 self.isLoading(false);
             }
+            self.loadOtherConferences();
 
             ko.applyBindings(window.dashboard);
         };
@@ -218,6 +222,8 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             self.requestConfSpecificField(self.conference().geo, "json", self.geoContent);
             self.requestConfSpecificField(self.conference().schedule, "json", self.scheduleContent);
             self.requestConfSpecificField(self.conference().info, "text", self.infoContent);
+
+            self.oldShort = self.conference().short();
         };
 
         self.requestConfSpecificField = function(url, type, setObservable) {
@@ -241,34 +247,60 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             });
         };
 
+        self.loadOtherConferences = function() {
+            console.log("loadOtherConferences::");
+
+            //now load the data from the server
+            var confURL = "/api/conferences";
+            $.getJSON(confURL, onOtherConferenceData).fail(self.ioFailHandler);
+
+            //conference data
+            function onOtherConferenceData(confObj) {
+                var confs = models.Conference.fromArray(confObj);
+                var confShorts = Array();
+                if (confs !== null) {
+                    confs.forEach(function (current) {
+                        confShorts.push(current.short);
+                    });
+                    self.otherConfShorts(confShorts);
+                }
+            }
+        }
+
         self.saveConference = function() {
             console.log("saveConference::");
-
+            //check fields
             if( Array.isArray(self.conference().mFigs()) ){ self.conference().mFigs(0); }
             if(self.conference().mAbsLeng() == null){ self.conference().mAbsLeng(500); }
             else if(self.conference().mAbsLeng() == 0){
                 self.setError("danger", "Max. Abs. Len. has to be larger than 0.")
-            }else {
-
-                if (self.conference().short() == null) {
-                    self.conference().short(self.conference().name().match(/\b(\w)/g).join('').toUpperCase());
-                }
-                var method = self.conference().uuid === null ? "POST" : "PUT";
-                var url = "/api/conferences" + (self.conference().uuid === null ? "" : "/" + self.conference().uuid);
-                var confData = self.conference().toJSON();
-                console.log(confData);
-                self.isLoading("Saving conference data.");
-                $.ajax(url, {
-                    data: confData,
-                    type: method,
-                    contentType: "application/json",
-                    success: function (result) {
-                        self.onConferenceData(result);
-                        self.setError("info", "Changes saved")
-                    },
-                    error: self.ioFailHandler
-                });
+                return;
             }
+            if (self.conference().short() == null) {
+                self.conference().short(self.conference().name().match(/\b(\w)/g).join('').toUpperCase());
+            }
+            if(!(self.oldShort == self.conference().short()) && self.otherConfShorts().indexOf(self.conference().short()) >= 0){
+                console.log(self.oldShort + ', NEW: ' + self.conference().short() + ' ' + self.otherConfShorts().indexOf(self.conference().short()));
+                self.setError("danger", "Conference short is already in use. Please choose a different one.");
+                return;
+            }
+
+            var method = self.conference().uuid === null ? "POST" : "PUT";
+            var url = "/api/conferences" + (self.conference().uuid === null ? "" : "/" + self.conference().uuid);
+            var confData = self.conference().toJSON();
+            console.log(confData);
+            self.isLoading("Saving conference data.");
+            $.ajax(url, {
+                data: confData,
+                type: method,
+                contentType: "application/json",
+                success: function (result) {
+                    self.onConferenceData(result);
+                    self.setError("info", "Changes saved")
+                },
+                error: self.ioFailHandler
+            });
+
         };
 
         self.isConferenceSaved = ko.computed(function() {
