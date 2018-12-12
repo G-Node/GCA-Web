@@ -2,5 +2,5 @@
 
 cp /srv/tmp/routes /srv/gca/conf/routes
 
-activator run
+activator start
 
