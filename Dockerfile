@@ -42,6 +42,6 @@ RUN mkdir -p /srv/ext_conf
 VOLUME ["/srv/ext_conf"]
 
 EXPOSE 9000
-ADD startup.sh /srv/gca
-RUN chmod +x ./startup.sh
-ENTRYPOINT ["./startup.sh"]
+ADD docker_startup.sh /srv/gca
+RUN chmod +x ./docker_startup.sh
+ENTRYPOINT ["./docker_startup.sh"]
