@@ -23,7 +23,6 @@ ADD project/build.properties /srv/gca/project/
 ADD public /srv/gca/public
 ADD test /srv/gca/test
 ADD build.sbt /srv/gca/
-ADD startup.sh /srv/gca
 
 # only required for local tests
 RUN mkdir -p /srv/gca/db
@@ -45,5 +44,6 @@ VOLUME ["/srv/gca/figures"]
 VOLUME ["/srv/gca/figures_mobile"]
 
 EXPOSE 9000
+ADD startup.sh /srv/gca
 RUN chmod +x ./startup.sh
 ENTRYPOINT ["./startup.sh"]
