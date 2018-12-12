@@ -13,6 +13,8 @@ ENV PATH /usr/local/activator-${ACTIVATOR_VERSION}-minimal:$PATH
 
 # install to srv gca
 RUN mkdir -p /srv/gca
+RUN mkdir -p /srv/gca/figures
+RUN mkdir -p /srv/gca/figures_mobile
 
 ADD app /srv/gca/app
 ADD conf /srv/gca/conf
@@ -25,6 +27,7 @@ ADD startup.sh /srv/gca
 ADD figures /srv/gca/figures
 ADD figures_mobile /srv/gca/figures_mobile
 
+# only required for local tests
 RUN mkdir -p /srv/gca/db
 RUN echo "db.default.url=\"jdbc:h2:/srv/gca/db/gca-web\"" >> /srv/gca/conf/application.dev.conf
 
@@ -33,6 +36,11 @@ WORKDIR /srv/gca
 # Required to get dependencies before running the startup script.
 RUN activator test stage
 
+# Make sure we always have the latest routes file available
+# even if we use a config folder from outside the container.
+RUN mkdir -p /srv/tmp
+RUN cp /srv/gca/conf/routes /srv/tmp/routes
+
 VOLUME ["/srv/gca/db"]
 VOLUME ["/srv/gca/conf"]
 VOLUME ["/srv/gca/figures"]
@@ -40,6 +48,3 @@ VOLUME ["/srv/gca/figures_mobile"]
 
 EXPOSE 9000
 ENTRYPOINT ["/bin/bash", "startup.sh"]
-
-# Previous entrypoint using the staged binary
-#ENTRYPOINT ["target/universal/stage/bin/gca-web"]
