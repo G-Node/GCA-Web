@@ -23,9 +23,6 @@ ADD project/build.properties /srv/gca/project/
 ADD public /srv/gca/public
 ADD test /srv/gca/test
 ADD build.sbt /srv/gca/
-ADD startup.sh /srv/gca
-ADD figures /srv/gca/figures
-ADD figures_mobile /srv/gca/figures_mobile
 
 # only required for local tests
 RUN mkdir -p /srv/gca/db
@@ -36,15 +33,15 @@ WORKDIR /srv/gca
 # Required to get dependencies before running the startup script.
 RUN activator test stage
 
-# Make sure we always have the latest routes file available
-# even if we use a config folder from outside the container.
-RUN mkdir -p /srv/tmp
-RUN cp /srv/gca/conf/routes /srv/tmp/routes
-
 VOLUME ["/srv/gca/db"]
-VOLUME ["/srv/gca/conf"]
 VOLUME ["/srv/gca/figures"]
 VOLUME ["/srv/gca/figures_mobile"]
 
+# Add an external directory for production config files.
+RUN mkdir -p /srv/ext_conf
+VOLUME ["/srv/ext_conf"]
+
 EXPOSE 9000
-ENTRYPOINT ["/bin/bash", "startup.sh"]
+ADD docker_startup.sh /srv/gca
+RUN chmod +x ./docker_startup.sh
+ENTRYPOINT ["./docker_startup.sh"]
