@@ -276,8 +276,12 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 self.setError("danger", "Max. Abs. Len. has to be larger than 0.")
                 return;
             }
-            if (self.conference().short() == null) {
+            if (self.conference().short() == null ) {
                 self.conference().short(self.conference().name().match(/\b(\w)/g).join('').toUpperCase());
+            }
+            if(self.conference().short().replace(/\s/g,'') == ''){
+                self.setError("danger", "Conference short cannot be empty.");
+                return;
             }
             if(!(self.oldShort == self.conference().short()) && self.otherConfShorts().indexOf(self.conference().short()) >= 0){
                 console.log(self.oldShort + ', NEW: ' + self.conference().short() + ' ' + self.otherConfShorts().indexOf(self.conference().short()));
