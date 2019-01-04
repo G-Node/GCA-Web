@@ -46,7 +46,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             caption: null
         };
 
-        // required to affiliate and author with a department
+        // required to affiliate an author with a department
         self.selectedAffiliationAuthor = 0;
 
         // just a shortcut
@@ -192,7 +192,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
         self.init = function () {
-
             if (confId) {
                 self.requestConference(confId);
             }
@@ -237,7 +236,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
         );
 
         self.requestConference = function (confId) {
-
             $.ajax({
                 async: false,
                 url: "/api/conferences/" + confId,
@@ -255,7 +253,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             function fail() {
                 self.setError("Error", "Unable to request the conference: uuid = " + confId);
             }
-
         };
 
         self.requestAbstract = function (abstrId) {
@@ -287,7 +284,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
         self.abstrTypeChanged = function(abstrType){
-            // Workaround as long as we have allowed only one Abstract type
+            // Workaround as long as we allow only one Abstract type
             self.editedAbstract().abstrTypes().pop();
             self.editedAbstract().abstrTypes().push(abstrType);
             self.abstract().abstrTypes().pop();
@@ -413,22 +410,18 @@ function (ko, models, tools, msg, validate, owned, astate) {
             }
         };
 
-
         self.doSaveAbstract = function (abstract) {
-
             if (!(abstract instanceof models.ObservableAbstract)) {
                 abstract = self.abstract();
             }
 
             var result = validate.abstract(abstract);
-
             if (result.hasErrors()) {
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
                 return;
             }
 
             self.autosave({text: 'Saving', css: 'label-warning'});
-
             if (self.isAbstractSaved()) {
 
                 if (self.hasAbstractFigures()) {
@@ -473,7 +466,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 var hasNoFig = !self.hasAbstractFigures(),
                     hasFigData = self.newFigure.file ? true : false;
                     if (hasFigData) {
-                    //success fig is a function callback...
+                    // successFig is a function callback
                     self.figureUpload(successFig);
                 } else {
                     self.autosave({text: 'Ok', css: 'label-success'});
@@ -519,7 +512,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self.modalFooter("generalModalFooter");
         };
 
-
         self.doEndEdit = function () {
 
             if (self.isAbstractSaved()) {
@@ -532,12 +524,10 @@ function (ko, models, tools, msg, validate, owned, astate) {
             MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
         };
 
-
         self.doEditAddAuthor = function () {
             var author = models.ObservableAuthor();
             self.editedAbstract().authors.push(author);
         };
-
 
         self.doEditRemoveAuthor = function (index) {
             index = index();
@@ -546,12 +536,10 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self.editedAbstract().authors(authors);
         };
 
-
         self.doEditAddAffiliation = function () {
             var affiliation = models.ObservableAffiliation();
             self.editedAbstract().affiliations.push(affiliation);
         };
-
 
         self.doEditRemoveAffiliation = function (index) {
             index = index();
@@ -559,7 +547,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 authors = self.editedAbstract().authors();
 
             affiliations.splice(index, 1);
-
 
             authors.forEach(function (author) {
                 var positions = author.affiliations(),
@@ -574,7 +561,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             self.editedAbstract().affiliations(affiliations);
         };
-
 
         /**
          * Add an affiliation position to an author.
@@ -605,7 +591,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self.selectedAffiliationAuthor = 0;
         };
 
-
         /**
          * Remove all affiliation positions for the authors affiliations array.
          *
@@ -624,11 +609,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
             author.affiliations(positions);
         };
 
-
         self.doEditAddReference = function () {
             self.editedAbstract().references.push(models.ObservableReference());
         };
-
 
         self.doEditRemoveReference = function (index) {
             index = index();
@@ -640,7 +623,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
         // state related functions go here
-
         self.successStateLog = function(logData) {
             astate.logHelper.formatDate(logData);
             self.stateLog(logData);
@@ -706,9 +688,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 var current = self.abstract().state();
                 var possible = self.stateHelper.getPossibleStatesFor(current, false, !open);
 
-                // for this to work, there must be a single next state,
-                //  with the exception of Withdrawn, which must *not* be
-                //  the first (cf. the state map in lib/astate)
+                // For this to work, there must be a single next state,
+                // with the exception of Withdrawn, which must *not* be
+                // the first (cf. the state map in lib/astate)
                 if (possible.length > 0) {
                     var next = possible[0];
                     if (next === 'Submitted') {
@@ -746,9 +728,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self
         );
 
-
-        // help
-
         self.submittedBefore = function() {
             if (!self.stateLog()) {
                 return false;
@@ -764,6 +743,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             return false;
         };
 
+        // help
         self.showHelp = function() {
             var open = self.conference() && self.conference().isOpen;
 
@@ -828,9 +808,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     "To register please go to: <a target=\"_blank\" href=\"" + self.conference().link + "\">" + self.conference().link + "</a>"
                     )
             }
-
         }
-
     }
 
     // start the editor
