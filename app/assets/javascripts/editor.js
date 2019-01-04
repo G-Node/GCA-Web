@@ -367,12 +367,20 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         contentType: "application/json",
                         dataType: "json",
                         data: figure.toJSON(),
+                        success: success,
                         processData: false,
                         error: fail,
                         cache: false
                     });
                 }
             )
+
+            // Fetch abstract to avoid stale figure caption
+            function success() {
+                self.requestAbstract(self.abstract().uuid);
+                self.autosave({text: 'Ok', css: 'label-success'});
+            }
+
             function fail() {
                 self.setError("Error", "Unable to update caption");
             }
