@@ -42,9 +42,10 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         // only required when a new figure is added
         self.newFigure = {
-            file: null,
-            caption: null
+            file: null
         };
+
+        self.newFigureCaption = ko.observable(null);
 
         // required to affiliate an author with a department
         self.selectedAffiliationAuthor = 0;
@@ -302,8 +303,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
         self.figureUpload = function (callback) {
-
-            var json = {caption: self.newFigure.caption},
+            var json = {caption: self.newFigureCaption()},
                 files = self.newFigure.file,
                 data = new FormData();
 
@@ -340,9 +340,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
             }
 
             function success(obj, stat, xhr) {
-
                 self.newFigure.file = null;
-                self.newFigure.caption = null;
+                self.newFigureCaption(null);
 
                 if (callback) {
                     callback(obj, stat, xhr);
@@ -404,9 +403,10 @@ function (ko, models, tools, msg, validate, owned, astate) {
             }
 
             function success() {
-                $("#figure-update-caption").val(null);
                 self.newFigure.file = null;
-                self.newFigure.caption = null;
+                // If a figure was removed, keep the caption around in
+                // case a user just wants to update the figure itself.
+                self.newFigureCaption($("#figure-update-caption").val())
 
                 self.requestAbstract(self.abstract().uuid);
                 self.autosave({text: 'Ok', css: 'label-success'});
