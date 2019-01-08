@@ -83,7 +83,7 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="name"
                                 placeholder="Name" data-bind="value: name, valueUpdate: 'afterkeydown'"
-                                maxlength="@Model.getLimit[Conference]("name")">
+                                maxlength='@Model.getLimit[Conference]("name")'>
                     </div>
                 </div>
 
@@ -92,7 +92,7 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="short"
                                 placeholder="Short name" data-bind="value: short, valueUpdate: 'afterkeydown'"
-                                maxlength="@Model.getLimit[Conference]("short")">
+                                maxlength='Model.getLimit[Conference]("short")'>
                     </div>
                 </div>
 
@@ -101,7 +101,7 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="group"
                         placeholder="The conference group" data-bind="value: group, valueUpdate: 'afterkeydown'"
-                        maxlength="@Model.getLimit[Conference]("group")">
+                        maxlength='@Model.getLimit[Conference]("group")'>
                     </div>
                 </div>
 
@@ -110,7 +110,7 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="cite"
                                 placeholder="Cite text" data-bind="value: cite, valueUpdate: 'afterkeydown'"
-                                maxlength="@Model.getLimit[Conference]("cite")">
+                                maxlength='@Model.getLimit[Conference]("cite")'>
                     </div>
                 </div>
 
@@ -143,7 +143,7 @@
                     <div class="col-sm-10">
                         <input type="url" class="form-control" id="logo"
                                 placeholder="Banner Logo url" data-bind="value: logo, valueUpdate: 'afterkeydown'"
-                                maxlength="@Model.getLimit[Conference]("logo")">
+                                maxlength='@Model.getLimit[Conference]("logo")'>
                     </div>
                 </div>
 
@@ -153,7 +153,7 @@
                         <input type="url" class="form-control" id="thumbnail"
                                 placeholder="Thumbnail image url"
                                 data-bind="value: thumbnail, valueUpdate: 'afterkeydown'"
-                                maxlength="@Model.getLimit[Conference]("thumbnail")">
+                                maxlength='@Model.getLimit[Conference]("thumbnail")'>
                     </div>
                 </div>
 
@@ -162,7 +162,7 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="iosapp"
                                 placeholder="iOS App id" data-bind="value: iOSApp, valueUpdate: 'afterkeydown'"
-                                maxlength="@Model.getLimit[Conference]("iOSApp")">
+                                maxlength='@Model.getLimit[Conference]("iOSApp")'>
                     </div>
                 </div>
 
@@ -172,7 +172,7 @@
                         <input type="url" class="form-control" id="link"
                                 placeholder="Link to the conference homepage"
                                 data-bind="value: link, valueUpdate: 'afterkeydown'"
-                                maxlength="@Model.getLimit[Conference]("link")">
+                                maxlength='@Model.getLimit[Conference]("link")'>
                     </div>
                 </div>
 
@@ -180,9 +180,9 @@
                     <label for="desc" class="col-sm-2 control-label">Description</label>
                     <div class="col-sm-10">
                         <textarea class="form-control" id="desc" rows="4"
-                                placeholder="Conference description (max. @Model.getLimit[Conference]("description") characters). Use Markdown."
+                                placeholder='Conference description (max. @Model.getLimit[Conference]("description") characters). Use Markdown.'
                                 data-bind="value: description, valueUpdate: 'afterkeydown'"
-                                maxlength="@Model.getLimit[Conference]("description")"></textarea>
+                                maxlength='@Model.getLimit[Conference]("description")'></textarea>
                     </div>
                 </div>
 
@@ -206,7 +206,7 @@
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-4">
                         <input class="form-control" type="text" placeholder="topic" id="addTopic"
-                                maxlength="@Model.getLimit[Topic]("topic")">
+                                maxlength='@Model.getLimit[Topic]("topic")'>
                     </div>
                     <div class="col-sm-1">
                         <a class="btn btn-default" data-bind="click: $root.addTopic">
@@ -257,15 +257,15 @@
                         <tr>
                             <td>
                                 <input class="form-control" data-bind="value: prefix, valueUpdate: 'afterkeydown'"
-                                        type="text" maxlength="@Model.getLimit[AbstractGroup]("prefix")">
+                                        type="text" maxlength='@Model.getLimit[AbstractGroup]("prefix")'>
                             </td>
                             <td>
                                 <input class="form-control" data-bind="value: short, valueUpdate: 'afterkeydown'"
-                                        type="text" maxlength="@Model.getLimit[AbstractGroup]("short")">
+                                        type="text" maxlength='@Model.getLimit[AbstractGroup]("short")'>
                             </td>
                             <td>
                                 <input class="form-control" data-bind="value: name, valueUpdate: 'afterkeydown'"
-                                        type="text" maxlength="@Model.getLimit[AbstractGroup]("name")">
+                                        type="text" maxlength='@Model.getLimit[AbstractGroup]("name")'>
                             </td>
                             <td>
                                 <button class="btn btn-danger btn-xs" data-bind="click: $root.removeGroup">
@@ -277,15 +277,15 @@
                         <tr id="newGroup">
                             <td>
                                 <input id="ngPrefix" class="form-control" type="text"
-                                        maxlength="@Model.getLimit[AbstractGroup]("prefix")">
+                                        maxlength='@Model.getLimit[AbstractGroup]("prefix")'>
                             </td>
                             <td>
                                 <input id="ngShort" class="form-control" type="text"
-                                        maxlength="@Model.getLimit[AbstractGroup]("short")">
+                                        maxlength='@Model.getLimit[AbstractGroup]("short")'>
                             </td>
                             <td>
                                 <input id="ngName" class="form-control" type="text"
-                                        maxlength="@Model.getLimit[AbstractGroup]("name")">
+                                        maxlength='@Model.getLimit[AbstractGroup]("name")'>
                             </td>
                             <td>
                                 <button class="btn btn-primary btn-xs" data-bind="click: $root.addGroup">
@@ -310,7 +310,7 @@
                             <textarea id="geoContent" class="form-control" rows="12"
                                 placeholder="Conference geo information. Requires well-formed JSON."
                                 data-bind="value: geoContent, valueUpdate: 'afterkeydown'"
-                                maxlength="@Model.getLimit[Conference]("geo")"></textarea>
+                                maxlength='@Model.getLimit[Conference]("geo")'></textarea>
                         </td>
                         <td>
                             <button type="submit" class="btn btn-success"
@@ -330,7 +330,7 @@
                             <textarea id="scheduleContent" class="form-control" rows="12"
                             placeholder="Conference schedule information. Requires well-formed JSON."
                             data-bind="value: scheduleContent, valueUpdate: 'afterkeydown'"
-                            maxlength="@Model.getLimit[Conference]("schedule")"></textarea>
+                            maxlength='@Model.getLimit[Conference]("schedule")'></textarea>
                         </td>
                         <td>
                             <button type="submit" class="btn btn-success"
@@ -350,7 +350,7 @@
                             <textarea id="infoContent" class="form-control" rows="12"
                             placeholder="Conference info data. Use markdown."
                             data-bind="value: infoContent, valueUpdate: 'afterkeydown'"
-                            maxlength="@Model.getLimit[Conference]("info")"></textarea>
+                            maxlength='@Model.getLimit[Conference]("info")'></textarea>
                         </td>
                         <td>
                             <button type="submit" class="btn btn-success"
