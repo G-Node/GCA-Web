@@ -4,11 +4,11 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
     "use strict";
 
     /**
-     * OwnersList view model.
-     *
+     * Admin conference view model.
      *
      * @param confId
-     * @returns {OwnersListViewModel}
+     * @param accId
+     * @returns {adminConferenceViewModel}
      * @constructor
      */
     function adminConferenceViewModel(confId, accId) {
@@ -44,7 +44,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
                 $el.datetimepicker(options);
 
-                // handle disposal (if KO removes by the template binding)
+                // Handle disposal (if KO removes by the template binding)
                 ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
                     $el.datetimepicker("destroy");
                 });
@@ -91,7 +91,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             self.error({message: text, level: "alert-" + level});
             self.isLoading(false);
 
-            // Fade out info banner after four seconds
+            // Fade out banner on any success info message
             if (level === "info") {
                 $(".alert").fadeOut(4000);
             }
@@ -126,7 +126,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             var sel = $("#addTopic");
             var text = sel.val();
 
-            // Add topic only if it contains an actual value
+            // Add topic only if it contains an actual value to avoid empty radio buttons in the submission form.
             if (text !== undefined && text !== null && text !== "") {
                 self.conference().topics.push(text);
                 sel.val("");
@@ -198,18 +198,16 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 self.isLoading("Loading conference data.");
             }
 
-            // now load the data from the server
             var confURL = "/api/conferences/" + id;
             $.getJSON(confURL, self.onConferenceData).fail(self.ioFailHandler);
         };
 
-        // conference data
         self.onConferenceData = function(confObj) {
             var conf = models.Conference.fromObject(confObj);
             self.makeConferenceObservable(conf);
             self.conference(conf);
             self.haveChanges(false);
-            // now that we have the conference, get the owners
+
             self.setupOwners("/api/conferences/" + self.conference().uuid + "/owners", self.setError);
             self.loadOwnersData(function() {
                 self.isLoading(false);
@@ -244,11 +242,9 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.loadOtherConferences = function() {
-            // now load the data from the server
             var confURL = "/api/conferences";
             $.getJSON(confURL, onOtherConferenceData).fail(self.ioFailHandler);
 
-            // conference data
             function onOtherConferenceData(confObj) {
                 var confs = models.Conference.fromArray(confObj);
                 var confShorts = Array();
@@ -262,7 +258,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.saveConference = function() {
-            // check fields
             if (Array.isArray(self.conference().mFigs())) {
                 self.conference().mFigs(0);
             }
