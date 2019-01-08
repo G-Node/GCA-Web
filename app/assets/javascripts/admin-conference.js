@@ -122,8 +122,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.removeTopic = function(data) {
-            console.log("Remove" + data);
-
             var index = self.conference().topics.indexOf(data);
             self.conference().topics.splice(index, 1);
 
@@ -201,7 +199,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.loadConference = function(id) {
-            console.log("loadConference::");
             if(!self.isLoading()) {
                 self.isLoading("Loading conference data.");
             }
@@ -213,7 +210,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         //conference data
         self.onConferenceData = function(confObj) {
-            console.log("Got conference data");
             var conf = models.Conference.fromObject(confObj);
             self.makeConferenceObservable(conf);
             self.conference(conf);
@@ -253,8 +249,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.loadOtherConferences = function() {
-            console.log("loadOtherConferences::");
-
             //now load the data from the server
             var confURL = "/api/conferences";
             $.getJSON(confURL, onOtherConferenceData).fail(self.ioFailHandler);
@@ -273,7 +267,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         }
 
         self.saveConference = function() {
-            console.log("saveConference::");
             //check fields
             if (Array.isArray(self.conference().mFigs())) {
                 self.conference().mFigs(0);
@@ -309,7 +302,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             }
 
             if (!(self.oldShort == self.conference().short()) && self.otherConfShorts().indexOf(self.conference().short()) >= 0 ) {
-                console.log(self.oldShort + ', NEW: ' + self.conference().short() + ' ' + self.otherConfShorts().indexOf(self.conference().short()));
                 self.setError("danger", "Conference short is already in use. Please choose a different one.");
                 return;
             }
@@ -317,7 +309,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             var method = self.conference().uuid === null ? "POST" : "PUT";
             var url = "/api/conferences" + (self.conference().uuid === null ? "" : "/" + self.conference().uuid);
             var confData = self.conference().toJSON();
-            console.log(confData);
             self.isLoading("Saving conference data.");
             $.ajax(url, {
                 data: confData,
@@ -329,7 +320,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 },
                 error: self.ioFailHandler
             });
-
         };
 
         self.isConferenceSaved = ko.computed(function() {
@@ -342,7 +332,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.uploadSpecificField = function (url, fieldName, fieldValue, conType, successMsg, errorMsg) {
             if( self.conference().uuid === null ) {
-                console.log("Conference does not exist yet.");
                 self.setError("danger", "Please create conference before uploading "+ fieldName +" information.");
             } else {
                 self.isLoading("Uploading "+ fieldName +" data.");
@@ -395,10 +384,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
     }
 
     $(document).ready(function() {
-
         var data = tools.hiddenData();
-
-        console.log(data.conferenceUuid, data.accountUuid);
 
         window.dashboard = adminConferenceViewModel(data.conferenceUuid, data.accountUuid);
         window.dashboard.init();
