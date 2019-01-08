@@ -133,10 +133,14 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.addTopic = function(data) {
             var sel = $("#addTopic");
             var text = sel.val();
-            self.conference().topics.push(text);
-            sel.val("");
 
-            self.haveChanges(true);
+            // Add topic only if it contains an actual value
+            if (text !== undefined && text !== null && text !== "") {
+                self.conference().topics.push(text);
+                sel.val("");
+
+                self.haveChanges(true);
+            }
         };
 
         self.makeGroupObservable = function(group) {
