@@ -99,7 +99,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
             //remove info automatically after 1 second
             if(level === "info") {
-                window.setTimeout(function(){ $(".alert").alert("close"); }, 1000);
+                $(".alert").fadeOut(4000);
             }
         };
 
