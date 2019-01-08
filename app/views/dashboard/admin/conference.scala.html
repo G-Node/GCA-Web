@@ -79,14 +79,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="presentation" class="col-sm-2 control-label">Presentation Preferences</label>
-                    <div class="col-sm-10">
-                        <input type="checkbox" class="form-control" id="presentation" name="presentation"
-                               data-bind="checked: hasPresentationPrefs, valueUpdate: 'afterkeydown', click: $root.changeHandler">
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label for="name" class="col-sm-2 control-label">Name</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="name"
@@ -191,6 +183,14 @@
                                 placeholder="Conference description (max. @Model.getLimit[Conference]("description") characters). Use Markdown."
                                 data-bind="value: description, valueUpdate: 'afterkeydown'"
                                 maxlength="@Model.getLimit[Conference]("description")"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="presentation" class="col-sm-2 control-label">Presentation Preferences</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" class="form-control" id="presentation" name="presentation"
+                               data-bind="checked: hasPresentationPrefs, valueUpdate: 'afterkeydown', click: $root.changeHandler">
                     </div>
                 </div>
 
