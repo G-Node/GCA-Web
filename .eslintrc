@@ -91,7 +91,6 @@
         "object-property-newline": ["error", { "allowMultiplePropertiesPerLine": true }],
         "padded-blocks": ["error", {"blocks": "never"}],
         "prefer-const": ["error"],
-        "prefer-template": ["error"],
         "quotes": ["error", "double"],
         "rest-spread-spacing": ["error"],
         "semi": ["error", "always"],
