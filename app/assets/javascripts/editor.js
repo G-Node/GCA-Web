@@ -746,10 +746,10 @@ function (ko, models, tools, msg, validate, owned, astate) {
             var open = self.conference() && self.conference().isOpen;
 
             if (!open) {
-                if (self.abstract().state === "InRevision") {
+                if (self.abstract().state() === "InRevision") {
                     self.setInfo(
                         "Abstract revision",
-                        "Please revise your abstract and re-submit your abstract by" +
+                        "Please revise your abstract and re-submit your abstract by " +
                         "clicking <b>Submit</b>"
                     );
                 } else {
