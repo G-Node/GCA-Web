@@ -319,8 +319,9 @@
         <label for="title"></label>
         <input type="text" class="form-control" id="title"
                 placeholder='Title (max. @Model.getLimit[Abstract]("title") characters)'
-                data-bind="value: editedAbstract().title"
+                data-bind="value: editedAbstract().title, valueUpdate: 'afterkeydown'"
                 maxlength='@Model.getLimit[Abstract]("title")'/>
+        <span data-bind="text: latexInTitle"></span>
     </script>
 
     <!-- authors templates -->
