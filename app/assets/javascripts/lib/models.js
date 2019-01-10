@@ -329,6 +329,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                     var value = self[prop];
                     var plain = null;
 
+                    // Trim whitespaces before saving
+                    var trimValueProperties = ["name", "short", "cite", "group", "link", "description"];
+                    if (trimValueProperties.includes(prop) && value() !== null && value !== undefined) {
+                        value(value().trim());
+                    }
+
                     if (prop === "topics" && value() !== null && value !== undefined) {
                         var cleanTopics = [];
                         value().forEach(function (model) {
