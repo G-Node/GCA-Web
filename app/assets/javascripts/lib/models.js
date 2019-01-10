@@ -366,6 +366,14 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             }
 
             function appendGroup(model) {
+                // Cleanup leading and trailing whitespaces
+                if (model.short() !== null && model.short() !== undefined) {
+                    model.short(model.short().trim());
+                }
+                if (model.name() !== null && model.name() !== undefined) {
+                    model.name(model.name().trim());
+                }
+
                 obj.groups.push(model.toObject());
             }
 
