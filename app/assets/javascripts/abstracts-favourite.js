@@ -66,6 +66,9 @@ require(["main"], function () {
                     if (confs !== null) {
                         confs.forEach(function (current) {
                             current.abstracts = ko.observableArray(null);
+                            current.localConferenceLink = ko.computed(function() {
+                                return "/conference/" + current.short + "/abstracts";
+                            });
                             console.log(current.short);
                         });
 
@@ -90,6 +93,7 @@ require(["main"], function () {
                         var absList = models.Abstract.fromArray(abstractList);
                         absList.forEach(function (abstr) {
                             abstr.createLink = ko.computed(function () {
+                                console.log("Creating link: "+ abstr.title)
                                 return {
                                     absLink: "/conference/" + currentConf.short + "/abstracts#/uuid/" + abstr.uuid
                                 };
