@@ -1090,6 +1090,25 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             }
 
             function appendReference(model) {
+                // Post process doi. Remove any leading doi link parts that hinder rendering later on.
+                var doiValue = model.doi();
+
+                // First remove leading http or https
+                doiValue = doiValue.replace(/^https:\/\//, "").replace(/http:\/\//, "");
+
+                // Then search and replace DOI variant hierarchical URL parts
+                var checkA = /^dx.doi.org\//;
+                var checkB = /^doi.org\//;
+                var checkC = /^doi:/;
+
+                if (checkA.test(doiValue)) {
+                    model.doi(doiValue.replace(checkA, ""));
+                } else if (checkB.test(doiValue)) {
+                    model.doi(doiValue.replace(checkB, ""));
+                } else if (checkC.test(doiValue)) {
+                    model.doi(doiValue.replace(checkC, ""));
+                }
+
                 obj.references.push(model.toObject());
             }
 
