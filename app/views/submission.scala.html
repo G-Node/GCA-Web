@@ -321,6 +321,7 @@
                 placeholder='Title (max. @Model.getLimit[Abstract]("title") characters)'
                 data-bind="value: editedAbstract().title, valueUpdate: 'afterkeydown'"
                 maxlength='@Model.getLimit[Abstract]("title")'/>
+        <br>
         <span data-bind="text: latexInTitle"></span>
     </script>
 
@@ -479,11 +480,13 @@
                 maxlength="@conference.abstractMaxLength">
         </textarea>
         <div>
+            <br>
             <span>LaTeX-like equation typesetting is supported via MathJax. Use $$ and $ (inline).
                 <a target="_blank" href="https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference">
                     Quick guide
                 </a>
-            </span><br>
+            </span>
+            <br>
             <span data-bind="if: showAbstractTextCharsLeft">Characters left: </span>
             <span data-bind="text: editorTextCharactersLeft"></span>
         </div>
@@ -499,6 +502,7 @@
                 maxlength='@Model.getLimit[Abstract]("acknowledgements")'>
         </textarea>
         <div>
+            <br>
             <span data-bind="if: showAckCharsLeft">Characters left: </span>
             <span data-bind="text: editorAckCharactersLeft"></span>
         </div>
