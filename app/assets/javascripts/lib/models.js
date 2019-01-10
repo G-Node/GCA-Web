@@ -329,6 +329,17 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                     var value = self[prop];
                     var plain = null;
 
+                    if (prop === "topics" && value() !== null && value !== undefined) {
+                        var cleanTopics = [];
+                        value().forEach(function (model) {
+                            var curr = model.trim();
+                            if (curr.length > 0) {
+                                cleanTopics.push(curr);
+                            }
+                        });
+                        value(cleanTopics);
+                    }
+
                     if (tools.type(value) !== "function") {
                         plain = value;
                     } else if (tools.functionName(value) === "observable") {
