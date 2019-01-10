@@ -1051,6 +1051,24 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                     var value = self[prop];
 
                     switch(prop) {
+                        case "title":
+                            if (value() !== undefined && value() !== null) {
+                                value(value().trim());
+                            }
+                            obj[prop] = toType(value());
+                            break;
+                        case "text":
+                            if (value() !== undefined && value() !== null) {
+                                value(value().trim());
+                            }
+                            obj[prop] = toType(value());
+                            break;
+                        case "acknowledgements":
+                            if (value() !== undefined && value() !== null) {
+                                value(value().trim());
+                            }
+                            obj[prop] = toType(value());
+                            break;
                         case "authors":
                             obj.authors = [];
                             self.authors().forEach(appendAuthor);
@@ -1082,14 +1100,51 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             }
 
             function appendAuthor(model) {
+                // Post processing, remove all leading and trailing whitespaces.
+                if (model.firstName() !== null && model.firstName() !== undefined) {
+                    model.firstName(model.firstName().trim());
+                }
+                if (model.lastName() !== null && model.lastName() !== undefined) {
+                    model.lastName(model.lastName().trim());
+                }
+                if (model.middleName() !== null && model.middleName() !== undefined) {
+                    model.middleName(model.middleName().trim());
+                }
+                if (model.mail() !== null && model.mail() !== undefined) {
+                    model.mail(model.mail().trim());
+                }
                 obj.authors.push(model.toObject());
             }
 
             function appendAffiliation(model) {
+                // Post processing, remove all leading and trailing whitespaces.
+                if (model.address() !== null && model.address() !== undefined) {
+                    model.address(model.address().trim());
+                }
+                if (model.department() !== null && model.department() !== undefined) {
+                    model.department(model.department().trim());
+                }
+                if (model.country() !== null && model.country() !== undefined) {
+                    model.country(model.country().trim());
+                }
+                if (model.section() !== null && model.section() !== undefined) {
+                    model.section(model.section().trim());
+                }
                 obj.affiliations.push(model.toObject());
             }
 
             function appendReference(model) {
+                // Post processing, remove all leading and trailing whitespaces.
+                if (model.text() !== null && model.text() !== undefined) {
+                    model.text(model.text().trim());
+                }
+                if (model.link() !== null && model.link() !== undefined) {
+                    model.link(model.link().trim());
+                }
+                if (model.doi() !== null && model.doi() !== undefined) {
+                    model.doi(model.doi().trim());
+                }
+
                 // Post process doi. Remove any leading doi link parts that hinder rendering later on.
                 var doiValue = model.doi();
 
