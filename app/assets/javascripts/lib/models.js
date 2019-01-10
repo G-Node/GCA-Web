@@ -65,15 +65,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @constructor
      */
     function Model(uuid) {
-
         if (tools.isGlobalOrUndefined(this)) {
             return new Model(uuid);
         }
 
         var self = this;
-
         self.uuid = uuid || null;
-
 
         self.toObject = function() {
             var prop,
@@ -149,7 +146,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             var obj = self.toObject();
             return JSON.stringify(obj, null, indention);
         };
-
     }
 
     /**
@@ -201,7 +197,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         return created;
     };
 
-
     /**
      * Model for AbstractGroup
      *
@@ -215,8 +210,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function AbstractGroup(uuid, prefix, name, short) {
-
-        if (! (this instanceof  AbstractGroup)) {
+        if (!(this instanceof  AbstractGroup)) {
             return new AbstractGroup(uuid, prefix, name, short);
         }
 
@@ -243,10 +237,9 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
-                        groups, start, end, deadline, logo, thumbnail, iOSApp, geo, schedule, info, owners, abstracts, topics, 
+                        groups, start, end, deadline, logo, thumbnail, iOSApp, geo, schedule, info, owners, abstracts, topics,
                         mAbsLeng, mFigs) {
-
-        if (! (this instanceof Conference)) {
+        if (!(this instanceof Conference)) {
             return new Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive,
                                   hasPresentationPrefs, groups, start, end, deadline, logo, thumbnail, iOSApp,
                                   geo, schedule, info, owners, abstracts, topics, mAbsLeng, mFigs);
@@ -312,12 +305,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
         self.formatCitation = function(abstract) {
             var year = moment(self.start).year();
-            return abstract.formatAuthorsCitation() + " (" + year + ") " + abstract.title + '. ' + self.name + '.';
+            return abstract.formatAuthorsCitation() + " (" + year + ") " + abstract.title + ". " + self.name + ".";
         };
 
         self.formatCopyright = function(abstract) {
             var year = moment(self.start).year();
-            return "©" + " (" + year + ") " + abstract.formatAuthorsCitation()
+            return "©" + " (" + year + ") " + abstract.formatAuthorsCitation();
         };
 
         self.toObject = function() {
@@ -379,7 +372,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
             return obj;
         };
-
     }
 
     Conference.fromObject = function(obj) {
@@ -424,8 +416,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Author(uuid, mail, firstName, middleName, lastName, affiliations) {
-
-        if (! (this instanceof Author)) {
+        if (!(this instanceof Author)) {
             return new Author(uuid, mail, firstName, middleName, lastName, affiliations);
         }
 
@@ -454,7 +445,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         };
 
         self.formatCitation = function() {
-          var res = self.lastName + ' ';
+          var res = self.lastName + " ";
             res += self.makeInitials(self.firstName);
             res += self.makeInitials(self.middleName);
             return res;
@@ -465,9 +456,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                 return "";
             }
 
-           return name.split(' ').map(function(x){ return x[0]; }).join('');
-        }
-
+           return name.split(" ").map(function(x) { return x[0]; }).join("");
+        };
     }
 
     Author.fromObject = function(obj) {
@@ -477,7 +467,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     Author.fromArray = function(array) {
         return Model.fromArray(array, Author.fromObject);
     };
-
 
     /**
      * Observable model for authors.
@@ -494,10 +483,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function ObservableAuthor(uuid, mail, firstName, middleName, lastName, affiliations) {
-
-        if (! (this instanceof ObservableAuthor)) {
-            return new ObservableAuthor(uuid, mail, firstName, middleName,
-                                        lastName, affiliations);
+        if (!(this instanceof ObservableAuthor)) {
+            return new ObservableAuthor(uuid, mail, firstName, middleName, lastName, affiliations);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -523,7 +510,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
             return formatted.sort().join(", ");
         };
-
     }
 
     ObservableAuthor.fromObject = function(obj) {
@@ -548,8 +534,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Affiliation(uuid, address, country, department, section) {
-
-        if (! (this instanceof  Affiliation)) {
+        if (!(this instanceof  Affiliation)) {
             return new Affiliation(uuid, address, country, department, section);
         }
 
@@ -572,7 +557,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
             return str;
         };
-
     }
 
     Affiliation.fromObject = function(obj) {
@@ -582,7 +566,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     Affiliation.fromArray = function(array) {
         return Model.fromArray(array, Affiliation.fromObject);
     };
-
 
     /**
      * Obervable model for affiliation
@@ -598,8 +581,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function ObservableAffiliation(uuid, address, country, department, section) {
-
-        if (! (this instanceof  ObservableAffiliation)) {
+        if (!(this instanceof  ObservableAffiliation)) {
             return new ObservableAffiliation(uuid, address, country, department, section);
         }
 
@@ -611,7 +593,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.section = ko.observable(section || null);
 
         self.format = function() {
-            var str =(self.department() || "")
+            var str = (self.department() || "")
                 .concat(self.section() ? ", " + self.section() : "")
                 .concat(self.address() ? ", " + self.address() : "")
                 .concat(self.country() ? ", " + self.country() : "");
@@ -622,7 +604,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
             return str;
         };
-
     }
 
     ObservableAffiliation.fromObject = function(obj) {
@@ -632,8 +613,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     ObservableAffiliation.fromArray = function(array) {
         return Model.fromArray(array, ObservableAffiliation.fromObject);
     };
-    
-    
 
     /**
      * Model for figure.
@@ -647,8 +626,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Figure(uuid, caption, URL) {
-
-        if (! (this instanceof Figure)) {
+        if (!(this instanceof Figure)) {
             return new Figure(uuid, caption, URL);
         }
 
@@ -656,7 +634,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
         self.caption = caption || null;
         self.URL = caption || null;
-
     }
 
     Figure.fromObject = function(obj) {
@@ -679,8 +656,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function ObservableFigure(uuid, caption, URL) {
-
-        if (! (this instanceof ObservableFigure)) {
+        if (!(this instanceof ObservableFigure)) {
             return new ObservableFigure(uuid, caption, URL);
         }
 
@@ -688,7 +664,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
         self.caption = ko.observable(caption || null);
         self.URL = ko.observable(URL || null);
-
     }
 
     ObservableFigure.fromObject = function(obj) {
@@ -712,8 +687,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Reference(uuid, text, link, doi) {
-
-        if (! (this instanceof Reference)) {
+        if (!(this instanceof Reference)) {
             return new Reference();
         }
 
@@ -725,16 +699,15 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
         self.format = function() {
             var text = self.text || self.link;
-            var html = self.link ? '<a target="_blank" href="' + self.link  + '"' + '>' + text + '</a>' : text;
+            var html = self.link ? '<a target="_blank" href="' + self.link  + '">' + text + "</a>" : text;
 
             if (self.doi) {
                 var dx = self.doi;
-                html += ', <a target="_blank" href="http://dx.doi.org/' + dx + '">' + dx + '</a>';
+                html += ', <a target="_blank" href="http://dx.doi.org/' + dx + '">' + dx + "</a>";
             }
 
             return html;
         };
-
     }
 
     Reference.fromObject = function(obj) {
@@ -744,7 +717,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     Reference.fromArray = function(array) {
         return Model.fromArray(array, Reference.fromObject);
     };
-
 
     /**
      * Observable model for reference.
@@ -759,8 +731,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function ObservableReference(uuid, text, link, doi) {
-
-        if (! (this instanceof ObservableReference)) {
+        if (!(this instanceof ObservableReference)) {
             return new ObservableReference();
         }
 
@@ -771,13 +742,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.doi = ko.observable(doi || null);
 
         self.format = function() {
-
             var text = self.text() || self.link();
-            var html = self.link() ? '<a target="_blank" href="' + self.link()  + '"' + '>' + text + '</a>' : text;
+            var html = self.link() ? '<a target="_blank" href="' + self.link()  + '">' + text + "</a>" : text;
 
             if (self.doi()) {
                 var dx = self.doi();
-                html += ', <a target="_blank" href="http://dx.doi.org/' + dx + '">' + dx + '</a>';
+                html += ', <a target="_blank" href="http://dx.doi.org/' + dx + '">' + dx + "</a>";
             }
 
             return html;
@@ -791,7 +761,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     ObservableReference.fromArray = function(array) {
         return Model.fromArray(array, ObservableReference.fromObject);
     };
-
 
     /**
      * Model for abstracts.
@@ -820,8 +789,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     function Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
                       acknowledgements, isTalk, reasonForTalk, owners, state, figures,
                       authors, affiliations, references, abstrTypes) {
-
-        if (! (this instanceof Abstract)) {
+        if (!(this instanceof Abstract)) {
             return new Abstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
                                 acknowledgements, isTalk, reasonForTalk, owners, state,
                                 figures, authors, affiliations, references, abstrTypes);
@@ -846,7 +814,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.references = references || [];
         self.abstrTypes = abstrTypes || [];
 
-
         self.paragraphs = function() {
             var para = [];
 
@@ -862,14 +829,14 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         };
 
         self.doiLink = function() {
-            return self.doi ? 'http://doi.org/' + self.doi : null;
+            return self.doi ? "http://doi.org/" + self.doi : null;
         };
 
         self.formatAuthorsCitation = function() {
             var res = "";
-            for(var i = 0; i < self.authors.length; i++) {
+            for (var i = 0; i < self.authors.length; i++) {
                 if (i != 0) {
-                    res += ', ';
+                    res += ", ";
                 }
                 res += self.authors[i].formatCitation();
             }
@@ -884,7 +851,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                 if (self.hasOwnProperty(prop)) {
                     var value = self[prop];
 
-                    switch(prop) {
+                    switch (prop) {
                         case "authors":
                             obj.authors = [];
                             self.authors.forEach(appendAuthor);
@@ -945,7 +912,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             if (target.hasOwnProperty(prop)) {
                 var value = readProperty(prop, obj);
 
-                switch(prop) {
+                switch (prop) {
                     case "figures":
                         target.figures = Figure.fromArray(value);
                         break;
@@ -976,7 +943,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         return Model.fromArray(array, Abstract.fromObject);
     };
 
-
     /**
      * Observable model for abstracts.
      *
@@ -1004,8 +970,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
     function ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
                                 acknowledgements, isTalk, reasonForTalk, owners, state, figures,
                                 authors, affiliations, references, abstrTypes) {
-
-        if (! (this instanceof ObservableAbstract)) {
+        if (!(this instanceof ObservableAbstract)) {
             return new ObservableAbstract(uuid, sortId, title, topic, text, doi, conflictOfInterest,
                                           acknowledgements, isTalk, reasonForTalk, owners, state,
                                           figures, authors, affiliations, references, abstrTypes);
@@ -1027,13 +992,13 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.authors = ko.observableArray(authors || []);
         self.affiliations = ko.observableArray(affiliations || []);
         self.references = ko.observableArray(references || []);
-        self.abstrTypes = ko.observableArray(abstrTypes||[]);
+        self.abstrTypes = ko.observableArray(abstrTypes || []);
 
         this.isTalk.computed = ko.computed({
-            'read': function() {
+            "read": function() {
                 return self.isTalk().toString();
             },
-            'write': function(val) {
+            "write": function(val) {
                 val = (val === "true");
                 if (!val) {
                     self.reasonForTalk(null);
@@ -1043,13 +1008,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             owner: this
         });
 
-
         self.indexedAuthors = ko.computed(
             function() {
                 var indexed = [];
 
                 self.authors().forEach(function(author, index) {
-                    indexed.push({author: author, index: index})
+                    indexed.push({author: author, index: index});
                 });
 
                 return indexed;
@@ -1075,7 +1039,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                 if (self.hasOwnProperty(prop)) {
                     var value = self[prop];
 
-                    switch(prop) {
+                    switch (prop) {
                         case "title":
                             if (value() !== undefined && value() !== null) {
                                 value(value().trim());
@@ -1198,7 +1162,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
             return obj;
         };
-
     }
 
     ObservableAbstract.fromObject = function(obj) {
@@ -1209,7 +1172,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             if (target.hasOwnProperty(prop)) {
                 var value = readProperty(prop, obj);
 
-                switch(prop) {
+                switch (prop) {
                     case "figures":
                         target.figures(Figure.fromArray(value));
                         break;
@@ -1247,7 +1210,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         return Model.fromArray(array, ObservableAbstract.fromObject);
     };
 
-
     /**
      * Observable model for user accounts.
      *
@@ -1259,8 +1221,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function ObservableAccount(uuid, mail, fullName, ctime) {
-
-        if (! (this instanceof ObservableAccount)) {
+        if (!(this instanceof ObservableAccount)) {
             return new ObservableAccount(uuid, mail, fullName, ctime);
         }
 
@@ -1272,12 +1233,11 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
         self.formatCtime = function() {
             if (self.ctime) {
-                return moment(self.ctime()).format("YY/MM/DD")
+                return moment(self.ctime()).format("YY/MM/DD");
             } else {
-                return ""
+                return "";
             }
-        }
-
+        };
     }
 
     ObservableAccount.fromObject = function(obj) {
@@ -1301,17 +1261,16 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function ObservableAbstractGroup(uuid, prefix, name, short) {
-    //Why do i not hgave an self ???
-        if (! (this instanceof ObservableAbstractGroup)) {
+        // Why do i not have a self ???
+        if (!(this instanceof ObservableAbstractGroup)) {
             return new ObservableAbstractGroup(uuid, prefix, name, short);
         }
 
         var self = tools.inherit(this, Model, uuid);
 
-        self.prefix= ko.observable(prefix || null);
+        self.prefix = ko.observable(prefix || null);
         self.name = ko.observable(name || null);
         self.short = ko.observable(short || null);
-
     }
 
     ObservableAbstractGroup.fromObject = function(obj) {
@@ -1337,7 +1296,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function SchedulerEvent (id, text, startDate, endDate, baseEvent) {
-
         if (!(this instanceof SchedulerEvent)) {
             return new SchedulerEvent(id, text, startDate, endDate, baseEvent);
         }
@@ -1349,7 +1307,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.start_date = startDate || null;
         self.end_date = endDate || null;
         self.baseEvent = baseEvent || null;
-        self.parentEvent = null; // used for split events to easily collapse them into the parent
+        // used for split events to easily collapse them into the parent
+        self.parentEvent = null;
 
         self.isTrack = function () {
             return self.baseEvent.hasOwnProperty("events");
@@ -1388,12 +1347,9 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             });
             return splitEvents;
         };
-
-    };
-
+    }
 
     function Track (title, subtitle, chair, events) {
-
         if (!(this instanceof Track)) {
             return new Track(title, subtitle, chair, events);
         }
@@ -1420,11 +1376,13 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                       splitEvents.push(event);
                   }
               });
-              if (splitEvents.length > 0) { // do not process empty dates
+              // do not process empty dates
+              if (splitEvents.length > 0) {
                   subtracks.push(new Track(self.title, self.subtitle, self.chair, splitEvents));
               }
-              splitDate = new Date(splitDate.getTime() + 24*60*60*1000); // switch to the next day
-          };
+              // switch to the next day
+              splitDate = new Date(splitDate.getTime() + 24 * 60 * 60 * 1000);
+          }
           return subtracks;
         };
 
@@ -1457,11 +1415,9 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
             return endingDate;
         };
-
-    };
+    }
 
     function Session (title, subtitle, tracks) {
-
         if (!(this instanceof Session)) {
             return new Session(title, subtitle, tracks);
         }
@@ -1494,11 +1450,13 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                         splitTracks.push(track);
                     }
                 });
-                if (splitTracks.length > 0) { // do not process empty dates
+                // do not process empty dates
+                if (splitTracks.length > 0) {
                     subsessions.push(new Session(self.title, self.subtitle, splitTracks));
                 }
-                splitDate = new Date(splitDate.getTime() + 24*60*60*1000); // switch to the next day
-            };
+                // switch to the next day
+                splitDate = new Date(splitDate.getTime() + 24 * 60 * 60 * 1000);
+            }
             return subsessions;
         };
 
@@ -1531,11 +1489,9 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
             return endingDate;
         };
-
-    };
+    }
 
     function Event (title, subtitle, start, end, date, location, authors, type, abstract) {
-
         if (!(this instanceof Event)) {
             return new Event(title, subtitle, start, end, date, location, authors, type, abstract);
         }
@@ -1567,13 +1523,13 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             // format year-month-day
             var ymd = self.date.split("-");
             // format hour:minute
-            var time = ["23","59"];
+            var time = ["23", "59"];
             if (self.end && self.end.length > 0) {
                 time = self.end.split(":");
             }
             return new Date(parseInt(ymd[0]), parseInt(ymd[1]) - 1, parseInt(ymd[2]), parseInt(time[0]), parseInt(time[1]));
         };
-    };
+    }
 
     /*
      * Create a DHTMLX Scheduler event from an Event, Track or Session.
@@ -1658,7 +1614,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Schedule (content) {
-
         if (!(this instanceof Schedule)) {
             return new Schedule(content);
         }
@@ -1676,7 +1631,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
                 if ((date.getDate() == start.getDate()
                         && date.getMonth() == start.getMonth()
                         && date.getFullYear() == start.getFullYear())
-                    ||(date.getDate() == end.getDate()
+                    || (date.getDate() == end.getDate()
                         && date.getMonth() == end.getMonth()
                         && date.getFullYear() == end.getFullYear())) {
                     dailyEvents.push(event);
@@ -1753,8 +1708,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
             return endingDate;
         };
-
-    };
+    }
 
     /*
      * Check whether the tow dates are on the same date.
@@ -1789,27 +1743,28 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * I guess it is ok to use this term instead.
      */
     Schedule.fromObject = function (scheduleObject) {
-
         var content = [];
 
-        scheduleObject.forEach( function(entry) {
-            if (entry.hasOwnProperty("tracks")) { // only sessions have this property
+        scheduleObject.forEach(function(entry) {
+            if (entry.hasOwnProperty("tracks")) {
+                // only sessions have this property
                 var session = Session.fromObject(entry);
                 session.splitByDays().forEach(function (s) {
                     content.push(s);
                 });
-            } else if (entry.hasOwnProperty("events")) { // only tracks have this property
+            } else if (entry.hasOwnProperty("events")) {
+                // only tracks have this property
                 var track = Track.fromObject(entry);
                 track.splitByDays().forEach(function (t) {
                     content.push(t);
                 });
-            } else { // all the rest are simply events
+            } else {
+                // all the rest are simply events
                 content.push(Event.fromObject(entry));
             }
         });
 
         return new Schedule(content);
-
     };
 
     return {
@@ -1826,12 +1781,11 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         ObservableAbstract: ObservableAbstract,
         ObservableAccount: ObservableAccount,
         AbstractGroup: AbstractGroup,
-        ObservableAbstractGroup:ObservableAbstractGroup,
+        ObservableAbstractGroup: ObservableAbstractGroup,
         Schedule: Schedule,
         Event: Event,
         Track: Track,
         Session: Session,
         SchedulerEvent: SchedulerEvent
     };
-
 });
