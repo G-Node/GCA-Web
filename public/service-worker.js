@@ -6,6 +6,7 @@ self.resourcesToCache = [
     "/contact",
     "/about",
     "/impressum",
+    "/datenschutz",
     // Assets
     "/assets/manifest.json",
     "/assets/lib/momentjs/moment.js",
