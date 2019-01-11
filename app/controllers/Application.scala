@@ -113,6 +113,10 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
     Ok(views.html.impressum(request.identity.map{ _.account }))
   }
 
+  def datenschutz = UserAwareAction { implicit request =>
+    Ok(views.html.datenschutz(request.identity.map{ _.account }))
+  }
+
   def about = UserAwareAction { implicit request =>
     Ok(views.html.about(request.identity.map{ _.account }))
   }
