@@ -192,12 +192,13 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
 
     Ok(
       s"""CACHE MANIFEST
-         |# v1.0.1
+         |# v1.0.2
          |# Views
          |/conferences
          |/contact
          |/about
          |/impressum
+         |/datenschutz
          |# Assets
          |/assets/manifest.json
          |/assets/lib/momentjs/moment.js
@@ -247,6 +248,7 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
          |# View Models
          |/assets/javascripts/abstract-list.js
          |/assets/javascripts/abstract-viewer.js
+         |/assets/javascripts/abstract-favourite.js
          |/assets/javascripts/browser.js
          |/assets/javascripts/conference-schedule.js
          |/assets/javascripts/config.js
