@@ -5,6 +5,7 @@ GET           /                                               @controllers.Appli
 GET           /contact                                        @controllers.Application.contact
 GET           /impressum                                      @controllers.Application.impressum
 GET           /about                                          @controllers.Application.about
+GET           /datenschutz                                    @controllers.Application.datenschutz
 
 GET           /dashboard/conference                           @controllers.Application.createConference()
 GET           /dashboard/conference/:id                       @controllers.Application.adminConference(id: String)
