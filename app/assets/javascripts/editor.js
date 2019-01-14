@@ -102,6 +102,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self
         );
 
+
         self.editorAckCharactersLeft = ko.computed(
             function () {
                 var ackCharLimit = $('#acknowledgements').attr('maxLength');
@@ -125,6 +126,17 @@ function (ko, models, tools, msg, validate, owned, astate) {
         );
 
         // validation
+
+        self.checkRemovePresPref = function( warnings ){
+            if( ! self.conference().hasPresentationPrefs ) {
+                warnings.forEach(function (currWarning) {
+                    if(currWarning.match('presentation')){
+                        warnings.splice(warnings.indexOf(currWarning), 1);
+                    }
+                });
+            }
+        }
+
 
         self.validity = ko.computed(
             function() {
@@ -160,6 +172,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         items: res.errors
                     };
                 } else {
+                    self.checkRemovePresPref(res.warnings);
                     var nwarn = res.warnings.length;
                     return {
                         ok: false,
@@ -185,7 +198,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             if (confId) {
                 self.requestConference(confId);
             }
-            if (abstrId) {
+            if( abstrId ) {
                 self.requestAbstract(abstrId);
             } else {
                 self.abstract(models.ObservableAbstract());
@@ -195,6 +208,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             ko.applyBindings(window.editor);
             MathJax.Hub.Configured(); //start MathJax
+
         };
 
         self.getEditorAuthorsForAffiliation = function (index) {
@@ -275,7 +289,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
         self.abstrTypeChanged = function(abstrType){
-            //Workaround as long as we have allow only one Abstract type
+            //Workaround as long as we have allowed only one Abstract type
             self.editedAbstract().abstrTypes().pop();
             self.editedAbstract().abstrTypes().push(abstrType);
             self.abstract().abstrTypes().pop();
@@ -285,7 +299,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 self.editedAbstract().reasonForTalk(null);
             }
             // needs to return true to enable default click action on the radio buttons (select)
-            return true;
+            return false;
         };
 
         self.getNewFigure = function(data, event) {
@@ -647,6 +661,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             if (toState === "Submitted") {
                 var result = validate.abstract(self.abstract());
+                self.checkRemovePresPref(result.warnings);
                 if (! result.ok()) {
                     self.setError("Error", "Unable to submit: " +
                         (result.hasErrors() ? result.errors[0] : result.warnings[0]));
