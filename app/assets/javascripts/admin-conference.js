@@ -272,27 +272,38 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             console.log("saveConference::");
             //check fields
             if( Array.isArray(self.conference().mFigs()) ){ self.conference().mFigs(0); }
-            if(self.conference().mAbsLeng() == null){ self.conference().mAbsLeng(500); }
-            else if(self.conference().mAbsLeng() == 0){
+            if( self.conference().mAbsLeng() == null ){ self.conference().mAbsLeng(500); }
+            else if( self.conference().mAbsLeng() == 0 ){
                 self.setError("danger", "Abstract length has to be larger than zero.");
                 return;
             }
-            if (self.conference().short() == null ) {
+            if ( self.conference().short() == null ) {
                 self.conference().short(self.conference().name().match(/\b(\w)/g).join('').toUpperCase());
             }
-            if(self.conference().short().replace(/\s/g,'') == ''){
+            if( self.conference().short().replace(/\s/g,'') == '' ){
                 self.setError("danger", "Conference short cannot be empty.");
                 return;
             }
 
-            for(var i=0; i<= self.conference().groups().length; i++){
-               var curr = self.conference().groups()[i];
-               if(! /^\d+$/.test(curr.prefix())){self.setError("danger", "Prefix can only contain numbers!"); return;}
-               else if(/^\d+$/.test(curr.name())){self.setError("danger", "Name cannot contain only numbers!"); return;}
-               else if(/^\d+$/.test(curr.short())){self.setError("danger", "Short cannot contain only numbers!"); return;}
+            if( self.conference().groups().length > 0 ) {
+                for (var i = 0; i <= self.conference().groups().length; i++) {
+                    var curr = self.conference().groups()[i];
+                    if (!/^\d+$/.test(curr.prefix())) {
+                        self.setError("danger", "Prefix can only contain numbers!");
+                        return;
+                    }
+                    else if (/^\d+$/.test(curr.name())) {
+                        self.setError("danger", "Name cannot contain only numbers!");
+                        return;
+                    }
+                    else if (/^\d+$/.test(curr.short())) {
+                        self.setError("danger", "Short cannot contain only numbers!");
+                        return;
+                    }
+                }
             }
 
-            if(!(self.oldShort == self.conference().short()) && self.otherConfShorts().indexOf(self.conference().short()) >= 0){
+            if( !(self.oldShort == self.conference().short()) && self.otherConfShorts().indexOf(self.conference().short()) >= 0 ){
                 console.log(self.oldShort + ', NEW: ' + self.conference().short() + ' ' + self.otherConfShorts().indexOf(self.conference().short()));
                 self.setError("danger", "Conference short is already in use. Please choose a different one.");
                 return;
