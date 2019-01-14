@@ -62,7 +62,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
             function onConferenceData(confObj) {
                 console.log("+ onConferenceData");
                 if((typeof confObj === 'string' || confObj instanceof String) && confObj.length == 0){
-                    self.setInfo("info","You have no own abstracts created yet. Create one via accessing a conference page.");
+                    self.setInfo("info","You have no own abstracts created yet.");
                     return;
                 }
                 var confs = models.Conference.fromArray(confObj);

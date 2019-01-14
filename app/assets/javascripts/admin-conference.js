@@ -274,7 +274,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             if( Array.isArray(self.conference().mFigs()) ){ self.conference().mFigs(0); }
             if(self.conference().mAbsLeng() == null){ self.conference().mAbsLeng(500); }
             else if(self.conference().mAbsLeng() == 0){
-                self.setError("danger", "Max. Abs. Len. has to be larger than 0.");
+                self.setError("danger", "Abstract length has to be larger than zero.");
                 return;
             }
             if (self.conference().short() == null ) {
