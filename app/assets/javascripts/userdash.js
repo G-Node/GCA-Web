@@ -29,6 +29,11 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
             self.isLoading(false);
         };
 
+        self.setInfo = function (level, text) {
+            self.error({message: text, level: 'callout-' + level});
+            self.isLoading(false);
+        };
+
 
         self.init = function () {
             ko.applyBindings(window.dashboard);
@@ -55,7 +60,11 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
 
             //conference data
             function onConferenceData(confObj) {
-                console.log("+ onConferenceData")
+                console.log("+ onConferenceData");
+                if((typeof confObj === 'string' || confObj instanceof String) && confObj.length == 0){
+                    self.setInfo("info","You have no own abstracts created yet. Create one via accessing a conference page.");
+                    return;
+                }
                 var confs = models.Conference.fromArray(confObj);
                 if (confs !== null) {
                     confs.forEach(function (current) {

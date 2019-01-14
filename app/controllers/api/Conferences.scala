@@ -66,12 +66,12 @@ class Conferences(implicit val env: Environment[Login, CachedCookieAuthenticator
    * List all available conferences for which the current user is an owner
    * of at least an abstract
    *
-   * @return Ok with all conferences publicly available.
+   * @return Ok with all conferences publicly available. / empty string to circumvent error message
    */
   def listWithOwnAbstracts =  SecuredAction { implicit request =>
     val conferences = conferenceService.listWithAbstractsOfAccount(request.identity.account)
     if (conferences.length==0) {
-      BadRequest("You have created no abstracts yet")
+      Ok(Json.toJson(""))
     } else {
       resultWithETag(conferences)
     }
