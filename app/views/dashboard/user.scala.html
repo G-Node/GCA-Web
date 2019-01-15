@@ -33,7 +33,7 @@
         <div data-bind="foreach: conferences">
             <div class="panel panel-default">
                 <div class="panel-heading" >
-                    <a data-bind="attr: { href: link }">
+                    <a data-bind="attr: { href: localConferenceLink() }">
                         <h4 class="panel-title" data-bind="text: name"></h4>
                     </a>
                 </div>

@@ -69,8 +69,10 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
                 if (confs !== null) {
                     confs.forEach(function (current) {
                         current.abstracts = ko.observableArray(null);
+                        current.localConferenceLink = ko.computed(function() {
+                            return "/conference/" + current.short + "/abstracts";
+                        });
                     });
-
                 }
 
                 self.conferences(confs);
