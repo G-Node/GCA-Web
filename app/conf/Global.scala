@@ -20,7 +20,11 @@ object Global extends GlobalSettings with SecuredSettings {
   implicit lazy val globalEnv = new GlobalEnvironment()
 
   override def onNotAuthenticated(request: RequestHeader, lang: Lang) = {
-    Option(Future.successful(NotFound(views.html.error.NotAuthorized())))
+    Option(Future.successful(Unauthorized(views.html.error.NotAuthenticated())))
+  }
+
+  override def onNotAuthorized(request: RequestHeader, lang: Lang) = {
+    Option(Future.successful(Forbidden(views.html.error.NotAuthorized())))
   }
 
   override def onHandlerNotFound(request: RequestHeader) = {
