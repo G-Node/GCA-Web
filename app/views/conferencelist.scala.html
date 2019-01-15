@@ -9,7 +9,7 @@
         var ref = window.sessionStorage.getItem("gca_ref")
         if (ref !== undefined && ref !== null) {
             window.sessionStorage.removeItem("gca_ref");
-            window.location = ref;
+            window.location.replace(ref);
         }
     </script>
 
