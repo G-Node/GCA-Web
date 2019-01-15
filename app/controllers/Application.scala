@@ -33,7 +33,6 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
     Ok("Hello %s".format(userName))
   }
 
-
   def submission(id: String) = UserAwareAction { implicit request => // TODO should be a secure action
     val user: Account = request.identity match {
       case Some(id: Login) => id.account
@@ -45,9 +44,13 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
   }
 
   def edit(id: String) = SecuredAction { implicit request =>
-    val abstr = abstractService.getOwn(id, request.identity.account)
+    try {
+      val abstr = abstractService.getOwn(id, request.identity.account)
 
-    Ok(views.html.submission(request.identity.account, abstr.conference, Option(abstr)))
+      Ok(views.html.submission(request.identity.account, abstr.conference, Option(abstr)))
+    } catch {
+      case ia: IllegalAccessException => Forbidden(views.html.error.NotAuthorized())
+    }
   }
 
   def abstractsPublic(confId: String) = UserAwareAction { implicit request =>
