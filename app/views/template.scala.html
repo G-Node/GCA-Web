@@ -122,8 +122,9 @@
                         <ul class="nav navbar-nav navbar-right">
                             @account.map { acc =>
                                 <li class="dropdown">
+                                    <!-- Currently there is no other occurrence on the page where the user email address is shown -->
                                     <a href="#" id="usermenu" role="button" class="dropdown-toggle" data-toggle="dropdown">
-                                        @acc.firstName @acc.lastName
+                                        @acc.firstName @acc.lastName (@acc.mail)
                                         <b class="caret"></b>
                                     </a>
 
