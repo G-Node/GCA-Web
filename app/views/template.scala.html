@@ -180,7 +180,6 @@
 
                 @if(!conference.isEmpty){
                     <div class="row">
-                        <div class="navbar-header col-md-1"></div>
                         <div class="navbar-collapse collapse">
                             <ul class="nav navbar-nav">
                                 @conference.map { conf =>
@@ -216,6 +215,12 @@
                                     && (Json.parse(conf.geo) \\ "floorplans").size > 0) {
                                         <li class=@if(active.toLowerCase == "floorplans") {"active"} else {""}>
                                             <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
+                                        </li>
+                                    }
+
+                                    @if(conf.link != null && conf.link.length > 0) {
+                                        <li>
+                                            <a href="@conf.link">Conference home</a>
                                         </li>
                                     }
 
