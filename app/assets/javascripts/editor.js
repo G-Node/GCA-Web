@@ -102,7 +102,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self
         );
 
-
         self.editorAckCharactersLeft = ko.computed(
             function () {
                 var ackCharLimit = $('#acknowledgements').attr('maxLength');
@@ -136,7 +135,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 });
             }
         }
-
 
         self.validity = ko.computed(
             function() {
@@ -237,6 +235,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             },
             self
         );
+
         self.requestConference = function (confId) {
 
             $.ajax({
@@ -258,7 +257,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             }
 
         };
-
 
         self.requestAbstract = function (abstrId) {
 
@@ -289,7 +287,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
         self.abstrTypeChanged = function(abstrType){
-            //Workaround as long as we have allowed only one Abstract type
+            // Workaround as long as we have allowed only one Abstract type
             self.editedAbstract().abstrTypes().pop();
             self.editedAbstract().abstrTypes().push(abstrType);
             self.abstract().abstrTypes().pop();
@@ -299,7 +297,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 self.editedAbstract().reasonForTalk(null);
             }
             // needs to return true to enable default click action on the radio buttons (select)
-            return false;
+            return true;
         };
 
         self.getNewFigure = function(data, event) {
