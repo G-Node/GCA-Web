@@ -2,17 +2,14 @@ require(["main"], function () {
 require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tools, ko, Sammy) {
     "use strict";
 
-
     /**
-     * AbstractList view model.
+     * User dash view model.
      *
      *
-     * @param confId
-     * @returns {AbstractListViewModel}
+     * @returns {UserDashViewModel}
      * @constructor
      */
     function UserDashViewModel() {
-
         if (!(this instanceof UserDashViewModel)) {
             return new UserDashViewModel();
         }
@@ -23,9 +20,8 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
         self.isLoading = ko.observable(true);
         self.error = ko.observable(false);
 
-
         self.setError = function (level, text) {
-            self.error({message: text, level: 'alert-' + level});
+            self.error({message: text, level: "alert-" + level});
             self.isLoading(false);
         };
 
@@ -33,7 +29,6 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
             self.error({message: text, level: 'callout-' + level});
             self.isLoading(false);
         };
-
 
         self.init = function () {
             ko.applyBindings(window.dashboard);
@@ -43,24 +38,18 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
             return "/myabstracts/" + abstract.uuid + "/edit";
         };
 
-
-        //Data IO
+        // Data IO
         self.ioFailHandler = function (jqxhr, textStatus, error) {
             var err = textStatus + ", " + error + ", " + jqxhr.responseText;
-            console.log("Request Failed: " + err);
             self.setError("danger", "Error while loading data [" + err + "]!");
         };
 
         self.ensureDataAndThen = function (doAfter) {
-            console.log("ensureDataAndThen::");
-
-            //now load the data from the server
             var confURL = "/api/user/self/conferences";
             $.getJSON(confURL, onConferenceData).fail(self.ioFailHandler);
 
-            //conference data
+            // Conference data
             function onConferenceData(confObj) {
-                console.log("+ onConferenceData");
                 if((typeof confObj === 'string' || confObj instanceof String) && confObj.length == 0){
                     self.setInfo("info","You have no own abstracts created yet.");
                     return;
@@ -92,13 +81,12 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
                     var absList = models.Abstract.fromArray(abstractList);
 
                     absList.forEach(function (abstr) {
-
                         abstr.viewEditCtx = ko.computed(function () {
                             var confIsOpen = currentConf.isOpen;
-                            var canEdit = abstr.state == "InRevision" ||
-                                (confIsOpen && (abstr.state == "InPreparation" ||
-                                abstr.state == "Submitted" ||
-                                abstr.state == "Withdrawn"));
+                            var canEdit = abstr.state === "InRevision" ||
+                                (confIsOpen && (abstr.state === "InPreparation" ||
+                                abstr.state === "Submitted" ||
+                                abstr.state === "Withdrawn"));
 
                             return {
                                 link: canEdit ? "/myabstracts/" + abstr.uuid + "/edit" : "/abstracts/" + abstr.uuid,
@@ -109,33 +97,25 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
                     });
 
                     currentConf.abstracts(absList);
-                }
+                };
             }
         };
 
-
-        // client-side routes
+        // Client-side routes
         Sammy(function () {
-
-            this.get('#/', function () {
-                console.log('Sammy::get::');
+            this.get("#/", function () {
                 self.ensureDataAndThen(function () {
                     self.isLoading(false);
                 });
             });
-
-        }).run('#/');
-
+        }).run("#/");
     }
 
     $(document).ready(function () {
-
         var data = tools.hiddenData();
-
 
         window.dashboard = UserDashViewModel();
         window.dashboard.init();
     });
-
 });
 });
