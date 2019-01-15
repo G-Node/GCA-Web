@@ -112,7 +112,7 @@
 
                         @if(conf.isPublished) {
                             <li class=@if(active.toLowerCase == "abstracts") {"active"} else {""}>
-                            <a href="@routes.Application.abstractsPublic(conf.short)">Abstracts</a>
+                                <a href="@routes.Application.abstractsPublic(conf.short)">Abstracts</a>
                             </li>
                         }
 
@@ -138,22 +138,26 @@
                                 <a href="@routes.Application.submission(conf.short)">Submission</a>
                             </li>
                         }
+                    }
 
+                    @if(account.isDefined) {
                         @account.map { acc =>
-                            <li class=@if(active.toLowerCase == "myabstracts") {"active"} else {""}>
+                            <li class=@if(active.toLowerCase == "my abstracts") {"active"} else {""}>
                                 <a href="@routes.Application.abstractsPrivate()">My Abstracts</a>
                             </li>
                         }
 
                         @account.map { acc =>
-                            <li class=@if(active.toLowerCase == "favouriteabstracts") {"active"} else {""}>
+                            <li class=@if(active.toLowerCase == "my favourites") {"active"} else {""}>
                                 <a href="@routes.Application.abstractsFavourite()">My Favourites</a>
                             </li>
                         }
                     }
 
                     @if(conference.isEmpty && active) {
-                        <li class="active"><a>@active</a></li>
+                        @if(!active.toLowerCase == "my abstracts" && !active.toLowerCase == "my favourites") {
+                            <li class="active"><a>@active</a></li>
+                        }
                     }
                 </ul>
 
