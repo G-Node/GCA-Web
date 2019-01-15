@@ -1,0 +1,14 @@
+@()(implicit lang: Lang)
+@template(None, None, "") {
+
+<script>
+    var loc = location.origin + "/login";
+    window.location.replace(loc);
+</script>
+
+<div class="callout-danger">
+    <h2>Provide authentication - 401 </h2>
+    <p>You are not authenticated to view this page.
+        If you are not automatically redirected to the login page, please login manually.</p>
+</div>
+}
