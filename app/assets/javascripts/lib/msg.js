@@ -3,38 +3,35 @@
  * @module {lib/msg}
  */
 define(["lib/tools", "knockout"], function(tools, ko) {
-
     function MessageBox() {
-
         if (tools.isGlobalOrUndefined(this)) {
             return new MessageBox();
         }
 
         var self = this;
 
-        var success = 'success',
-            info = 'info',
-            warning = 'warning',
-            danger = 'danger',
+        var success = "success",
+            info = "info",
+            warning = "warning",
+            danger = "danger",
             levels = [success, info, warning, danger],
             defaultTimeout = 3000;
 
         self.message = ko.observable(null);
 
         self.setMessage = function(level, text, description, timeout) {
-
             if (levels.indexOf(level) < 0) {
                 throw "Not a valid level";
             }
 
             if (text) {
-                self.message({message: text, level: 'callout-' + level, desc: description, close: self.clearMessage});
+                self.message({message: text, level: "callout-" + level, desc: description, close: self.clearMessage});
             } else {
                 self.clearMessage();
             }
 
             if (timeout) {
-                var t = tools.type(timeout) === 'number' ? timeout : defaultTimeout;
+                var t = tools.type(timeout) === "number" ? timeout : defaultTimeout;
                 setTimeout(self.clearMessage, t);
             }
         };
@@ -70,11 +67,9 @@ define(["lib/tools", "knockout"], function(tools, ko) {
         };
 
         self.setOk = self.setSuccess;
-
     }
 
     return {
         MessageBox: MessageBox
     };
-
 });
