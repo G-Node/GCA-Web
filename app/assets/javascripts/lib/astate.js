@@ -4,10 +4,8 @@
  */
 define(["lib/tools", "moment"], function(tools, moment) {
     "use strict";
-
     function StateChangeHelper() {
-
-        if (! (this instanceof StateChangeHelper)) {
+        if (!(this instanceof StateChangeHelper)) {
             return new StateChangeHelper();
         }
 
@@ -31,10 +29,9 @@ define(["lib/tools", "moment"], function(tools, moment) {
                 Rejected:   ["InRevision", "Withdrawn"]
             }};
 
-
         self.mkStateDisplayName = function(curState) {
-            if (curState.substr(0, 2) === 'In') {
-                return 'In ' +  curState.substr(2);
+            if (curState.substr(0, 2) === "In") {
+                return "In " +  curState.substr(2);
             }
 
             return curState;
@@ -44,7 +41,7 @@ define(["lib/tools", "moment"], function(tools, moment) {
             if (isAdmin) {
                 return self.transitionMap.admin;
             } else {
-                return self.transitionMap.owner[isClosed ? 'isClosed' : 'isOpen'];
+                return self.transitionMap.owner[isClosed ? "isClosed" : "isOpen"];
             }
         };
 
@@ -60,7 +57,6 @@ define(["lib/tools", "moment"], function(tools, moment) {
     }
 
     function StateLogHelper() {
-
         if (tools.isGlobalOrUndefined(this)) {
             return new StateLogHelper();
         }
@@ -71,15 +67,11 @@ define(["lib/tools", "moment"], function(tools, moment) {
             stateLog.forEach(function (elm) {
                 elm.formattedDate = moment(elm.timestamp).calendar();
             });
-        }
+        };
     }
-
 
     return {
         changeHelper: new StateChangeHelper(),
         logHelper: new StateLogHelper()
     };
-
 });
-
-
