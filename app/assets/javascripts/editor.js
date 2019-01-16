@@ -139,12 +139,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
         self.checkRemovePresPref = function (warnings) {
             if (!self.conference().hasPresentationPrefs) {
                 warnings.forEach(function (currWarning) {
-                    if (currWarning.match('presentation')) {
+                    if (currWarning.match("presentation")) {
                         warnings.splice(warnings.indexOf(currWarning), 1);
                     }
                 });
             }
-        }
+        };
 
         self.validity = ko.computed(
             function() {
@@ -205,7 +205,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             if (confId) {
                 self.requestConference(confId);
             }
-            if( abstrId ) {
+            if (abstrId) {
                 self.requestAbstract(abstrId);
             } else {
                 self.abstract(models.ObservableAbstract());
