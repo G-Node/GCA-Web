@@ -140,6 +140,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.makeGroupObservable = function(group) {
+
             group.makeObservable(['prefix', 'name', 'short']);
 
             for(var prop in group) {
@@ -270,16 +271,40 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.saveConference = function() {
             console.log("saveConference::");
             //check fields
-            if( Array.isArray(self.conference().mFigs()) ){ self.conference().mFigs(0); }
-            if(self.conference().mAbsLeng() == null){ self.conference().mAbsLeng(500); }
-            else if(self.conference().mAbsLeng() == 0){
-                self.setError("danger", "Max. Abs. Len. has to be larger than 0.")
+            if (Array.isArray(self.conference().mFigs())) {
+                self.conference().mFigs(0);
+            }
+            if (self.conference().mAbsLeng() == null){
+                self.conference().mAbsLeng(500);
+            } else if (self.conference().mAbsLeng() == 0) {
+                self.setError("danger", "Abstract length has to be larger than zero.");
                 return;
             }
             if (self.conference().short() == null) {
                 self.conference().short(self.conference().name().match(/\b(\w)/g).join('').toUpperCase());
             }
-            if(!(self.oldShort == self.conference().short()) && self.otherConfShorts().indexOf(self.conference().short()) >= 0){
+            if (self.conference().short().replace(/\s/g,'') == '') {
+                self.setError("danger", "Conference short cannot be empty.");
+                return;
+            }
+
+            if (self.conference().groups().length > 0) {
+                for (var i = 0; i <= self.conference().groups().length; i++) {
+                    var curr = self.conference().groups()[i];
+                    if (!/^\d+$/.test(curr.prefix())) {
+                        self.setError("danger", "Prefix can only contain numbers!");
+                        return;
+                    } else if (/^\d+$/.test(curr.name())) {
+                        self.setError("danger", "Name cannot contain only numbers!");
+                        return;
+                    } else if (/^\d+$/.test(curr.short())) {
+                        self.setError("danger", "Short cannot contain only numbers!");
+                        return;
+                    }
+                }
+            }
+
+            if (!(self.oldShort == self.conference().short()) && self.otherConfShorts().indexOf(self.conference().short()) >= 0 ) {
                 console.log(self.oldShort + ', NEW: ' + self.conference().short() + ' ' + self.otherConfShorts().indexOf(self.conference().short()));
                 self.setError("danger", "Conference short is already in use. Please choose a different one.");
                 return;
