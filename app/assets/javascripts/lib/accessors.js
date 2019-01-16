@@ -4,9 +4,7 @@
  * @module {lib/accessors}
  */
 define(function() {
-
     function newAcessor(initVal) {
-
         var val = initVal;
         function accessor(newVal) {
             var result = val;
@@ -23,7 +21,6 @@ define(function() {
     }
 
     function newArrayAccessor(initVal) {
-
         var val = initVal;
         function arrayAccessor(newVal) {
             var result = val;
@@ -50,5 +47,4 @@ define(function() {
         accessor: newAcessor,
         arrayAccessor: newArrayAccessor
     };
-
 });
