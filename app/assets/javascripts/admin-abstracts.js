@@ -93,11 +93,6 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
             }
         };
 
-        self.onSelStateClick = function() {
-            console.log("clicked");
-            console.log($(this));
-        };
-
         self.setError = function(level, text, description) {
             if (text === null) {
                 self.message(null);
