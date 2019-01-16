@@ -310,7 +310,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
         self.formatCopyright = function(abstract) {
             var year = moment(self.start).year();
-            return "©" + " (" + year + ") " + abstract.formatAuthorsCitation();
+            return "© (" + year + ") " + abstract.formatAuthorsCitation();
         };
 
         self.toObject = function() {
@@ -818,7 +818,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             var para = [];
 
             if (self.text) {
-                para = self.text.split('\n');
+                para = self.text.split("\n");
             }
 
             return para;
@@ -899,9 +899,9 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             return obj;
         };
 
-    self.hasTypeWuuid = function (uuid) {
-        return true;
-        }
+        self.hasTypeWuuid = function (uuid) {
+            return true;
+        };
     }
 
     Abstract.fromObject = function(obj) {
@@ -1025,7 +1025,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
             var para = [];
 
             if (self.text()) {
-                para = self.text().split('\n');
+                para = self.text().split("\n");
             }
 
             return para;
