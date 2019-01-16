@@ -16,7 +16,7 @@ define(function() {
         var result = true;
 
         if (obj !== undefined) {
-            result = new Function('return this;')() === obj;
+            result = new Function("return this;")() === obj;
         }
 
         return result;
@@ -60,9 +60,7 @@ define(function() {
      * @public
      */
     function inherit(obj, superclass) {
-
         if (superclass instanceof Function) {
-
             var param;
             if (arguments.length > 2) {
                 param = Array.prototype.slice.call(arguments, 2);
@@ -85,27 +83,26 @@ define(function() {
      * @public
      */
     function type(obj) {
-
         var str,
             typ;
 
         if (obj === null) {
-            return 'null';
+            return "null";
         }
 
         if (obj && (obj.nodeType === 1 || obj.nodeType === 9)) {
-            return 'element';
+            return "element";
         }
 
         str = Object.prototype.toString.call(obj);
         typ = str.match(/\[object (.*?)\]/)[1].toLowerCase();
 
-        if (typ === 'number') {
+        if (typ === "number") {
             if (isNaN(obj)) {
-                return 'nan';
+                return "nan";
             }
             if (!isFinite(obj)) {
-                return 'infinity';
+                return "infinity";
             }
         }
 
@@ -120,8 +117,7 @@ define(function() {
      * @returns {string} The modified string.
      * @public
      */
-    function toUnderscore(str){
-
+    function toUnderscore(str) {
         function substitute(char) {
             return "_" + char.toLowerCase();
         }
@@ -138,7 +134,6 @@ define(function() {
      * @public
      */
     function toCamelCase(str) {
-
         function substitute(char) {
              return char.toUpperCase();
         }
@@ -178,21 +173,18 @@ define(function() {
      * @public
      */
     function formParse(dom) {
-
         var match,
             pattern = /^(\w+)($|\[\]|\[(\w+)\]$)/,
             data = {},
             inputs = dom.find("input, textarea, select");
 
         inputs.each(function() {
-
             var input = $(this),
                 type  = input.attr("type").toLowerCase(),
                 name  = input.attr("name").toLowerCase(),
                 val   = input.val();
 
             if (type !== "submit") {
-
                 match = pattern.exec(name);
 
                 if (!match) {
@@ -214,7 +206,6 @@ define(function() {
                     data[name][match[3]] = val;
                 }
             }
-
         });
 
         return data;
@@ -229,7 +220,7 @@ define(function() {
      * @public
      */
     function functionName(fn) {
-        if (type(fn) !== 'function') {
+        if (type(fn) !== "function") {
             return null;
         }
 
@@ -241,7 +232,6 @@ define(function() {
         }
     }
 
-
     return {
         isGlobalOrUndefined: isGlobalOrUndefined,
         hiddenData: hiddenData,
@@ -252,5 +242,4 @@ define(function() {
         formParse: formParse,
         functionName: functionName
     };
-
 });
