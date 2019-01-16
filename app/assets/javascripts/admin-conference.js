@@ -99,7 +99,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
-            console.log("Request Failed: " + err);
             var errobj = $.parseJSON(jqxhr.responseText);
 
             var details = "";
@@ -174,7 +173,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 name.val("");
                 prefix.val("");
                 short.val("");
-                self.setError("info", 'New group added, click "Save"!');
+                self.setError("info", "New group added, click 'Save'!");
             }
         };
 
@@ -268,17 +267,18 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             if (Array.isArray(self.conference().mFigs())) {
                 self.conference().mFigs(0);
             }
-            if (self.conference().mAbsLeng() == null) {
+            if (self.conference().mAbsLeng() === null || self.conference().mAbsLeng() === undefined) {
                 self.conference().mAbsLeng(500);
-            } else if (self.conference().mAbsLeng() == 0) {
-                self.setError("danger", "Max. Abs. Len. has to be larger than 0.");
+            }
+            if (self.conference().mAbsLeng() == 0) {
+                self.setError("danger", "Abstract length has to be larger than zero");
                 return;
             }
-            if (self.conference().short() == null) {
+            if (self.conference().short() === null || self.conference().short() === undefined) {
                 self.conference().short(self.conference().name().match(/\b(\w)/g).join("").toUpperCase());
             }
-            if (self.conference().short().replace(/\s/g,'') == '') {
-                self.setError("danger", "Conference short cannot be empty.");
+            if (self.conference().short().replace(/\s/g, "") === "") {
+                self.setError("danger", "Conference short cannot be empty");
                 return;
             }
 
