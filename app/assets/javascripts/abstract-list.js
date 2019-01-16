@@ -2,7 +2,6 @@ require(["main"], function () {
 require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], function(models, tools, ko, Sammy, offline) {
     "use strict";
 
-
     /**
      * AbstractList view model.
      *
@@ -12,8 +11,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
      * @constructor
      */
     function AbstractListViewModel(confId, loggedIn) {
-
-        if (! (this instanceof AbstractListViewModel)) {
+        if (!(this instanceof AbstractListViewModel)) {
             return new AbstractListViewModel(confId, loggedIn);
         }
 
@@ -27,24 +25,24 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.groups = ko.observableArray(null);
         self.error = ko.observable(false);
 
-        //maps for uuid -> abstract, doi -> abstract,
-        //         neighbours -> prev & next of current list
+        // maps for uuid -> abstract, doi -> abstract,
+        //          neighbours -> prev & next of current list
         self.uuidMap = {};
         self.neighbours = {};
 
-
         self.init = function() {
             ko.applyBindings(window.abstractList);
-            MathJax.Hub.Configured(); //start MathJax
+            // start MathJax
+            MathJax.Hub.Configured();
         };
 
         self.setError = function(level, text) {
-            self.error({message: text, level: 'alert-' + level});
+            self.error({message: text, level: "alert-" + level});
             self.isLoading(false);
         };
 
         self.makeLink = function(abstract) {
-            return '#' + '/uuid/' + abstract.uuid;
+            return "#/uuid/" + abstract.uuid;
         };
 
         self.getGroupById = function(groupid) {
@@ -79,29 +77,27 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             return prefix + "&nbsp;" + aid;
         };
 
-
         self.selectAbstract = function(abstract) {
-            console.log("Selecting abstract " + abstract.uuid + " " + abstract.toString());
             window.location = self.makeLink(abstract);
         };
 
         self.showAbstract = function(abstract) {
-
             self.abstracts(null);
             var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (isMobile) {
-                console.log("Mobile figure hotfix in progress, adjusting URL")
+                // Mobile figure hotfix, adjusting URL
                 for (let fig of abstract.figures) {
-                    fig.URL = fig.URL + "mobile"
+                    fig.URL = fig.URL + "mobile";
                 }
             }
             self.selectedAbstract(abstract);
-            document.title = abstract.title; //FIXME add conference
-            //if user is not logged in
-            if(loggedIn.indexOf('true')>=0){
+            document.title = abstract.title;
+            // if user is not logged in
+            if (loggedIn.indexOf("true") >= 0) {
                 self.isFavourite(abstract);
             }
-            MathJax.Hub.Queue(["Typeset",MathJax.Hub]); //re-render equations
+            // re-render equations
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
         };
 
         self.favourAbstract = function(abstract) {
@@ -115,9 +111,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         };
 
         self.showAbstractByUUID = function(uuid) {
-
-            if(!uuid in self.uuidMap) {
-                console.log("Warning uuid to show not in map");
+            if (!uuid in self.uuidMap) {
                 return;
             }
 
@@ -125,33 +119,23 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         };
 
         self.activateGroup = function(groupId) {
-
         };
 
-
         self.showAbstractsByGroup = function(groupId) {
-
-            console.log("groupid" + groupId);
-
             var selGroup = null;
             for (var i = 0; i < self.groups().length; i++) {
                 var curGroup = self.groups()[i];
                 if (curGroup.short === groupId) {
                     selGroup = curGroup;
-                    //we don't break here because we want to set
-                    //all the groups 'state' member
-
+                    // We don't break here because we want to set all the groups 'state' member
                     curGroup.state("active");
                 } else {
                     curGroup.state("");
                 }
             }
 
-
-
             if (selGroup === null) {
-                self.setError("danger", "Internal error [group selection]!")
-                console.log("Error invalid group selected");
+                self.setError("danger", "Internal error [group selection]!");
                 self.showAbstractList([]);
                 return;
             }
@@ -177,9 +161,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             self.neighbours = self.makeNeighboursMap(theList);
         };
 
-
         self.buildGroups = function() {
-
             function mkGroup(_prefix, _name, _short) {
                 return {
                     prefix: _prefix,
@@ -201,9 +183,10 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
           self.groups(theGroups);
         };
 
-        //map related stuff
+        // Map related stuff
         self.buildMaps = function() {
-            self.uuidMap = {}; //empty the map
+            // Empty the map
+            self.uuidMap = {};
             for (var i = 0; i < self.abstractsData.length; i++) {
                 var currentAbstract = self.abstractsData[i];
                 self.uuidMap[currentAbstract.uuid] = currentAbstract;
@@ -217,20 +200,20 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
                 return theMap;
             }
 
-            for(var i = 0; i < objs.length; i++) {
+            for (var i = 0; i < objs.length; i++) {
                 theMap[objs[i].uuid] = {
-                    prev: i > 0 ? self.makeLink(objs[i-1]): null,
-                    next: i + 1 != objs.length ? self.makeLink(objs[i+1]) : null
-                }
+                    prev: i > 0 ? self.makeLink(objs[i - 1]) : null,
+                    next: i + 1 != objs.length ? self.makeLink(objs[i + 1]) : null
+                };
             }
 
             return theMap;
         };
 
         self.nextAbstract = function(abstract) {
-          var uuid = abstract.uuid;
+            var uuid = abstract.uuid;
 
-            if(!uuid in self.neighbours) {
+            if (!uuid in self.neighbours) {
                 return null;
             }
 
@@ -240,7 +223,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.prevAbstract = function(abstract) {
             var uuid = abstract.uuid;
 
-            if(!uuid in self.neighbours) {
+            if (!uuid in self.neighbours) {
                 return null;
             }
 
@@ -250,24 +233,20 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.isFavourite = function(abstract) {
             var uuid = abstract.uuid;
             var favUsersUrl = "/api/user/self/abstract/" + uuid + "/isfavuser";
-            $.get(favUsersUrl,onFavUserData).fail(self.ioFailHandler);
+            $.get(favUsersUrl, onFavUserData).fail(self.ioFailHandler);
             function onFavUserData(isFavUser) {
-                console.log('IsFavUser '+ isFavUser);
-                var IFUBool = (isFavUser == 'true');
-                console.log('IsFavUser IFUBool '+ IFUBool);
+                var IFUBool = isFavUser === "true";
                 self.isFavouriteAbstract(IFUBool);
             }
         };
 
-        //Data IO
+        // Data IO
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
-            console.log( "Request Failed: " + err );
-            self.setError("danger", "Error while fetching data from server: <br\\>" + error);
+            self.setError("danger", "Error while fetching data from server: <br\\>" + err);
         };
 
         self.ensureDataAndThen = function(doAfter) {
-            console.log("ensureDataAndThen::");
             self.isLoading(true);
             if (self.abstractsData !== null) {
                 doAfter();
@@ -275,20 +254,20 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
                 return;
             }
 
-            //now load the data from the server
-            var confURL ="/api/conferences/" + confId;
+            // Now load the data from the server
+            var confURL = "/api/conferences/" + confId;
             offline.requestJSON(confId, confURL, onConferenceData, self.ioFailHandler);
 
-            //conference data
+            // Conference data
             function onConferenceData(confObj) {
                 var conf = models.Conference.fromObject(confObj);
                 self.conference(conf);
                 self.buildGroups();
-                //now load the abstract data
+                // Now load the abstract data
                 offline.requestJSON(conf.uuid + "abstracts", conf.abstracts, onAbstractData, self.ioFailHandler);
             }
 
-            //abstract data
+            // Abstract data
             function onAbstractData(absArray) {
                 var absList = models.Abstract.fromArray(absArray);
                 self.abstractsData = absList;
@@ -301,47 +280,35 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             }
         };
 
-        // client-side routes
+        // Client-side routes
         Sammy(function() {
-
-            this.get('#/uuid/:uuid', function() {
-                var uuid = this.params['uuid'];
-                console.log("Sammy::get::uuid [" + uuid + "]");
+            this.get("#/uuid/:uuid", function() {
+                var uuid = this.params["uuid"];
                 self.ensureDataAndThen(function () {
                     self.showAbstractByUUID(uuid);
                 });
             });
 
-            this.get('#/groups/:group', function() {
-                var group = this.params['group'];
-                console.log("Sammy::get::group [" + group + "]");
+            this.get("#/groups/:group", function() {
+                var group = this.params["group"];
                 self.ensureDataAndThen(function () {
                     self.showAbstractsByGroup(group);
                 });
             });
 
-
-            this.get('#/', function() {
-                console.log('Sammy::get::');
+            this.get("#/", function() {
                 self.ensureDataAndThen(function () {
                     self.showAbstractList(self.abstractsData);
                 });
             });
-
-        }).run('#/');
-
+        }).run("#/");
     }
 
-
     $(document).ready(function() {
-
         var data = tools.hiddenData();
 
-        console.log(data.conferenceUuid,data.loggedIn);
-
-        window.abstractList = AbstractListViewModel(data.conferenceUuid,data.loggedIn);
+        window.abstractList = AbstractListViewModel(data.conferenceUuid, data.loggedIn);
         window.abstractList.init();
     });
-
 });
 });
