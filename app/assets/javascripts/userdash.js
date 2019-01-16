@@ -26,7 +26,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
         };
 
         self.setInfo = function (level, text) {
-            self.error({message: text, level: 'callout-' + level});
+            self.error({message: text, level: "callout-" + level});
             self.isLoading(false);
         };
 
@@ -50,8 +50,8 @@ require(["lib/models", "lib/tools", "knockout", "sammy"], function (models, tool
 
             // Conference data
             function onConferenceData(confObj) {
-                if((typeof confObj === 'string' || confObj instanceof String) && confObj.length == 0){
-                    self.setInfo("info","You have no own abstracts created yet.");
+                if ((typeof confObj === "string" || confObj instanceof String) && confObj.length == 0) {
+                    self.setInfo("info", "You have no own abstracts created yet.");
                     return;
                 }
                 var confs = models.Conference.fromArray(confObj);
