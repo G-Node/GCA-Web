@@ -5,10 +5,10 @@ define(function() {
     "use strict";
 
     // some constants
-    var sep = '\r\n',
-        sepEnd = '\r\n\r\n',
-        stdContentType = 'text/plain',
-        binContentType = 'application/octet-stream';
+    var sep = "\r\n",
+        sepEnd = "\r\n\r\n",
+        stdContentType = "text/plain",
+        binContentType = "application/octet-stream";
 
     // helper function
     function createBoundary() {
@@ -32,14 +32,13 @@ define(function() {
      * @public
      */
     function MultiPart() {
-
-        if (! (this instanceof MultiPart)) {
+        if (!(this instanceof MultiPart)) {
             return new MultiPart();
         }
 
         var self = this;
         var bound = createBoundary(),
-            mpContentType = 'multipart/form-data; boundary=' + bound,
+            mpContentType = "multipart/form-data; boundary=" + bound,
             body = "";
 
         /**
@@ -58,7 +57,7 @@ define(function() {
             body += 'Content-Disposition: form-data; name="' + name + '"' + sepEnd;
 
             body += text + sep;
-        }
+        };
 
         /**
          * Append file data.
@@ -73,8 +72,8 @@ define(function() {
 
             body += bound + sep;
             body += 'Content-Disposition: form-data; name="' + name + '"; filename="' + fileName + '"' + sep;
-            body += 'Content-Length: ' + data.length + sep;
-            body += 'Content-Type: ' + contentType + sepEnd;
+            body += "Content-Length: " + data.length + sep;
+            body += "Content-Type: " + contentType + sepEnd;
 
             body += data + sep;
         };
@@ -89,7 +88,6 @@ define(function() {
          * @param {Function} [error]        Error callback.
          */
         self.appendInput = function(name, input, success, error) {
-
             if (!FileReader) {
                 throw "Browser does not support FileReader";
             }
@@ -115,15 +113,14 @@ define(function() {
                 return function(e) {
                     self.appendFile(name, f.name, e.target.result, f.type);
                     if (success) success(self, f, "Loaded file " + f.name);
-                }
+                };
             }
 
             function onerror(f) {
                 return function(e) {
                     if (error) error(self, f, "Unable to read file: " + f.name);
-                }
+                };
             }
-
         };
 
         /**
@@ -134,7 +131,6 @@ define(function() {
         self.contentType = function() {
             return mpContentType;
         };
-
 
         /**
          * Get the request body.
@@ -151,14 +147,11 @@ define(function() {
          * @returns {string} Header and request body as string.
          */
         self.all = function() {
-            return 'Content-Type: ' + self.contentType() + sepEnd + self.body();
+            return "Content-Type: " + self.contentType() + sepEnd + self.body();
         };
-
     }
 
     return {
         MultiPart: MultiPart
-    }
-
-
+    };
 });
