@@ -276,7 +276,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             }
 
             if (self.conference().groups().length > 0) {
-                for (var i = 0; i <= self.conference().groups().length; i++) {
+                for (var i = 0; i < self.conference().groups().length; i++) {
                     var curr = self.conference().groups()[i];
                     if (!/^\d+$/.test(curr.prefix())) {
                         self.setError("danger", "Prefix can only contain numbers!");
