@@ -12,24 +12,21 @@ define([], function() {
      * local storage will be searched by the specified fallback key.
      */
     function requestJSON (key, url, successFunction, failHandler) {
-        $.getJSON(url, successFunction).fail(function (keyHandover, urlHandover
-                                                       ,successFunctionHandover,
+        $.getJSON(url, successFunction).fail(function (keyHandover, urlHandover,
+                                                       successFunctionHandover,
                                                        failHandlerHandover) {
             return function (jqxhr, textStatus, error) {
-                console.log("Server request of " + urlHandover + " failed. Try loading local " +
-                    "storage entry " + keyHandover + ".");
                 var stored = localStorage.getItem(keyHandover);
                 if (stored !== null && stored !== undefined) {
                     successFunctionHandover(JSON.parse(stored));
                 } else {
                     failHandlerHandover(jqxhr, textStatus, error);
                 }
-            }
+            };
         }(key, url, successFunction, failHandler));
     }
 
     return {
         requestJSON: requestJSON
     };
-
 });
