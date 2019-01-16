@@ -153,7 +153,14 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             var name = $("#ngName");
             var prefix = $("#ngPrefix");
             var short = $("#ngShort");
-            if (!/^\d+$/.test(prefix.val())) {
+
+            var checkPref = prefix.val() !== null && prefix.val() !== undefined && prefix.val() !== "";
+            var checkShort = short.val() !== null && short.val() !== undefined && short.val() !== "";
+            var checkFull =  name.val() !== null && name.val() !== undefined && name.val() !== "";
+
+            if (!checkPref || !checkShort || !checkFull) {
+                self.setError("danger", "Prefix, short and long entries have to be provided!");
+            } else if (!/^\d+$/.test(prefix.val())) {
                 self.setError("danger", "Prefix can only contain numbers!");
             } else if (/^\d+$/.test(name.val())) {
                 self.setError("danger", "Name cannot contain only numbers!");
@@ -278,7 +285,15 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             if (self.conference().groups().length > 0) {
                 for (var i = 0; i < self.conference().groups().length; i++) {
                     var curr = self.conference().groups()[i];
-                    if (!/^\d+$/.test(curr.prefix())) {
+
+                    var checkPref = curr.prefix() !== null && curr.prefix() !== undefined && curr.prefix() !== "";
+                    var checkShort = curr.short() !== null && curr.short() !== undefined && curr.short() !== "";
+                    var checkFull =  curr.name() !== null && curr.name() !== undefined && curr.name() !== "";
+
+                    if (!checkPref || !checkShort || !checkFull) {
+                        self.setError("danger", "Prefix, short and long entries have to be provided!");
+                        return;
+                    } else if (!/^\d+$/.test(curr.prefix())) {
                         self.setError("danger", "Prefix can only contain numbers!");
                         return;
                     } else if (/^\d+$/.test(curr.name())) {
