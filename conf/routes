@@ -64,7 +64,7 @@ PUT           /api/abstracts/:id/owners                       @controllers.api.A
 GET           /api/abstracts/:id/owners                       @controllers.api.Abstracts.getPermissions(id: String)
 GET           /api/abstracts/:id/favusers                     @controllers.api.Abstracts.favouriteUsers(id: String)
 PUT           /api/abstracts/:id/addfavuser                   @controllers.api.Abstracts.addFavUser(id: String)
-GET           /api/abstracts/:id/removefavuser                @controllers.api.Abstracts.removeFavUser(id: String)
+DELETE        /api/abstracts/:id/removefavuser                @controllers.api.Abstracts.removeFavUser(id: String)
 GET           /api/abstracts/:id/stateLog                     @controllers.api.Abstracts.listState(id: String)
 PUT           /api/abstracts/:id/state                        @controllers.api.Abstracts.setState(id: String)
 

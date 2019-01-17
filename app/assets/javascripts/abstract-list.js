@@ -133,9 +133,30 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             }
         };
 
-        self.disfavourAbstract = function(abstract) {
-            var absUrl = "/api/abstracts/" + abstract.uuid + "/removefavuser";
-            return absUrl;
+        self.disfavourAbstract = function () {
+            var selectedAbstract = self.selectedAbstract();
+            if (selectedAbstract !== null && selectedAbstract !== undefined) {
+                $.ajax({
+                    data: JSON.stringify(selectedAbstract.uuid),
+                    async: false,
+                    url: "/api/abstracts/" + selectedAbstract.uuid + "/removefavuser",
+                    type: "DELETE",
+                    success: success,
+                    error: fail,
+                    contentType: "application/json",
+                    cache: false
+                });
+
+                function success(obj) {
+                    // Reload the abstract view to refresh the favourite status
+                    self.showAbstractByUUID(obj);
+                    self.setInfo("Abstract has been removed from the favourite abstracts list");
+                }
+
+                function fail() {
+                    self.setError("Error", "Unable to remove abstract from the favourite abstracts list");
+                }
+            }
         };
 
         self.showAbstractByUUID = function(uuid) {
