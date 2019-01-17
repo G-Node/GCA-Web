@@ -31,6 +31,16 @@
         <!-- /ko -->
     </div>
 
+    <!-- Success message box; for unknown reason the css level is not properly updated; keep until resolved -->
+    <div data-bind="visible: messageSuccess">
+        <!-- ko with: messageSuccess -->
+        <div class="alert alert-info fade in alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong data-bind="html: message"></strong>
+        </div>
+        <!-- /ko -->
+    </div>
+
     <div class="page-header">
         <h1><a href="@conference.link">@conference.name</a></h1>
     </div>

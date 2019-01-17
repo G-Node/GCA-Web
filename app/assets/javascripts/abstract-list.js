@@ -24,6 +24,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.isFavouriteAbstract = ko.observable(false);
         self.groups = ko.observableArray(null);
         self.error = ko.observable(false);
+        self.messageSuccess = ko.observable(false);
 
         // maps for uuid -> abstract, doi -> abstract,
         //          neighbours -> prev & next of current list
@@ -34,6 +35,12 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             ko.applyBindings(window.abstractList);
             // start MathJax
             MathJax.Hub.Configured();
+        };
+
+        // Duplicate code with setError. Implement MessageBox instead and remove code from here
+        self.setInfo = function(text) {
+            self.messageSuccess({message: text});
+            self.isLoading(false);
         };
 
         self.setError = function(level, text) {
