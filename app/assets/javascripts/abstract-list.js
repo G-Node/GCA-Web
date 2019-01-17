@@ -107,9 +107,30 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
         };
 
-        self.favourAbstract = function(abstract) {
-            var absUrl = "/api/abstracts/" + abstract.uuid + "/addfavuser";
-            return absUrl;
+        self.favourAbstract = function () {
+            var selectedAbstract = self.selectedAbstract();
+            if (selectedAbstract !== null && selectedAbstract !== undefined) {
+                $.ajax({
+                    data: JSON.stringify(selectedAbstract.uuid),
+                    async: false,
+                    url: "/api/abstracts/" + selectedAbstract.uuid + "/addfavuser",
+                    type: "PUT",
+                    success: success,
+                    error: fail,
+                    contentType: "application/json",
+                    cache: false
+                });
+
+                function success(obj) {
+                    // Reload the abstract view to refresh the favourite status
+                    self.showAbstractByUUID(obj);
+                    self.setInfo("Abstract has been added to the favourite abstracts list");
+                }
+
+                function fail() {
+                    self.setError("Error", "Unable to add abstract to the favourite abstracts list");
+                }
+            }
         };
 
         self.disfavourAbstract = function(abstract) {
