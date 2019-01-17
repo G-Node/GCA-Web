@@ -569,6 +569,8 @@
     </script>
     <script id="body-figure-editor" type="text/html">
         <div data-bind="visible: !(abstract().figures().length>=@conference.abstractMaxFigures)">
+            <div>Figures of format "jpg", "gif", "png" are supported; the size limit is 5MB.</div>
+            <br>
             <div class="form-group">
                 <input type="text" name="figure-caption" id="figure-caption" class="form-control input-sm"
                     placeholder='Figure Caption (max. @Model.getLimit[Figure]("caption") characters)'
