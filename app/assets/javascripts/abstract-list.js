@@ -37,6 +37,13 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             MathJax.Hub.Configured();
         };
 
+        self.localConferenceLink = ko.computed(function() {
+            if (self.conference() === null || self.conference() === undefined) {
+                return "";
+            }
+            return "/conference/" + self.conference().short + "/abstracts";
+        });
+
         // Duplicate code with setError. Implement MessageBox instead and remove code from here
         self.setInfo = function(text) {
             self.messageSuccess({message: text});
