@@ -439,6 +439,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
         self.doSaveAbstract = function (abstract) {
+            // Clean slate for new messages
+            self.clearMessage();
+
             if (!(abstract instanceof models.ObservableAbstract)) {
                 abstract = self.abstract();
             }
@@ -505,8 +508,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
                 if (firstSave) {
                     self.showHelp();
-                } else {
-                    self.clearMessage();
                 }
             }
 
