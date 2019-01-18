@@ -3,8 +3,6 @@ require(["lib/models", "lib/tools", "lib/msg", "knockout"], function(models, too
     "use strict";
 
     function AdminAccountsViewModel() {
-
-
         if (!(this instanceof AdminAccountsViewModel)) {
             return new AdminAccountsViewModel();
         }
@@ -22,8 +20,7 @@ require(["lib/models", "lib/tools", "lib/msg", "knockout"], function(models, too
         };
 
         self.loadAccounts = function() {
-
-            var confURL ="/api/user/list";
+            var confURL = "/api/user/list";
             $.getJSON(confURL, onAccountData).fail(function() {
                 self.setError("Error", "Could not load accounts from server!");
             });
@@ -32,15 +29,13 @@ require(["lib/models", "lib/tools", "lib/msg", "knockout"], function(models, too
                 var acc = models.ObservableAccount.fromArray(accountData);
                 self.accounts(acc);
             }
-        }
+        };
     }
 
     // the show begins
     $(document).ready(function() {
-
         window.dashboard = AdminAccountsViewModel();
         window.dashboard.init();
     });
-
 });
 });

@@ -3,18 +3,16 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
     function(models, tools, owned, ko) {
     "use strict";
 
-
     /**
-     * OwnersList view model.
-     *
+     * Admin conference view model.
      *
      * @param confId
-     * @returns {OwnersListViewModel}
+     * @param accId
+     * @returns {adminConferenceViewModel}
      * @constructor
      */
     function adminConferenceViewModel(confId, accId) {
-
-        if (! (this instanceof adminConferenceViewModel)) {
+        if (!(this instanceof adminConferenceViewModel)) {
             return new adminConferenceViewModel(confId, accId);
         }
 
@@ -30,11 +28,10 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.infoContent = ko.observable(null);
 
         self.otherConfShorts = ko.observable(null);
-        self.oldshort = '';
+        self.oldshort = "";
 
         ko.bindingHandlers.datetimepicker = {
             init: function(element, valueAccessor, allBindingsAccessor) {
-
                 function onSelectHandler(text, obj) {
                     var os = valueAccessor();
                     var dt = $el.datetimepicker("getDate");
@@ -47,11 +44,10 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
                 $el.datetimepicker(options);
 
-                //handle disposal (if KO removes by the template binding)
+                // Handle disposal (if KO removes by the template binding)
                 ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
                     $el.datetimepicker("destroy");
                 });
-
             },
             update: function(element, valueAccessor) {
                 var $el = $(element);
@@ -65,8 +61,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             }
         };
 
-        self.saveButtonText = ko.computed(function(){
-
+        self.saveButtonText = ko.computed(function() {
             if (self.isLoading()) {
                 return "Saving...";
             }
@@ -74,12 +69,11 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             return self.conference() && self.conference().uuid !== null ? "Save" : "Create";
         });
 
-        self.saveButtonDisabled = ko.computed(function(){
+        self.saveButtonDisabled = ko.computed(function() {
             return !self.haveChanges();
         });
 
         self.init = function() {
-
             if (confId !== null) {
                 self.loadConference(confId);
             } else {
@@ -94,18 +88,17 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.setError = function(level, text) {
-            self.error({message: text, level: 'alert-' + level});
+            self.error({message: text, level: "alert-" + level});
             self.isLoading(false);
 
-            //remove info automatically after 1 second
-            if(level === "info") {
-                window.setTimeout(function(){ $(".alert").alert("close"); }, 1000);
+            // Fade out banner on any success info message
+            if (level === "info") {
+                $(".alert").fadeOut(4000);
             }
         };
 
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
-            console.log( "Request Failed: " + err );
             var errobj = $.parseJSON(jqxhr.responseText);
 
             var details = "";
@@ -122,8 +115,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.removeTopic = function(data) {
-            console.log("Remove" + data);
-
             var index = self.conference().topics.indexOf(data);
             self.conference().topics.splice(index, 1);
 
@@ -133,17 +124,20 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.addTopic = function(data) {
             var sel = $("#addTopic");
             var text = sel.val();
-            self.conference().topics.push(text);
-            sel.val("");
 
-            self.haveChanges(true);
+            // Add topic only if it contains an actual value to avoid empty radio buttons in the submission form.
+            if (text !== undefined && text !== null && text !== "") {
+                self.conference().topics.push(text);
+                sel.val("");
+
+                self.haveChanges(true);
+            }
         };
 
         self.makeGroupObservable = function(group) {
+            group.makeObservable(["prefix", "name", "short"]);
 
-            group.makeObservable(['prefix', 'name', 'short']);
-
-            for(var prop in group) {
+            for (var prop in group) {
                 if (group.hasOwnProperty(prop)) {
                     var value = group[prop];
 
@@ -158,18 +152,28 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             var name = $("#ngName");
             var prefix = $("#ngPrefix");
             var short = $("#ngShort");
-            if(! /^\d+$/.test(prefix.val())){self.setError("danger", "Prefix can only contain numbers!");}
-            else if(/^\d+$/.test(name.val())){self.setError("danger", "Name cannot contain only numbers!");}
-            else if(/^\d+$/.test(short.val())){self.setError("danger", "Short cannot contain only numbers!");}
-            else {
+
+            var checkPref = prefix.val() !== null && prefix.val() !== undefined && prefix.val() !== "";
+            var checkShort = short.val() !== null && short.val() !== undefined && short.val() !== "";
+            var checkFull =  name.val() !== null && name.val() !== undefined && name.val() !== "";
+
+            if (!checkPref || !checkShort || !checkFull) {
+                self.setError("danger", "Prefix, short and long entries have to be provided!");
+            } else if (!/^\d+$/.test(prefix.val())) {
+                self.setError("danger", "Prefix can only contain numbers!");
+            } else if (/^\d+$/.test(name.val())) {
+                self.setError("danger", "Name cannot contain only numbers!");
+            } else if (/^\d+$/.test(short.val())) {
+                self.setError("danger", "Short cannot contain only numbers!");
+            } else {
                 var grp = models.AbstractGroup(null, prefix.val(), name.val(), short.val());
                 self.makeGroupObservable(grp);
                 self.conference().groups.push(grp);
 
-                name.val('');
-                prefix.val('');
-                short.val('');
-                self.setError("info", 'New group added, click "Save"!');
+                name.val("");
+                prefix.val("");
+                short.val("");
+                self.setError("info", "New group added, click 'Save'!");
             }
         };
 
@@ -177,13 +181,12 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
           self.conference().groups.remove(data);
         };
 
-
         self.makeConferenceObservable = function (conf) {
             conf.makeObservable(["name", "short", "group", "cite", "description", "start", "end", "groups",
                 "deadline", "logo", "thumbnail", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
-                "topics", "iOSApp","mAbsLeng","mFigs"]);
+                "topics", "iOSApp", "mAbsLeng", "mFigs"]);
 
-            for(var prop in conf) {
+            for (var prop in conf) {
                 if (conf.hasOwnProperty(prop)) {
                     var value = conf[prop];
 
@@ -197,24 +200,20 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.loadConference = function(id) {
-            console.log("loadConference::");
-            if(!self.isLoading()) {
+            if (!self.isLoading()) {
                 self.isLoading("Loading conference data.");
             }
 
-            //now load the data from the server
-            var confURL ="/api/conferences/" + id;
+            var confURL = "/api/conferences/" + id;
             $.getJSON(confURL, self.onConferenceData).fail(self.ioFailHandler);
         };
 
-        //conference data
         self.onConferenceData = function(confObj) {
-            console.log("Got conference data");
             var conf = models.Conference.fromObject(confObj);
             self.makeConferenceObservable(conf);
             self.conference(conf);
             self.haveChanges(false);
-            //now that we have the conference, get the owners
+
             self.setupOwners("/api/conferences/" + self.conference().uuid + "/owners", self.setError);
             self.loadOwnersData(function() {
                 self.isLoading(false);
@@ -249,13 +248,9 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.loadOtherConferences = function() {
-            console.log("loadOtherConferences::");
-
-            //now load the data from the server
             var confURL = "/api/conferences";
             $.getJSON(confURL, onOtherConferenceData).fail(self.ioFailHandler);
 
-            //conference data
             function onOtherConferenceData(confObj) {
                 var confs = models.Conference.fromArray(confObj);
                 var confShorts = Array();
@@ -266,32 +261,39 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                     self.otherConfShorts(confShorts);
                 }
             }
-        }
+        };
 
         self.saveConference = function() {
-            console.log("saveConference::");
-            //check fields
             if (Array.isArray(self.conference().mFigs())) {
                 self.conference().mFigs(0);
             }
-            if (self.conference().mAbsLeng() == null){
+            if (self.conference().mAbsLeng() === null || self.conference().mAbsLeng() === undefined) {
                 self.conference().mAbsLeng(500);
-            } else if (self.conference().mAbsLeng() == 0) {
-                self.setError("danger", "Abstract length has to be larger than zero.");
+            }
+            if (self.conference().mAbsLeng() == 0) {
+                self.setError("danger", "Abstract length has to be larger than zero");
                 return;
             }
-            if (self.conference().short() == null) {
-                self.conference().short(self.conference().name().match(/\b(\w)/g).join('').toUpperCase());
+            if (self.conference().short() === null || self.conference().short() === undefined) {
+                self.conference().short(self.conference().name().match(/\b(\w)/g).join("").toUpperCase());
             }
-            if (self.conference().short().replace(/\s/g,'') == '') {
-                self.setError("danger", "Conference short cannot be empty.");
+            if (self.conference().short().replace(/\s/g, "") === "") {
+                self.setError("danger", "Conference short cannot be empty");
                 return;
             }
 
             if (self.conference().groups().length > 0) {
-                for (var i = 0; i <= self.conference().groups().length; i++) {
+                for (var i = 0; i < self.conference().groups().length; i++) {
                     var curr = self.conference().groups()[i];
-                    if (!/^\d+$/.test(curr.prefix())) {
+
+                    var checkPref = curr.prefix() !== null && curr.prefix() !== undefined && curr.prefix() !== "";
+                    var checkShort = curr.short() !== null && curr.short() !== undefined && curr.short() !== "";
+                    var checkFull =  curr.name() !== null && curr.name() !== undefined && curr.name() !== "";
+
+                    if (!checkPref || !checkShort || !checkFull) {
+                        self.setError("danger", "Prefix, short and long entries have to be provided!");
+                        return;
+                    } else if (!/^\d+$/.test(curr.prefix())) {
                         self.setError("danger", "Prefix can only contain numbers!");
                         return;
                     } else if (/^\d+$/.test(curr.name())) {
@@ -304,8 +306,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 }
             }
 
-            if (!(self.oldShort == self.conference().short()) && self.otherConfShorts().indexOf(self.conference().short()) >= 0 ) {
-                console.log(self.oldShort + ', NEW: ' + self.conference().short() + ' ' + self.otherConfShorts().indexOf(self.conference().short()));
+            if (!(self.oldShort === self.conference().short()) && self.otherConfShorts().indexOf(self.conference().short()) >= 0) {
                 self.setError("danger", "Conference short is already in use. Please choose a different one.");
                 return;
             }
@@ -313,7 +314,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             var method = self.conference().uuid === null ? "POST" : "PUT";
             var url = "/api/conferences" + (self.conference().uuid === null ? "" : "/" + self.conference().uuid);
             var confData = self.conference().toJSON();
-            console.log(confData);
             self.isLoading("Saving conference data.");
             $.ajax(url, {
                 data: confData,
@@ -321,11 +321,10 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 contentType: "application/json",
                 success: function (result) {
                     self.onConferenceData(result);
-                    self.setError("info", "Changes saved")
+                    self.setError("info", "Changes saved");
                 },
                 error: self.ioFailHandler
             });
-
         };
 
         self.isConferenceSaved = ko.computed(function() {
@@ -337,20 +336,19 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         });
 
         self.uploadSpecificField = function (url, fieldName, fieldValue, conType, successMsg, errorMsg) {
-            if( self.conference().uuid === null ) {
-                console.log("Conference does not exist yet.");
-                self.setError("danger", "Please create conference before uploading "+ fieldName +" information.");
+            if (self.conference().uuid === null) {
+                self.setError("danger", "Please create conference before uploading " + fieldName + " information.");
             } else {
-                self.isLoading("Uploading "+ fieldName +" data.");
+                self.isLoading("Uploading " + fieldName + " data.");
                 $.ajax(url, {
                     data: fieldValue,
                     type: "PUT",
                     contentType: conType,
                     success: function() {
-                        self.setError("info", successMsg)
+                        self.setError("info", successMsg);
                     },
                     error: function() {
-                        self.setError("danger", errorMsg)
+                        self.setError("danger", errorMsg);
                     }
                 });
             }
@@ -391,14 +389,10 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
     }
 
     $(document).ready(function() {
-
         var data = tools.hiddenData();
-
-        console.log(data.conferenceUuid, data.accountUuid);
 
         window.dashboard = adminConferenceViewModel(data.conferenceUuid, data.accountUuid);
         window.dashboard.init();
     });
-
 });
 });

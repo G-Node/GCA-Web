@@ -15,40 +15,40 @@
           \____|     |_| \_|\___/ \__,_|\___|
 
           Brought to you by the German Neuroinformatics Node (G-Node) @@gnode
-          Copyright (c) 2013,2014,2018 G-Node
+          Copyright (c) 2013,2014,2019 G-Node
           License: BSD-4 clause and Apache 2.0 (see http://www.apache.org/licenses/LICENSE-2.0.html)
           Authors: Christian Garbers <christian@@stuebeweg50.de>
                    Christian Kellner <kellner@@bio.lmu.de>
                    Andrey Sobolev <sobolev.andrey@@gmail.com>
+                   Michael Sonntag <sonntag@@bio.lmu.de>
                    Adrian Stoewer <adrian.stoewer@@rz.ifi.lmu.de>
 
     -->
     <title>@conference.map(_.name).getOrElse("G-Node Conference Application Suite")</title>
 
-    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/g-node-bootstrap.play.css")" />
-    <script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>
-    <link rel="stylesheet" href="@routes.Assets.at("lib/jquery-ui/jquery-ui.min.css")" />
-    <script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
+    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/g-node-bootstrap.play.css")' />
+    <script type="text/javascript" src='@routes.Assets.at("lib/jquery/jquery.min.js")'></script>
+    <link rel="stylesheet" href='@routes.Assets.at("lib/jquery-ui/jquery-ui.min.css")' />
+    <script type="text/javascript" src='@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")'></script>
 
     <!-- project fonts -->
     <link href='//fonts.googleapis.com/css?family=EB+Garamond|Open+Sans' rel='stylesheet' type='text/css'>
 
     <!-- project stylesheet -->
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/layout.css")">
-    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+    <link rel="stylesheet" media="screen" href='@routes.Assets.at("stylesheets/layout.css")'>
+    <link rel="shortcut icon" type="image/png" href='@routes.Assets.at("images/favicon.png")'>
 
     <!-- Timepicker for jQuery -->
     <link rel="stylesheet" media="screen" href="//cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.1/jquery-ui-timepicker-addon.min.css">
 
     <!-- DHTMLX scheduler -->
-    <script src="@routes.Assets.at("javascripts/lib/scheduler/dhtmlxscheduler.js")" type="text/javascript"></script>
-    <script src="@routes.Assets.at("javascripts/lib/scheduler/ext/dhtmlxscheduler_readonly.js")" type="text/javascript"></script>
-    <link rel="stylesheet" href="@routes.Assets.at("javascripts/lib/scheduler/dhtmlxscheduler.css")" type="text/css">
+    <script src='@routes.Assets.at("javascripts/lib/scheduler/dhtmlxscheduler.js")' type="text/javascript"></script>
+    <script src='@routes.Assets.at("javascripts/lib/scheduler/ext/dhtmlxscheduler_readonly.js")' type="text/javascript"></script>
+    <link rel="stylesheet" href='@routes.Assets.at("javascripts/lib/scheduler/dhtmlxscheduler.css")' type="text/css">
 
     <!-- leaflet.js for open street map -->
-    <link rel="stylesheet" href="@routes.Assets.at("javascripts/lib/leaflet/leaflet.css")"/>
-    <script src="@routes.Assets.at("javascripts/lib/leaflet/leaflet.js")"></script>
-
+    <link rel="stylesheet" href='@routes.Assets.at("javascripts/lib/leaflet/leaflet.css")'/>
+    <script src='@routes.Assets.at("javascripts/lib/leaflet/leaflet.js")'></script>
 
     <!-- MathJax support -->
     @components.mathjax()
@@ -65,7 +65,7 @@
     <link rel="manifest" href="/manifest.json">
 
     <!-- offline support -->
-    <script src="@routes.Assets.at("javascripts/lib/update-storage.js")" type="text/javascript"></script>
+    <script src='@routes.Assets.at("javascripts/lib/update-storage.js")' type="text/javascript"></script>
 
     <!-- smart app banner -->
     @conference.map { conf =>
@@ -75,151 +75,166 @@
     }
 </head>
 <body>
-
     <div class="container">
     <!-- navigation -->
-    <div class="navbar navbar-default">
 
-            <div class="navbar-header">
-                <!-- toggle nav button for small screens -->
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <!-- left hand side brand / icon -->
-                <a class="navbar-brand" href="/">
-                    <span class="glyphicon glyphicon-home"></span>
-                    @if(conference.isEmpty) {
-                        Conference abstracts and submission
-                    }
-                </a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-
-                    @conference.map { conf =>
-                        <li class=@if(active.toLowerCase == "conference") {"active"} else {""}>
-                            <a href="@routes.Application.conference(conf.short)"> @conference.get.short</a>
-                        </li>
-
-                        @if(conf.schedule != null && conf.schedule.length > 0
-                                && Json.parse(conf.schedule).asOpt[List[JsValue]] != None
-                                && Json.parse(conf.schedule).as[List[JsValue]].length > 0) {
-                            <li class=@if(active.toLowerCase == "conferenceschedule") {"active"} else {""}>
-                                <a href="@routes.Application.schedule(conf.short)">Schedule</a>
-                            </li>
-                        }
-
-                        @if(conf.isPublished) {
-                            <li class=@if(active.toLowerCase == "abstracts") {"active"} else {""}>
-                            <a href="@routes.Application.abstractsPublic(conf.short)">Abstracts</a>
-                            </li>
-                        }
-
-                    @if(conf.geo != null && conf.geo.length > 0
-                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
-                            && Json.parse(conf.geo).as[List[JsValue]].length > 0){
-                        <li class=@if(active.toLowerCase == "locations") {"active"} else{""} >
-                            <a href="@routes.Application.locations(conf.short)">Locations</a>
-                        </li>
-                    }
-
-                    @if(conf.geo != null && conf.geo.length > 0
-                            && Json.parse(conf.geo).asOpt[List[JsValue]] != None
-                            && Json.parse(conf.geo).as[List[JsValue]].length > 0
-                            && (Json.parse(conf.geo) \\ "floorplans").size > 0){
-                        <li class=@if(active.toLowerCase == "floorplans") {"active"} else {""}>
-                            <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
-                        </li>
-                    }
-
-                    @if(conference.get.isOpen && account.isDefined) {
-                            <li class=@if(active.toLowerCase == "submission") {"active"} else {""}>
-                                <a href="@routes.Application.submission(conf.short)">Submission</a>
-                            </li>
-                        }
-
-                        @account.map { acc =>
-                            <li class=@if(active.toLowerCase == "myabstracts") {"active"} else {""}>
-                                <a href="@routes.Application.abstractsPrivate()">My Abstracts</a>
-                            </li>
-                        }
-
-                        @account.map { acc =>
-                            <li class=@if(active.toLowerCase == "favouriteabstracts") {"active"} else {""}>
-                                <a href="@routes.Application.abstractsFavourite()">Favourite Abstracts</a>
-                            </li>
-                        }
-                    }
-
-                    @if(conference.isEmpty && active) {
-                        <li class="active"><a>@active</a></li>
-                    }
-
-                </ul>
-
-
-                <ul class="nav navbar-nav navbar-right">
-                    @account.map { acc =>
-                        <li class="dropdown">
-                            <a href="#" id="usermenu" role="button" class="dropdown-toggle" data-toggle="dropdown">
-                                @acc.firstName @acc.lastName (@acc.mail)
-                            <b class="caret"></b>
-                            </a>
-
-                            <ul class="dropdown-menu" role="menu" aria-labelledby="usermenu">
-                                <li role="presentation">
-                                    <a role="menuitem" tabindex="-1" href="@routes.Application.abstractsPrivate()">My Abstracts</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li role="presentation" class="dropdown-header">My Settings</li>
-                                <li role="presentation">
-                                    <a role="menuitem" tabindex="-1" href="/password">Change password</a>
-                                    <a role="menuitem" tabindex="-1" href="/mail">Change Email</a>
-                                </li>
-                                <li class="divider"></li>
-                                @if(acc.isAdmin) {
-                                    <li role="presentation" class="dropdown-header">Site Admin</li>
-                                    <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href="@routes.Application.createConference()">Create Conference</a>
+    <div class="container">
+        <div class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="navbar-header">
+                        <!-- toggle nav button for small screens -->
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <!-- left hand side brand / icon -->
+                        <a class="navbar-brand" href="/">
+                            <span class="glyphicon glyphicon-home"></span>
+                            Conference abstracts and submission
+                        </a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            @if(account.isDefined) {
+                                @account.map { acc =>
+                                    <li class=@if(active.toLowerCase == "my abstracts") {"active"} else {""}>
+                                        <a href="@routes.Application.abstractsPrivate()">My Abstracts</a>
                                     </li>
-                                    <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href="@routes.Application.adminAccounts()">Accounts</a>
-                                    </li>
-
-                                    <li class="divider"></li>
                                 }
 
+                                @account.map { acc =>
+                                    <li class=@if(active.toLowerCase == "my favourites") {"active"} else {""}>
+                                        <a href="@routes.Application.abstractsFavourite()">My Favourites</a>
+                                    </li>
+                                }
+                            }
+
+                            @if(conference.isEmpty && active) {
+                                @if(!active.toLowerCase == "my abstracts" && !active.toLowerCase == "my favourites") {
+                                    <li class="active"><a>@active</a></li>
+                                }
+                            }
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            @account.map { acc =>
+                                <li class="dropdown">
+                                    <!-- Currently there is no other occurrence on the page where the user email address is shown -->
+                                    <a href="#" id="usermenu" role="button" class="dropdown-toggle" data-toggle="dropdown">
+                                        @acc.firstName @acc.lastName (@acc.mail)
+                                        <b class="caret"></b>
+                                    </a>
+
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="usermenu">
+                                        <li role="presentation">
+                                            <a role="menuitem" tabindex="-1" href="@routes.Application.abstractsPrivate()">My Abstracts</a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li role="presentation" class="dropdown-header">My Settings</li>
+                                        <li role="presentation">
+                                            <a role="menuitem" tabindex="-1" href="/password">Change password</a>
+                                            <a role="menuitem" tabindex="-1" href="/mail">Change Email</a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        @if(acc.isAdmin) {
+                                            <li role="presentation" class="dropdown-header">Site Admin</li>
+                                            <li role="presentation">
+                                                <a role="menuitem" tabindex="-1" href="@routes.Application.createConference()">Create Conference</a>
+                                            </li>
+                                            <li role="presentation">
+                                                <a role="menuitem" tabindex="-1" href="@routes.Application.adminAccounts()">Accounts</a>
+                                            </li>
+
+                                            <li class="divider"></li>
+                                        }
+
+                                        @conference.map { conf =>
+                                          @if(acc.isAdmin || conf.isOwner(acc)) {
+                                              <li role="presentation" class="dropdown-header">Conference Admin</li>
+                                              <li role="presentation">
+                                                  <a role="menuitem" tabindex="-1" href="@routes.Application.adminAbstracts(conf.uuid)">Conference Abstracts</a>
+                                              </li>
+                                              <li role="presentation">
+                                                  <a role="menuitem" tabindex="-1" href="@routes.Application.adminConference(conf.uuid)">Conference Settings</a>
+                                              </li>
+                                              <li class="divider"></li>
+                                          }
+                                        }
+
+                                        <li role="presentation">
+                                            <a role="menuitem" tabindex="-1" href="@routes.Accounts.logOut()">Logout</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+
+                            @if(account.isEmpty && !("login" :: "register" :: Nil).contains(active.toLowerCase)) {
+                                <li><a href="@routes.Accounts.logIn()">Login</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+                @if(!conference.isEmpty){
+                    <div class="row">
+                        <div class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav">
                                 @conference.map { conf =>
+                                    <li class=@if(active.toLowerCase == "conference") {"active"} else {""}>
+                                        <a href="@routes.Application.conference(conf.short)"> @conference.get.short</a>
+                                    </li>
 
-                                  @if(acc.isAdmin || conf.isOwner(acc)) {
-                                      <li role="presentation" class="dropdown-header">Conference Admin</li>
-                                      <li role="presentation">
-                                          <a role="menuitem" tabindex="-1" href="@routes.Application.adminAbstracts(conf.uuid)">Conference Abstracts</a>
-                                      </li>
-                                      <li role="presentation">
-                                          <a role="menuitem" tabindex="-1" href="@routes.Application.adminConference(conf.uuid)">Conference Settings</a>
-                                      </li>
-                                      <li class="divider"></li>
-                                  }
+                                    @if(conf.schedule != null && conf.schedule.length > 0
+                                    && Json.parse(conf.schedule).asOpt[List[JsValue]] != None
+                                    && Json.parse(conf.schedule).as[List[JsValue]].length > 0) {
+                                        <li class=@if(active.toLowerCase == "conferenceschedule") {"active"} else {""}>
+                                            <a href="@routes.Application.schedule(conf.short)">Schedule</a>
+                                        </li>
+                                    }
 
+                                    @if(conf.isPublished) {
+                                        <li class=@if(active.toLowerCase == "abstracts") {"active"} else {""}>
+                                            <a href="@routes.Application.abstractsPublic(conf.short)">Abstracts</a>
+                                        </li>
+                                    }
+
+                                    @if(conf.geo != null && conf.geo.length > 0
+                                    && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                                    && Json.parse(conf.geo).as[List[JsValue]].length > 0) {
+                                        <li class=@if(active.toLowerCase == "locations") {"active"} else{""} >
+                                            <a href="@routes.Application.locations(conf.short)">Locations</a>
+                                        </li>
+                                    }
+
+                                    @if(conf.geo != null && conf.geo.length > 0
+                                    && Json.parse(conf.geo).asOpt[List[JsValue]] != None
+                                    && Json.parse(conf.geo).as[List[JsValue]].length > 0
+                                    && (Json.parse(conf.geo) \\ "floorplans").size > 0) {
+                                        <li class=@if(active.toLowerCase == "floorplans") {"active"} else {""}>
+                                            <a href="@routes.Application.floorplans(conf.short)">Floorplans</a>
+                                        </li>
+                                    }
+
+                                    @if(conf.link != null && conf.link.length > 0) {
+                                        <li>
+                                            <a href="@conf.link">Conference home</a>
+                                        </li>
+                                    }
+
+                                    @if(conference.get.isOpen && account.isDefined) {
+                                        <li class=@if(active.toLowerCase == "submission") {"active"} else {""}>
+                                            <a href="@routes.Application.submission(conf.short)">Submission</a>
+                                        </li>
+                                    }
                                 }
-
-                                <li role="presentation">
-                                    <a role="menuitem" tabindex="-1" href="@routes.Accounts.logOut()">Logout</a>
-                                </li>
-
                             </ul>
-                        </li>
-                    }
-
-                    @if(account.isEmpty && !("login" :: "register" :: Nil).contains(active.toLowerCase)) {
-                        <li><a href="@routes.Accounts.logIn()">Login</a></li>
-                    }
-                </ul>
-            </div><!--/.nav-collapse -->
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
 
@@ -233,16 +248,16 @@
             <div class="row">
                 <div class="pull-left">
                     <ul class="list-inline">
+                        <li><a href="@routes.Application.about">About</a></li>
                         <li><a href="@routes.Application.contact">Contact</a></li>
                         <li><a href="@routes.Application.impressum">Imprint</a></li>
-                        <li><a href="@routes.Application.about">About</a></li>
+                        <li><a href="@routes.Application.datenschutz">Datenschutz</a></li>
                     </ul>
                 </div>
-                <div class="pull-right"><p>The G-Node Conference Site &mdash; © <a href="http://www.g-node.org">G-Node</a> 2018 </p></div>
+                <div class="pull-right"><p>The G-Node Conference Site &mdash; © <a href="http://www.g-node.org">G-Node</a> 2019 </p></div>
             </div>
         </div>
     </div>
-
 
 </body>
 </html>

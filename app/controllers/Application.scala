@@ -33,7 +33,6 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
     Ok("Hello %s".format(userName))
   }
 
-
   def submission(id: String) = UserAwareAction { implicit request => // TODO should be a secure action
     val user: Account = request.identity match {
       case Some(id: Login) => id.account
@@ -45,9 +44,13 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
   }
 
   def edit(id: String) = SecuredAction { implicit request =>
-    val abstr = abstractService.getOwn(id, request.identity.account)
+    try {
+      val abstr = abstractService.getOwn(id, request.identity.account)
 
-    Ok(views.html.submission(request.identity.account, abstr.conference, Option(abstr)))
+      Ok(views.html.submission(request.identity.account, abstr.conference, Option(abstr)))
+    } catch {
+      case ia: IllegalAccessException => Forbidden(views.html.error.NotAuthorized())
+    }
   }
 
   def abstractsPublic(confId: String) = UserAwareAction { implicit request =>
@@ -111,6 +114,10 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
 
   def impressum = UserAwareAction { implicit request =>
     Ok(views.html.impressum(request.identity.map{ _.account }))
+  }
+
+  def datenschutz = UserAwareAction { implicit request =>
+    Ok(views.html.datenschutz(request.identity.map{ _.account }))
   }
 
   def about = UserAwareAction { implicit request =>
@@ -188,12 +195,13 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
 
     Ok(
       s"""CACHE MANIFEST
-         |# v1.0.1
+         |# v1.0.2
          |# Views
          |/conferences
          |/contact
          |/about
          |/impressum
+         |/datenschutz
          |# Assets
          |/assets/manifest.json
          |/assets/lib/momentjs/moment.js
@@ -243,6 +251,7 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
          |# View Models
          |/assets/javascripts/abstract-list.js
          |/assets/javascripts/abstract-viewer.js
+         |/assets/javascripts/abstract-favourite.js
          |/assets/javascripts/browser.js
          |/assets/javascripts/conference-schedule.js
          |/assets/javascripts/config.js

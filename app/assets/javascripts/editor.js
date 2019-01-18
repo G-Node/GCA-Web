@@ -13,8 +13,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
      * @constructor
      */
     function EditorViewModel(confId, abstrId) {
-
-        if (! (this instanceof EditorViewModel)) {
+        if (!(this instanceof EditorViewModel)) {
             return new EditorViewModel(confId, abstrId);
         }
 
@@ -31,7 +30,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
         self.selectedType = ko.observable(null);
 
         // autosave label
-        self.autosave = ko.observable({text: "Loading", css:"label-primary"});
+        self.autosave = ko.observable({text: "Loading", css: "label-primary"});
 
         // required to set displayed modal header
         self.modalHeader = ko.observable(null);
@@ -42,11 +41,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         // only required when a new figure is added
         self.newFigure = {
-            file: null,
-            caption: null
+            file: null
         };
 
-        // required to affiliate and author with a department
+        self.newFigureCaption = ko.observable(null);
+
+        // required to affiliate an author with a department
         self.selectedAffiliationAuthor = 0;
 
         // just a shortcut
@@ -66,9 +66,21 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self
         );
 
+        self.latexInTitle = ko.computed(
+            function () {
+                var checkTitle = /.*\$.*\$.*/;
+                if (self.editedAbstract() && self.editedAbstract().title() && checkTitle.test(self.editedAbstract().title())) {
+                    return "Please avoid using LaTeX code in the abstract title";
+                } else {
+                    return "";
+                }
+            },
+            self
+        );
+
         self.showAbstractTextCharsLeft = ko.computed(
             function () {
-                var textCharLimit = $('#text').attr('maxLength');
+                var textCharLimit = $("#maxLenPrepText").text();
                 if (self.editedAbstract() && self.editedAbstract().text() && textCharLimit !== undefined) {
                     return true;
                 } else {
@@ -80,7 +92,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         self.editorTextCharactersLeft = ko.computed(
             function () {
-                var textCharLimit = $('#text').attr('maxLength');
+                var textCharLimit = $("#maxLenPrepText").text();
                 if (self.editedAbstract() && self.editedAbstract().text() && textCharLimit !== undefined) {
                     return textCharLimit - self.editedAbstract().text().length;
                 } else {
@@ -92,7 +104,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         self.showAckCharsLeft = ko.computed(
             function () {
-                var ackCharLimit = $('#acknowledgements').attr('maxLength');
+                var ackCharLimit = $("#maxLenPrepAck").text();
                 if (self.editedAbstract() && self.editedAbstract().acknowledgements() && ackCharLimit !== undefined) {
                     return true;
                 } else {
@@ -104,7 +116,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         self.editorAckCharactersLeft = ko.computed(
             function () {
-                var ackCharLimit = $('#acknowledgements').attr('maxLength');
+                var ackCharLimit = $("#maxLenPrepAck").text();
                 if (self.editedAbstract() && self.editedAbstract().acknowledgements() && ackCharLimit !== undefined) {
                     return ackCharLimit - self.editedAbstract().acknowledgements().length;
                 } else {
@@ -113,33 +125,31 @@ function (ko, models, tools, msg, validate, owned, astate) {
             },
             self
         );
-        
-        // hide edit buttons, if the abstract is in any state other
-        // than "InPreparation" or "InRevision"
+
+        // Hide edit buttons if the abstract is in any state other than "InPreparation" or "InRevision"
         self.showEditButton = ko.computed(
             function () {
-                var ok = ['InPreparation', 'InRevision'];
-                return !self.isAbstractSaved() || (ok.indexOf(self.abstract().state()) > -1);
+                var ok = ["InPreparation", "InRevision"];
+                return !self.isAbstractSaved() || ok.indexOf(self.abstract().state()) > -1;
             },
             self
         );
 
         // validation
-
-        self.checkRemovePresPref = function( warnings ){
-            if( ! self.conference().hasPresentationPrefs ) {
+        self.checkRemovePresPref = function (warnings) {
+            if (!self.conference().hasPresentationPrefs) {
                 warnings.forEach(function (currWarning) {
-                    if(currWarning.match('presentation')){
+                    if (currWarning.match("presentation")) {
                         warnings.splice(warnings.indexOf(currWarning), 1);
                     }
                 });
             }
-        }
+        };
 
         self.validity = ko.computed(
             function() {
                 var abstract = self.abstract();
-                if (abstract == null) {
+                if (abstract === null || abstract === undefined) {
                     return {
                         ok: true,
                         isError: false,
@@ -192,11 +202,10 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
         self.init = function () {
-
             if (confId) {
                 self.requestConference(confId);
             }
-            if( abstrId ) {
+            if (abstrId) {
                 self.requestAbstract(abstrId);
             } else {
                 self.abstract(models.ObservableAbstract());
@@ -205,8 +214,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
             }
 
             ko.applyBindings(window.editor);
-            MathJax.Hub.Configured(); //start MathJax
 
+            // start MathJax
+            MathJax.Hub.Configured();
         };
 
         self.getEditorAuthorsForAffiliation = function (index) {
@@ -225,19 +235,17 @@ function (ko, models, tools, msg, validate, owned, astate) {
             function () {
                 // dirty workaround part 2
                 var _x = self.abstrGrChangeWatch();
-                try{
-                    return self.conference().group==="BCCN" &&
-                        self.abstract().abstrTypes()[0].name==="Talk or Poster";
-                }
-                catch(err) {
-                    return false
+                try {
+                    return self.conference().group === "BCCN" &&
+                        self.abstract().abstrTypes()[0].name === "Talk or Poster";
+                } catch (err) {
+                    return false;
                 }
             },
             self
         );
 
         self.requestConference = function (confId) {
-
             $.ajax({
                 async: false,
                 url: "/api/conferences/" + confId,
@@ -255,11 +263,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
             function fail() {
                 self.setError("Error", "Unable to request the conference: uuid = " + confId);
             }
-
         };
 
         self.requestAbstract = function (abstrId) {
-
             $.ajax({
                 async: false,
                 url: "/api/abstracts/" + abstrId,
@@ -273,27 +279,26 @@ function (ko, models, tools, msg, validate, owned, astate) {
             function success(obj) {
                 self.abstract(models.ObservableAbstract.fromObject(obj));
                 self.editedAbstract(self.abstract());
-                self.autosave({text: 'Ok', css: 'label-success'});
+                self.autosave({text: "Ok", css: "label-success"});
                 self.fetchStateLog();
                 self.setupOwners("/api/abstracts/" + abstrId + "/owners", self.setError);
                 self.loadOwnersData(null);
             }
 
             function fail() {
-                self.autosave({text: 'Error', css: 'btn-danger'});
+                self.autosave({text: "Error", css: "btn-danger"});
                 self.setError("Error", "Unable to request the abstract: uuid = " + abstrId);
             }
-
         };
 
-        self.abstrTypeChanged = function(abstrType){
-            // Workaround as long as we have allowed only one Abstract type
+        self.abstrTypeChanged = function(abstrType) {
+            // Workaround as long as we allow only one Abstract type
             self.editedAbstract().abstrTypes().pop();
             self.editedAbstract().abstrTypes().push(abstrType);
             self.abstract().abstrTypes().pop();
             self.abstract().abstrTypes().push(abstrType);
             self.abstrGrChangeWatch.valueHasMutated();
-            if(!self.showReason()) {
+            if (!self.showReason()) {
                 self.editedAbstract().reasonForTalk(null);
             }
             // needs to return true to enable default click action on the radio buttons (select)
@@ -305,18 +310,17 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
         self.figureUpload = function (callback) {
-
-            var json = {caption: self.newFigure.caption},
+            var json = {caption: self.newFigureCaption()},
                 files = self.newFigure.file,
                 data = new FormData();
 
             if (files) {
                 var fileName = files.name,
                     fileSize = files.size,
-                    splitted = fileName.split('.'),
+                    splitted = fileName.split("."),
                     ending = splitted[splitted.length - 1].toLowerCase();
 
-                if (['jpeg', 'jpg', 'gif', 'giff', 'png'].indexOf(ending) < 0) {
+                if (["jpeg", "jpg", "gif", "giff", "png"].indexOf(ending) < 0) {
                     self.setError("Error", "Figure file format not supported (only jpeg, gif or png is allowed).");
                     return;
                 }
@@ -326,12 +330,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     return;
                 }
 
-                data.append('file', files);
-                data.append('figure', JSON.stringify(json));
+                data.append("file", files);
+                data.append("figure", JSON.stringify(json));
 
                 $.ajax({
-                    url: '/api/abstracts/' + self.abstract().uuid + '/figures',
-                    type: 'POST',
+                    url: "/api/abstracts/" + self.abstract().uuid + "/figures",
+                    type: "POST",
                     dataType: "json",
                     data: data,
                     processData: false,
@@ -343,9 +347,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
             }
 
             function success(obj, stat, xhr) {
-
                 self.newFigure.file = null;
-                self.newFigure.caption = null;
+                self.newFigureCaption(null);
 
                 if (callback) {
                     callback(obj, stat, xhr);
@@ -370,67 +373,70 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         contentType: "application/json",
                         dataType: "json",
                         data: figure.toJSON(),
+                        success: success,
                         processData: false,
                         error: fail,
                         cache: false
                     });
                 }
-            )
+            );
+
+            // Fetch abstract to avoid stale figure caption
+            function success() {
+                self.requestAbstract(self.abstract().uuid);
+                self.autosave({text: "Ok", css: "label-success"});
+            }
+
             function fail() {
                 self.setError("Error", "Unable to update caption");
             }
         };
 
         self.doRemoveFigure = function (figure) {
-
             if (self.hasAbstractFigures()) {
-                self.autosave({text: 'Saving', css: 'label-warning'});
+                self.autosave({text: "Saving", css: "label-warning"});
 
                 $.ajax({
-                    url: '/api/figures/' + figure.uuid,
-                    type: 'DELETE',
+                    url: "/api/figures/" + figure.uuid,
+                    type: "DELETE",
                     dataType: "json",
                     success: success,
                     error: fail,
                     cache: false
-                })
+                });
             } else {
                 self.setWarning("Error", "Unable to delete figure: abstract has no figure", true);
             }
 
             function success() {
-                $("#figure-update-caption").val(null);
                 self.newFigure.file = null;
-                self.newFigure.caption = null;
+                // If a figure was removed, keep the caption around in
+                // case a user just wants to update the figure itself.
+                self.newFigureCaption($("#figure-update-caption").val());
 
                 self.requestAbstract(self.abstract().uuid);
-                self.autosave({text: 'Ok', css: 'label-success'});
+                self.autosave({text: "Ok", css: "label-success"});
             }
 
             function fail() {
                 self.setError("Error", "Unable to delete the figure");
-                self.autosave({text: 'Error!', css: 'label-danger'});
+                self.autosave({text: "Error!", css: "label-danger"});
             }
         };
 
-
         self.doSaveAbstract = function (abstract) {
-
             if (!(abstract instanceof models.ObservableAbstract)) {
                 abstract = self.abstract();
             }
 
             var result = validate.abstract(abstract);
-
             if (result.hasErrors()) {
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
                 return;
             }
 
-            self.autosave({text: 'Saving', css: 'label-warning'});
-
+            self.autosave({text: "Saving", css: "label-warning"});
             if (self.isAbstractSaved()) {
-
                 if (self.hasAbstractFigures()) {
                     self.doUpdateFigure();
                 }
@@ -446,9 +452,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     data: abstract.toJSON(),
                     cache: false
                 });
-
             } else if (confId) {
-
                 $.ajax({
                     async: false,
                     url: "/api/conferences/" + confId + "/abstracts",
@@ -460,7 +464,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     data: abstract.toJSON(),
                     cache: false
                 });
-
             } else {
                 self.setError("Error", "Conference id or abstract id must be defined. This is a bug: please report!");
             }
@@ -473,13 +476,13 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 var hasNoFig = !self.hasAbstractFigures(),
                     hasFigData = self.newFigure.file ? true : false;
                     if (hasFigData) {
-                    //success fig is a function callback...
+                    // successFig is a function callback
                     self.figureUpload(successFig);
                 } else {
-                    self.autosave({text: 'Ok', css: 'label-success'});
+                    self.autosave({text: "Ok", css: "label-success"});
                 }
 
-                if (! self.stateLog()) {
+                if (!self.stateLog()) {
                     self.fetchStateLog();
                 }
 
@@ -495,15 +498,15 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             function successFig() {
                 self.requestAbstract(self.abstract().uuid);
-                self.autosave({text: 'Ok', css: 'label-success'});
+                self.autosave({text: "Ok", css: "label-success"});
             }
 
             function fail() {
                 self.setError("Error", "Unable to save abstract!");
-                self.autosave({text: 'Error!', css: 'label-danger'});
+                self.autosave({text: "Error!", css: "label-danger"});
             }
         };
-        
+
         self.doStartEdit = function (editorId) {
             var ed = $(editorId).find("input").first();
             ed.focus();
@@ -512,32 +515,28 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self.editedAbstract(models.ObservableAbstract.fromObject(obj));
 
             // load corresponding script for modal header
-            self.modalHeader("header-"+ editorId.replace('#',''));
+            self.modalHeader("header-" + editorId.replace("#", ""));
             // load corresponding script for modal body
-            self.modalBody("body-"+ editorId.replace('#',''));
+            self.modalBody("body-" + editorId.replace("#", ""));
             // load corresponding script for modal footer (wow, I am such a useful comment)
             self.modalFooter("generalModalFooter");
         };
 
-
         self.doEndEdit = function () {
-
             if (self.isAbstractSaved()) {
-                self.doSaveAbstract(self.editedAbstract())
+                self.doSaveAbstract(self.editedAbstract());
             } else {
                 self.abstract(self.editedAbstract());
             }
 
-            //re-do Math typesetting, TODO: do this at a more sensible place
+            // re-do Math typesetting, TODO: do this at a more sensible place
             MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
         };
-
 
         self.doEditAddAuthor = function () {
             var author = models.ObservableAuthor();
             self.editedAbstract().authors.push(author);
         };
-
 
         self.doEditRemoveAuthor = function (index) {
             index = index();
@@ -546,12 +545,10 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self.editedAbstract().authors(authors);
         };
 
-
         self.doEditAddAffiliation = function () {
             var affiliation = models.ObservableAffiliation();
             self.editedAbstract().affiliations.push(affiliation);
         };
-
 
         self.doEditRemoveAffiliation = function (index) {
             index = index();
@@ -559,7 +556,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 authors = self.editedAbstract().authors();
 
             affiliations.splice(index, 1);
-
 
             authors.forEach(function (author) {
                 var positions = author.affiliations(),
@@ -574,7 +570,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             self.editedAbstract().affiliations(affiliations);
         };
-
 
         /**
          * Add an affiliation position to an author.
@@ -605,7 +600,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self.selectedAffiliationAuthor = 0;
         };
 
-
         /**
          * Remove all affiliation positions for the authors affiliations array.
          *
@@ -624,11 +618,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
             author.affiliations(positions);
         };
 
-
         self.doEditAddReference = function () {
             self.editedAbstract().references.push(models.ObservableReference());
         };
-
 
         self.doEditRemoveReference = function (index) {
             index = index();
@@ -640,7 +632,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
         // state related functions go here
-
         self.successStateLog = function(logData) {
             astate.logHelper.formatDate(logData);
             self.stateLog(logData);
@@ -659,15 +650,16 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             if (toState === "Submitted") {
                 var result = validate.abstract(self.abstract());
+
                 self.checkRemovePresPref(result.warnings);
-                if (! result.ok()) {
+                if (!result.ok()) {
                     self.setError("Error", "Unable to submit: " +
                         (result.hasErrors() ? result.errors[0] : result.warnings[0]));
                     return;
                 }
             }
 
-            $.ajax("/api/abstracts/" + self.abstract().uuid + '/state', {
+            $.ajax("/api/abstracts/" + self.abstract().uuid + "/state", {
                 data: JSON.stringify(data),
                 type: "PUT",
                 contentType: "application/json",
@@ -691,7 +683,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 var saved = self.isAbstractSaved(),
                     open = self.conference() && self.conference().isOpen;
 
-                if (! saved) {
+                if (!saved) {
                     if (open) {
                         return {
                             label: "Save",
@@ -706,19 +698,19 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 var current = self.abstract().state();
                 var possible = self.stateHelper.getPossibleStatesFor(current, false, !open);
 
-                // for this to work, there must be a single next state,
-                //  with the exception of Withdrawn, which must *not* be
-                //  the first (cf. the state map in lib/astate)
+                // For this to work, there must be a single next state,
+                // with the exception of Withdrawn, which must *not* be
+                // the first (cf. the state map in lib/astate)
                 if (possible.length > 0) {
                     var next = possible[0];
-                    if (next === 'Submitted') {
+                    if (next === "Submitted") {
                         return {
                             label: "Submit",
                             level: "btn-danger",
                             action: function() { self.doChangeState(next); },
                             want: next
                         };
-                    } else if (next === 'InPreparation') {
+                    } else if (next === "InPreparation") {
                         return {
                             label: "Unlock",
                             level: "btn-danger",
@@ -746,9 +738,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             self
         );
 
-
-        // help
-
         self.submittedBefore = function() {
             if (!self.stateLog()) {
                 return false;
@@ -756,7 +745,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             var log = self.stateLog();
             for (var i = 0; i < log.length; i++) {
-                if (log[i].state == 'Submitted') {
+                if (log[i].state === "Submitted") {
                     return true;
                 }
             }
@@ -764,20 +753,22 @@ function (ko, models, tools, msg, validate, owned, astate) {
             return false;
         };
 
+        // help
         self.showHelp = function() {
             var open = self.conference() && self.conference().isOpen;
 
             if (!open) {
-                if (self.abstract().state == 'InRevision') {
+                if (self.abstract().state() === "InRevision") {
                     self.setInfo(
                         "Abstract revision",
-                        "Please revise your abstract and re-submit your abstract by" +
+                        "Please revise your abstract and re-submit your abstract by " +
                         "clicking <b>Submit</b>"
-                    )
+                    );
                 } else {
                     self.setWarning(
                         "Conference closed",
-                        "Conference is closed and the abstract can not be modified.")
+                        "Conference is closed and the abstract cannot be modified."
+                    );
                 }
             } if (!self.isAbstractSaved()) {
                 self.setInfo(
@@ -793,7 +784,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     "    bring up a dialog with issue details.</li>" +
                     "</ul>"
                 );
-            } else if (self.abstract().state() == 'InPreparation') {
+            } else if (self.abstract().state() === "InPreparation") {
                 if (self.submittedBefore()) {
                     self.setWarning("Abstract unlocked",
                         "<ul>" +
@@ -815,35 +806,29 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         "</ul>"
                     );
                 }
-            } else if (self.abstract().state() == 'Submitted') {
+            } else if (self.abstract().state() === "Submitted") {
                 self.setInfo(
                     "Abstract is submitted",
                     "<ul>" +
                     "<li>Changes are deactivated. Submitted abstracts can be modified until the" +
                     " deadline.</li>" +
                     "<li>To modify a submitted abstract, use the <b>Unlock</b> button.<br/></li>" +
-                    "</ul> <br/>" + 
-                    "<b> <u> Please note that abstract submission does not replace conference registration!</u> <br/>"+
-                    "All abstract submitters also have to register for the conference.</b><br/>"+
-                    "To register please go to: <a target=\"_blank\" href=\"" + self.conference().link + "\">" + self.conference().link + "</a>"
-                    )
+                    "</ul> <br/>" +
+                    "<b> <u> Please note that abstract submission does not replace conference registration!</u> <br/>" +
+                    "All abstract submitters also have to register for the conference.</b><br/>" +
+                    "To register please go to: <a target=\"_blank\" href=\"" +
+                    self.conference().link + "\">" + self.conference().link + "</a>"
+                );
             }
-
-        }
-
+        };
     }
 
     // start the editor
     $(document).ready(function () {
-
         var data = tools.hiddenData();
-
-        console.log(data["conferenceUuid"]);
-        console.log(data["abstractUuid"]);
 
         window.editor = EditorViewModel(data["conferenceUuid"], data["abstractUuid"]);
         window.editor.init();
     });
-
 });
 });

@@ -1,4 +1,4 @@
-self._cacheVersion = "v19";
+self._cacheVersion = "v20";
 
 self.resourcesToCache = [
     // Views
@@ -6,6 +6,7 @@ self.resourcesToCache = [
     "/contact",
     "/about",
     "/impressum",
+    "/datenschutz",
     // Assets
     "/assets/manifest.json",
     "/assets/lib/momentjs/moment.js",
@@ -55,6 +56,7 @@ self.resourcesToCache = [
     // view models
     "/assets/javascripts/abstract-list.js",
     "/assets/javascripts/abstract-viewer.js",
+    "/assets/javascripts/abstract-favourite.js",
     "/assets/javascripts/browser.js",
     "/assets/javascripts/conference-schedule.js",
     "/assets/javascripts/config.js",

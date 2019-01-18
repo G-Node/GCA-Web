@@ -14,6 +14,14 @@
       @text(form("identifier"), "Email", icon = "at")
       @password(form("password"), "Password", icon = "key")
 
+      <!-- Provide redirection after login from landing page /conferences -->
+      <script>
+        var ref = document.referrer;
+        if (ref !== null && ref !== undefined && ref.includes(window.location.hostname) && !ref.includes("/login")) {
+          window.sessionStorage.setItem("gca_ref", ref);
+        }
+      </script>
+
       <div class="form-group">
         <a href="@routes.Accounts.forgotPasswordPage()">Forgot password?</a>
         or

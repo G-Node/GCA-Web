@@ -1,14 +1,13 @@
 @(account: Account)
 
-@template(Some(account), None, "Abstracts") {
+@template(Some(account), None, "My Abstracts") {
 
     <div class="hidden-data">
         <div id="conference-uuid">@account.uuid</div>
     </div>
 
-    <script data-main="@routes.Assets.at("javascripts/userdash.js")"
-                  src="@routes.Assets.at("javascripts/require.js")"></script>
-
+    <script data-main='@routes.Assets.at("javascripts/userdash.js")'
+                  src='@routes.Assets.at("javascripts/require.js")'></script>
 
     <!-- Loading box -->
     <div data-bind="if: isLoading">
@@ -21,24 +20,23 @@
     <!-- Knockout !flickerbox  -->
     <div style="display: none" data-bind="visible: true">
 
-    <!-- Error message box -->
-    <div data-bind="visible: error">
-        <!-- ko with: error -->
-        <div class="alert alert-warning fade in alert-dismissable" data-bind="css: level">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <strong data-bind="html: message"></strong>
-        </div>
-        <!-- /ko -->
-    </div>
-
-
-    <div data-bind="foreach: conferences">
-        <div class="panel panel-default">
-            <div class="panel-heading" >
-                <a data-bind="attr: { href: link }">
-                    <h4 class="panel-title" data-bind="text: name"></h4>
-                </a>
+        <!-- Error message box -->
+        <div data-bind="visible: error">
+            <!-- ko with: error -->
+            <div class="alert alert-warning fade in alert-dismissable" data-bind="css: level">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <strong data-bind="html: message"></strong>
             </div>
+            <!-- /ko -->
+        </div>
+
+        <div data-bind="foreach: conferences">
+            <div class="panel panel-default">
+                <div class="panel-heading" >
+                    <a data-bind="attr: { href: localConferenceLink() }">
+                        <h4 class="panel-title" data-bind="text: name"></h4>
+                    </a>
+                </div>
                 <div class="panel-body">
                     <span data-bind="text: cite"></span>
                 </div>
@@ -50,9 +48,7 @@
                         </li>
                     </a>
                 </ul>
+            </div>
         </div>
     </div>
-
-    </div>
-
 }

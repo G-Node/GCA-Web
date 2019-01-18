@@ -11,7 +11,6 @@ require(["main"], function () {
          * @constructor
          */
         function ScheduleViewModel(confId) {
-
             if (!(this instanceof ScheduleViewModel)) {
                 return new ScheduleViewModel(confId);
             }
@@ -38,7 +37,8 @@ require(["main"], function () {
             self.infoChair = ko.observable(null);
             self.infoAuthors = ko.observable(null);
             self.schedule = null;
-            self.days = ko.observableArray([]); // dates of the conference
+            // dates of the conference
+            self.days = ko.observableArray([]);
 
             self.init = function () {
                 ko.applyBindings(window.schedule);
@@ -46,62 +46,56 @@ require(["main"], function () {
             };
 
             self.setError = function(level, text) {
-                self.error({message: text, level: 'alert-' + level});
+                self.error({message: text, level: "alert-" + level});
                 self.isLoading(false);
             };
 
             self.infoSetError = function(level, text) {
-                self.infoError({message: text, level: 'alert-' + level});
+                self.infoError({message: text, level: "alert-" + level});
                 self.infoIsLoadingAbstract(false);
             };
 
-            //Data IO
+            // Data IO
             self.ioFailHandler = function(jqxhr, textStatus, error) {
                 var err = textStatus + ", " + error;
-                console.log( "Request Failed: " + err );
-                self.setError("danger", "Error while fetching data from server: <br\\>" + error);
+                self.setError("danger", "Error while fetching data from server: <br\\>" + err);
             };
 
             self.infoIoFailHandler = function(jqxhr, textStatus, error) {
                 var err = textStatus + ", " + error;
-                console.log( "Request Failed: " + err );
-                self.infoSetError("danger", "Error while fetching data from server: <br\\>" + error);
+                self.infoSetError("danger", "Error while fetching data from server: <br\\>" + err);
             };
 
             self.loadConference = function(id) {
-                if(!self.isLoading()) {
+                if (!self.isLoading()) {
                     self.isLoading("Loading conference schedule.");
                 }
 
-                //now load the data from the server
-                var confURL ="/api/conferences/" + id;
+                var confURL = "/api/conferences/" + id;
                 offline.requestJSON(id, confURL, self.onConferenceData, self.ioFailHandler);
             };
 
-            //conference data
+            // Conference data
             self.onConferenceData = function (confObj) {
                 var conf = models.Conference.fromObject(confObj);
-                //now load the schedule data
                 offline.requestJSON(confObj.uuid + "schedule", confObj.schedule, self.onScheduleData, self.ioFailHandler);
             };
 
-            //schedule data
+            // Schedule data
             self.onScheduleData = function (scheduleObj) {
                 try {
                     self.schedule = models.Schedule.fromObject(scheduleObj);
 
                     var startingDate = self.schedule.getStart();
                     // Use the start of the day for comparisons.
-                    startingDate = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate())
-                    var numberOfDays = Math.ceil((self.schedule.getEnd() - startingDate) / (24*60*60*1000));
+                    startingDate = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate());
+                    var numberOfDays = Math.ceil((self.schedule.getEnd() - startingDate) / (24 * 60 * 60 * 1000));
 
                     for (var i = 0; i < numberOfDays; i++) {
-                        self.days.push(new Date(startingDate.getTime() + i*24*60*60*1000));
+                        self.days.push(new Date(startingDate.getTime() + i * 24 * 60 * 60 * 1000));
                     }
-                    /*
-                     * Initialising the scheduler must be the last step after loading
-                     * all the required data.
-                     */
+
+                    // Initialising the scheduler must be the last step after loading all the required data.
                     self.initScheduler();
                     self.isLoading(false);
                 } catch (e) {
@@ -133,7 +127,7 @@ require(["main"], function () {
                         }
                         self.infoIsLoadingAbstract(false);
                     }
-                };
+                }
             };
 
             /*
@@ -159,7 +153,7 @@ require(["main"], function () {
             self.expandEvent = function (id) {
                 if (self.canExpandEvent(id)) {
                     var event = window.dhtmlXScheduler.getEvent(id);
-                    (window.dhtmlXScheduler.getEvent(id)).getSplitEvents().forEach(function (splitEvent) {
+                    window.dhtmlXScheduler.getEvent(id).getSplitEvents().forEach(function (splitEvent) {
                         window.dhtmlXScheduler.addEvent(splitEvent);
                     });
                     window.dhtmlXScheduler.deleteEvent(id);
@@ -178,7 +172,7 @@ require(["main"], function () {
             // collapse a track or event
             self.collapseEvent = function (id) {
                 if (self.canCollapseEvent(id)) {
-                    var parentEvent = (window.dhtmlXScheduler.getEvent(id)).parentEvent;
+                    var parentEvent = window.dhtmlXScheduler.getEvent(id).parentEvent;
                     window.dhtmlXScheduler.addEvent(parentEvent);
                     var allEvents = window.dhtmlXScheduler.getEvents();
                     if (allEvents.length > 0) {
@@ -211,31 +205,33 @@ require(["main"], function () {
              * Get all dates that should be displayed in the custom navbar.
              */
             self.getNavbarDates = function () {
-              var dates = [];
-              if (self.days().length > 0 && self.schedule.isScheduledDate(window.dhtmlXScheduler.getState().date)) {
-                  // find the starting index
-                  for(var currentIndex = 0; currentIndex < self.days().length; currentIndex++) {
-                     if (self.days()[currentIndex].toDateString() === window.dhtmlXScheduler.getState().date.toDateString()) {
-                        break;
-                     }
-                  }
-                  // add the current date and the two previous dates if present
-                  var indexToAddPrev = currentIndex;
-                  while (indexToAddPrev >= 0 && dates.length < 3) {
-                      dates.push(self.days()[indexToAddPrev--]);
-                  }
-                  // add the next dates if present
-                  var indexToAddNext = currentIndex + 1;
-                  while (indexToAddNext < self.days().length && dates.length < 5) {
-                      dates.push(self.days()[indexToAddNext++]);
-                  }
-                  // fill up the remaining space with previous dates
-                  while (indexToAddPrev >= 0 && dates.length < 5) {
-                      dates.push(self.days()[indexToAddPrev--]);
-                  }
-                  dates.sort(function (a, b) { return a.getTime() - b.getTime() });
-              }
-              return dates;
+                var dates = [];
+                if (self.days().length > 0 && self.schedule.isScheduledDate(window.dhtmlXScheduler.getState().date)) {
+                    // find the starting index
+                    for (var currentIndex = 0; currentIndex < self.days().length; currentIndex++) {
+                       if (self.days()[currentIndex].toDateString() === window.dhtmlXScheduler.getState().date.toDateString()) {
+                          break;
+                       }
+                    }
+                    // add the current date and the two previous dates if present
+                    var indexToAddPrev = currentIndex;
+                    while (indexToAddPrev >= 0 && dates.length < 3) {
+                        dates.push(self.days()[indexToAddPrev--]);
+                    }
+                    // add the next dates if present
+                    var indexToAddNext = currentIndex + 1;
+                    while (indexToAddNext < self.days().length && dates.length < 5) {
+                        dates.push(self.days()[indexToAddNext++]);
+                    }
+                    // fill up the remaining space with previous dates
+                    while (indexToAddPrev >= 0 && dates.length < 5) {
+                        dates.push(self.days()[indexToAddPrev--]);
+                    }
+                    dates.sort(function (a, b) {
+                        return a.getTime() - b.getTime();
+                    });
+                }
+                return dates;
             };
 
             /*
@@ -254,7 +250,7 @@ require(["main"], function () {
              */
             self.modifySchedulerDate = function(modificationInDays) {
                 self.setSchedulerDate(new Date(window.dhtmlXScheduler.getState().date.getTime()
-                    + 24*60*60*1000*modificationInDays));
+                    + 24 * 60 * 60 * 1000 * modificationInDays));
             };
 
             /*
@@ -293,7 +289,8 @@ require(["main"], function () {
                         self.infoID(null);
                         if (currentEvent.isTrack()) {
                             self.infoBaseEvent(currentEvent.baseEvent.events[childIndex]);
-                        } else { // must be a session as events have no children
+                        } else {
+                            // must be a session as events have no children
                             self.infoBaseEvent(currentEvent.baseEvent.tracks[childIndex]);
                         }
                     } else {
@@ -335,10 +332,14 @@ require(["main"], function () {
             };
 
             self.initScheduler = function () {
-                window.dhtmlXScheduler.xy.scale_height = -2; // hide the day display
-                window.dhtmlXScheduler.xy.scroll_width = -1; // hide the scroll bar
-                window.dhtmlXScheduler.config.readonly = true; // disable editing events
-                window.dhtmlXScheduler.config.separate_short_events = true; // prevent short events from overlapping
+                // hide the day display
+                window.dhtmlXScheduler.xy.scale_height = -2;
+                // hide the scroll bar
+                window.dhtmlXScheduler.xy.scroll_width = -1;
+                // disable editing events
+                window.dhtmlXScheduler.config.readonly = true;
+                // prevent short events from overlapping
+                window.dhtmlXScheduler.config.separate_short_events = true;
                 window.dhtmlXScheduler.config.multi_day = false;
                 // window.dhtmlXScheduler.config.mark_now = true; // mark the current time
                 /*
@@ -419,7 +420,7 @@ require(["main"], function () {
 
                     // the header with date and event type
                     html += "<div class='conference-scheduler-header' data-bind='click: function (data, event) "
-                        + "{displayEventInfo(\"" + ev.id +"\")}'><button type='button' "
+                        + "{displayEventInfo(\"" + ev.id + "\")}'><button type='button' "
                         + "class='btn btn-secondary btn-sm pull-left " + templateButtonClass + "' disabled>"
                         + templateEventType + "</button>"
                         + "<h4>" + window.dhtmlXScheduler.templates.event_text(ev.start_date, ev.end_date, ev) + "</h4>"
@@ -439,8 +440,7 @@ require(["main"], function () {
                     html += "</div>";
 
                     // the body with all the necessary information
-                    html += "<div class='conference-scheduler-body'>" + "</br>" +  templateEventContent
-                        + "</div>";
+                    html += "<div class='conference-scheduler-body'></br>" + templateEventContent + "</div>";
 
                     // closing divs
                     html += "</div></div>";
@@ -511,7 +511,8 @@ require(["main"], function () {
                     self.schedulerHeight(window.dhtmlXScheduler.xy.nav_height
                         + (window.dhtmlXScheduler.config.last_hour - window.dhtmlXScheduler.config.first_hour)
                         * window.dhtmlXScheduler.config.hour_size_px);
-                    window.dhtmlXScheduler.updateView(); // update scheduler to display all changes
+                    // update scheduler to display all changes
+                    window.dhtmlXScheduler.updateView();
                 });
 
                 /*
@@ -519,7 +520,7 @@ require(["main"], function () {
                  * or the first day of the conference if not.
                  */
                 var now = new Date();
-                if ((self.schedule.getStart() - now) <= 0 && (self.schedule.getEnd() - now) >= 0 ) {
+                if ((self.schedule.getStart() - now) <= 0 && (self.schedule.getEnd() - now) >= 0) {
                     window.dhtmlXScheduler.init("conference_scheduler", now, "day");
                 } else {
                     window.dhtmlXScheduler.init("conference_scheduler", self.days()[0], "day");
@@ -545,28 +546,22 @@ require(["main"], function () {
                 });
                 // add dummy events for empty days
                 self.days().forEach(function (day) {
-                   if (self.schedule.getDailyEvents(day).length == 0) {
+                   if (self.schedule.getDailyEvents(day).length === 0) {
                        var dummyEvent = models.SchedulerEvent.fromObject(
-                           new models.Event("No Events", null, "00:00", "23:59", moment(day).format('YYYY[-]MM[-]DD')));
+                           new models.Event("No Events", null, "00:00", "23:59", moment(day).format("YYYY[-]MM[-]DD")));
                        dummyEvent.id = contentIndex++ + ":-1:-1";
                        window.dhtmlXScheduler.addEvent(dummyEvent);
                    }
                 });
-
             };
-
-        };
+        }
 
         $(document).ready(function() {
-
             var data = tools.hiddenData();
-
-            console.log(data.conferenceUuid);
 
             window.moment = moment;
             window.schedule = ScheduleViewModel(data.conferenceUuid);
             window.schedule.init();
         });
-
     });
 });

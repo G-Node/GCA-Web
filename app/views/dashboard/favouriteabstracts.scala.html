@@ -1,16 +1,15 @@
 @(account: Account)
 
-@template(Some(account), None, "Favourite Abstracts") {
+@template(Some(account), None, "My Favourites") {
 
     <div class="hidden-data">
         <div id="conference-uuid">@account.uuid</div>
     </div>
 
-    <script data-main="@routes.Assets.at("javascripts/abstracts-favourite.js")"
-    src="@routes.Assets.at("javascripts/require.js")"></script>
+    <script data-main='@routes.Assets.at("javascripts/abstracts-favourite.js")'
+            src='@routes.Assets.at("javascripts/require.js")'></script>
 
-
-        <!-- Loading box -->
+    <!-- Loading box -->
     <div data-bind="if: isLoading">
         <div class="alert alert-info fade in out">
             <h4>Loading data</h4>
@@ -18,31 +17,30 @@
         </div>
     </div>
 
-        <!-- If no Favourites -->
+    <!-- If no Favourites -->
     <div data-bind="if: noFavouriteAbstracts">
         <div class="alert alert-info fade in out">
             <h4>You have no favourite abstracts yet. Click the star button shown for abstracts to add them.</h4>
         </div>
     </div>
 
-        <!-- Knockout !flickerbox  -->
+    <!-- Knockout !flickerbox  -->
     <div style="display: none" data-bind="visible: true">
 
-            <!-- Error message box -->
+        <!-- Error message box -->
         <div data-bind="visible: error">
-                <!-- ko with: error -->
+            <!-- ko with: error -->
             <div class="alert alert-warning fade in alert-dismissable" data-bind="css: level">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <strong data-bind="html: message"></strong>
             </div>
-                <!-- /ko -->
+            <!-- /ko -->
         </div>
-
 
         <div data-bind="foreach: conferences">
             <div class="panel panel-default">
                 <div class="panel-heading" >
-                    <a data-bind="attr: { href: link }">
+                    <a data-bind="attr: { href: localConferenceLink() }">
                         <h4 class="panel-title" data-bind="text: name"></h4>
                     </a>
                 </div>
@@ -58,7 +56,5 @@
                 </ul>
             </div>
         </div>
-
     </div>
-
 }

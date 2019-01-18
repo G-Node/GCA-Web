@@ -8,6 +8,7 @@ import com.mohiva.play.silhouette.core.exceptions.AccessDeniedException
 import com.mohiva.play.silhouette.core.{Environment, SecuredSettings}
 import models.Login
 import play.api._
+import play.api.i18n.Lang
 import play.api.libs.json.{JsObject, JsError, JsResultException, Json}
 import play.api.mvc.Results._
 import play.api.mvc._
@@ -17,6 +18,14 @@ object Global extends GlobalSettings with SecuredSettings {
 
   import play.api.Play.current
   implicit lazy val globalEnv = new GlobalEnvironment()
+
+  override def onNotAuthenticated(request: RequestHeader, lang: Lang) = {
+    Option(Future.successful(Unauthorized(views.html.error.NotAuthenticated())))
+  }
+
+  override def onNotAuthorized(request: RequestHeader, lang: Lang) = {
+    Option(Future.successful(Forbidden(views.html.error.NotAuthorized())))
+  }
 
   override def onHandlerNotFound(request: RequestHeader) = {
     Future.successful(NotFound(views.html.error.NotFound()))

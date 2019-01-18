@@ -39,7 +39,7 @@ define(["lib/tools"], function (tools) {
             abstract,
             must("title", notNothing, "The abstract has no title"),
             should("abstrTypes", notEmpty, "No presentation type selected"),
-            should("authors", notEmpty, "No authors are defined for this abstract"),            
+            should("authors", notEmpty, "No authors are defined for this abstract"),
             should("authors", useAllAffiliations(getVal(abstract, "affiliations")), "Some affiliations are not used"),
             should("text", notNothing, "The abstract contains no text"),
             should("topic", notNothing, "No topic selected for the abstract")
@@ -93,8 +93,7 @@ define(["lib/tools"], function (tools) {
      * @public
      */
     function Result(errors, warnings) {
-
-        if (! (this instanceof  Result)) {
+        if (!(this instanceof  Result)) {
             return new Result(errors, warnings);
         }
 
@@ -153,7 +152,7 @@ define(["lib/tools"], function (tools) {
         return function(obj) {
             var val = getVal(obj, field);
 
-            if (! test(val)) {
+            if (!test(val)) {
                 return Result(msg);
             } else {
                 return Result();
@@ -175,7 +174,7 @@ define(["lib/tools"], function (tools) {
         return function(obj) {
             var val = getVal(obj, field);
 
-            if (! test(val)) {
+            if (!test(val)) {
                 return Result(null, msg);
             } else {
                 return Result();
@@ -218,24 +217,22 @@ define(["lib/tools"], function (tools) {
      *                     list as first and only argument.
      */
     function useAllAffiliations(affiliations) {
-
-        var positions = affiliations.map( function(_, index) { return index; } );
+        var positions = affiliations.map(function(_, index) {
+            return index;
+        });
 
         return function(authors) {
             var used = positions.filter(function(pos) {
                 return authors.some(function(author) {
-                    var otherPositions = getVal(author, "affiliations")
+                    var otherPositions = getVal(author, "affiliations");
                     return otherPositions.indexOf(pos) >= 0;
-                })
+                });
             });
             return used.length === positions.length;
-        }
+        };
     }
 
-    //
     // Helper
-    //
-
     function getVal(obj, field) {
         var val = obj[field];
 
@@ -246,12 +243,9 @@ define(["lib/tools"], function (tools) {
         return val;
     }
 
-    //
     // Create and return the module
-    //
-
     return {
         author: validateAuthor,
         abstract: validateAbstract
-    }
+    };
 });

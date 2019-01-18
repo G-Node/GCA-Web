@@ -7,7 +7,7 @@ function notCompatibleBrowser() {
         var engine = ie[1].toLowerCase(),
             version = Number(ie[2]);
 
-        if (engine === 'trident') {
+        if (engine === "trident") {
             return version < 7;
         } else {
             return true;

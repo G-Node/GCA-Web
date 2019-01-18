@@ -2,18 +2,16 @@ require(["main"], function () {
 require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, tools, astate, ko) {
     "use strict";
 
-
     /**
      * admin/abstracts view model.
      *
      *
      * @param confId
-     * @returns {OwnersListViewModel}
+     * @returns {adminAbstractsViewModel}
      * @constructor
      */
     function adminAbstractsViewModel(confId) {
-
-        if (! (this instanceof adminAbstractsViewModel)) {
+        if (!(this instanceof adminAbstractsViewModel)) {
             return new adminAbstractsViewModel(confId);
         }
 
@@ -25,20 +23,20 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
         self.abstracts = ko.observableArray(null);
         self.abstractNumbers = ko.observable({ total: 0, active: 0 });
 
-        //state related things
+        // State related things
         self.stateHelper = astate.changeHelper;
         self.selectedAbstract = ko.observable(null);
-        self.selectableStates = ko.observableArray(['InPreparation', 'Submitted', 'InReview', 'Accepted', 'Rejected', 'InRevision', 'Withdrawn']);
+        self.selectableStates = ko.observableArray(["InPreparation", "Submitted", "InReview", "Accepted", "Rejected", "InRevision", "Withdrawn"]);
 
-        self.selectedStates = ko.observableArray(['Submitted', 'InReview', 'Accepted', 'Rejected', 'InRevision']);
+        self.selectedStates = ko.observableArray(["Submitted", "InReview", "Accepted", "Rejected", "InRevision"]);
 
         ko.bindingHandlers.bsChecked = {
             init: function(element, valueAccessor) {
                 $(element).change(function() {
-
                     var value = ko.unwrap(valueAccessor());
                     var this_val = $(this).val();
-                    var is_active = ! $(this.parentElement).hasClass('active'); //we are doing this before the change
+                    // We are doing this before the change
+                    var is_active = !$(this.parentElement).hasClass("active");
                     var idx = value.indexOf(this_val);
 
                     var change = true;
@@ -51,10 +49,9 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
                     }
 
                     if (change) {
-                        //we don't seem to trigger notifications automatically
-                        valueAccessor().notifySubscribers(value, 'arrayChange');
+                        // We don't seem to trigger notifications automatically
+                        valueAccessor().notifySubscribers(value, "arrayChange");
                     }
-
                 });
             },
             update: function(element, valueAccessor, allBindings) {
@@ -64,10 +61,10 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
                 var idx = value.indexOf(myval);
 
                 var should_be_active = idx > -1;
-                var is_active = $(element.parentElement).hasClass('active');
+                var is_active = $(element.parentElement).hasClass("active");
 
                 if (should_be_active != is_active) {
-                    $(element.parentElement).toggleClass('active');
+                    $(element.parentElement).toggleClass("active");
                 }
             }
         };
@@ -81,7 +78,7 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
             self.abstractNumbers({ total: self.abstractsData.length, active: new_list.length });
         };
 
-        self.selectedStates.subscribe(self.showAbstractsWithState, 'null', 'arrayChange');
+        self.selectedStates.subscribe(self.showAbstractsWithState, "null", "arrayChange");
 
         self.init = function() {
             self.ensureData();
@@ -96,20 +93,15 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
             }
         };
 
-        self.onSelStateClick = function() {
-            console.log('clicked');
-            console.log($(this));
-        };
-
         self.setError = function(level, text, description) {
             if (text === null) {
                 self.message(null);
             } else {
-                self.message({message: text, level: 'alert-' + level, desc: description});
+                self.message({message: text, level: "alert-" + level, desc: description});
             }
         };
 
-        //helper functions
+        // Helper functions
         self.makeAbstractLink = function(abstract) {
             return "/myabstracts/" + abstract.uuid + "/edit";
         };
@@ -123,7 +115,7 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
             }
 
             abstract.state("Saving...");
-            $.ajax("/api/abstracts/" + abstract.uuid + '/state', {
+            $.ajax("/api/abstracts/" + abstract.uuid + "/state", {
                 data: JSON.stringify(data),
                 type: "PUT",
                 contentType: "application/json",
@@ -138,22 +130,22 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
         };
 
         self.beginStateChange = function(abstract) {
-            $('#note').val(""); //reset the message box
-            $('#state-dialog').modal('show');
+            // Reset the message box
+            $("#note").val("");
+            $("#state-dialog").modal("show");
             self.selectedAbstract(abstract);
         };
 
         self.finishStateChange = function() {
-            var note = $('#note').val();
-            var state = $('#state-dialog').find('select').val();
+            var note = $("#note").val();
+            var state = $("#state-dialog").find("select").val();
 
             self.setState(self.selectedAbstract(), state, note);
             self.selectedAbstract();
         };
 
         self.mkAuthorList = function(abstract) {
-
-            if(abstract.authors.length < 1) {
+            if (abstract.authors.length < 1) {
                 return "";
             }
 
@@ -166,44 +158,39 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
             return text;
         };
 
-        //Data IO
+        // Data IO
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
-            console.log( "Request Failed: " + err );
-            self.setError("danger", "Error while fetching data from server", error);
+            self.setError("danger", "Error while fetching data from server: ", err);
         };
 
         self.ensureData = function() {
-            console.log("ensureDataAndThen::");
             self.isLoading(true);
             if (self.abstractsData !== null) {
                 self.isLoading(false);
                 return;
             }
 
-            //now load the data from the server
-            var confURL ="/api/conferences/" + confId;
+            var confURL = "/api/conferences/" + confId;
             $.getJSON(confURL, onConferenceData).fail(self.ioFailHandler);
 
-            //conference data
+            // Conference data
             function onConferenceData(confObj) {
                 var conf = models.Conference.fromObject(confObj);
                 self.conference(conf);
-                //now load the abstract data
                 $.getJSON(confURL + "/allAbstracts", onAbstractData).fail(self.ioFailHandler);
             }
 
-            //abstract data
+            // Abstract data
             function onAbstractData(absArray) {
                 var absList = models.Abstract.fromArray(absArray);
 
                 absList.forEach(function (abstr) {
-
-                    abstr.makeObservable(['state']);
+                    abstr.makeObservable(["state"]);
                     abstr.possibleStates = ko.computed(function () {
                         var fromState = abstr.state();
 
-                        if (fromState === 'Saving...') {
+                        if (fromState === "Saving...") {
                             return [];
                         }
 
@@ -211,15 +198,14 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
                     });
 
                     abstr.viewEditCtx = ko.computed(function () {
-                        //only time that admins can make changes is in the InRevision state
-                        var canEdit = abstr.state() == "InRevision";
+                        // Only time that admins can make changes is in the InRevision state
+                        var canEdit = abstr.state() === "InRevision";
 
                         return {
                             link: canEdit ? "/myabstracts/" + abstr.uuid + "/edit" : "/abstracts/" + abstr.uuid,
                             label: canEdit ? "Edit" : "View",
                             btn: canEdit ? "btn-danger" : "btn-primary"
                         };
-
                     });
                 });
 
@@ -228,19 +214,13 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
                 self.isLoading(false);
             }
         };
-
     }
 
     $(document).ready(function() {
-
         var data = tools.hiddenData();
-
-        console.log(data.conferenceUuid);
 
         window.dashboard = adminAbstractsViewModel(data.conferenceUuid);
         window.dashboard.init();
     });
-
-
 });
 });

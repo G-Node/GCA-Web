@@ -3,7 +3,6 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate", "knockout", "lib/of
     "use strict";
 
     function AbstractViewerViewModel(confId, abstrId, isAdmin, isOwner) {
-
         if (!(this instanceof AbstractViewerViewModel)) {
             return new AbstractViewerViewModel(confId, abstrId, isAdmin, isOwner);
         }
@@ -17,7 +16,8 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate", "knockout", "lib/of
         self.init = function() {
             self.loadAbstract();
             ko.applyBindings(window.viewer);
-            MathJax.Hub.Configured(); //start MathJax
+            // start MathJax
+            MathJax.Hub.Configured();
         };
 
         self.ioFailHandler = function(jqxhr, textStatus, error) {
@@ -25,23 +25,22 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate", "knockout", "lib/of
         };
 
         self.loadAbstract = function() {
-
             self.isLoading(true);
-            var absURL ="/api/abstracts/" + abstrId;
+            var absURL = "/api/abstracts/" + abstrId;
             offline.requestJSON(abstrId, absURL, onAbstractData, self.ioFailHandler);
 
-            //conference data
+            // Conference data
             function onAbstractData(abstrObj) {
                 var abstr = models.Abstract.fromObject(abstrObj);
                 self.selectedAbstract(abstr);
-                MathJax.Hub.Queue(["Typeset",MathJax.Hub]); //re-render equations
+                // Re-render equations
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 
                 self.loadConference();
 
-                if(isAdmin === "true" || isOwner === "true") {
+                if (isAdmin === "true" || isOwner === "true") {
                     var logUrl = "/api/abstracts/" + abstrId + "/stateLog";
                     $.getJSON(logUrl, onLogData).fail(self.ioFailHandler);
-
                 } else {
                     self.isLoading(false);
                 }
@@ -55,31 +54,23 @@ require(["lib/models", "lib/tools", "lib/msg", "lib/astate", "knockout", "lib/of
         };
 
         self.loadConference = function() {
-            var confUrl = "/api/conferences/" + confId; // we should be reading this from the abstract
+            // We should be reading this from the abstract
+            var confUrl = "/api/conferences/" + confId;
             offline.requestJSON(confId, confUrl, onConferenceData, self.ioFailHandler);
 
             function onConferenceData(confObj) {
                 var conf = models.Conference.fromObject(confObj);
                 self.conference(conf);
             }
-
         };
     }
 
-    // start the editor
+    // Start the editor
     $(document).ready(function() {
-
         var data = tools.hiddenData();
-
-        console.log(data["conferenceUuid"]);
-        console.log(data["abstractUuid"]);
-        console.log(data["isAdmin"]);
-        console.log(data["isOwner"]);
-
         window.viewer = AbstractViewerViewModel(data["conferenceUuid"], data["abstractUuid"],
                                                 data["isAdmin"], data["isOwner"]);
         window.viewer.init();
     });
-
 });
 });

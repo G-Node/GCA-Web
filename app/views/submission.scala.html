@@ -5,10 +5,12 @@
     <div class="hidden-data">
         <div id="conference-uuid">@conference.uuid</div>
         <div id="abstract_uuid">@abstr.map(_.uuid).getOrElse("")</div>
+        <div id="maxLenPrepText">@conference.abstractMaxLength</div>
+        <div id="maxLenPrepAck">@Model.getLimit[Abstract]("acknowledgements")</div>
     </div>
 
-    <script data-main="@routes.Assets.at("javascripts/editor.js")"
-            src="@routes.Assets.at("javascripts/require.js")"></script>
+    <script data-main='@routes.Assets.at("javascripts/editor.js")'
+            src='@routes.Assets.at("javascripts/require.js")'></script>
 
     <div class="header">
         <div class="pull-right state-btn-group">
@@ -83,7 +85,7 @@
         </div>
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">
-            <div class="btn-group pull-right btn-group-hovezr" data-bind="if: showEditButton">
+            <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                 <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#affiliations-editor')">
                     Edit
@@ -97,7 +99,6 @@
                     <li><span data-bind="text: format()"></span></li>
                 </ol>
             </div>
-
         </div>
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">
@@ -148,11 +149,12 @@
                 </ol>
             </div>
         </div>
+
         @if(conference.abstractMaxFigures>0){
             <div class="editor-box" data-bind="css: {editable: showEditButton}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                     <button type="button" class="btn btn-default btn-sm" data-target="#figure-editor"
-                    data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#figure-editor')">
+                            data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#figure-editor')">
                         Edit
                     </button>
                 </div>
@@ -161,13 +163,17 @@
         
                 <div class="figure">
                     <h4>Figures</h4>
-                    <div><!-- ko foreach: abstract().figures() --><div class="figure-box">
-                        <img class="figure-image" src="" data-bind="attr: {src: $data.URL}">
-                        <div class="figure-caption">
-                            <span>Figure <b data-bind="text:$index() + 1"></b>: </span>
-                            <span data-bind="text: $data.caption"></span>
+                    <div>
+                    <!-- ko foreach: abstract().figures() -->
+                        <div class="figure-box">
+                            <img class="figure-image" src="" data-bind="attr: {src: $data.URL}">
+                            <div class="figure-caption">
+                                <span>Figure <b data-bind="text:$index() + 1"></b>: </span>
+                                <span data-bind="text: $data.caption"></span>
+                            </div>
                         </div>
-                    </div><!-- /ko --></div>
+                    <!-- /ko -->
+                    </div>
                 </div>    
             </div>
         }
@@ -180,7 +186,7 @@
             <div class="editor-box" data-bind="css: {editable: showEditButton}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                     <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
-                    data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#topic-editor')">
+                            data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#topic-editor')">
                         Edit
                     </button>
                 </div>
@@ -193,13 +199,13 @@
                 </div>
             </div>
         }
-        <!-- This is recycling of the old Bernstein like presentation choice style, well keep the names for the time
-        being -->
+
+        <!-- Recycling of the old Bernstein like presentation choice style, we'll keep the names for the time being -->
         @if(conference.hasPresentationPrefs) {
             <div class="editor-box" data-bind="css: {editable: showEditButton}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
                     <button type="button" class="btn btn-default btn-sm" data-target="#is-talk-editor"
-                    data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#is-talk-editor')">
+                            data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#is-talk-editor')">
                         Edit
                     </button>
                 </div>
@@ -218,8 +224,7 @@
                             <p>Presentation comment: <span data-bind="text: abstract().reasonForTalk"></span></p>
                         </div>
                     </div>
-
-                    </div>
+                </div>
             </div>
         }
 
@@ -240,11 +245,11 @@
             <!-- Tab panes -->
             <div class="tab-content" data-bind="if: stateLog">
                 <div role="tabpanel" class="tab-pane active" id="statelog">
-                @components.statelog("stateLog") { <div></div> }
+                    @components.statelog("stateLog") { <div></div> }
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="owner" data-bind="if: showEditButton() && isAbstractSaved()">
-                @components.owned()
+                    @components.owned()
                 </div>
 
                 <div role="tabpanel" class="tab-pane" id="withdraw" data-bind="if: showButtonWithdraw">
@@ -261,9 +266,7 @@
                 </div>
             </div>
         </div>
-
     </div>
-
 
     <!-- modal main template -->
     <script id="modalDialog" type="text/html">
@@ -315,9 +318,11 @@
     <script id="body-title-editor" type="text/html">
         <label for="title"></label>
         <input type="text" class="form-control" id="title"
-                placeholder="Title (max. @Model.getLimit[Abstract]("title") characters)"
-                data-bind="value: editedAbstract().title"
-                maxlength="@Model.getLimit[Abstract]("title")"/>
+                placeholder='Title (max. @Model.getLimit[Abstract]("title") characters)'
+                data-bind="value: editedAbstract().title, valueUpdate: 'afterkeydown'"
+                maxlength='@Model.getLimit[Abstract]("title")'/>
+        <br>
+        <span data-bind="text: latexInTitle"></span>
     </script>
 
     <!-- authors templates -->
@@ -338,28 +343,28 @@
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="First Name"
-                                maxlength="@Model.getLimit[Author]("firstName")"
+                                maxlength='@Model.getLimit[Author]("firstName")'
                                 data-bind="value: person.firstName" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Middle Name"
-                                maxlength="@Model.getLimit[Author]("middleName")"
+                                maxlength='@Model.getLimit[Author]("middleName")'
                                 data-bind="value: person.middleName" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Last Name"
-                                maxlength="@Model.getLimit[Author]("lastName")"
+                                maxlength='@Model.getLimit[Author]("lastName")'
                                 data-bind="value: person.lastName" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Mail"
-                                maxlength="@Model.getLimit[Author]("mail")"
+                                maxlength='@Model.getLimit[Author]("mail")'
                                 data-bind="value: person.mail" />
                     </td>
                     <td>
                         <div class="btn-group pull-right">
                             <button type="button" class="btn btn-default btn-sm"
-                            data-bind="click: $root.doEditRemoveAuthor.bind($root, $index, person)">
+                                    data-bind="click: $root.doEditRemoveAuthor.bind($root, $index, person)">
                                 Remove
                                 <span class="glyphicon glyphicon-user"></span>
                             </button>
@@ -390,22 +395,22 @@
                 <tr class="affiliation-form">
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Department"
-                                maxlength="@Model.getLimit[Affiliation]("department")"
+                                maxlength='@Model.getLimit[Affiliation]("department")'
                                 data-bind="value: affiliation.department" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Institution"
-                                maxlength="@Model.getLimit[Affiliation]("section")"
+                                maxlength='@Model.getLimit[Affiliation]("section")'
                                 data-bind="value: affiliation.section" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Address"
-                                maxlength="@Model.getLimit[Affiliation]("address")"
+                                maxlength='@Model.getLimit[Affiliation]("address")'
                                 data-bind="value: affiliation.address" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Country"
-                                maxlength="@Model.getLimit[Affiliation]("country")"
+                                maxlength='@Model.getLimit[Affiliation]("country")'
                                 data-bind="value: affiliation.country" />
                     </td>
                     <td>
@@ -418,7 +423,7 @@
                         </div>
                     </td>
                 </tr>
-                    <!-- ko if: $root.getEditorAuthorsForAffiliation($index(), affiliation).length < 1 -->
+                <!-- ko if: $root.getEditorAuthorsForAffiliation($index(), affiliation).length < 1 -->
                 <tr>
                     <td colspan="5">
                         <div class="affiliations-no-author text-danger">
@@ -426,35 +431,35 @@
                         </div>
                     </td>
                 </tr>
-                    <!-- /ko -->
-                    <!-- ko foreach: {data: $root.getEditorAuthorsForAffiliation($index(), affiliation), as: 'author'} -->
+                <!-- /ko -->
+                <!-- ko foreach: {data: $root.getEditorAuthorsForAffiliation($index(), affiliation), as: 'author'} -->
                 <tr>
                     <td colspan="4" data-bind="text: author.formatName()"></td>
                     <td>
                         <div class="btn-group pull-right">
                             <button type="button" class="btn btn-default btn-sm"
-                            data-bind="click: $root.doEditRemoveAffiliationFromAuthor.bind($root, $parentContext.$index, author)">
+                                    data-bind="click: $root.doEditRemoveAffiliationFromAuthor.bind($root, $parentContext.$index, author)">
                                 Remove
                                 <span class="glyphicon glyphicon-user"></span>
                             </button>
                         </div>
                     </td>
                 </tr>
-                    <!-- /ko -->
+                <!-- /ko -->
                 <tr>
                     <td></td>
                     <td colspan="3" data-bind="attr: {id: 'author-select-' + $index()}">
                         <select class="form-control"
-                        data-bind="options: $root.editedAbstract().indexedAuthors,
-                                                               optionsText: function(e) { return e.author.formatName(); },
-                                                               optionsValue: 'index',
-                                                               value: $root.selectedAffiliationAuthor">
+                                data-bind="options: $root.editedAbstract().indexedAuthors,
+                                           optionsText: function(e) { return e.author.formatName(); },
+                                           optionsValue: 'index',
+                                           value: $root.selectedAffiliationAuthor">
                         </select>
                     </td>
                     <td>
                         <div class="btn-group pull-right">
                             <button type="button" class="btn btn-default btn-sm"
-                            data-bind="click: $root.doEditAddAuthorToAffiliation.bind($root, $index, affiliation)">
+                                    data-bind="click: $root.doEditAddAuthorToAffiliation.bind($root, $index, affiliation)">
                                 Assign
                                 <span class="glyphicon glyphicon-user"></span>
                             </button>
@@ -475,10 +480,15 @@
                 maxlength="@conference.abstractMaxLength">
         </textarea>
         <div>
+            <br>
             <span>LaTeX-like equation typesetting is supported via MathJax. Use $$ and $ (inline).
-                <a target="_blank" href="http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference">Quick guide</a>
-            </span><br>
-            <span data-bind="if: showAbstractTextCharsLeft">Characters left: </span><span data-bind="text: editorTextCharactersLeft"></span>
+                <a target="_blank" href="https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference">
+                    Quick guide
+                </a>
+            </span>
+            <br>
+            <span data-bind="if: showAbstractTextCharsLeft">Characters left: </span>
+            <span data-bind="text: editorTextCharactersLeft"></span>
         </div>
     </script>
 
@@ -489,10 +499,12 @@
     <script id="body-acknowledgements-editor" type="text/html">
         <textarea rows="10" class="form-control" id="acknowledgements"
                 data-bind="value: editedAbstract().acknowledgements, valueUpdate: 'afterkeydown'"
-                maxlength="@Model.getLimit[Abstract]("acknowledgements")">
+                maxlength='@Model.getLimit[Abstract]("acknowledgements")'>
         </textarea>
         <div>
-            <span data-bind="if: showAckCharsLeft">Characters left: </span><span data-bind="text: editorAckCharactersLeft"></span>
+            <br>
+            <span data-bind="if: showAckCharsLeft">Characters left: </span>
+            <span data-bind="text: editorAckCharactersLeft"></span>
         </div>
     </script>
 
@@ -514,17 +526,17 @@
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="Citation"
-                                maxlength="@Model.getLimit[Reference]("text")"
+                                maxlength='@Model.getLimit[Reference]("text")'
                                 data-bind="value: reference.text" />
                     </td>
                     <td>
                         <input type="text" class="form-control input-sm" placeholder="link"
-                                maxlength="@Model.getLimit[Reference]("link")"
+                                maxlength='@Model.getLimit[Reference]("link")'
                                 data-bind="value: reference.link" />
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="DOI"
-                                maxlength="@Model.getLimit[Reference]("doi")"
+                        <input type="text" class="form-control input-sm" placeholder="DOI e.g. 10.xxxxxx/journal.date.xx"
+                                maxlength='@Model.getLimit[Reference]("doi")'
                                 data-bind="value: reference.doi" />
                     </td>
                     <td>
@@ -543,6 +555,12 @@
                 <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder references
             </small>
         </div>
+        <br/>
+        <div>
+            <small>
+                Note: any DOI links differing from the 10.xxxxxx/journal.date.xx format will be post processed.
+            </small>
+        </div>
     </script>
 
     <!-- figure templates -->
@@ -551,11 +569,13 @@
     </script>
     <script id="body-figure-editor" type="text/html">
         <div data-bind="visible: !(abstract().figures().length>=@conference.abstractMaxFigures)">
+            <div>Figures of format "jpg", "gif", "png" are supported; the size limit is 5MB.</div>
+            <br>
             <div class="form-group">
                 <input type="text" name="figure-caption" id="figure-caption" class="form-control input-sm"
-                    placeholder="Figure Caption (max. @Model.getLimit[Figure]("caption") characters)"
-                    maxlength="@Model.getLimit[Figure]("caption")"
-                    data-bind="value: newFigure.caption">
+                    placeholder='Figure Caption (max. @Model.getLimit[Figure]("caption") characters)'
+                    maxlength='@Model.getLimit[Figure]("caption")'
+                    data-bind="value: newFigureCaption">
             </div>
             <div class="form-group">
                 <input type="file" name="figure-file" id="figure-file" data-bind="event: { change: getNewFigure }"
@@ -571,22 +591,22 @@
         <button type="button" class="btn btn-default btn-sm pull-right"
                 data-bind="click: $root.doRemoveFigure">
                 Remove
-            </button>
-            <div class="figure-box">
-                <img class="figure-image" src="" data-bind="attr: {src: $data.URL}">
-                <div class="figure-caption">
-                    <span>Figure <b data-bind="text:$index() + 1"></b>: </span>
-                    <input type="text" name="figure-update-caption" id="figure-update-caption" class="form-control input-sm"
-                            maxlength="@Model.getLimit[Figure]("caption")"
-                            data-bind="value: $data.caption, valueUpdate: 'afterkeydown'">
-                </div>
+        </button>
+        <div class="figure-box">
+            <img class="figure-image" src="" data-bind="attr: {src: $data.URL}">
+            <div class="figure-caption">
+                <span>Figure <b data-bind="text:$index() + 1"></b>: </span>
+                <input type="text" name="figure-update-caption" id="figure-update-caption" class="form-control input-sm"
+                        maxlength='@Model.getLimit[Figure]("caption")'
+                        data-bind="value: $data.caption, valueUpdate: 'afterkeydown'">
             </div>
+        </div>
         <!-- /ko -->
         </div>
     </script>
 
+    <!-- topic templates -->
     @if(! conference.topics.isEmpty) {
-            <!-- topic templates -->
         <script id="header-topic-editor" type="text/html">
             <h3>Set the Abstract Topic</h3>
         </script>
@@ -602,8 +622,8 @@
         </script>
     }
 
+    <!-- poster/talk templates -->
     @if(! conference.groups.isEmpty) {
-        <!-- poster/talk templates -->
         <script id="header-is-talk-editor" type="text/html">
             <h3>Presentation Type</h3>
         </script>
@@ -612,11 +632,11 @@
             <div class="radio">
                 <div data-bind="if:$root.abstract().abstrTypes().length>0">
                     <input type="radio" name="optionPresentation" value="$data.name"
-                        data-bind="click:$root.abstrTypeChanged , checkedValue: $data.name, checked:$root.abstract().abstrTypes()[0].name">
+                            data-bind="click:$root.abstrTypeChanged, checkedValue: $data.name, checked:$root.abstract().abstrTypes()[0].name">
                 </div>
                 <div data-bind="ifnot:$root.abstract().abstrTypes().length>0">
                     <input type="radio" name="optionPresentation" value="$data.name"
-                        data-bind="click:$root.abstrTypeChanged">
+                            data-bind="click:$root.abstrTypeChanged">
                 </div>
                 <span data-bind="text: $data.name" ></span>
             </div>
@@ -624,8 +644,8 @@
 
         <div data-bind="if:showReason">
             <input type="text" class="form-control" placeholder="Why should this contribution be selected for an oral presentation?"
-                        maxlength="@Model.getLimit[Abstract]("reasonForTalk")"
-                        data-bind="value: editedAbstract().reasonForTalk">
+                    maxlength='@Model.getLimit[Abstract]("reasonForTalk")'
+                    data-bind="value: editedAbstract().reasonForTalk">
         </div>
 
         </script>
@@ -637,7 +657,7 @@
             Cancel
         </button>
         <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
-            data-bind="click: doEndEdit">
+                data-bind="click: doEndEdit">
             Ok
         </button>
     </script>
