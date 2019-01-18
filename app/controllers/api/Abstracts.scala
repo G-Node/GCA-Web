@@ -263,7 +263,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     Ok(abstr.favUsers.contains(request.identity.account).toString)
   }
   /**
-    * Add the loggend in user to the favourite users list of an abstract.
+    * Add the logged in user to the favourite users list of an abstract.
     *
     * @return The id of the updated Abstract as JSON
     */
