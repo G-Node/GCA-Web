@@ -71,9 +71,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 var checkTitle = /.*\$.*\$.*/;
                 if (self.editedAbstract() && self.editedAbstract().title() && checkTitle.test(self.editedAbstract().title())) {
                     return "Please avoid using LaTeX code in the abstract title";
-                } else {
-                    return "";
                 }
+                return "";
             },
             self
         );
