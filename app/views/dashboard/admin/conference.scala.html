@@ -218,13 +218,13 @@
                     <label for="mAbsLen" class="col-sm-4">Max. Abs. Len. (<@Model.getLimit[Abstract]("text"))</label>
                     <div class="col-sm-6">
                         <input type="text" class="form-control" id="mAbsLen"
-                        placeholder="Maximum Abstract Length (chars)" data-bind="value:mAbsLeng, valueUpdate:'afterkeydown'">
+                        placeholder="Maximum Abstract Length (chars)" data-bind="value:mAbsLeng, valueUpdate:'afterkeydown', event: { keypress: $root.ensureNumerical }">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10 alert alert-danger fade in out" data-bind="visible: $root.checkmAbsLeng()">
-                        Changing to shorter abstract length causes cut-offs for already craeted abstracts exceeding this new length!
+                        Changing to shorter abstract length causes cut-offs for already created abstracts exceeding this new length!
                     </div>
                 </div>
 
@@ -232,7 +232,7 @@
                     <label for="mFigs" class="col-sm-4">Max. Figs.</label>
                     <div class="col-sm-6">
                         <input type="text" class="form-control" id="mFigs"
-                        placeholder="Maximum Number Of Figures" data-bind="value: mFigs, valueUpdate: 'afterkeydown'">
+                        placeholder="Maximum Number Of Figures" data-bind="value: mFigs, valueUpdate: 'afterkeydown', event: { keypress: $root.ensureNumerical }">
                     </div>
                 </div>
 
