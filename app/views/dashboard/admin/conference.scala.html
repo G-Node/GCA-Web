@@ -223,6 +223,12 @@
                 </div>
 
                 <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10 alert alert-danger fade in out" data-bind="visible: $root.checkmAbsLeng()">
+                        Changing to shorter abstract length causes cut-offs for already craeted abstracts exceeding this new length!
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="mFigs" class="col-sm-4">Max. Figs.</label>
                     <div class="col-sm-6">
                         <input type="text" class="form-control" id="mFigs"
