@@ -652,7 +652,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 var result = validate.abstract(self.abstract());
 
                 self.checkRemovePresPref(result.warnings);
-                self.checkRemoveTopics(result.warnings);
                 if (!result.ok()) {
                     self.setError("Error", "Unable to submit: " +
                         (result.hasErrors() ? result.errors[0] : result.warnings[0]));
