@@ -479,8 +479,8 @@ class AbstractService(figPath: String) extends PermissionsBase {
       if (abstrChecked == null)
         throw new EntityNotFoundException("Unable to find abstract with uuid = " + id)
 
-      val isOwner = abstrChecked.owners.contains(accountChecked)
-      val isConfOwner = abstrChecked.conference.owners.contains(accountChecked)
+      val isOwner = abstrChecked.isOwner(accountChecked)
+      val isConfOwner = abstrChecked.conference.isOwner(accountChecked)
       val isAdmin = accountChecked.isAdmin
       if (! (isOwner || isConfOwner || isAdmin))
         throw new IllegalAccessException("No permissions for abstract with uuid = " + id)
