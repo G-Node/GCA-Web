@@ -196,6 +196,20 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     // Suppress error, if conference has no defined topics
                     self.checkRemoveTopics(result.warnings);
                     var nwarn = result.warnings.length;
+
+                    // Return result Ok, if no warnings are left after preference and
+                    // topics warnings have been suppressed.
+                    if (nwarn !== null && nwarn !== undefined && nwarn === 0) {
+                        return {
+                            ok: true,
+                            isError: false,
+                            badgeLevel: "btn-success",
+                            badgeText: "Ok",
+                            items: [],
+                            handler: function() {}
+                        };
+                    }
+
                     return {
                         ok: false,
                         isError: false,
