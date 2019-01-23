@@ -136,6 +136,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
         );
 
         // validation
+        // If conference has no presentation preferences, suppress messages from validate.js
         self.checkRemovePresPref = function (warnings) {
             if (!self.conference().hasPresentationPrefs) {
                 warnings.forEach(function (currWarning) {
@@ -146,6 +147,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
             }
         };
 
+        // If conference has no topics defined, suppress messages from validate.js
         self.checkRemoveTopics = function (warnings) {
             if (self.conference().topics === null || self.conference().topics.length === 0) {
                 warnings.forEach(function (currWarning) {
@@ -190,7 +192,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         items: res.errors
                     };
                 } else {
+                    // Suppress error, if conference has no presentation preferences
                     self.checkRemovePresPref(res.warnings);
+                    // Suppress error, if conference has no defined topics
                     self.checkRemoveTopics(res.warnings);
                     var nwarn = res.warnings.length;
                     return {
@@ -662,7 +666,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
             if (toState === "Submitted") {
                 var result = validate.abstract(self.abstract());
 
+                // Suppress error, if conference has no presentation preferences
                 self.checkRemovePresPref(result.warnings);
+                // Suppress error, if conference has no defined topics
                 self.checkRemoveTopics(result.warnings);
                 if (!result.ok()) {
                     self.setError("Error", "Unable to submit: " +
