@@ -29,6 +29,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.otherConfShorts = ko.observable(null);
         self.oldshort = "";
+        self.oldmAbsLeng = 0;
 
         ko.bindingHandlers.datetimepicker = {
             init: function(element, valueAccessor, allBindingsAccessor) {
@@ -181,6 +182,26 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
           self.conference().groups.remove(data);
         };
 
+        self.ensureNumerical = function (data, e) {
+            // Allow backspace etc.
+            var allowedkeyCodes = [8, 9, 13, 27, 35, 36, 37, 38, 39, 46];
+            if (allowedkeyCodes.includes(e.keyCode)) {
+                return true;
+            } else if (e.key.match(/[0-9]/g)) {
+                return true;
+            }
+            return false;
+        };
+
+        self.checkmAbsLeng = function() {
+            var visible = false;
+            var currVal = self.conference().mAbsLeng();
+            if (currVal !== "" && currVal < self.oldmAbsLeng) {
+                visible = true;
+            }
+            return visible;
+        };
+
         self.makeConferenceObservable = function (conf) {
             conf.makeObservable(["name", "short", "group", "cite", "description", "start", "end", "groups",
                 "deadline", "logo", "thumbnail", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
@@ -224,6 +245,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             self.requestConfSpecificField(self.conference().info, "text", self.infoContent);
 
             self.oldShort = self.conference().short();
+            self.oldmAbsLeng = self.conference().mAbsLeng();
         };
 
         self.requestConfSpecificField = function(url, type, setObservable) {
@@ -270,7 +292,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             if (self.conference().mAbsLeng() === null || self.conference().mAbsLeng() === undefined) {
                 self.conference().mAbsLeng(500);
             }
-            if (self.conference().mAbsLeng() == 0) {
+            if (self.conference().mAbsLeng() === 0 || self.conference().mAbsLeng() === "0") {
                 self.setError("danger", "Abstract length has to be larger than zero");
                 return;
             }

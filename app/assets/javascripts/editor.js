@@ -136,10 +136,22 @@ function (ko, models, tools, msg, validate, owned, astate) {
         );
 
         // validation
+        // If conference has no presentation preferences, suppress messages from validate.js
         self.checkRemovePresPref = function (warnings) {
             if (!self.conference().hasPresentationPrefs) {
                 warnings.forEach(function (currWarning) {
                     if (currWarning.match("presentation")) {
+                        warnings.splice(warnings.indexOf(currWarning), 1);
+                    }
+                });
+            }
+        };
+
+        // If conference has no topics defined, suppress messages from validate.js
+        self.checkRemoveTopics = function (warnings) {
+            if (self.conference().topics === null || self.conference().topics.length === 0) {
+                warnings.forEach(function (currWarning) {
+                    if (currWarning.match("topic")) {
                         warnings.splice(warnings.indexOf(currWarning), 1);
                     }
                 });
@@ -159,8 +171,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         handler: function() {}
                     };
                 }
-                var res = validate.abstract(abstract);
-                if (res.ok()) {
+                var result = validate.abstract(abstract);
+                if (result.ok()) {
                     return {
                         ok: true,
                         isError: false,
@@ -169,26 +181,29 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         items: [],
                         handler: function() {}
                     };
-                } else if (res.hasErrors()) {
-                    var nerr = res.errors.length;
+                } else if (result.hasErrors()) {
+                    var nerr = result.errors.length;
                     return {
                         ok: false,
                         isError: true,
                         badgeLevel: self.isAbstractSaved() ? "btn-danger" : " btn-default",
                         badgeText: "" + nerr  + " issue" + (nerr > 1 ? "s" : ""),
                         handler: self.presentValidationResults,
-                        items: res.errors
+                        items: result.errors
                     };
                 } else {
-                    self.checkRemovePresPref(res.warnings);
-                    var nwarn = res.warnings.length;
+                    // Suppress error, if conference has no presentation preferences
+                    self.checkRemovePresPref(result.warnings);
+                    // Suppress error, if conference has no defined topics
+                    self.checkRemoveTopics(result.warnings);
+                    var nwarn = result.warnings.length;
                     return {
                         ok: false,
                         isError: false,
                         badgeLevel: "btn-warning",
                         badgeText: "" + nwarn  + " issue" + (nwarn > 1 ? "s" : ""),
                         handler: self.presentValidationResults,
-                        items: res.warnings
+                        items: result.warnings
                     };
                 }
             },
@@ -651,7 +666,10 @@ function (ko, models, tools, msg, validate, owned, astate) {
             if (toState === "Submitted") {
                 var result = validate.abstract(self.abstract());
 
+                // Suppress error, if conference has no presentation preferences
                 self.checkRemovePresPref(result.warnings);
+                // Suppress error, if conference has no defined topics
+                self.checkRemoveTopics(result.warnings);
                 if (!result.ok()) {
                     self.setError("Error", "Unable to submit: " +
                         (result.hasErrors() ? result.errors[0] : result.warnings[0]));

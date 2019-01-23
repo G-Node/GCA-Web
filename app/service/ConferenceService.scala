@@ -114,7 +114,7 @@ class ConferenceService() extends PermissionsBase {
       val queryStr =
         """SELECT DISTINCT c FROM Conference c
            INNER JOIN c.abstracts a
-           INNER JOIN a.owners af
+           INNER JOIN a.favUsers af
            WHERE af.uuid = :uuid
            ORDER BY c.startDate DESC"""
       val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
