@@ -840,7 +840,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     "<b> <u> Please note that abstract submission does not replace conference registration!</u> <br/>" +
                     "All abstract submitters also have to register for the conference.</b><br/>" +
                     "To register please go to: <a target=\"_blank\" href=\"" +
-                    self.conference().link + "\">" + self.conference().link + "</a>"
+                    self.conference().link + "\"><span class=\"glyphicon glyphicon-new-window\"></span> " +
+                    self.conference().link + "</a>"
                 );
             }
         };
