@@ -380,8 +380,8 @@ class AbstractService(figPath: String) extends PermissionsBase {
       if (accountChecked == null)
         throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
 
-      val isOwner = abstrChecked.owners.contains(accountChecked)
-      val isConfOwner = abstrChecked.conference.owners.contains(accountChecked)
+      val isOwner = abstrChecked.isOwner(accountChecked)
+      val isConfOwner = abstrChecked.conference.isOwner(accountChecked)
       val isAdmin = accountChecked.isAdmin
       if (! (isOwner || isConfOwner || isAdmin))
         throw new IllegalAccessException("No permissions for abstract with uuid = " + abstr.uuid)
@@ -441,6 +441,7 @@ class AbstractService(figPath: String) extends PermissionsBase {
     }
     get(abstrUpdated.uuid)
   }
+
   /**
     * Remove a favourite user from an abstract.
     *
@@ -456,7 +457,6 @@ class AbstractService(figPath: String) extends PermissionsBase {
     }
     get(abstrUpdated.uuid)
   }
-
 
   /**
    * Delete an abstract.
