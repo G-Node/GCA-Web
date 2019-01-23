@@ -146,16 +146,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
             }
         };
 
-        self.checkRemoveTopics = function (warnings) {
-            if (self.conference().topics === null || self.conference().topics.length === 0) {
-                warnings.forEach(function (currWarning) {
-                    if (currWarning.match("topic")) {
-                        warnings.splice(warnings.indexOf(currWarning), 1);
-                    }
-                });
-            }
-        };
-
         self.validity = ko.computed(
             function() {
                 var abstract = self.abstract();
@@ -191,7 +181,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     };
                 } else {
                     self.checkRemovePresPref(res.warnings);
-                    self.checkRemoveTopics(res.warnings);
                     var nwarn = res.warnings.length;
                     return {
                         ok: false,
@@ -663,7 +652,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 var result = validate.abstract(self.abstract());
 
                 self.checkRemovePresPref(result.warnings);
-                self.checkRemoveTopics(res.warnings);
                 if (!result.ok()) {
                     self.setError("Error", "Unable to submit: " +
                         (result.hasErrors() ? result.errors[0] : result.warnings[0]));
