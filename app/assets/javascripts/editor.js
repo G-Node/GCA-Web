@@ -807,6 +807,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     self.setWarning("Abstract unlocked",
                         "<ul>" +
                         "<li>Autosave is again enabled, changes will be stored directly on the server.</li>" +
+                        "<li>This abstract is <b>not submitted</b> yet.</li>" +
                         "<li>Abstract must be re-submitted before the deadline. If the abstract is not submitted, " +
                         "    it will not be considered for the conference.</li>" +
                         "</ul>"
@@ -816,6 +817,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         "Abstract is saved",
                         "<ul>" +
                         "<li>Autosave is enabled, i.e. changes are stored automatically on the server.</li>" +
+                        "<li>This abstract is <b>not submitted</b> yet.</li>" +
                         "<li>Once the Validation field shows 'Ok', you can click the " +
                         "    <b>Submit</b> button to submit it. Submitted abstracts can" +
                         "    be modified until the deadline. </li>" +
