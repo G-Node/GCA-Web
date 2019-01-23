@@ -694,6 +694,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         self.doWithdrawAbstract = function () {
             self.doChangeState("Withdrawn");
+
+            // Cleanup any leftover messages
+            self.clearMessage();
         };
 
         self.action = ko.computed(
