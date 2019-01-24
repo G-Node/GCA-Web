@@ -48,11 +48,11 @@
                     <span data-bind="text: cite"></span>
                 </div>
                 <ul id="abstract-list" class="list-group" data-bind="foreach: abstracts">
-                    <a data-bind="attr: { href: createLink().absLink }">
-                        <li id="abstract-list-item" class="list-group-item abstract">
+                    <li id="abstract-list-item" class="list-group-item abstract">
+                        <a data-bind="attr: { href: createLink().absLink }">
                             <span data-bind="text: title"></span>
-                        </li>
-                    </a>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
