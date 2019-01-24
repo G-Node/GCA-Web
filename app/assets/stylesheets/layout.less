@@ -160,15 +160,15 @@ body {
   }
 
   .favour{
-    color: white !important;
-    background-color: gold !important;
+    color: @color-dark-gray-dark !important;
+    background-color: white !important;
     border-radius: 4px;
   }
+
   .disfavour{
-    color: white;
-    background-color: darkred;
+    color: rgb(184, 134, 11);
+    background-color: rgb(255, 250, 120);
     border-radius: 4px;
-    border: none;
   }
 
   .abstract-text {
@@ -410,4 +410,34 @@ body {
 
 .tab-content {
   margin-top: 10px;
+}
+
+ /* Tooltip container */
+.gn-tooltip {
+  color: black;
+}
+
+/* Tooltip text */
+.gn-tooltip .gn-tooltiptext {
+  visibility: hidden;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 5px;
+
+  /* Position the tooltip text */
+  position: fixed;
+  z-index: 1;
+  margin-top: -60px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.gn-tooltip:hover .gn-tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }

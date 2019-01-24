@@ -20,7 +20,7 @@
     <!-- If no Favourites -->
     <div data-bind="if: noFavouriteAbstracts">
         <div class="alert alert-info fade in out">
-            <h4>You have no favourite abstracts yet. Click the star button shown for abstracts to add them.</h4>
+            <h4>You have no favourite abstracts yet. Click the star button on an abstract to add it.</h4>
         </div>
     </div>
 
@@ -48,11 +48,11 @@
                     <span data-bind="text: cite"></span>
                 </div>
                 <ul id="abstract-list" class="list-group" data-bind="foreach: abstracts">
-                    <a data-bind="attr: { href: createLink().absLink }">
-                        <li id="abstract-list-item" class="list-group-item abstract">
+                    <li id="abstract-list-item" class="list-group-item abstract">
+                        <a data-bind="attr: { href: createLink().absLink }">
                             <span data-bind="text: title"></span>
-                        </li>
-                    </a>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
