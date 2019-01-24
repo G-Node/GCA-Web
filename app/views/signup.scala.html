@@ -17,11 +17,17 @@
       @password(form("password"), "Password", icon = "key")
 
       <div class="form-group">
+
+        <div class="jumbotron">
+          By registering, you agree to our
+          <a onclick="window.open('https://web.gin.g-node.org/G-Node/Info/wiki/Terms+of+Use')" href="">Terms of Use</a> and
+          <a href="@routes.Application.datenschutz">Data Processing Policy</a>.
+        </div>
+
         <div>
           <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Submit</button>
         </div>
       </div>
     }
   </fieldset>
-
 }

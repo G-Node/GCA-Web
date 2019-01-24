@@ -71,9 +71,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
                 var checkTitle = /.*\$.*\$.*/;
                 if (self.editedAbstract() && self.editedAbstract().title() && checkTitle.test(self.editedAbstract().title())) {
                     return "Please avoid using LaTeX code in the abstract title";
-                } else {
-                    return "";
                 }
+                return "";
             },
             self
         );
@@ -197,6 +196,20 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     // Suppress error, if conference has no defined topics
                     self.checkRemoveTopics(result.warnings);
                     var nwarn = result.warnings.length;
+
+                    // Return result Ok, if no warnings are left after preference and
+                    // topics warnings have been suppressed.
+                    if (nwarn !== null && nwarn !== undefined && nwarn === 0) {
+                        return {
+                            ok: true,
+                            isError: false,
+                            badgeLevel: "btn-success",
+                            badgeText: "Ok",
+                            items: [],
+                            handler: function() {}
+                        };
+                    }
+
                     return {
                         ok: false,
                         isError: false,
@@ -440,6 +453,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
         };
 
         self.doSaveAbstract = function (abstract) {
+            // Clean slate for new messages
+            self.clearMessage();
+
             if (!(abstract instanceof models.ObservableAbstract)) {
                 abstract = self.abstract();
             }
@@ -506,8 +522,6 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
                 if (firstSave) {
                     self.showHelp();
-                } else {
-                    self.clearMessage();
                 }
             }
 
@@ -694,6 +708,9 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
         self.doWithdrawAbstract = function () {
             self.doChangeState("Withdrawn");
+
+            // Cleanup any leftover messages
+            self.clearMessage();
         };
 
         self.action = ko.computed(
@@ -795,7 +812,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     "<li>Nothing will be stored on the server before the abstract is saved for" +
                     "    the first time, so it is ok to play around and explore this editor.</li>" +
                     "<li>After entering at least the abstract title, click the <b>Save</b> button" +
-                    "    to store the abstract on the server. Subsequent changes will the be " +
+                    "    to store the abstract on the server. Subsequent changes will then be " +
                     "    saved automatically.</li>" +
                     "<li>The 'Validation' field above indicates if there are issues with the" +
                     "    required content of the abstract. Clicking on the <i>issues</i> button will " +
@@ -807,6 +824,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     self.setWarning("Abstract unlocked",
                         "<ul>" +
                         "<li>Autosave is again enabled, changes will be stored directly on the server.</li>" +
+                        "<li>This abstract is <b>not submitted</b> yet.</li>" +
                         "<li>Abstract must be re-submitted before the deadline. If the abstract is not submitted, " +
                         "    it will not be considered for the conference.</li>" +
                         "</ul>"
@@ -816,6 +834,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
                         "Abstract is saved",
                         "<ul>" +
                         "<li>Autosave is enabled, i.e. changes are stored automatically on the server.</li>" +
+                        "<li>This abstract is <b>not submitted</b> yet.</li>" +
                         "<li>Once the Validation field shows 'Ok', you can click the " +
                         "    <b>Submit</b> button to submit it. Submitted abstracts can" +
                         "    be modified until the deadline. </li>" +
@@ -835,7 +854,8 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     "<b> <u> Please note that abstract submission does not replace conference registration!</u> <br/>" +
                     "All abstract submitters also have to register for the conference.</b><br/>" +
                     "To register please go to: <a target=\"_blank\" href=\"" +
-                    self.conference().link + "\">" + self.conference().link + "</a>"
+                    self.conference().link + "\"><span class=\"glyphicon glyphicon-new-window\"></span> " +
+                    self.conference().link + "</a>"
                 );
             }
         };
