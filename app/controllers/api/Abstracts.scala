@@ -140,6 +140,19 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
   }
 
   /**
+    * List all favourite abstracts for a given conference and a given user
+    *
+    * @return All (accessible) favourite abstracts for a given user.
+    */
+  def listFavUuidByConf(conferenceId: String) = SecuredAction { implicit request =>
+    val conference = conferenceService.get(conferenceId)
+    val abstracts = abstractService.listIsFavourite(conference, request.identity.account)
+    Ok(Json.toJson(
+      for (abs <- abstracts) yield abs.uuid
+    ))
+  }
+
+  /**
    * An abstract info by id.
    *
    * @param id The id of the abstract.
