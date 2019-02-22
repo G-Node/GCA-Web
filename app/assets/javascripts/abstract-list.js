@@ -25,6 +25,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.groups = ko.observableArray(null);
         self.error = ko.observable(false);
         self.messageSuccess = ko.observable(false);
+        self.favs = ko.observableArray(null);
 
         // maps for uuid -> abstract, doi -> abstract,
         //          neighbours -> prev & next of current list
@@ -100,7 +101,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (isMobile) {
                 // Mobile figure hotfix, adjusting URL
-                for (let fig of abstract.figures) {
+                for (const fig of abstract.figures) {
                     fig.URL = fig.URL + "mobile";
                 }
             }
@@ -167,7 +168,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         };
 
         self.showAbstractByUUID = function(uuid) {
-            if (!uuid in self.uuidMap) {
+            if (!(uuid in self.uuidMap)) {
                 return;
             }
 
@@ -269,7 +270,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.nextAbstract = function(abstract) {
             var uuid = abstract.uuid;
 
-            if (!uuid in self.neighbours) {
+            if (!(uuid in self.neighbours)) {
                 return null;
             }
 
@@ -279,7 +280,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.prevAbstract = function(abstract) {
             var uuid = abstract.uuid;
 
-            if (!uuid in self.neighbours) {
+            if (!(uuid in self.neighbours)) {
                 return null;
             }
 
@@ -293,6 +294,22 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             function onFavUserData(isFavUser) {
                 var IFUBool = isFavUser === "true";
                 self.isFavouriteAbstract(IFUBool);
+            }
+        };
+
+        self.getFavourites = function() {
+            var favUsersUrl = "/api/user/self/conferences/" + self.conference().uuid + "/favabstractuuids";
+            $.get(favUsersUrl, onFavouriteData).fail(self.ioFailHandler);
+
+            function onFavouriteData(absList) {
+                var absArr = [];
+                absList.forEach(function(obj) {
+                    absArr.push(obj);
+                });
+                for (var i = 0; i < self.abstractsData.length; i++) {
+                    var isFav = $.inArray(self.abstractsData[i].uuid, absArr) >= 0;
+                    self.favs.push(isFav);
+                }
             }
         };
 
@@ -330,6 +347,9 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
                 self.buildMaps();
                 self.abstracts(absList);
                 self.neighbours = self.makeNeighboursMap(absList);
+                if (loggedIn.indexOf("true") >= 0) {
+                    self.getFavourites(absList);
+                }
 
                 doAfter();
                 self.isLoading(false);

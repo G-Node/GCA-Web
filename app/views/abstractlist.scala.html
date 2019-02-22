@@ -59,6 +59,9 @@
             <div class="abstract">
                 <div class="sortId" data-bind="html: $parent.makeAbstractID($data)"></div>
                 <div class="box">
+                    @if(account.isDefined) {
+                        <div class="pull-right" data-bind="visible: $parent.favs()[$index()]">&#9733</div>
+                    }
                     <h4 class="list-group-item-heading" data-bind="text: title"></h4>
                     <div class="list-group-item-text">
                         <ul class="authors" data-bind="foreach: authors">
@@ -91,7 +94,7 @@
                         <span class="gn-tooltiptext">Add abstract to favourites</span>
                     </a>
                 </li>
-                <li data-bind="visible: $root.isFavouriteAbstract">
+                <li data-bind="visible: $root.isFavouriteAbstract()">
                     <a class="disfavour gn-tooltip" data-bind="click: $root.disfavourAbstract" href="">
                         &#9733
                         <span class="gn-tooltiptext">Remove abstract from favourites</span>
