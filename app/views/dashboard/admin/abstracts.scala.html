@@ -116,6 +116,10 @@
                             data-bind="value: $root.note, valueUpdate: 'afterkeydown'"
                             cols="80" rows="3" maxlength="255">
                         </textarea>
+                        <div>
+                            <span>Characters left: </span>
+                            <span data-bind="text: $root.editorNoteCharactersLeft"></span>
+                        </div>
                     </div>
 
                     <div class="modal-footer">

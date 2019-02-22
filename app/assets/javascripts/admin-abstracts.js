@@ -145,6 +145,17 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
             self.selectedAbstract();
         };
 
+        self.editorNoteCharactersLeft = ko.computed(
+            function () {
+                if (self.note()) {
+                    return 255 - self.note().length;
+                } else {
+                    return 255;
+                }
+            },
+            self
+        );
+
         self.mkAuthorList = function(abstract) {
             if (abstract.authors.length < 1) {
                 return "";
