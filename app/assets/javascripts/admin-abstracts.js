@@ -23,6 +23,8 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
         self.abstracts = ko.observableArray(null);
         self.abstractNumbers = ko.observable({ total: 0, active: 0 });
 
+        self.note = ko.observable(null);
+
         // State related things
         self.stateHelper = astate.changeHelper;
         self.selectedAbstract = ko.observable(null);
@@ -131,16 +133,15 @@ require(["lib/models", "lib/tools", "lib/astate", "knockout"], function(models, 
 
         self.beginStateChange = function(abstract) {
             // Reset the message box
-            $("#note").val("");
+            self.note("");
             $("#state-dialog").modal("show");
             self.selectedAbstract(abstract);
         };
 
         self.finishStateChange = function() {
-            var note = $("#note").val();
             var state = $("#state-dialog").find("select").val();
 
-            self.setState(self.selectedAbstract(), state, note);
+            self.setState(self.selectedAbstract(), state, self.note());
             self.selectedAbstract();
         };
 
