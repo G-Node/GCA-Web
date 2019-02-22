@@ -26,6 +26,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.error = ko.observable(false);
         self.messageSuccess = ko.observable(false);
         self.favs = ko.observableArray(null);
+        self.favAbsArr = [];
 
         // maps for uuid -> abstract, doi -> abstract,
         //          neighbours -> prev & next of current list
@@ -131,6 +132,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
 
                 function success(obj) {
                     // Reload the abstract view to refresh the favourite status
+                    self.favAbsArr.push(obj);
                     self.showAbstractByUUID(obj);
                     self.setInfo("Abstract has been added to the favourite abstracts list");
                 }
@@ -157,6 +159,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
 
                 function success(obj) {
                     // Reload the abstract view to refresh the favourite status
+                    self.favAbsArr.splice(self.favAbsArr.indexOf(obj), 1);
                     self.showAbstractByUUID(obj);
                     self.setInfo("Abstract has been removed from the favourite abstracts list");
                 }
@@ -288,13 +291,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         };
 
         self.isFavourite = function(abstract) {
-            var uuid = abstract.uuid;
-            var favUsersUrl = "/api/user/self/abstract/" + uuid + "/isfavuser";
-            $.get(favUsersUrl, onFavUserData).fail(self.ioFailHandler);
-            function onFavUserData(isFavUser) {
-                var IFUBool = isFavUser === "true";
-                self.isFavouriteAbstract(IFUBool);
-            }
+            self.isFavouriteAbstract($.inArray(abstract.uuid, self.favAbsArr) >= 0);
         };
 
         self.getFavourites = function() {
@@ -302,13 +299,16 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             $.get(favUsersUrl, onFavouriteData).fail(self.ioFailHandler);
 
             function onFavouriteData(absList) {
-                var absArr = [];
                 absList.forEach(function(obj) {
-                    absArr.push(obj);
+                    self.favAbsArr.push(obj);
                 });
                 for (var i = 0; i < self.abstractsData.length; i++) {
-                    var isFav = $.inArray(self.abstractsData[i].uuid, absArr) >= 0;
+                    var isFav = $.inArray(self.abstractsData[i].uuid, self.favAbsArr) >= 0;
                     self.favs.push(isFav);
+                }
+
+                if (self.selectedAbstract()) {
+                    self.isFavouriteAbstract($.inArray(self.selectedAbstract().uuid, self.favAbsArr) >= 0);
                 }
             }
         };
