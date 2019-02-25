@@ -291,7 +291,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         };
 
         self.isFavourite = function(abstract) {
-            self.isFavouriteAbstract($.inArray(abstract.uuid, self.favAbsArr) >= 0);
+            self.isFavouriteAbstract(self.favAbsArr.includes(abstract.uuid, 0));
         };
 
         self.getFavourites = function() {
@@ -303,12 +303,12 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
                     self.favAbsArr.push(obj);
                 });
                 for (var i = 0; i < self.abstractsData.length; i++) {
-                    var isFav = $.inArray(self.abstractsData[i].uuid, self.favAbsArr) >= 0;
+                    var isFav = self.favAbsArr.includes(self.abstractsData[i].uuid, 0);
                     self.favs.push(isFav);
                 }
 
                 if (self.selectedAbstract()) {
-                    self.isFavouriteAbstract($.inArray(self.selectedAbstract().uuid, self.favAbsArr) >= 0);
+                    self.isFavouriteAbstract(self.favAbsArr.includes(self.selectedAbstract().uuid, 0));
                 }
             }
         };
