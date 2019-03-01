@@ -25,6 +25,8 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.groups = ko.observableArray(null);
         self.error = ko.observable(false);
         self.messageSuccess = ko.observable(false);
+        self.favs = ko.observableArray(null);
+        self.favAbsArr = [];
 
         // maps for uuid -> abstract, doi -> abstract,
         //          neighbours -> prev & next of current list
@@ -100,7 +102,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (isMobile) {
                 // Mobile figure hotfix, adjusting URL
-                for (let fig of abstract.figures) {
+                for (const fig of abstract.figures) {
                     fig.URL = fig.URL + "mobile";
                 }
             }
@@ -130,6 +132,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
 
                 function success(obj) {
                     // Reload the abstract view to refresh the favourite status
+                    self.favAbsArr.push(obj);
                     self.showAbstractByUUID(obj);
                     self.setInfo("Abstract has been added to the favourite abstracts list");
                 }
@@ -156,6 +159,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
 
                 function success(obj) {
                     // Reload the abstract view to refresh the favourite status
+                    self.favAbsArr.splice(self.favAbsArr.indexOf(obj), 1);
                     self.showAbstractByUUID(obj);
                     self.setInfo("Abstract has been removed from the favourite abstracts list");
                 }
@@ -167,7 +171,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         };
 
         self.showAbstractByUUID = function(uuid) {
-            if (!uuid in self.uuidMap) {
+            if (!(uuid in self.uuidMap)) {
                 return;
             }
 
@@ -269,7 +273,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.nextAbstract = function(abstract) {
             var uuid = abstract.uuid;
 
-            if (!uuid in self.neighbours) {
+            if (!(uuid in self.neighbours)) {
                 return null;
             }
 
@@ -279,7 +283,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.prevAbstract = function(abstract) {
             var uuid = abstract.uuid;
 
-            if (!uuid in self.neighbours) {
+            if (!(uuid in self.neighbours)) {
                 return null;
             }
 
@@ -287,12 +291,25 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         };
 
         self.isFavourite = function(abstract) {
-            var uuid = abstract.uuid;
-            var favUsersUrl = "/api/user/self/abstract/" + uuid + "/isfavuser";
-            $.get(favUsersUrl, onFavUserData).fail(self.ioFailHandler);
-            function onFavUserData(isFavUser) {
-                var IFUBool = isFavUser === "true";
-                self.isFavouriteAbstract(IFUBool);
+            self.isFavouriteAbstract(self.favAbsArr.includes(abstract.uuid, 0));
+        };
+
+        self.getFavourites = function() {
+            var favUsersUrl = "/api/user/self/conferences/" + self.conference().uuid + "/favabstractuuids";
+            $.get(favUsersUrl, onFavouriteData).fail(self.ioFailHandler);
+
+            function onFavouriteData(absList) {
+                absList.forEach(function(obj) {
+                    self.favAbsArr.push(obj);
+                });
+                for (var i = 0; i < self.abstractsData.length; i++) {
+                    var isFav = self.favAbsArr.includes(self.abstractsData[i].uuid, 0);
+                    self.favs.push(isFav);
+                }
+
+                if (self.selectedAbstract()) {
+                    self.isFavouriteAbstract(self.favAbsArr.includes(self.selectedAbstract().uuid, 0));
+                }
             }
         };
 
@@ -330,6 +347,9 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
                 self.buildMaps();
                 self.abstracts(absList);
                 self.neighbours = self.makeNeighboursMap(absList);
+                if (loggedIn.indexOf("true") >= 0) {
+                    self.getFavourites(absList);
+                }
 
                 doAfter();
                 self.isLoading(false);

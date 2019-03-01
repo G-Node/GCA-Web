@@ -111,8 +111,15 @@
                             <option data-bind="value: $data, text: $data"></option>
                         </select>
 
-                        <label for="note">Message:</label>
-                        <textarea class="form-control" id="note" cols="80" rows="3"></textarea>
+                        <label for="noteId">Message:</label>
+                        <textarea class="form-control" id="noteId"
+                            data-bind="value: $root.note, valueUpdate: 'afterkeydown'"
+                            cols="80" rows="3" maxlength="255">
+                        </textarea>
+                        <div>
+                            <span>Characters left: </span>
+                            <span data-bind="text: $root.editorNoteCharactersLeft"></span>
+                        </div>
                     </div>
 
                     <div class="modal-footer">

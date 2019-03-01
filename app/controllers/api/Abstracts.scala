@@ -140,6 +140,19 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
   }
 
   /**
+    * List all favourite abstracts for a given conference and a given user
+    *
+    * @return All (accessible) favourite abstracts for a given user.
+    */
+  def listFavUuidByConf(conferenceId: String) = SecuredAction { implicit request =>
+    val conference = conferenceService.get(conferenceId)
+    val abstracts = abstractService.listIsFavourite(conference, request.identity.account)
+    Ok(Json.toJson(
+      for (abs <- abstracts) yield abs.uuid
+    ))
+  }
+
+  /**
    * An abstract info by id.
    *
    * @param id The id of the abstract.
@@ -253,15 +266,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
       for (acc <- favUsers) yield accountFormat.writes(acc)
     ))
   }
-  /**
-    * Check, whether current user is has the abstract as a favourite.
-    *
-    * @return a list of updated permissions (accounts) as JSON
-    */
-  def isFavouriteUser(id: String) = SecuredAction { implicit request =>
-    val abstr = abstractService.get(id)
-    Ok(abstr.favUsers.contains(request.identity.account).toString)
-  }
+
   /**
     * Add the logged in user to the favourite users list of an abstract.
     *
