@@ -156,6 +156,24 @@ class AbstractsCtrlTest extends BaseCtrlTest {
   }
 
   @Test
+  def testListFavByAccount() {
+
+    val bobCookie = getCookie(assets.bob, "testtest")
+    val uid = assets.bob.uuid
+    val reqNoAuth = FakeRequest(GET, s"/api/user/$uid/favouriteabstracts")
+    val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
+    assert(status(reqNoAuthResult) == UNAUTHORIZED)
+
+    val reqAuth = reqNoAuth.withCookies(bobCookie)
+
+    val reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
+    assert(status(reqAuthResult) == OK)
+
+    val loadedAbs = contentAsJson(reqAuthResult).as[Seq[Abstract]]
+    assert(loadedAbs.nonEmpty)
+  }
+
+  @Test
   def testListByConference() {
 
     val cid = assets.conferences(0).uuid
