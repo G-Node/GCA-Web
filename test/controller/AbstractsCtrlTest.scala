@@ -271,6 +271,27 @@ class AbstractsCtrlTest extends BaseCtrlTest {
   }
 
   @Test
+  def testDeleteFavUser() {
+    //Add
+    val absUUID = assets.abstracts(0).uuid
+    val reqNoAuth = FakeRequest(DELETE, s"/api/abstracts/$absUUID/removefavuser")
+    val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
+    assert(status(reqNoAuthResult) == UNAUTHORIZED)
+
+    val reqAuth = reqNoAuth.withCookies(cookie)
+
+    val reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
+    assert(status(reqAuthResult) == OK)
+
+    val cid = assets.conferences(0).uuid
+    val reqList = FakeRequest(GET, s"/api/user/self/conferences/$cid/favabstractuuids").withCookies(cookie)
+
+    val reqListResult = route(AbstractsCtrlTest.app, reqList).get
+    val loadedJSONAlice = contentAsJson(reqListResult).as[Array[String]]
+    assert(loadedJSONAlice.length == 0)
+  }
+
+  @Test
   def testDelete() {
     val absUUID = assets.abstracts(0).uuid
     val reqNoAuth = FakeRequest(DELETE, s"/api/abstracts/$absUUID")
