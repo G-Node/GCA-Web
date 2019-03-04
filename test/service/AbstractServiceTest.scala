@@ -64,6 +64,15 @@ class AbstractServiceTest extends JUnitSuite {
   }
 
   @Test
+  def testListFavourite() : Unit = {
+    var abstracts = srv.listFavourite(assets.alice)
+    assert(abstracts.isEmpty)
+
+    abstracts = srv.listFavourite(assets.bob)
+    assert(abstracts.length == assets.abstracts.length)
+  }
+
+  @Test
   def testListIsFavourite() : Unit = {
     var abstracts = srv.listIsFavourite(assets.conferences(0), assets.alice)
     assert(abstracts.size == 0)
