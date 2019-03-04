@@ -212,6 +212,24 @@ class AbstractServiceTest extends JUnitSuite {
   }
 
   @Test
+  def testRemoveFavUSer() : Unit = {
+    val abstr = assets.abstracts(0)
+    srv.addFavUser(abstr, assets.alice)
+    srv.removeFavUser(abstr, assets.alice)
+    assert(!abstr.favUsers.contains(assets.alice))
+
+    val illegal = assets.createAbstract()
+    illegal.uuid = "wrongid"
+    intercept[EntityNotFoundException] {
+      srv.removeFavUser(illegal, assets.alice)
+    }
+
+    intercept[EntityNotFoundException] {
+      srv.removeFavUser(abstr, Account(Some("uuid"), Some("foo@bar.com")))
+    }
+  }
+
+  @Test
   def testDelete() : Unit = {
     val original = assets.abstracts(0)
 
