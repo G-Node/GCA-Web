@@ -462,6 +462,18 @@ class AbstractService(figPath: String) extends PermissionsBase {
     */
   def removeFavUser(abstr : Abstract, account: Account) : Abstract = {
     val abstrUpdated = transaction { (em, tx) =>
+
+      if (abstr.uuid == null)
+        throw new IllegalArgumentException("Unable to update an abstract with null uuid")
+
+      val abstrChecked = em.find(classOf[Abstract], abstr.uuid)
+      if (abstrChecked == null)
+        throw new EntityNotFoundException("Unable to find abstract with uuid = " + abstr.uuid)
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
       abstr.favUsers.remove(account)
       val merged = em.merge(abstr)
       merged
