@@ -114,6 +114,22 @@ class AbstractServiceTest extends JUnitSuite {
   }
 
   @Test
+  def testGetFav() : Unit = {
+    srv.getFav(assets.abstracts(0).uuid, assets.bob)
+
+    intercept[EntityNotFoundException] {
+      srv.getFav(
+        assets.abstracts(0).uuid,
+        Account(Some("uuid"), Some("not@valid.com"))
+      )
+    }
+
+    intercept[NoResultException] {
+      srv.getFav("NONEXISTENT", assets.eve)
+    }
+  }
+
+  @Test
   def testCreate() : Unit = {
     val original = assets.createAbstract()
     val abstr = srv.create(original, assets.conferences(0), assets.alice)
