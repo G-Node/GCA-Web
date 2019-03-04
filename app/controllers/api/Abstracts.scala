@@ -282,7 +282,7 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     *
     * @return The id of the updated Abstract as JSON
     */
-  def removeFavUser(id: String) = SecuredAction(parse.json) { implicit request =>
+  def removeFavUser(id: String) = SecuredAction { implicit request =>
     val abstr = abstractService.get(id)
     abstractService.removeFavUser(abstr, request.identity.account)
     Ok(Json.toJson(id))
