@@ -64,6 +64,15 @@ class AbstractServiceTest extends JUnitSuite {
   }
 
   @Test
+  def testListFavourite() : Unit = {
+    var abstracts = srv.listFavourite(assets.alice)
+    assert(abstracts.isEmpty)
+
+    abstracts = srv.listFavourite(assets.bob)
+    assert(abstracts.length == assets.abstracts.length)
+  }
+
+  @Test
   def testListIsFavourite() : Unit = {
     var abstracts = srv.listIsFavourite(assets.conferences(0), assets.alice)
     assert(abstracts.size == 0)
@@ -101,6 +110,22 @@ class AbstractServiceTest extends JUnitSuite {
 
     intercept[IllegalAccessException] {
       srv.getOwn(assets.abstracts(1).uuid, assets.eve)
+    }
+  }
+
+  @Test
+  def testGetFav() : Unit = {
+    srv.getFav(assets.abstracts(0).uuid, assets.bob)
+
+    intercept[EntityNotFoundException] {
+      srv.getFav(
+        assets.abstracts(0).uuid,
+        Account(Some("uuid"), Some("not@valid.com"))
+      )
+    }
+
+    intercept[NoResultException] {
+      srv.getFav("NONEXISTENT", assets.eve)
     }
   }
 
@@ -166,6 +191,41 @@ class AbstractServiceTest extends JUnitSuite {
       intercept[IllegalAccessException] {
         srv.update(stateChanged, assets.alice)
       }
+    }
+  }
+
+  @Test
+  def testAddFavUSer() : Unit = {
+    val abstr = assets.abstracts(0)
+    srv.addFavUser(abstr, assets.alice)
+    assert(abstr.favUsers.contains(assets.alice))
+
+    val illegal = assets.createAbstract()
+    illegal.uuid = "wrongid"
+    intercept[EntityNotFoundException] {
+      srv.addFavUser(illegal, assets.alice)
+    }
+
+    intercept[EntityNotFoundException] {
+      srv.addFavUser(abstr, Account(Some("uuid"), Some("foo@bar.com")))
+    }
+  }
+
+  @Test
+  def testRemoveFavUSer() : Unit = {
+    val abstr = assets.abstracts(0)
+    srv.addFavUser(abstr, assets.alice)
+    srv.removeFavUser(abstr, assets.alice)
+    assert(!abstr.favUsers.contains(assets.alice))
+
+    val illegal = assets.createAbstract()
+    illegal.uuid = "wrongid"
+    intercept[EntityNotFoundException] {
+      srv.removeFavUser(illegal, assets.alice)
+    }
+
+    intercept[EntityNotFoundException] {
+      srv.removeFavUser(abstr, Account(Some("uuid"), Some("foo@bar.com")))
     }
   }
 

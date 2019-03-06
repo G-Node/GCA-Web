@@ -156,6 +156,24 @@ class AbstractsCtrlTest extends BaseCtrlTest {
   }
 
   @Test
+  def testListFavByAccount() {
+
+    val bobCookie = getCookie(assets.bob, "testtest")
+    val uid = assets.bob.uuid
+    val reqNoAuth = FakeRequest(GET, s"/api/user/$uid/favouriteabstracts")
+    val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
+    assert(status(reqNoAuthResult) == UNAUTHORIZED)
+
+    val reqAuth = reqNoAuth.withCookies(bobCookie)
+
+    val reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
+    assert(status(reqAuthResult) == OK)
+
+    val loadedAbs = contentAsJson(reqAuthResult).as[Seq[Abstract]]
+    assert(loadedAbs.nonEmpty)
+  }
+
+  @Test
   def testListByConference() {
 
     val cid = assets.conferences(0).uuid
@@ -177,6 +195,33 @@ class AbstractsCtrlTest extends BaseCtrlTest {
 
     val resETag = route(AbstractsCtrlTest.app, reqETag).get
     assert(status(resETag) ==  NOT_MODIFIED)
+  }
+
+  @Test
+  def testListFavByConf() {
+
+    val cid = assets.conferences(0).uuid
+    val reqNoAuth = FakeRequest(GET, s"/api/user/self/conferences/$cid/favouriteabstracts")
+
+    val reqNoAuthResult = routeWithErrors(AbstractsCtrlTest.app, reqNoAuth).get
+    assert(status(reqNoAuthResult) == UNAUTHORIZED)
+
+    val reqAuth = reqNoAuth.withCookies(cookie)
+    val reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
+    assert(status(reqAuthResult) == OK)
+    assert(header(ETAG, reqAuthResult).isDefined)
+
+    val loadedAbsAlice = contentAsJson(reqAuthResult).as[Seq[Abstract]]
+
+    assert(loadedAbsAlice.isEmpty)
+
+    val bobCookie = getCookie(assets.bob, "testtest")
+    val reqBob = reqNoAuth.withCookies(bobCookie)
+    val reqBobResult = route(AbstractsCtrlTest.app, reqBob).get
+    assert(status(reqBobResult) == OK)
+
+    val loadedAbs = contentAsJson(reqBobResult).as[Seq[Abstract]]
+    assert(loadedAbs.length == assets.abstracts.size)
   }
 
   @Test
@@ -202,6 +247,48 @@ class AbstractsCtrlTest extends BaseCtrlTest {
 
     val loadedJSONBob = contentAsJson(reqBobResult).as[Array[String]]
     assert(loadedJSONBob.length == assets.abstracts.size)
+  }
+
+  @Test
+  def testAddFavUser() {
+    //Add
+    val absUUID = assets.abstracts(0).uuid
+    val reqNoAuth = FakeRequest(PUT, s"/api/abstracts/$absUUID/addfavuser")
+    val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
+    assert(status(reqNoAuthResult) == UNAUTHORIZED)
+
+    val reqAuth = reqNoAuth.withCookies(cookie)
+
+    val reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
+    assert(status(reqAuthResult) == OK)
+
+    val cid = assets.conferences(0).uuid
+    val reqList = FakeRequest(GET, s"/api/user/self/conferences/$cid/favabstractuuids").withCookies(cookie)
+
+    val reqListResult = route(AbstractsCtrlTest.app, reqList).get
+    val loadedJSONAlice = contentAsJson(reqListResult).as[Array[String]]
+    assert(loadedJSONAlice.length > 0)
+  }
+
+  @Test
+  def testDeleteFavUser() {
+    //Add
+    val absUUID = assets.abstracts(0).uuid
+    val reqNoAuth = FakeRequest(DELETE, s"/api/abstracts/$absUUID/removefavuser")
+    val reqNoAuthResult = route(AbstractsCtrlTest.app, reqNoAuth).get
+    assert(status(reqNoAuthResult) == UNAUTHORIZED)
+
+    val reqAuth = reqNoAuth.withCookies(cookie)
+
+    val reqAuthResult = route(AbstractsCtrlTest.app, reqAuth).get
+    assert(status(reqAuthResult) == OK)
+
+    val cid = assets.conferences(0).uuid
+    val reqList = FakeRequest(GET, s"/api/user/self/conferences/$cid/favabstractuuids").withCookies(cookie)
+
+    val reqListResult = route(AbstractsCtrlTest.app, reqList).get
+    val loadedJSONAlice = contentAsJson(reqListResult).as[Array[String]]
+    assert(loadedJSONAlice.length == 0)
   }
 
   @Test
