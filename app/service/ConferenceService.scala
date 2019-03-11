@@ -9,15 +9,19 @@
 
 package service
 
-import java.net.URLDecoder
-import javax.persistence._
+import java.io.File
 
+import javax.persistence.{EntityNotFoundException, TypedQuery}
+import java.net.URLDecoder
+
+import javax.persistence._
 import play.api._
 import models._
 import plugins.DBUtil._
 import service.util.PermissionsBase
+import org.joda.time.{DateTime, DateTimeZone}
+import play.Play
 
-import org.joda.time.{DateTimeZone, DateTime}
 import scala.collection.JavaConversions._
 
 /**
@@ -26,7 +30,7 @@ import scala.collection.JavaConversions._
  * TODO prefetch stuff
  * TODO write test
  */
-class ConferenceService() extends PermissionsBase {
+class ConferenceService(banPath: String) extends PermissionsBase {
 
   /**
    * List all available conferences.
@@ -63,6 +67,7 @@ class ConferenceService() extends PermissionsBase {
            INNER JOIN FETCH c.owners o
            LEFT JOIN FETCH c.abstracts
            LEFT JOIN FETCH c.topics
+           LEFT JOIN FETCH c.banner
            WHERE o.uuid = :uuid
            ORDER BY c.startDate DESC"""
 
@@ -140,6 +145,7 @@ class ConferenceService() extends PermissionsBase {
            LEFT JOIN FETCH c.groups
            LEFT JOIN FETCH c.owners
            LEFT JOIN FETCH c.topics
+           LEFT JOIN FETCH c.banner
            WHERE c.uuid = :uuid or c.short = :short"""
 
       val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
@@ -147,6 +153,56 @@ class ConferenceService() extends PermissionsBase {
       query.setParameter("short", URLDecoder.decode(id, "UTF-8"))
 
       query.getSingleResult
+    }
+  }
+
+  /**
+    * Get a conference specified by its id, if account is owner.
+    *
+    * @param account The account to check.
+    * @param id The id of the conference.
+    *
+    * @return The specified conference.
+    *
+    * @throws NoResultException If the conference was not found
+    */
+  def getOwn(id: String, account: Account) : Conference = {
+    query { em =>
+
+      val queryStr =
+        """SELECT DISTINCT c FROM Conference c
+           LEFT JOIN FETCH c.groups
+           LEFT JOIN FETCH c.owners o
+           LEFT JOIN FETCH c.topics
+           LEFT JOIN FETCH c.banner
+           WHERE c.uuid = :uuid and o.uuid = :acc"""
+
+      if (id == null)
+        throw new IllegalArgumentException("Unable to update a conference without uuid")
+
+      val confChecked = em.find(classOf[Conference], id)
+      if (confChecked == null)
+        throw new EntityNotFoundException("Unable to find conference with uuid = " + id)
+
+      // this apparently useless query is needed to avoid strange caching behaviour related to #285
+      val queryUserStr =  """SELECT acc FROM Account acc LEFT JOIN acc.conferences c WHERE c.uuid = :uuid"""
+      em.createQuery(queryUserStr, classOf[Account])
+        .setParameter("uuid", id)
+        .getResultList
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
+      query.setParameter("uuid", id)
+      query.setParameter("acc", account.uuid)
+      val conf = query.getSingleResult
+
+      if (!(conf.isOwner(account) || account.isAdmin))
+        throw new IllegalAccessException("No permissions for conference with uuid = " + conf.uuid)
+
+      conf
     }
   }
 
@@ -231,6 +287,7 @@ class ConferenceService() extends PermissionsBase {
       conference.schedule = confChecked.schedule
       conference.info = confChecked.info
       conference.ctime = confChecked.ctime
+      conference.banner = confChecked.banner
 
       conference.groups.foreach { group =>
         group.conference = conference
@@ -294,6 +351,14 @@ class ConferenceService() extends PermissionsBase {
       confChecked.groups.foreach(em.remove(_))
       confChecked.topics.foreach(em.remove(_))
 
+      confChecked.banner.foreach( ban => {
+        if (ban != null) {
+          val file = new File(banPath, ban.uuid)
+          if (file.exists())
+            file.delete()
+        }
+      })
+
       em.remove(confChecked)
     }
   }
@@ -349,8 +414,12 @@ class ConferenceService() extends PermissionsBase {
 
 object ConferenceService {
 
-  def apply() = {
-    new ConferenceService()
+  def apply[A]() = {
+    new ConferenceService(Play.application().configuration().getString("file.ban_path", "./banner"))
+  }
+
+  def apply(banPath: String) = {
+    new ConferenceService(banPath)
   }
 
 }

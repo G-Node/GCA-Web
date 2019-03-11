@@ -229,6 +229,7 @@ class Assets() {
       ?("https://portal.g-node.org/abstracts/bc18/BC18_header.jpg"),
       ?("https://portal.g-node.org/abstracts/bc14/BC14_icon.png"),
       ?("557712638"),
+      Nil,
       Seq(AbstractGroup(None, ?(1), ?("Talk"), ?("T")),
         AbstractGroup(None, ?(2), ?("Poster"), ?("P"))),Nil,Nil,Nil,
       ?("""[{"ExtendedData": "","name": "Central Lecture Hall (ZHG)","description": "Main Conference and Workshops","point": {"lat": 51.542262,"long": 9.935886},"type": 0,"zoomto": true, "floorplans" : ["https://www.uni-muenchen.de/studium/beratung/beratung_service/beratung_lmu/beratungsstelle-barrierefrei/bilderbaukasten/Barrierefreiheit/geschwister-scholl-platz-1-eg.jpg"]},{"ExtendedData": "","name": "Alte Mensa","description": "Public Lecture and Conference Dinner","point": {"lat": 51.533442,"long": 9.937631},"type": 0,"zoomto": true},{"ExtendedData": "","name": "Alte Mensa","description": "Conference Dinner","point": {"lat": 51.533442,"long": 9.937631},"type": 5,"zoomto": true},{"ExtendedData": "","name": "Göttingen Hbf","description": "main station","point": {"lat": 51.536548,"long": 9.926891},"type": 4,"zoomto": true}]"""),
