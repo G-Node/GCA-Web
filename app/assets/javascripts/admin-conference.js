@@ -31,6 +31,20 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.oldshort = "";
         self.oldmAbsLeng = 0;
 
+        self.autosave = ko.observable({text: "Loading", css: "label-primary"});
+
+        // only required when a new banner is added
+        self.newBanner = {
+            file: null
+        };
+
+        self.hasBanner = ko.computed(
+            function () {
+                return self.conference() && self.conference().banner() && self.conference().banner().length > 0;
+            },
+            self
+        );
+
         ko.bindingHandlers.datetimepicker = {
             init: function(element, valueAccessor, allBindingsAccessor) {
                 function onSelectHandler(text, obj) {
@@ -205,7 +219,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.makeConferenceObservable = function (conf) {
             conf.makeObservable(["name", "short", "group", "cite", "description", "start", "end", "groups",
                 "deadline", "logo", "thumbnail", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
-                "topics", "iOSApp", "mAbsLeng", "mFigs"]);
+                "topics", "iOSApp", "banner", "mAbsLeng", "mFigs"]);
 
             for (var prop in conf) {
                 if (conf.hasOwnProperty(prop)) {
@@ -342,11 +356,22 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 type: method,
                 contentType: "application/json",
                 success: function (result) {
+                   if (self.newBanner.file) {
+                        // successBan is a function callback
+                        self.uploadBanner(successBan);
+                    } else {
+                        self.autosave({text: "Ok", css: "label-success"});
+                    }
                     self.onConferenceData(result);
                     self.setError("info", "Changes saved");
                 },
                 error: self.ioFailHandler
             });
+
+            function successBan() {
+                self.requestConference(self.conference().uuid);
+                self.autosave({text: "Ok", css: "label-success"});
+            }
         };
 
         self.isConferenceSaved = ko.computed(function() {
@@ -407,6 +432,97 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             var errorMsg = "Error uploading info data.";
 
             self.uploadSpecificField(url, fieldName, fieldValue, contentType, successMsg, errorMsg);
+        };
+
+        self.getNewBanner = function(data, event) {
+            if (self.conference().banner().length === 0) {
+                self.newBanner.file = event.currentTarget.files[0];
+                self.uploadBanner(successBan);
+            }
+
+            function successBan() {
+                self.loadConference(self.conference().uuid);
+                self.autosave({text: "Ok", css: "label-success"});
+            }
+        };
+
+        self.uploadBanner = function (callback) {
+            var files = self.newBanner.file,
+                data = new FormData();
+
+            if (files) {
+                var fileName = files.name,
+                    fileSize = files.size,
+                    splitted = fileName.split("."),
+                    ending = splitted[splitted.length - 1].toLowerCase();
+
+                if (["jpeg", "jpg", "gif", "giff", "png"].indexOf(ending) < 0) {
+                    self.setError("Error", "Figure file format for banner not supported (only jpeg, gif or png is allowed).");
+                    return;
+                }
+
+                if (fileSize > 5242880) {
+                    self.setError("Error", "Figure banner file is too large (limit is 5MB).");
+                    return;
+                }
+
+                data.append("file", files);
+
+                $.ajax({
+                    url: "/api/conferences/" + self.conference().uuid + "/banner",
+                    type: "POST",
+                    dataType: "json",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: success,
+                    error: fail,
+                    cache: false
+                });
+            }
+
+            function success(obj, stat, xhr) {
+                self.newBanner.file = null;
+
+                self.setError("Error", "Figure done.");
+
+                if (callback) {
+                    callback(obj, stat, xhr);
+                }
+            }
+
+            function fail() {
+                self.setError("Error", "Unable to save the banner figure.");
+            }
+        };
+
+        self.removeBanner = function (banner) {
+            if (self.hasBanner()) {
+                self.autosave({text: "Saving", css: "label-warning"});
+
+                $.ajax({
+                    url: "/api/banner/" + self.conference().banner()[0].uuid,
+                    type: "DELETE",
+                    success: success,
+                    error: fail,
+                    cache: false
+                });
+            } else {
+                self.setWarning("Error", "Unable to delete banner figure: conference has no banner", true);
+            }
+
+            function success() {
+                self.newBanner.file = null;
+                self.setError("Error", "Banner figure successfully removed.");
+
+                self.loadConference(self.conference().uuid);
+                self.autosave({text: "Ok", css: "label-success"});
+            }
+
+            function fail() {
+                self.setError("Error", "Unable to delete the banner figure");
+                self.autosave({text: "Error!", css: "label-danger"});
+            }
         };
     }
 
