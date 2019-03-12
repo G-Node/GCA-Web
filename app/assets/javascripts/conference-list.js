@@ -16,7 +16,7 @@ require(["main"], function () {
 
                 var self = tools.inherit(this);
 
-                self.logos = ko.observableArray(null);
+                self.banners = ko.observableArray(null);
 
                 self.init = function() {
                     if ($("#conference-uuid").length) {
@@ -34,12 +34,12 @@ require(["main"], function () {
 
                     function onConferenceData(confObj) {
                         var conf = models.Conference.fromObject(confObj);
-                        var confLogos = [];
+                        var confbanners = [];
                         if (conf !== null) {
-                            if (conf.logo.length > 0) {
-                                confLogos.push(conf.logo[0].URL);
+                            if (conf.banner.length > 0) {
+                                confbanners.push(conf.banner[0].URL);
                             }
-                            self.logos(confLogos);
+                            self.banners(confbanners);
                         }
                     }
                 };
@@ -50,18 +50,18 @@ require(["main"], function () {
 
                     function onConferenceData(confObj) {
                         var confs = models.Conference.fromArray(confObj);
-                        var confLogos = [];
+                        var confbanners = [];
                         if (confs !== null) {
                             confs.forEach(function (current) {
                                 if (current.isActive) {
-                                    if (current.logo.length > 0) {
-                                        confLogos.push(current.logo[0].URL);
+                                    if (current.banner.length > 0) {
+                                        confbanners.push(current.banner[0].URL);
                                     } else {
-                                        confLogos.push("");
+                                        confbanners.push("");
                                     }
                                 }
                             });
-                            self.logos(confLogos);
+                            self.banners(confbanners);
                         }
                     }
                 };

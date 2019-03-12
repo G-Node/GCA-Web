@@ -89,7 +89,10 @@ package object serializer {
     */
   class BannerFormat(implicit routesResolver: RoutesResolver) extends Format[Banner] {
 
-    override def reads(json: JsValue): JsResult[Banner] = JsSuccess(Banner(json.as[Option[String]], None))
+    override def reads(json: JsValue): JsResult[Banner] = (
+      (__ \ "uuid").readNullable[String] and
+        (__ \ "bType").readNullable[String]
+      )(Banner(_, _)).reads(json)
 
     override def writes(a: Banner): JsValue = {
       if (a == null) {
@@ -97,6 +100,7 @@ package object serializer {
       } else {
         Json.obj(
           "uuid" -> a.uuid,
+          "bType" -> a.bType,
           "URL" -> routesResolver.bannerFileUrl(a.uuid)
         )
       }
@@ -135,7 +139,7 @@ package object serializer {
       (__ \ "topics").read[List[Topic]].addPosition and
         (__ \ "mAbsLeng").readNullable[Int] and
         (__ \ "mFigs").readNullable[Int]
-    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _,  _, Nil, _, Nil, Nil, _,
+    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, _, Nil, Nil, _,
       null,null,null,_,_)).reads(json)
 
     override def writes(c: Conference): JsValue = {
@@ -160,7 +164,7 @@ package object serializer {
         "iOSApp" -> c.iOSApp,
         "abstracts" -> routesResolver.abstractsUrl(c.uuid),
         "allAbstracts" -> routesResolver.allAbstractsUrl(c.uuid),
-        "logo" -> asScalaSet(c.logo).toSeq.sorted[Model],
+        "banner" -> asScalaSet(c.banner).toSeq.sorted[Model],
         "topics" -> c.topics.toSeq.sorted[Model],
         "geo" -> routesResolver.geoUrl(c.uuid),
         "schedule" -> routesResolver.scheduleUrl(c.uuid),

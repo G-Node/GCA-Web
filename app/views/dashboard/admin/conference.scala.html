@@ -141,7 +141,7 @@
                 <div class="form-group">
                     <label for="logo-file" class="col-sm-2 control-label">Logo</label>
                     <div class="col-sm-10">
-                        <div data-bind="if: $root.conference().logo().length == 0">
+                        <div data-bind="if: $root.conference().banner().length == 0">
                             <div>Images of format "jpg", "gif", "png" are supported; the size limit is 5MB.</div>
                             <input type="file" name="logo-file" id="logo-file"
                             data-bind="event: { change: $root.getNewBanner }, enable: $root.isConferenceSaved"
@@ -151,14 +151,14 @@
                             </div>
                         </div>
 
-                        <div data-bind="if: $root.conference().logo().length > 0">
+                        <div data-bind="if: $root.conference().banner().length > 0">
                             <button type="button" class="btn btn-default btn-sm pull-right"
                             data-bind="click: $root.removeBanner">
                                 Remove
                             </button>
                             <div class="banner-box">
                                 <img class="conference-logo img-responsive img-rounded" src=""
-                                data-bind="attr: {src: $root.conference().logo()[0].URL}">
+                                data-bind="attr: {src: $root.conference().banner()[0].URL}">
                             </div>
                         </div>
                     </div>

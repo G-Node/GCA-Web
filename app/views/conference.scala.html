@@ -21,11 +21,11 @@
         <div class="page-header">
             <h1>@conference.name</h1>
         </div>
-        @if(conference.logo.size() > 0 && conference.link != null) {
+        @if(conference.banner.size() > 0 && conference.link != null) {
         <div>
             <a href="@conference.link">
                 <img class="conference-logo img-responsive img-rounded" src=""
-                data-bind="attr: {src: $root.logos()[0]}" alt="Conference Logo">
+                data-bind="attr: {src: $root.banners()[0]}" alt="Conference Logo">
             </a>
         </div>
     }
