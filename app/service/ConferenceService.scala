@@ -30,7 +30,7 @@ import scala.collection.JavaConversions._
  * TODO prefetch stuff
  * TODO write test
  */
-class ConferenceService(banPath: String) extends PermissionsBase {
+class ConferenceService(logoPath: String) extends PermissionsBase {
 
   /**
    * List all available conferences.
@@ -67,7 +67,7 @@ class ConferenceService(banPath: String) extends PermissionsBase {
            INNER JOIN FETCH c.owners o
            LEFT JOIN FETCH c.abstracts
            LEFT JOIN FETCH c.topics
-           LEFT JOIN FETCH c.banner
+           LEFT JOIN FETCH c.logo
            WHERE o.uuid = :uuid
            ORDER BY c.startDate DESC"""
 
@@ -145,7 +145,7 @@ class ConferenceService(banPath: String) extends PermissionsBase {
            LEFT JOIN FETCH c.groups
            LEFT JOIN FETCH c.owners
            LEFT JOIN FETCH c.topics
-           LEFT JOIN FETCH c.banner
+           LEFT JOIN FETCH c.logo
            WHERE c.uuid = :uuid or c.short = :short"""
 
       val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
@@ -174,7 +174,7 @@ class ConferenceService(banPath: String) extends PermissionsBase {
            LEFT JOIN FETCH c.groups
            LEFT JOIN FETCH c.owners o
            LEFT JOIN FETCH c.topics
-           LEFT JOIN FETCH c.banner
+           LEFT JOIN FETCH c.logo
            WHERE c.uuid = :uuid and o.uuid = :acc"""
 
       if (id == null)
@@ -287,7 +287,7 @@ class ConferenceService(banPath: String) extends PermissionsBase {
       conference.schedule = confChecked.schedule
       conference.info = confChecked.info
       conference.ctime = confChecked.ctime
-      conference.banner = confChecked.banner
+      conference.logo = confChecked.logo
 
       conference.groups.foreach { group =>
         group.conference = conference
@@ -351,9 +351,9 @@ class ConferenceService(banPath: String) extends PermissionsBase {
       confChecked.groups.foreach(em.remove(_))
       confChecked.topics.foreach(em.remove(_))
 
-      confChecked.banner.foreach( ban => {
-        if (ban != null) {
-          val file = new File(banPath, ban.uuid)
+      confChecked.logo.foreach( logo => {
+        if (logo != null) {
+          val file = new File(logoPath, logo.uuid)
           if (file.exists())
             file.delete()
         }
@@ -415,11 +415,11 @@ class ConferenceService(banPath: String) extends PermissionsBase {
 object ConferenceService {
 
   def apply[A]() = {
-    new ConferenceService(Play.application().configuration().getString("file.ban_path", "./banner"))
+    new ConferenceService(Play.application().configuration().getString("file.logo_path", "./banner"))
   }
 
-  def apply(banPath: String) = {
-    new ConferenceService(banPath)
+  def apply(logoPath: String) = {
+    new ConferenceService(logoPath)
   }
 
 }

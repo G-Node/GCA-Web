@@ -57,7 +57,7 @@ class Banners(implicit val env: Environment[Login, CachedCookieAuthenticator])
   def list(id: String) = UserAwareAction { implicit request =>
     Ok(JsArray(
       for (ban <- asScalaSet(
-        conferenceService.get(id).banner
+        conferenceService.get(id).logo
       ).toSeq
       ) yield banFormat.writes(ban)
     ))

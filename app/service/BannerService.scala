@@ -62,7 +62,7 @@ class BannerService(banPath: String) {
       if (conferenceChecked == null)
         throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
 
-      conferenceChecked.banner.add(ban)
+      conferenceChecked.logo.add(ban)
       ban.conference = conferenceChecked
       conferenceChecked.touch()
 
@@ -113,7 +113,7 @@ class BannerService(banPath: String) {
       if (file.exists())
         file.delete()
 
-      banChecked.conference.banner.remove(banChecked)
+      banChecked.conference.logo.remove(banChecked)
       banChecked.conference.touch()
       banChecked.conference = null
 

@@ -22,15 +22,10 @@
 
         @for((conference,i) <- list_active.zipWithIndex) {
             <div class="jumbotron">
-                @if(conference.logo != null && conference.banner.size() == 0) {
-                    <p>
-                        <img class="conference-logo img-responsive img-rounded" src="@conference.logo">
-                    </p>
-                }
-                @if(conference.banner.size() > 0) {
+                @if(conference.logo.size() > 0) {
                     <p>
                         <img class="conference-logo img-responsive img-rounded" src=""
-                        data-bind="attr: {src: $root.banners()[@i]}">
+                        data-bind="attr: {src: $root.logos()[@i]}">
                     </p>
                 }
                 <h3>

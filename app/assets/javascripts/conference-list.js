@@ -16,9 +16,7 @@ require(["main"], function () {
 
                 var self = tools.inherit(this);
 
-                self.banners = ko.observableArray(null);
-
-                self.otherConfShorts = ko.observable(null);
+                self.logos = ko.observableArray(null);
 
                 self.init = function() {
                     if ($("#conference-uuid").length) {
@@ -36,12 +34,12 @@ require(["main"], function () {
 
                     function onConferenceData(confObj) {
                         var conf = models.Conference.fromObject(confObj);
-                        var confBanners = [];
+                        var confLogos = [];
                         if (conf !== null) {
-                            if (conf.banner.length > 0) {
-                                confBanners.push(conf.banner[0].URL);
+                            if (conf.logo.length > 0) {
+                                confLogos.push(conf.logo[0].URL);
                             }
-                            self.banners(confBanners);
+                            self.logos(confLogos);
                         }
                     }
                 };
@@ -52,16 +50,18 @@ require(["main"], function () {
 
                     function onConferenceData(confObj) {
                         var confs = models.Conference.fromArray(confObj);
-                        var confBanners = [];
+                        var confLogos = [];
                         if (confs !== null) {
                             confs.forEach(function (current) {
-                                if (current.banner.length > 0) {
-                                    confBanners.push(current.banner[0].URL);
-                                } else {
-                                    confBanners.push("");
+                                if (current.isActive) {
+                                    if (current.logo.length > 0) {
+                                        confLogos.push(current.logo[0].URL);
+                                    } else {
+                                        confLogos.push("");
+                                    }
                                 }
                             });
-                            self.banners(confBanners);
+                            self.logos(confLogos);
                         }
                     }
                 };
