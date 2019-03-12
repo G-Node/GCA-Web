@@ -36,6 +36,7 @@ class Assets() {
   }
 
   val figPath = Play.application().configuration().getString("file.fig_path", "./figures")
+  val banPath = Play.application().configuration().getString("file.ban_path", "./banner")
 
   def makeSortId(group: Int, seqid: Int) : Option[Int] = {
     val sortId : Int = group << 16 | seqid
@@ -339,6 +340,13 @@ class Assets() {
       }
     }
 
+    val dirB = new File(banPath)
+    if (dirB.exists() && dirB.isDirectory) {
+      dirB.listFiles().foreach {file =>
+        file.delete()
+      }
+    }
+
     transaction { (em, tx) =>
       em.createQuery("DELETE FROM StateLogEntry").executeUpdate()      
       em.createQuery("DELETE FROM Affiliation").executeUpdate()
@@ -348,6 +356,7 @@ class Assets() {
       em.createQuery("DELETE FROM Abstract").executeUpdate()
       em.createQuery("DELETE FROM Topic").executeUpdate()
       em.createQuery("DELETE FROM AbstractGroup").executeUpdate()
+      em.createQuery("DELETE FROM Banner").executeUpdate()
       em.createQuery("DELETE FROM Conference").executeUpdate()
       em.createQuery("DELETE FROM CredentialsLogin").executeUpdate()
       em.createQuery("DELETE FROM Account").executeUpdate()      
