@@ -237,11 +237,11 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
-                        groups, start, end, deadline, thumbnail, iOSApp, banner, geo, schedule, info, owners, abstracts, topics,
+                        groups, start, end, deadline, iOSApp, banner, geo, schedule, info, owners, abstracts, topics,
                         mAbsLeng, mFigs) {
         if (!(this instanceof Conference)) {
             return new Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive,
-                                  hasPresentationPrefs, groups, start, end, deadline, thumbnail, iOSApp, banner,
+                                  hasPresentationPrefs, groups, start, end, deadline, iOSApp, banner,
                                   geo, schedule, info, owners, abstracts, topics, mAbsLeng, mFigs);
         }
 
@@ -261,7 +261,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.start = start || null;
         self.end = end || null;
         self.deadline = deadline || null;
-        self.thumbnail = thumbnail || null;
         self.iOSApp = iOSApp || null;
         self.banner = banner || null;
         self.geo = geo || null;

@@ -33,8 +33,13 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.autosave = ko.observable({text: "Loading", css: "label-primary"});
 
+        self.logo = ko.observable(null);
+        self.thumbnail = ko.observable(null);
         // only required when a new banner is added
         self.newLogo = {
+            file: null
+        };
+        self.newThumbnail = {
             file: null
         };
 
@@ -253,6 +258,16 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
             self.oldShort = self.conference().short();
             self.oldmAbsLeng = self.conference().mAbsLeng();
+
+            if (self.conference().banner()) {
+                for (var i = 0; i < self.conference().banner().length; i++) {
+                    if (self.conference().banner()[i].bType === "logo") {
+                        self.logo(self.conference().banner()[i]);
+                    } else if (self.conference().banner()[i].bType === "thumbnail") {
+                        self.thumbnail(self.conference().banner()[i]);
+                    }
+                }
+            }
         };
 
         self.requestConfSpecificField = function(url, type, setObservable) {
@@ -349,9 +364,12 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 type: method,
                 contentType: "application/json",
                 success: function (result) {
-                   if (self.newLogo.file) {
+                    if (self.newLogo.file) {
                         // successBan is a function callback
-                        self.uploadBanner(successBan);
+                        self.uploadBanner(successBan, "logo");
+                    } else if (self.newThumbnail.file) {
+                        // successBan is a function callback
+                        self.uploadBanner(successBan, "thumbnail");
                     } else {
                         self.autosave({text: "Ok", css: "label-success"});
                     }
@@ -439,9 +457,16 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             }
         };
 
-        self.uploadBanner = function (callback) {
-            var files = self.newLogo.file,
+        self.uploadBanner = function (callback, bType) {
+            var json = {bType: bType},
+                files = null,
                 data = new FormData();
+
+            if (bType === "logo") {
+                files = self.newLogo.file;
+            } else if (bType === "thumbnail") {
+                files = self.newThumbnail.file;
+            }
 
             if (files) {
                 var fileName = files.name,
@@ -475,7 +500,11 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             }
 
             function success(obj, stat, xhr) {
-                self.newLogo.file = null;
+                if (bType === "logo") {
+                    self.newLogo.file = null;
+                } else if (bType === "thumbnail") {
+                    self.newThumbnail.file = null;
+                }
 
                 self.setError("Error", "Image saved.");
 
@@ -492,20 +521,33 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.removeBanner = function (banner) {
             if (self.conference().logo() && self.conference().logo().length > 0) {
                 self.autosave({text: "Saving", css: "label-warning"});
+                for (var i = 0; i < self.conference().banner().length; i++) {
+                    if (self.conference().banner()[i].bType === bType) {
+                        uuid = self.conference().banner()[i].uuid;
+                    }
+                }
+            }
 
+            if (uuid !== null) {
                 $.ajax({
-                    url: "/api/banner/" + self.conference().logo()[0].uuid,
+                    url: "/api/banner/" + uuid,
                     type: "DELETE",
                     success: success,
                     error: fail,
                     cache: false
                 });
             } else {
-                self.setWarning("Error", "Unable to delete image: conference has no logo", true);
+                self.setWarning("Error", "Unable to delete image: conference has no " + bType, true);
             }
 
             function success() {
-                self.newLogo.file = null;
+                if (bType === "logo") {
+                    self.newLogo.file = null;
+                    self.logo(null);
+                } else if (bType === "thumbnail") {
+                    self.newThumbnail.file = null;
+                    self.thumbnail(null);
+                }
                 self.setError("Error", "Image successfully removed.");
 
                 self.loadConference(self.conference().uuid);

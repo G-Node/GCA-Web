@@ -180,8 +180,7 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
                        |/conference/${conf.short}/floorplans
                        |/conference/${conf.short}/locations
                        |/conference/${conf.short}/abstracts
-                       |${conf.banner}
-                       |${conf.thumbnail}""".stripMargin
+                       |${conf.banner}""".stripMargin
     for (abs: Abstract <- conf.abstracts.asScala) {
       dynamicViews +=
         s"""

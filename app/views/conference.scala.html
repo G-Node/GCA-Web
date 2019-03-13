@@ -22,10 +22,10 @@
             <h1>@conference.name</h1>
         </div>
         @if(conference.banner.size() > 0 && conference.link != null) {
-        <div>
+        <div data-bind="if: $root.logos()[0]">
             <a href="@conference.link">
-                <img class="conference-logo img-responsive img-rounded" src=""
-                data-bind="attr: {src: $root.banners()[0]}" alt="Conference Logo">
+                    <img class="conference-logo img-responsive img-rounded" src=""
+                    data-bind="attr: {src: $root.logos()[0].URL}">
             </a>
         </div>
     }

@@ -141,7 +141,7 @@
                 <div class="form-group">
                     <label for="logo-file" class="col-sm-2 control-label">Logo</label>
                     <div class="col-sm-10">
-                        <div data-bind="if: $root.conference().banner().length == 0">
+                        <div data-bind="ifnot: $root.logo()">
                             <div>Images of format "jpg", "gif", "png" are supported; the size limit is 5MB.</div>
                             <input type="file" name="logo-file" id="logo-file"
                             data-bind="event: { change: $root.getNewBanner }, enable: $root.isConferenceSaved"
@@ -151,26 +151,42 @@
                             </div>
                         </div>
 
-                        <div data-bind="if: $root.conference().banner().length > 0">
-                            <button type="button" class="btn btn-default btn-sm pull-right"
+                        <div data-bind="if: $root.logo()">
+                            <button type="button" name="logo" class="btn btn-default btn-sm pull-right"
                             data-bind="click: $root.removeBanner">
                                 Remove
                             </button>
                             <div class="banner-box">
                                 <img class="conference-logo img-responsive img-rounded" src=""
-                                data-bind="attr: {src: $root.conference().banner()[0].URL}">
+                                data-bind="attr: {src: $root.logo().URL}">
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="thumbnail" class="col-sm-2 control-label">Thumbnail</label>
+                    <label for="thumbnail-file" class="col-sm-2 control-label">Thumbnail</label>
                     <div class="col-sm-10">
-                        <input type="url" class="form-control" id="thumbnail"
-                                placeholder="Thumbnail image url"
-                                data-bind="value: thumbnail, valueUpdate: 'afterkeydown'"
-                                maxlength='@Model.getLimit[Conference]("thumbnail")'>
+                        <div data-bind="ifnot: $root.thumbnail()">
+                            <div>Images of format "jpg", "gif", "png" are supported; the size limit is 5MB.</div>
+                            <input type="file" name="thumbnail-file" id="thumbnail-file"
+                            data-bind="event: { change: $root.getNewBanner }, enable: $root.isConferenceSaved"
+                            maxlength="250" class="form-control">
+                            <div data-bind="ifnot: $root.isConferenceSaved">
+                                Note: The image will be uploaded when the conference is saved.
+                            </div>
+                        </div>
+
+                        <div data-bind="if: $root.thumbnail()">
+                            <button type="button" name="thumbnail" class="btn btn-default btn-sm pull-right"
+                            data-bind="click: $root.removeBanner">
+                                Remove
+                            </button>
+                            <div class="banner-box">
+                                <img class="conference-logo img-responsive img-rounded" src=""
+                                data-bind="attr: {src: $root.thumbnail().URL}">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
