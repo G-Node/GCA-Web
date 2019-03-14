@@ -164,7 +164,10 @@ class ConferenceService(banPath: String) extends PermissionsBase {
     *
     * @return The specified conference.
     *
-    * @throws NoResultException If the conference was not found
+    * @throws IllegalArgumentException If the id is not defined
+    * @throws EntityNotFoundException If the conference does not exist
+    * @throws EntityNotFoundException If the account does not exist
+    * @throws IllegalAccessException If the user is not a conference owner or admin.
     */
   def getOwn(id: String, account: Account) : Conference = {
     query { em =>
