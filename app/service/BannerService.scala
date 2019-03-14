@@ -58,6 +58,7 @@ class BannerService(banPath: String) {
     *
     * @throws EntityNotFoundException If the account does not exist
     * @throws EntityNotFoundException If the conference has no uuid
+    * @throws IllegalAccessException If the user is not a conference owner or admin.
     */
   def create(ban: Banner, data: TemporaryFile, conference: Conference, account: Account) : Banner = {
     val banCreated = transaction { (em, tx) =>
@@ -69,6 +70,9 @@ class BannerService(banPath: String) {
       val conferenceChecked = em.find(classOf[Conference], conference.uuid)
       if (conferenceChecked == null)
         throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
+
+      if (!(conferenceChecked.isOwner(account) || account.isAdmin))
+        throw new IllegalAccessException("No permissions for conference with uuid = " + conferenceChecked.uuid)
 
       conferenceChecked.banner.add(ban)
       ban.conference = conferenceChecked
