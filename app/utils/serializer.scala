@@ -91,13 +91,13 @@ package object serializer {
 
     override def reads(json: JsValue): JsResult[Banner] = JsSuccess(Banner(json.as[Option[String]], None))
 
-    override def writes(a: Banner): JsValue = {
-      if (a == null) {
+    override def writes(ban: Banner): JsValue = {
+      if (ban == null) {
         JsNull
       } else {
         Json.obj(
-          "uuid" -> a.uuid,
-          "URL" -> routesResolver.bannerFileUrl(a.uuid)
+          "uuid" -> ban.uuid,
+          "URL" -> routesResolver.bannerFileUrl(ban.uuid)
         )
       }
     }
