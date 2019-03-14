@@ -457,12 +457,12 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                     ending = splitted[splitted.length - 1].toLowerCase();
 
                 if (["jpeg", "jpg", "gif", "giff", "png"].indexOf(ending) < 0) {
-                    self.setError("Error", "Figure file format for banner not supported (only jpeg, gif or png is allowed).");
+                    self.setError("danger", "Figure file format for banner not supported (only jpeg, gif or png is allowed).");
                     return;
                 }
 
                 if (fileSize > 5242880) {
-                    self.setError("Error", "Figure banner file is too large (limit is 5MB).");
+                    self.setError("danger", "Figure banner file is too large (limit is 5MB).");
                     return;
                 }
 
@@ -484,7 +484,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             function success(obj, stat, xhr) {
                 self.newBanner.file = null;
 
-                self.setError("Error", "Figure done.");
+                self.setError("info", "Figure done.");
 
                 if (callback) {
                     callback(obj, stat, xhr);
@@ -492,7 +492,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             }
 
             function fail() {
-                self.setError("Error", "Unable to save the banner figure.");
+                self.setError("danger", "Unable to save the banner figure.");
             }
         };
 
@@ -508,12 +508,12 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                     cache: false
                 });
             } else {
-                self.setWarning("Error", "Unable to delete banner figure: conference has no banner", true);
+                self.setError("warning", "Unable to delete banner figure: conference has no banner", true);
             }
 
             function success() {
                 self.newBanner.file = null;
-                self.setError("Error", "Banner figure successfully removed.");
+                self.setError("info", "Banner figure successfully removed.");
 
                 self.loadConference(self.conference().uuid);
                 self.autosave({text: "Ok", css: "label-success"});
