@@ -181,7 +181,7 @@ class ConferenceService(banPath: String) extends PermissionsBase {
            WHERE c.uuid = :uuid and o.uuid = :acc"""
 
       if (id == null)
-        throw new IllegalArgumentException("Unable to update a conference without uuid")
+        throw new IllegalArgumentException("Conference uuid is missing.")
 
       val confChecked = em.find(classOf[Conference], id)
       if (confChecked == null)
@@ -197,13 +197,13 @@ class ConferenceService(banPath: String) extends PermissionsBase {
       if (accountChecked == null)
         throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
 
+      if (!(confChecked.isOwner(account) || account.isAdmin))
+        throw new IllegalAccessException("No permissions for conference with uuid = " + confChecked.uuid)
+
       val query : TypedQuery[Conference] = em.createQuery(queryStr, classOf[Conference])
       query.setParameter("uuid", id)
       query.setParameter("acc", account.uuid)
       val conf = query.getSingleResult
-
-      if (!(conf.isOwner(account) || account.isAdmin))
-        throw new IllegalAccessException("No permissions for conference with uuid = " + conf.uuid)
 
       conf
     }
