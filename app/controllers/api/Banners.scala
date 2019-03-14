@@ -2,9 +2,10 @@ package controllers.api
 
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.core.{Environment, Silhouette}
+import javax.persistence.NoResultException
 import models._
 import play.api.libs.json.{JsArray, _}
-import service.{ConferenceService, BannerService}
+import service.{BannerService, ConferenceService}
 import utils.DefaultRoutesResolver._
 import utils.serializer.BannerFormat
 
