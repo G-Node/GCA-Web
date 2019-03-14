@@ -36,8 +36,8 @@ require(["main"], function () {
 
                     function onConferenceData(confObj) {
                         var conf = models.Conference.fromObject(confObj);
-                        var confBanners = [];
                         if (conf !== null) {
+                            var confBanners = [];
                             if (conf.banner.length > 0) {
                                 confBanners.push(conf.banner[0].URL);
                             }
@@ -52,8 +52,8 @@ require(["main"], function () {
 
                     function onConferenceData(confObj) {
                         var confs = models.Conference.fromArray(confObj);
-                        var confBanners = [];
                         if (confs !== null) {
+                            var confBanners = [];
                             confs.forEach(function (current) {
                                 if (current.banner.length > 0) {
                                     confBanners.push(current.banner[0].URL);
