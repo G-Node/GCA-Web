@@ -1,5 +1,4 @@
-// Copyright © 2014, German Neuroinformatics Node (G-Node)
-//                   A. Stoewer (adrian.stoewer@rz.ifi.lmu.de)
+// Copyright © 2019, German Neuroinformatics Node (G-Node)
 //
 // All rights reserved.
 //
