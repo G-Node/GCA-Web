@@ -358,7 +358,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 success: function (result) {
                    if (self.newBanner.file) {
                         // successBan is a function callback
-                        self.uploadBanner(successBan);
+                        self.uploadBanner();
                     } else {
                         self.autosave({text: "Ok", css: "label-success"});
                     }
@@ -367,11 +367,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 },
                 error: self.ioFailHandler
             });
-
-            function successBan() {
-                self.requestConference(self.conference().uuid);
-                self.autosave({text: "Ok", css: "label-success"});
-            }
         };
 
         self.isConferenceSaved = ko.computed(function() {
@@ -437,22 +432,17 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.getNewBanner = function(data, event) {
             if (self.conference().banner().length === 0) {
                 self.newBanner.file = event.currentTarget.files[0];
-                self.uploadBanner(successBan);
-            }
-
-            function successBan() {
-                self.loadConference(self.conference().uuid);
-                self.autosave({text: "Ok", css: "label-success"});
+                self.uploadBanner();
             }
         };
 
-        self.uploadBanner = function (callback) {
-            var files = self.newBanner.file,
+        self.uploadBanner = function () {
+            var file = self.newBanner.file,
                 data = new FormData();
 
-            if (files) {
-                var fileName = files.name,
-                    fileSize = files.size,
+            if (file) {
+                var fileName = file.name,
+                    fileSize = file.size,
                     splitted = fileName.split("."),
                     ending = splitted[splitted.length - 1].toLowerCase();
 
@@ -466,7 +456,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                     return;
                 }
 
-                data.append("file", files);
+                data.append("file", file);
 
                 $.ajax({
                     url: "/api/conferences/" + self.conference().uuid + "/banner",
@@ -486,9 +476,8 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
                 self.setError("info", "Figure done.");
 
-                if (callback) {
-                    callback(obj, stat, xhr);
-                }
+                self.loadConference(self.conference().uuid);
+                self.autosave({text: "Ok", css: "label-success"});
             }
 
             function fail() {
