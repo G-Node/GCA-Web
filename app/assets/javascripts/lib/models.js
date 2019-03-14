@@ -692,7 +692,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
         var self = tools.inherit(this, Model, uuid);
 
-        self.URL = caption || null;
+        self.URL = URL || null;
     }
 
     Banner.fromObject = function(obj) {
