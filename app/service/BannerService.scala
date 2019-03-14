@@ -1,3 +1,11 @@
+// Copyright © 2019, German Neuroinformatics Node (G-Node)
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted under the terms of the BSD License. See
+// LICENSE file in the root of the Project.
+
 package service
 
 import java.io.{File, FileNotFoundException}
@@ -49,7 +57,7 @@ class BannerService(banPath: String) {
     * @return The created banner.
     *
     * @throws EntityNotFoundException If the account does not exist
-    * @throws IllegalArgumentException If the conference has no uuid
+    * @throws EntityNotFoundException If the conference has no uuid
     */
   def create(ban: Banner, data: TemporaryFile, conference: Conference, account: Account) : Banner = {
     val banCreated = transaction { (em, tx) =>
@@ -92,6 +100,9 @@ class BannerService(banPath: String) {
     * @param account The account that performs the delete.
     *
     * @return True if the banner was deleted, false otherwise.
+    *
+    * @throws EntityNotFoundException If the account does not exist.
+    * @throws EntityNotFoundException If the banner does not exist.
     */
   def delete(id: String, account: Account) : Unit = {
     transaction { (em, tx) =>
@@ -127,6 +138,9 @@ class BannerService(banPath: String) {
     * @param ban The figure to open.
     *
     * @return A file handler to the respective image file.
+    *
+    * @throws IllegalArgumentException If the banner has no uuid.
+    * @throws EntityNotFoundException If the file does not exist or cannot be read.
     */
   def openFile(ban: Banner) : File = {
     if (ban.uuid == null)
@@ -143,7 +157,7 @@ class BannerService(banPath: String) {
 }
 
 /**
-  * FigureService companion object.
+  * BannerService companion object.
   */
 object BannerService {
 
