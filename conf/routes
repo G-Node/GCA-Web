@@ -52,6 +52,8 @@ PUT           /api/conferences/:id/schedule                   @controllers.api.C
 GET           /api/conferences/:id/schedule                   @controllers.api.Conferences.getSchedule(id: String)
 PUT           /api/conferences/:id/info                       @controllers.api.Conferences.setInfo(id: String)
 GET           /api/conferences/:id/info                       @controllers.api.Conferences.getInfo(id: String)
+POST          /api/conferences/:id/banner                     @controllers.api.Banners.upload(id: String)
+GET           /api/conferences/:id/banner                     @controllers.api.Banners.download(id: String)
 
 # Abstract interface
 GET           /api/abstracts/:id                              @controllers.api.Abstracts.get(id: String)
@@ -73,6 +75,10 @@ GET           /api/figures/:id/image                          @controllers.api.F
 GET           /api/figures/:id/imagemobile                    @controllers.api.Figures.downloadmobile(id: String)
 PUT           /api/figures/:id                                @controllers.api.Figures.updateFigure(id: String)
 DELETE        /api/figures/:id                                @controllers.api.Figures.delete(id: String)
+
+# Banner interface
+GET           /api/banner/:id/image                          @controllers.api.Banners.download(id: String)
+DELETE        /api/banner/:id                                @controllers.api.Banners.delete(id: String)
 
 # [...] maybe add more figure functions
 

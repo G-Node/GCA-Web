@@ -87,6 +87,9 @@ class Conference extends Model with Owned with Tagged {
   @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL), orphanRemoval = true)
   var groups: JSet[AbstractGroup] = new JTreeSet[AbstractGroup]()
 
+  @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL), orphanRemoval = true)
+  var banner: JSet[Banner] = new JTreeSet[Banner]()
+
   @OneToMany
   @JoinTable(name = "conference_owners")
   var owners: JSet[Account] = new JTreeSet[Account]()
@@ -196,6 +199,7 @@ object Conference extends Model {
             logo: Option[String] = null,
             thumbnail: Option[String] = null,
             iOSApp: Option[String] = null,
+            banner: Seq[Banner] = Nil,
             groups: Seq[AbstractGroup] = Nil,
             owners: Seq[Account] = Nil,
             abstracts: Seq[Abstract] = Nil,
@@ -228,6 +232,7 @@ object Conference extends Model {
 
     conference.iOSApp      = unwrapRef(iOSApp)
 
+    conference.banner      = toJSet(banner)
     conference.groups      = toJSet(groups)
     conference.owners      = toJSet(owners)
     conference.abstracts   = toJSet(abstracts)

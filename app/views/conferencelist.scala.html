@@ -13,15 +13,24 @@
         }
     </script>
 
+    <script data-main='@routes.Assets.at("javascripts/conference-list.js")'
+    src='@routes.Assets.at("javascripts/require.js")'></script>
+
     @flash(request)
 
     @if(list_active.nonEmpty) {
 
-        @for(conference <- list_active) {
+        @for((conference,i) <- list_active.zipWithIndex) {
             <div class="jumbotron">
-                @if(conference.logo != null) {
+                @if(conference.logo != null && conference.banner.size() == 0) {
                     <p>
                         <img class="conference-logo img-responsive img-rounded" src="@conference.logo">
+                    </p>
+                }
+                @if(conference.banner.size() > 0) {
+                    <p>
+                        <img class="conference-logo img-responsive img-rounded" src=""
+                        data-bind="attr: {src: $root.banners()[@i]}">
                     </p>
                 }
                 <h3>

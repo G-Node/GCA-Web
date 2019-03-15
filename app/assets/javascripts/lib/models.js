@@ -237,11 +237,11 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
-                        groups, start, end, deadline, logo, thumbnail, iOSApp, geo, schedule, info, owners, abstracts, topics,
+                        groups, start, end, deadline, logo, thumbnail, iOSApp, banner, geo, schedule, info, owners, abstracts, topics,
                         mAbsLeng, mFigs) {
         if (!(this instanceof Conference)) {
             return new Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive,
-                                  hasPresentationPrefs, groups, start, end, deadline, logo, thumbnail, iOSApp,
+                                  hasPresentationPrefs, groups, start, end, deadline, logo, thumbnail, iOSApp, banner,
                                   geo, schedule, info, owners, abstracts, topics, mAbsLeng, mFigs);
         }
 
@@ -264,6 +264,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.logo = logo || null;
         self.thumbnail = thumbnail || null;
         self.iOSApp = iOSApp || null;
+        self.banner = banner || null;
         self.geo = geo || null;
         self.schedule = schedule || null;
         self.info = info || null;
@@ -672,6 +673,62 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
     ObservableFigure.fromArray = function(array) {
         return Model.fromArray(array, ObservableFigure.fromObject);
+    };
+
+    /**
+     * Model for banner.
+     *
+     * @param {string} [uuid]
+     * @param {string} [URL]       URL to the image URL.
+     *
+     * @returns {Banner}
+     * @constructor
+     * @public
+     */
+    function Banner(uuid, URL) {
+        if (!(this instanceof Banner)) {
+            return new Banner(uuid, URL);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.URL = URL || null;
+    }
+
+    Banner.fromObject = function(obj) {
+        return Model.fromObject(obj, Banner);
+    };
+
+    Banner.fromArray = function(array) {
+        return Model.fromArray(array, Banner.fromObject);
+    };
+
+    /**
+     * Observable model for banner.
+     *
+     * @param {string} [uuid]
+     * @param {string} [URL]       URL to the image URL.
+     *
+     * @returns {ObservableBanner}
+     * @constructor
+     * @public
+     */
+    function ObservableBanner(uuid, URL) {
+        if (!(this instanceof ObservableBanner)) {
+            return new ObservableBanner(uuid, URL);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.URL = ko.observable(URL || null);
+    }
+
+    ObservableBanner.fromObject = function(obj) {
+        return Model.fromObject(obj, ObservableBanner);
+    };
+
+    ObservableBanner.fromArray = function(array) {
+        return Model.fromArray(array, ObservableBanner.fromObject);
     };
 
     /**

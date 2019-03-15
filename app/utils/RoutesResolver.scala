@@ -61,6 +61,16 @@ class RoutesResolver {
     new URL(baseUrl + s"/api/user/$id/favouriteabstracts")
   }
 
+  /**
+    * Builds an URL to banner file.
+    *
+    * @param id an ID of a Banner object to insert into the URL
+    *
+    * @return URL for file, like "/api/banner/HNOPSADMHV/image"
+    */
+  def bannerFileUrl(id: String) = {
+    new URL(baseUrl + s"/api/banner/$id/image")
+  }
 
   /**
    * Builds an URL to figure file.
