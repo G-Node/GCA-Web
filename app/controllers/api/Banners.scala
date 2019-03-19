@@ -41,9 +41,9 @@ class Banners(implicit val env: Environment[Login, CachedCookieAuthenticator])
       throw new IllegalArgumentException("File is missing")
     }
 
-    val ban = new Banner
+    val jsban = Json.parse(request.body.dataParts("banner").head).as[Banner]
 
-    val banner = bannerService.create(ban, tempfile, conference, request.identity.account)
+    val banner = bannerService.create(jsban, tempfile, conference, request.identity.account)
 
     Created(banFormat.writes(banner))
   }

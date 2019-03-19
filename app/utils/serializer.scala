@@ -89,7 +89,10 @@ package object serializer {
     */
   class BannerFormat(implicit routesResolver: RoutesResolver) extends Format[Banner] {
 
-    override def reads(json: JsValue): JsResult[Banner] = JsSuccess(Banner(json.as[Option[String]], None))
+    override def reads(json: JsValue): JsResult[Banner] = (
+      (__ \ "uuid").readNullable[String] and
+        (__ \ "bType").readNullable[String]
+      )(Banner(_, _)).reads(json)
 
     override def writes(ban: Banner): JsValue = {
       if (ban == null) {
@@ -97,6 +100,7 @@ package object serializer {
       } else {
         Json.obj(
           "uuid" -> ban.uuid,
+          "bType" -> ban.bType,
           "URL" -> routesResolver.bannerFileUrl(ban.uuid)
         )
       }

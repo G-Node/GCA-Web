@@ -141,7 +141,7 @@
                 <div class="form-group">
                     <label for="banner-file" class="col-sm-2 control-label">Banner</label>
                     <div class="col-sm-10">
-                        <div data-bind="ifnot: $root.hasBanner">
+                        <div data-bind="if: $root.conference().banner().length == 0">
                             <div>Banner figures of format "jpg", "gif", "png" are supported; the size limit is 5MB.</div>
                             <input type="file" name="banner-file" id="banner-file"
                             data-bind="event: { change: $root.getNewBanner }, enable: $root.isConferenceSaved"
@@ -151,7 +151,7 @@
                             </div>
                         </div>
 
-                        <div data-bind="if: $root.hasBanner">
+                        <div data-bind="if: $root.conference().banner().length > 0">
                             <button type="button" class="btn btn-default btn-sm pull-right"
                             data-bind="click: $root.removeBanner">
                                 Remove

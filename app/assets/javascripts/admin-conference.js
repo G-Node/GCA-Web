@@ -38,13 +38,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             file: null
         };
 
-        self.hasBanner = ko.computed(
-            function () {
-                return self.conference() && self.conference().banner() && self.conference().banner().length > 0;
-            },
-            self
-        );
-
         ko.bindingHandlers.datetimepicker = {
             init: function(element, valueAccessor, allBindingsAccessor) {
                 function onSelectHandler(text, obj) {
@@ -437,7 +430,8 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.uploadBanner = function () {
-            var file = self.newBanner.file,
+            var json = { bType : "logo"},
+                file = self.newBanner.file,
                 data = new FormData();
 
             if (file) {
@@ -457,6 +451,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 }
 
                 data.append("file", file);
+                data.append("banner", JSON.stringify(json));
 
                 $.ajax({
                     url: "/api/conferences/" + self.conference().uuid + "/banner",

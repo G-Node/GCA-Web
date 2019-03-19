@@ -55,10 +55,12 @@ require(["main"], function () {
                         if (confs !== null) {
                             var confBanners = [];
                             confs.forEach(function (current) {
-                                if (current.banner.length > 0) {
-                                    confBanners.push(current.banner[0].URL);
-                                } else {
-                                    confBanners.push("");
+                                if (current.isActive) {
+                                    if (current.banner.length > 0) {
+                                        confBanners.push(current.banner[0].URL);
+                                    } else {
+                                        confBanners.push("");
+                                    }
                                 }
                             });
                             self.banners(confBanners);
