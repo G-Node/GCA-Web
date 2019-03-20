@@ -297,7 +297,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
             function onOtherConferenceData(confObj) {
                 var confs = models.Conference.fromArray(confObj);
-                var confShorts = Array();
+                var confShorts = [];
                 if (confs !== null) {
                     confs.forEach(function (current) {
                         confShorts.push(current.short);
