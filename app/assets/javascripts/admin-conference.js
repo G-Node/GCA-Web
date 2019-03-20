@@ -111,7 +111,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.ioFailHandler = function(jqxhr, textStatus, error) {
-            var err = textStatus + ", " + error;
             var errobj = $.parseJSON(jqxhr.responseText);
 
             var details = "";
