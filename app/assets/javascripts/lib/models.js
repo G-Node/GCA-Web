@@ -634,7 +634,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         var self = tools.inherit(this, Model, uuid);
 
         self.caption = caption || null;
-        self.URL = caption || null;
+        self.URL = URL || null;
     }
 
     Figure.fromObject = function(obj) {

@@ -22,17 +22,15 @@
 
         @for((conference,i) <- list_active.zipWithIndex) {
             <div class="jumbotron">
-                @if(conference.logo != null && conference.banner.size() == 0) {
-                    <p>
+                @if(conference.logo != null) {
+                    <p data-bind="ifnot: $root.logos()[@i]">
                         <img class="conference-logo img-responsive img-rounded" src="@conference.logo">
                     </p>
                 }
-                @if(conference.banner.size() > 0) {
-                    <p>
-                        <img class="conference-logo img-responsive img-rounded" src=""
-                        data-bind="attr: {src: $root.banners()[@i]}">
-                    </p>
-                }
+                <p data-bind="if: $root.logos()[@i]">
+                    <img class="conference-logo img-responsive img-rounded" src=""
+                    data-bind="attr: {src: $root.logos()[@i].URL}">
+                </p>
                 <h3>
                     <a href="@routes.Application.conference(conference.short)">@conference.name</a>
                 </h3>
@@ -60,13 +58,20 @@
 
     @if(list_other.nonEmpty) {
         <hr>
-        @for(conference <- list_other) {
+        @for((conference,i) <- list_other.zipWithIndex) {
             @if(conference.isPublished){
                 <div class="media">
                     <div class="pull-left media-left">
-                        <a href="@routes.Application.conference(conference.short)">
-                            <img class="media-object conference-thumbnail" src="@conference.thumbnail">
+                        @if(conference.thumbnail != null) {
+                            <a href="@routes.Application.conference(conference.short)" data-bind="ifnot: $root.thumbnails()[@i]">
+                                <img class="media-object conference-thumbnail" src="@conference.thumbnail">
+                            </a>
+                        }
+                        <a href="@routes.Application.conference(conference.short)" data-bind="if: $root.thumbnails()[@i]">
+                            <img class="media-object conference-thumbnail" src=""
+                            data-bind="attr: {src: $root.thumbnails()[@i].URL}">
                         </a>
+
                     </div>
                     <div class="media-body">
                         <a href="@routes.Application.abstractsPublic(conference.short)">

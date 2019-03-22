@@ -16,7 +16,8 @@ require(["main"], function () {
 
                 var self = tools.inherit(this);
 
-                self.banners = ko.observableArray(null);
+                self.logos = ko.observableArray([]);
+                self.thumbnails = ko.observableArray([]);
 
                 self.otherConfShorts = ko.observable(null);
 
@@ -37,11 +38,11 @@ require(["main"], function () {
                     function onConferenceData(confObj) {
                         var conf = models.Conference.fromObject(confObj);
                         if (conf !== null) {
-                            var confBanners = [];
-                            if (conf.banner.length > 0) {
-                                confBanners.push(conf.banner[0].URL);
+                            for (var i = 0; i < conf.banner.length; i++) {
+                                if (conf.banner[i].bType === "logo") {
+                                    self.logos.push(conf.banner[i]);
+                                }
                             }
-                            self.banners(confBanners);
                         }
                     }
                 };
@@ -53,15 +54,30 @@ require(["main"], function () {
                     function onConferenceData(confObj) {
                         var confs = models.Conference.fromArray(confObj);
                         if (confs !== null) {
-                            var confBanners = [];
-                            confs.forEach(function (current) {
-                                if (current.banner.length > 0) {
-                                    confBanners.push(current.banner[0].URL);
-                                } else {
-                                    confBanners.push("");
+                            confs.forEach(function (conf) {
+                                var banFound = false;
+                                if (conf.isActive) {
+                                    for (var i = 0; i < conf.banner.length; i++) {
+                                        if (conf.banner[i].bType === "logo") {
+                                            self.logos.push(conf.banner[i]);
+                                            banFound = true;
+                                        }
+                                    }
+                                    if (banFound === false) {
+                                        self.logos.push("");
+                                    }
+                                } else if (conf.isPublished) {
+                                    for (i = 0; i < conf.banner.length; i++) {
+                                        if (conf.banner[i].bType === "thumbnail") {
+                                            self.thumbnails.push(conf.banner[i]);
+                                            banFound = true;
+                                        }
+                                    }
+                                    if (banFound === false) {
+                                        self.thumbnails.push("");
+                                    }
                                 }
                             });
-                            self.banners(confBanners);
                         }
                     }
                 };

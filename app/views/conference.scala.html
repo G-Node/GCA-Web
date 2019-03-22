@@ -21,21 +21,21 @@
         <div class="page-header">
             <h1>@conference.name</h1>
         </div>
-        @if(conference.banner.size() == 0 && conference.logo != null && conference.link != null) {
-            <div>
+        @if(conference.logo != null && conference.link != null) {
+            <div data-bind="ifnot: $root.logos()[0]">
                 <a href="@conference.link">
                     <img class="conference-logo img-responsive img-rounded" src="@conference.logo" alt="Conference Logo">
                 </a>
             </div>
         }
-        @if(conference.banner.size() > 0 && conference.link != null) {
-        <div>
-            <a href="@conference.link">
-                <img class="conference-logo img-responsive img-rounded" src=""
-                data-bind="attr: {src: $root.banners()[0]}" alt="Conference Logo">
-            </a>
-        </div>
-    }
+        @if(conference.link != null) {
+            <div data-bind="if: $root.logos()[0]">
+                <a href="@conference.link">
+                    <img class="conference-logo img-responsive img-rounded" src=""
+                    data-bind="attr: {src: $root.logos()[0].URL}">
+                </a>
+            </div>
+        }
         @if(conference.getDescriptionAsHTML().length() > 0) {
             <div class="jumbo-small">
                 @Html(conference.getDescriptionAsHTML())
