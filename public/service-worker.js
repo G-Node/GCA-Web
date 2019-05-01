@@ -179,6 +179,14 @@ self.loadDynamicViews = function () {
                 dynamicViews.push("/conference/" + conf.short + "/abstracts");
                 dynamicViews.push(conf.logo);
                 dynamicViews.push(conf.thumbnail);
+                if (conf.banner) {
+                    conf.banner.forEach(function (banner) {
+                        if (banner) {
+                            //dynamicAbstracts.push(banner.URL);
+                            dynamicAbstracts.push("/api/banner/"+banner.uuid+"/imagemobile");
+                        }
+                    });
+                }
                 accordingAbstracts.push(self.loadDynamicAbstracts(conf.abstracts));
             };
             Promise.all(accordingAbstracts).then(function (allAbstracts) {

@@ -78,6 +78,7 @@ DELETE        /api/figures/:id                                @controllers.api.F
 
 # Banner interface
 GET           /api/banner/:id/image                          @controllers.api.Banners.download(id: String)
+GET           /api/banner/:id/imagemobile                    @controllers.api.Banners.downloadmobile(id: String)
 DELETE        /api/banner/:id                                @controllers.api.Banners.delete(id: String)
 
 # [...] maybe add more figure functions
