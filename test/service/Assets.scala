@@ -37,6 +37,7 @@ class Assets() {
 
   val figPath = Play.application().configuration().getString("file.fig_path", "./figures")
   val banPath = Play.application().configuration().getString("file.ban_path", "./banner")
+  val banMobilePath = Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile")
 
   def makeSortId(group: Int, seqid: Int) : Option[Int] = {
     val sortId : Int = group << 16 | seqid
@@ -329,6 +330,12 @@ class Assets() {
           file.getParentFile.mkdirs()
 
         file.createNewFile()
+
+        val file_mobile = new File(banMobilePath, ban.uuid)
+        if (!file_mobile.getParentFile.exists())
+          file_mobile.getParentFile.mkdirs()
+
+        file_mobile.createNewFile()
 
         ban
       }
