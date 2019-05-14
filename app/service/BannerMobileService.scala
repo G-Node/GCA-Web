@@ -24,8 +24,8 @@ class BannerMobileService(banPath: String) {
   def get(id: String) : Banner = {
     query { em =>
       val queryStr =
-        """SELECT DISTINCT b FROM banner b
-           LEFT JOIN FETCH b.conf
+        """SELECT DISTINCT b FROM Banner b
+           LEFT JOIN FETCH b.conference
            WHERE b.uuid = :uuid"""
 
       val query : TypedQuery[Banner] = em.createQuery(queryStr, classOf[Banner])
@@ -52,7 +52,7 @@ class BannerMobileService(banPath: String) {
 
     if (!file.exists || !file.canRead)
       // If a low resolution file cannot be found, get back to the original file
-      file = new File(Play.application().configuration().getString("file.ban_path", "./banner_mobile"), ban.uuid)
+      file = new File(Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile"), ban.uuid)
       if (!file.exists || !file.canRead)
         throw new FileNotFoundException("Unable to open the file for reading: " + file.toString)
 
