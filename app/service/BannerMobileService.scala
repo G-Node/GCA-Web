@@ -52,7 +52,7 @@ class BannerMobileService(banPath: String) {
 
     if (!file.exists || !file.canRead)
       // If a low resolution file cannot be found, get back to the original file
-      file = new File(Play.application().configuration().getString("file.ban_path", "./banners_mobile"), ban.uuid)
+      file = new File(Play.application().configuration().getString("file.ban_path", "./banner_mobile"), ban.uuid)
       if (!file.exists || !file.canRead)
         throw new FileNotFoundException("Unable to open the file for reading: " + file.toString)
 
