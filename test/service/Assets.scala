@@ -36,6 +36,7 @@ class Assets() {
   }
 
   val figPath = Play.application().configuration().getString("file.fig_path", "./figures")
+  val figMobilePath = Play.application().configuration().getString("file.fig_mobile_path", "./figures_mobile")
   val banPath = Play.application().configuration().getString("file.ban_path", "./banner")
   val banMobilePath = Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile")
 
@@ -354,6 +355,12 @@ class Assets() {
           file.getParentFile.mkdirs()
 
         file.createNewFile()
+
+        val file_mobile = new File(figMobilePath, fig.uuid)
+        if (!file_mobile.getParentFile.exists())
+          file_mobile.getParentFile.mkdirs()
+
+        file_mobile.createNewFile()
 
         fig
       }
