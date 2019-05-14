@@ -24,6 +24,7 @@ class SerializerTest extends JUnitSuite {
   val sampleReference: Reference = Reference(Option("someuuid"), Option("authors, title"),
     Option("http://www.someink.com"), Option("doi"))
   val sampleFigure: Figure = Figure(Option("someuuid"), Option("caption"))
+  val sampleBanner: Banner = Banner(Option("someuuid"), Option("logo"))
   val sampleAbstract = Abstract(Option("someuuid"), Option("title"), Option("topic"),
       Option("text"), Option("doi"), Option("conflictOfInterest"), Option("acknowledgements"), Option(true), Option("reason"),
         Some(0), Some(AbstractState.InPreparation), Option(sampleConference), Seq(sampleFigure), Nil, Nil, Seq(sampleAuthor),
@@ -107,6 +108,19 @@ class SerializerTest extends JUnitSuite {
     val jsFormat = new FigureFormat()
 
     val original = Figure(Option("someuuid"), Option("caption"))
+    val json = jsFormat.writes(original)
+
+    jsFormat.reads(json).fold(
+      valid = { converted => {assert(converted.uuid == original.uuid)}},
+      invalid = { errors => throw new MatchError(errors.toString()) }
+    )
+  }
+
+  @Test
+  def testBanner(): Unit = {
+    val jsFormat = new BannerFormat()
+
+    val original = Banner(Option("someuuid"), Option("logo"))
     val json = jsFormat.writes(original)
 
     jsFormat.reads(json).fold(
