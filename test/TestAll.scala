@@ -28,6 +28,7 @@ class TestAll extends Suites(
   new ConferenceCtrlTest,
   new AbstractsCtrlTest,
   new FigureCtrlTest,
+  new BannerCtrlTest,
   new AccountsCtrlTest,
   new ConferenceTest
 
