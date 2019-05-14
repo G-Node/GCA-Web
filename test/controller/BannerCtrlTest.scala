@@ -99,6 +99,15 @@ class BannerCtrlTest extends BaseCtrlTest {
   }
 
   @Test
+  def testDownloadMobile(): Unit = {
+    val uuid = assets.banner(0).uuid
+    val request = FakeRequest(GET, s"/api/banner/$uuid/imagemobile")
+    val result = route(BannerCtrlTest.app, request).get
+
+    assert(status(result) == OK)
+  }
+
+  @Test
   def testDelete(): Unit = {
     val uuid = assets.banner(1).uuid
     val request = FakeRequest(DELETE, s"/api/banner/$uuid").withCookies(cookie)
