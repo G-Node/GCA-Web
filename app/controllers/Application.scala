@@ -182,7 +182,8 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
                        |/conference/${conf.short}/abstracts
                        |${conf.logo}
                        |${conf.thumbnail}""".stripMargin
-    for (ban: Banner <- conf.banner.asScala) {dynamicViews +=
+    for (ban: Banner <- conf.banner.asScala) {
+      dynamicViews +=
           s"""
              |/api/banner/${ban.uuid}/imagemobile""".stripMargin
     }
