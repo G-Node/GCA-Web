@@ -42,14 +42,21 @@ class BannerServiceTest extends JUnitSuite {
 
   @Test
   def testCreate(): Unit = {
-    val file = new File("tmp")
-    file.createNewFile()
-    val tmp = new TemporaryFile(file)
-    val banOrig = Banner(None, Some("logo"))
-    val ban = srv.create(banOrig, tmp, assets.conferences(0), assets.alice)
+    val fileLogo = new File("tmp")
+    fileLogo.createNewFile()
+    val tmpLogo = new TemporaryFile(fileLogo)
+    val logoOrig = Banner(None, Some("logo"))
+    val logo = srv.create(logoOrig, tmpLogo, assets.conferences(0), assets.alice)
+    assert(logo.uuid != null)
+    assert(logo.bType == "logo")
 
-    assert(ban.uuid != null)
-    assert(ban.bType == "logo")
+    val fileThn = new File("tmp")
+    fileThn.createNewFile()
+    val tmpThn = new TemporaryFile(fileThn)
+    val thnOrig = Banner(None, Some("thumbnail"))
+    val thn = srv.create(thnOrig, tmpThn, assets.conferences(0), assets.alice)
+    assert(thn.uuid != null)
+    assert(thn.bType == "thumbnail")
   }
 
 
