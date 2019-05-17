@@ -5,7 +5,7 @@ import com.mohiva.play.silhouette.core.{Environment, Silhouette}
 import javax.persistence.NoResultException
 import models._
 import play.api.libs.json.{JsArray, _}
-import service.{BannerService, ConferenceService, BannerMobileService}
+import service.{BannerService, ConferenceService}
 import utils.DefaultRoutesResolver._
 import utils.serializer.BannerFormat
 
@@ -21,7 +21,6 @@ class Banners(implicit val env: Environment[Login, CachedCookieAuthenticator])
   implicit val banFormat = new BannerFormat()
   val conferenceService = ConferenceService()
   val bannerService = BannerService()
-  val bannerMobileService = BannerMobileService()
 
   /**
     * Upload file with a banner to the specified conference (id).
@@ -86,8 +85,8 @@ class Banners(implicit val env: Environment[Login, CachedCookieAuthenticator])
     * @return  OK / Failed
     */
   def downloadmobile(id: String) = UserAwareAction { implicit request =>
-    Ok.sendFile(bannerMobileService.openFile(
-      bannerMobileService.get(id)
+    Ok.sendFile(bannerService.openMobileFile(
+      bannerService.get(id)
     ))
   }
 

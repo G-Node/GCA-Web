@@ -158,6 +158,30 @@ class BannerService(banPath: String) {
     file
   }
 
+  /**
+    * Open the mobile image file that belongs to the banner;
+    * if the mobile banner cannot be found, fallback to the
+    * original banner.
+    *
+    * @param ban The banner to open.
+    *
+    * @return A file handler to the respective image file.
+    */
+  def openMobileFile(ban: Banner) : File = {
+    if (ban.uuid == null)
+      throw new IllegalArgumentException("Unable to open file for banner without uuid")
+
+    var file = new File(banPath, ban.uuid)
+
+    if (!file.exists || !file.canRead)
+    // If a low resolution file cannot be found, get back to the original file
+      file = new File(Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile"), ban.uuid)
+    if (!file.exists || !file.canRead)
+      throw new FileNotFoundException("Unable to open the file for reading: " + file.toString)
+
+    file
+  }
+
 }
 
 /**
