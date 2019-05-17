@@ -182,7 +182,6 @@ self.loadDynamicViews = function () {
                 if (conf.banner) {
                     conf.banner.forEach(function (banner) {
                         if (banner) {
-                            //dynamicAbstracts.push(banner.URL);
                             dynamicAbstracts.push("/api/banner/"+banner.uuid+"/imagemobile");
                         }
                     });
