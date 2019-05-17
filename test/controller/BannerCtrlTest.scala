@@ -95,7 +95,6 @@ class BannerCtrlTest extends BaseCtrlTest {
     val result = route(BannerCtrlTest.app, request).get
 
     assert(status(result) == OK)
-    val file = contentAsBytes(result)
   }
 
   @Test
