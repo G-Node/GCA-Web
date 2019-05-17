@@ -23,7 +23,6 @@ class BannerServiceTest extends JUnitSuite {
 
   var srv: BannerService = _
   var assets: Assets = _
-  var confsrv: ConferenceService = _
 
   @Before
   def before(): Unit = {
@@ -31,7 +30,6 @@ class BannerServiceTest extends JUnitSuite {
     assets.killDB()
     assets.fillDB()
     srv = BannerService("./banner")
-    confsrv = ConferenceService(assets.banPath)
   }
 
   @Test
