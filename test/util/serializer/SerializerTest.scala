@@ -120,11 +120,25 @@ class SerializerTest extends JUnitSuite {
   def testBanner(): Unit = {
     val jsFormat = new BannerFormat()
 
-    val original = Banner(Option("someuuid"), Option("logo"))
-    val json = jsFormat.writes(original)
+    val originalLogo = Banner(Option("someuuid"), Option("logo"))
+    val jsonLogo = jsFormat.writes(originalLogo)
 
-    jsFormat.reads(json).fold(
-      valid = { converted => {assert(converted.uuid == original.uuid)}},
+    jsFormat.reads(jsonLogo).fold(
+      valid = { converted => {
+        assert(converted.uuid == originalLogo.uuid)
+        assert(converted.bType == originalLogo.bType)}
+      },
+      invalid = { errors => throw new MatchError(errors.toString()) }
+    )
+
+    val originalThn = Banner(Option("someuuid"), Option("thumbnail"))
+    val jsonThn = jsFormat.writes(originalThn)
+
+    jsFormat.reads(jsonThn).fold(
+      valid = { converted => {
+        assert(converted.uuid == originalThn.uuid)
+        assert(converted.bType == originalThn.bType)}
+      },
       invalid = { errors => throw new MatchError(errors.toString()) }
     )
   }
