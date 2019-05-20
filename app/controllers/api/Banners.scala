@@ -78,6 +78,19 @@ class Banners(implicit val env: Environment[Login, CachedCookieAuthenticator])
   }
 
   /**
+    * Download mobile banner file from the specified banner object (id).
+    *
+    * @param id  The id of the banner.
+    *
+    * @return  OK / Failed
+    */
+  def downloadmobile(id: String) = UserAwareAction { implicit request =>
+    Ok.sendFile(bannerService.openMobileFile(
+      bannerService.get(id)
+    ))
+  }
+
+  /**
     * Delete an existing banner (id).
     *
     * @param id   The id of the banner.

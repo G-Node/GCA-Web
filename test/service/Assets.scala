@@ -36,7 +36,9 @@ class Assets() {
   }
 
   val figPath = Play.application().configuration().getString("file.fig_path", "./figures")
+  val figMobilePath = Play.application().configuration().getString("file.fig_mobile_path", "./figures_mobile")
   val banPath = Play.application().configuration().getString("file.ban_path", "./banner")
+  val banMobilePath = Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile")
 
   def makeSortId(group: Int, seqid: Int) : Option[Int] = {
     val sortId : Int = group << 16 | seqid
@@ -185,6 +187,11 @@ class Assets() {
     Figure(None, ?("This is the super nice figure three."))
   )
 
+  var banner : Array[Banner] = Array(
+    Banner(None, ?("logo")),
+    Banner(None, ?("thumbnail"))
+  )
+
   var alice : Account = createAccount("Alice", "Goodchild", "alice@foo.com")
 
   var alice_new : Account = createAccount("Alice", "Goodchild", "alice_new@foo.com")
@@ -312,6 +319,28 @@ class Assets() {
         em.merge(abstr)
       }
 
+      banner = banner.map { ban =>
+        val conf = conferences(0)
+        ban.conference = conf
+        conf.banner.add(ban)
+
+        em.persist(ban)
+
+        val file = new File(banPath, ban.uuid)
+        if (!file.getParentFile.exists())
+          file.getParentFile.mkdirs()
+
+        file.createNewFile()
+
+        val file_mobile = new File(banMobilePath, ban.uuid)
+        if (!file_mobile.getParentFile.exists())
+          file_mobile.getParentFile.mkdirs()
+
+        file_mobile.createNewFile()
+
+        ban
+      }
+
       figures = 0.until(figures.length).toArray.map { i: Int =>
         val fig = figures(i)
         val abstr = abstracts(i)
@@ -326,6 +355,12 @@ class Assets() {
           file.getParentFile.mkdirs()
 
         file.createNewFile()
+
+        val file_mobile = new File(figMobilePath, fig.uuid)
+        if (!file_mobile.getParentFile.exists())
+          file_mobile.getParentFile.mkdirs()
+
+        file_mobile.createNewFile()
 
         fig
       }

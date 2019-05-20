@@ -117,6 +117,15 @@ class FigureCtrlTest extends BaseCtrlTest {
   }
 
   @Test
+  def testDownloadMobile(): Unit = {
+    val uuid = assets.figures(0).uuid
+    val request = FakeRequest(GET, s"/api/figures/$uuid/imagemobile")
+    val result = route(FigureCtrlTest.app, request).get
+
+    assert(status(result) == OK)
+  }
+
+  @Test
   def testUpdate(): Unit = {
     val uuid = assets.figures(0).uuid
     val figure = assets.figures(0)
