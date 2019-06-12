@@ -1,29 +1,18 @@
-import unittest
-from selenium import webdriver
+import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
-import Cookies
 
-class EditorTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(inst):
-        inst.driver = webdriver.Chrome()
-        #browser needs to be opened before cookies can be loaded
-        inst.driver.get("http://localhost:9000/login")
-        Cookies.load_cookies(inst.driver, "cookies.txt")
-        inst.driver.maximize_window()
-        inst.driver.get("http://localhost:9000/conference/BC14/submission")
-        WebDriverWait(inst.driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div[2]/div[1]/span/button'))
-        )
+
+@pytest.mark.usefixtures("setup_editor")
+class TestEditor:
 
     def test_simple_creation(self):
         driver = self.driver
         #fail saving when empty abstract
         driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[2]/div[1]/span/button').click()
-        self.assertTrue(EC.visibility_of((By.XPATH, '/html/body/div[2]/div[2]/div[3]/div/h4')))
+        assert EC.visibility_of((By.XPATH, '/html/body/div[2]/div[2]/div[3]/div/h4'))
 
     def test_title_save(self):
         driver = self.driver
@@ -52,14 +41,6 @@ class EditorTest(unittest.TestCase):
 
         #make sure, submit fails
         driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[2]/div[1]/span/button').click()
-        self.assertTrue(EC.text_to_be_present_in_element(
+        assert EC.text_to_be_present_in_element(
             (By.XPATH, '/html/body/div[2]/div[2]/div[3]/div/p'), 'Unable to submit'
-        ))
-
-    @classmethod
-    def tearDownClass(inst):
-        inst.driver.close()
-
-
-if __name__ == "__main__":
-    unittest.main()
+        )
