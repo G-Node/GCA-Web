@@ -1,19 +1,18 @@
-import pickle
+import json
 import socket
 
 
 def save_cookies(driver, location):
 
-    pickle.dump(driver.get_cookies(), open(location, "wb"))
+    json.dump(driver.get_cookies()[0], open(location, "w"))
 
 
-def load_cookies(driver, url=None, location="cookies.pkl",):
+def load_cookies(driver, url=None, location="cookies.json"):
 
-    cookies = pickle.load(open(location, "rb"))
+    cookies = json.load(open(location, "r"))
     driver.delete_all_cookies()
     driver.get("http://" + get_host_ip() + ":9000/login" if url is None else url)
-    for cookie in cookies:
-        driver.add_cookie(cookie)
+    driver.add_cookie(cookies)
 
 
 def delete_cookies(driver, domains=None):
@@ -34,7 +33,7 @@ def delete_cookies(driver, domains=None):
 
 def set_cookies(driver, user, password):
 
-    cookies_location = "cookies.pkl"
+    cookies_location = "cookies.json"
     driver.get("http://" + get_host_ip() + ":9000/login")
     driver.maximize_window()
     driver.find_element_by_id("identifier").send_keys(user)
