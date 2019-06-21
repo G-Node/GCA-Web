@@ -110,7 +110,7 @@ class Accounts(implicit val env: GlobalEnvironment)
 
   def forgotPasswordPage = UserAwareAction { implicit request =>
     request.identity match {
-      case Some(user) => Redirect(routes.Application.index())
+      case Some(user) => Redirect(routes.Application.index()).flashing("success" -> "You are already logged in.")
       case None => Ok(views.html.forgotpassword(EmailForm.emailForm))
     }
   }
