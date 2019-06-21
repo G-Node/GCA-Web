@@ -90,7 +90,6 @@ class Accounts(implicit val env: GlobalEnvironment)
         Redirect(routes.Accounts.passwordResetPage()).flashing("error" -> "New passwords don't match.")
       },
       passwords => {
-        println(passwords)
         var loginInfo = LoginInfo(env.credentialsProvider.id, request.identity.account.mail)
         val f = Await.result(env.authInfoService.retrieve(loginInfo)(classTag[PasswordInfo]), 10 seconds)
         val pwInfo = f.get
