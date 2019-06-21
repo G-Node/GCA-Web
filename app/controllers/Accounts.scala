@@ -158,7 +158,7 @@ class Accounts(implicit val env: GlobalEnvironment)
       ok => {
         try {
           accountService.create(Account(null, ok.email, ok.firstName, ok.lastName, None), Some(ok.password))
-          Redirect(routes.Application.conferences()).flashing("info" -> flashing)
+          Redirect(routes.Accounts.signUp()).flashing("info" -> flashing)
         } catch {
           case e: Throwable => Redirect(routes.Accounts.signUp()).flashing("error" -> e.getMessage)
         }
