@@ -81,7 +81,7 @@ class Accounts(implicit val env: GlobalEnvironment)
   }
   
   def passwordResetPage = SecuredAction { implicit request =>
-    Ok(views.html.passwordreset(ResetPasswordForm.passwordsForm))
+    Ok(views.html.passwordreset(request.identity.account, ResetPasswordForm.passwordsForm))
   }
 
   def passwordResetCommit = SecuredAction { implicit request =>
