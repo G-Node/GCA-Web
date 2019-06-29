@@ -50,7 +50,7 @@ class Accounts(implicit val env: GlobalEnvironment)
   }
   
   def emailchange = SecuredAction { implicit request =>
-    Ok(views.html.changemail(NewMailForm.newmailform))
+    Ok(views.html.changemail(request.identity.account, NewMailForm.newmailform))
   }
 
   def emailchangeCommit = SecuredAction { implicit request =>
