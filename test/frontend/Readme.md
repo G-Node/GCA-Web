@@ -4,14 +4,21 @@ Frontend Testing With Selenium
 This file contains a description about the steps necessary in order to start testing with selenium 
 as well as some remarks about setting up new tests.
 
+# Preliminary requirements
+- Make sure that `activator test` has been run
+- Make sure GCA-Web is running locally at the default port `9000` using `activator start`
+
 # Steps to Set Up Selenium
+
+Note this setup has been tested and used exclusively with Python 3.6. Using Python 2 is not
+encouraged.
 
 Before the tests can run, several steps are needed in order for them to work.
 
 First of course, you need to install python-selenium, if you haven't done so already, 
 after setting up a virtual environment (not necessarily in this order):
 
-`pip install selenium`
+`pip install selenium pytest`
 
 Next, you need to get the drivers for the browsers your interested in, at the moment, 
 Google Chrome and Firefox are used. The drivers can eb downloaded from this page:
@@ -19,9 +26,14 @@ Google Chrome and Firefox are used. The drivers can eb downloaded from this page
 https://www.seleniumhq.org/download/
 
 under "Third Party Drivers, Bindings, and Plugins". 
-Place them on your local machine and make sure the PATH is set right.
 
-To allow parallel and cross browser testing, and even giving the possiblity of testing
+Place them on your local machine and make sure they are available via the `PATH` environmental variable.
+
+From the same source download the Selenium standalone server, something 
+along the lines of `selenium-server-standalone-[version].jar`, 
+and have it available.
+
+To allow parallel and cross browser testing, and even giving the possibility of testing
 with different operating systems and on different machines, we next set up selenium grid.
 In order to do this, we need the selenium standalone server, which is already included as a java jar 
 in the "selenium" directory. Be sure to check out newer versions from time to time on the same page as above.
@@ -31,7 +43,6 @@ The hub can be started by opening a terminal, changing to the selenium folder an
 (replace with you current version of the jar):
 
 ```
-cd $path$/selenium  
 java -jar selenium-server-standalone-3.141.59.jar -role hub
 ```
 
@@ -53,7 +64,8 @@ java -jar selenium-server-standalone-3.141.59.jar -role node -hub http://$IP of 
  
 Using just your local machine, you can also add more nodes via the same command,
 speeding up the run time of the tests, as they will get distributed over these nodes by pytest.
-For more helpful information about selenium grid, check out [the docs](https://www.seleniumhq.org/docs/07_selenium_grid.jsp) and this [article on medium.com](https://medium.com/@arnonaxelrod/running-cross-browser-selenium-tests-in-parallel-using-selenium-grid-and-docker-containers-9ee293b86cfd)
+For more helpful information about selenium grid, check out [the docs](https://www.seleniumhq.org/docs/07_selenium_grid.jsp) 
+and this [article on medium.com](https://medium.com/@arnonaxelrod/running-cross-browser-selenium-tests-in-parallel-using-selenium-grid-and-docker-containers-9ee293b86cfd)
 
 After this preparation, open yet another terminal. Before starting the tests, be sure to create a file containing 
 session cookies:
