@@ -86,9 +86,9 @@ class Accounts(implicit val env: GlobalEnvironment)
 
   def passwordResetCommit = SecuredAction { implicit request =>
     ResetPasswordForm.passwordsForm.bindFromRequest.fold(
-      formWithErrors => {
-        Redirect(routes.Accounts.passwordResetPage()).flashing("error" -> "New passwords don't match.")
-      },
+      formWithErrors =>
+        Ok(views.html.passwordreset(request.identity.account, formWithErrors))
+      ,
       passwords => {
         var loginInfo = LoginInfo(env.credentialsProvider.id, request.identity.account.mail)
         val f = Await.result(env.authInfoService.retrieve(loginInfo)(classTag[PasswordInfo]), 10 seconds)
@@ -96,6 +96,8 @@ class Accounts(implicit val env: GlobalEnvironment)
         //Check, whether old password is correct.
         if (!env.pwHasher.matches(pwInfo, passwords._1)) {
           Redirect(routes.Accounts.passwordResetPage()).flashing("error" -> "Old password is incorrect.")
+        }else if (passwords._2 != passwords._3) {
+          Redirect(routes.Accounts.passwordResetPage()).flashing("error" -> "New passwords don't match.")
         }else {
           val newPwInfo = env.pwHasher.hash(passwords._2)
           Await.result(env.authInfoService.save(loginInfo, newPwInfo), 5 seconds)
