@@ -35,7 +35,8 @@ class SerializerTest extends JUnitSuite {
     val jsFormat = new ConferenceFormat()
 
     val original = Conference(Option("someuuid"), Option("bar"), Some("XX"), Some("G"), Some("X"),
-                             None, None, Some(false), Some(false), None, None, None, None)
+                             None, None, Some(false), Some(false), None, None, None, None, None,
+                             Option(Set("XX")))
     val json = jsFormat.writes(original)
 
     jsFormat.reads(json).fold(

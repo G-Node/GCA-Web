@@ -168,7 +168,9 @@
                     <label for="logo" class="col-sm-2 control-label">Logo Link</label>
                     <div class="col-sm-10">
                         <input type="url" class="form-control" id="logo"
-                                placeholder="Banner Logo url" data-bind="value: logo, valueUpdate: 'afterkeydown'"
+                                placeholder="Banner Logo url"
+                                data-bind="value: $root.logoURL, valueUpdate: 'afterkeydown',
+                                event: {'keydown': $root.changeHandler}"
                                 maxlength='@Model.getLimit[Conference]("logo")'>
                         <div>
                             Note: If a logo image is uploaded, the logo link will not be used.
@@ -207,7 +209,8 @@
                     <div class="col-sm-10">
                         <input type="url" class="form-control" id="thumbnail"
                                 placeholder="Thumbnail image url"
-                                data-bind="value: thumbnail, valueUpdate: 'afterkeydown'"
+                                data-bind="value: $root.thumbnailURL, valueUpdate: 'afterkeydown',
+                                event: {'keydown': $root.changeHandler}"
                                 maxlength='@Model.getLimit[Conference]("thumbnail")'>
                         <div>
                             Note: If a thumbnail image is uploaded, the thumbnail link will not be used.

@@ -22,11 +22,17 @@
 
         @for((conference,i) <- list_active.zipWithIndex) {
             <div class="jumbotron">
-                @if(conference.logo != null) {
-                    <p data-bind="ifnot: $root.logos()[@i]">
-                        <img class="conference-logo img-responsive img-rounded" src="@conference.logo">
-                    </p>
+
+                <p data-bind="ifnot: $root.logos()[@i]">
+                @if(conference.imageUrls != null) {
+                    @for(url <- conference.imageUrls){
+                        @if(url.contains("logo") && url.split("logo: ").length > 0){
+                            <img class="conference-logo img-responsive img-rounded"
+                            src="@url.split("logo: ").tail">
+                        }
+                    }
                 }
+                </p>
                 <p data-bind="if: $root.logos()[@i]">
                     <img class="conference-logo img-responsive img-rounded" src=""
                     data-bind="attr: {src: $root.logos()[@i].URL}">
@@ -62,12 +68,19 @@
             @if(conference.isPublished){
                 <div class="media">
                     <div class="pull-left media-left">
-                        @if(conference.thumbnail != null) {
-                            <a href="@routes.Application.conference(conference.short)" data-bind="ifnot: $root.thumbnails()[@i]">
-                                <img class="media-object conference-thumbnail" src="@conference.thumbnail">
-                            </a>
+                        <a href="@routes.Application.conference(conference.short)"
+                        data-bind="ifnot: $root.thumbnails()[@i]">
+                        @if(conference.imageUrls != null) {
+                            @for(url <- conference.imageUrls){
+                                @if(url.contains("thumbnail") && url.split("thumbnail: ").length > 0){
+                                    <img class="media-object conference-thumbnail"
+                                    src="@url.split("thumbnail: ").tail">
+                                }
+                            }
                         }
-                        <a href="@routes.Application.conference(conference.short)" data-bind="if: $root.thumbnails()[@i]">
+                        </a>
+                        <a href="@routes.Application.conference(conference.short)"
+                        data-bind="if: $root.thumbnails()[@i]">
                             <img class="media-object conference-thumbnail" src=""
                             data-bind="attr: {src: $root.thumbnails()[@i].URL}">
                         </a>
