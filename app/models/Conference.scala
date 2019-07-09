@@ -68,8 +68,7 @@ class Conference extends Model with Owned with Tagged {
   @Convert(converter = classOf[DateTimeConverter])
   var deadline: DateTime = null
 
-  var logo: String = _
-  var thumbnail: String = _
+  var imageUrls: Set[String] = _
 
   var iOSApp: String = _
   @Column(length = 10000)
@@ -196,8 +195,7 @@ object Conference extends Model {
             startDate: Option[DateTime],
             endDate: Option[DateTime],
             deadline: Option[DateTime] = null,
-            logo: Option[String] = null,
-            thumbnail: Option[String] = null,
+            imageUrls: Option[Set[String]] = null,
             iOSApp: Option[String] = null,
             banner: Seq[Banner] = Nil,
             groups: Seq[AbstractGroup] = Nil,
@@ -227,8 +225,7 @@ object Conference extends Model {
     conference.endDate     = unwrapRef(endDate)
     conference.deadline    = unwrapRef(deadline)
 
-    conference.logo        = unwrapRef(logo)
-    conference.thumbnail   = unwrapRef(thumbnail)
+    conference.imageUrls        = unwrapRef(imageUrls)
 
     conference.iOSApp      = unwrapRef(iOSApp)
 
