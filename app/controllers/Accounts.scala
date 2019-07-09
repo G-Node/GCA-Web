@@ -87,7 +87,7 @@ class Accounts(implicit val env: GlobalEnvironment)
   def passwordResetCommit = SecuredAction { implicit request =>
     ResetPasswordForm.passwordsForm.bindFromRequest.fold(
       formWithErrors =>
-        Ok(views.html.passwordreset(request.identity.account, formWithErrors))
+        BadRequest(views.html.passwordreset(request.identity.account, formWithErrors))
       ,
       passwords => {
         var loginInfo = LoginInfo(env.credentialsProvider.id, request.identity.account.mail)
