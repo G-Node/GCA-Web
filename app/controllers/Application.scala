@@ -17,7 +17,7 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
   val conferenceService = ConferenceService()
   
   def index = UserAwareAction { implicit request =>
-    Redirect(routes.Application.conferences())
+    Redirect(routes.Application.conferences()).flashing(request.flash)
   }
 
   def showUserInfo = UserAwareAction { implicit request =>
@@ -94,6 +94,7 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
     val list_other = conferences.filter(conf => !conf.isActive)
 
     Ok(views.html.conferencelist(request.identity.map{ _.account }, list_active, list_other))
+      .flashing(request.flash)
   }
 
   def conference(confId: String) = UserAwareAction { implicit request =>

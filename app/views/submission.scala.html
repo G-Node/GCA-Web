@@ -535,7 +535,7 @@
                                 data-bind="value: reference.link" />
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="DOI e.g. 10.xxxxxx/journal.date.xx"
+                        <input type="text" class="form-control input-sm" placeholder=""
                                 maxlength='@Model.getLimit[Reference]("doi")'
                                 data-bind="value: reference.doi" />
                     </td>
@@ -553,12 +553,6 @@
         <div>
             <small> Use the drag handle
                 <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder references
-            </small>
-        </div>
-        <br/>
-        <div>
-            <small>
-                Note: any DOI links differing from the 10.xxxxxx/journal.date.xx format will be post processed.
             </small>
         </div>
     </script>

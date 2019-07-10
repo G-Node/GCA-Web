@@ -1,8 +1,8 @@
-@(emailForm: Form[(String, String, String)])(implicit env: com.mohiva.play.silhouette.core.Environment[models.Login, _], request: RequestHeader)
+@(account: Account, emailForm: Form[(String, String, String)])(implicit env: com.mohiva.play.silhouette.core.Environment[models.Login, _], request: RequestHeader)
 
 @import views.html.bootstrap._
 
-@template(None, None, "") {
+@template(Option(account), None, "") {
     
 
   @flash(request)

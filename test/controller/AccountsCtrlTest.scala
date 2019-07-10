@@ -65,6 +65,31 @@ class AccountsCtrlTest extends BaseCtrlTest {
     assert(status(response) == UNAUTHORIZED)
 
     val newpass = "foofoofoo"
+
+    val postRTooShortPWs = FakeRequest(POST, "/password").withCookies(cookie)
+      .withFormUrlEncodedBody("passwordold" -> "testtest","password1" -> "foo", "password2" -> "foo")
+
+    response = route(AccountsCtrlTest.app, postRTooShortPWs).get
+    assert(status(response) == BAD_REQUEST)
+
+    val postRNoPWs = FakeRequest(POST, "/password").withCookies(cookie)
+      .withFormUrlEncodedBody("passwordold" -> "testtest","password1" -> newpass, "password2" -> "")
+
+    response = route(AccountsCtrlTest.app, postRNoPWs).get
+    assert(status(response) == BAD_REQUEST)
+
+    val postRWrongOldPWs = FakeRequest(POST, "/password").withCookies(cookie)
+      .withFormUrlEncodedBody("passwordold" -> "test12","password1" -> newpass, "password2" -> newpass)
+
+    response = route(AccountsCtrlTest.app, postRWrongOldPWs).get
+    assert(status(response) == SEE_OTHER)
+
+    val postRWrongPWs = FakeRequest(POST, "/password").withCookies(cookie)
+      .withFormUrlEncodedBody("passwordold" -> "testtest","password1" -> newpass, "password2" -> "foofoo")
+
+    response = route(AccountsCtrlTest.app, postRWrongPWs).get
+    assert(status(response) == SEE_OTHER)
+
     val postR = FakeRequest(POST, "/password").withCookies(cookie)
       .withFormUrlEncodedBody("passwordold" -> "testtest","password1" -> newpass, "password2" -> newpass)
 

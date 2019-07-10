@@ -50,7 +50,7 @@ class Accounts(implicit val env: GlobalEnvironment)
   }
   
   def emailchange = SecuredAction { implicit request =>
-    Ok(views.html.changemail(NewMailForm.newmailform))
+    Ok(views.html.changemail(request.identity.account, NewMailForm.newmailform))
   }
 
   def emailchangeCommit = SecuredAction { implicit request =>
@@ -81,19 +81,23 @@ class Accounts(implicit val env: GlobalEnvironment)
   }
   
   def passwordResetPage = SecuredAction { implicit request =>
-    Ok(views.html.passwordreset(ResetPasswordForm.passwordsForm))
+    Ok(views.html.passwordreset(request.identity.account, ResetPasswordForm.passwordsForm))
   }
 
   def passwordResetCommit = SecuredAction { implicit request =>
     ResetPasswordForm.passwordsForm.bindFromRequest.fold(
-      formWithErrors => Ok(views.html.passwordreset(formWithErrors)),
+      formWithErrors =>
+        BadRequest(views.html.passwordreset(request.identity.account, formWithErrors))
+      ,
       passwords => {
         var loginInfo = LoginInfo(env.credentialsProvider.id, request.identity.account.mail)
         val f = Await.result(env.authInfoService.retrieve(loginInfo)(classTag[PasswordInfo]), 10 seconds)
         val pwInfo = f.get
-        // lets see whether old password is corect. if not fail silently
+        //Check, whether old password is correct.
         if (!env.pwHasher.matches(pwInfo, passwords._1)) {
-          Redirect(routes.Accounts.emailchange()).flashing("error" -> "Could not change email address")
+          Redirect(routes.Accounts.passwordResetPage()).flashing("error" -> "Old password is incorrect.")
+        }else if (passwords._2 != passwords._3) {
+          Redirect(routes.Accounts.passwordResetPage()).flashing("error" -> "New passwords don't match.")
         }else {
           val newPwInfo = env.pwHasher.hash(passwords._2)
           Await.result(env.authInfoService.save(loginInfo, newPwInfo), 5 seconds)
@@ -107,7 +111,7 @@ class Accounts(implicit val env: GlobalEnvironment)
 
   def forgotPasswordPage = UserAwareAction { implicit request =>
     request.identity match {
-      case Some(user) => Redirect(routes.Application.index())
+      case Some(user) => Redirect(routes.Application.index()).flashing("success" -> "You are already logged in.")
       case None => Ok(views.html.forgotpassword(EmailForm.emailForm))
     }
   }
@@ -155,7 +159,7 @@ class Accounts(implicit val env: GlobalEnvironment)
       ok => {
         try {
           accountService.create(Account(null, ok.email, ok.firstName, ok.lastName, None), Some(ok.password))
-          Redirect(routes.Application.conferences()).flashing("info" -> flashing)
+          Redirect(routes.Accounts.signUp()).flashing("info" -> flashing)
         } catch {
           case e: Throwable => Redirect(routes.Accounts.signUp()).flashing("error" -> e.getMessage)
         }
