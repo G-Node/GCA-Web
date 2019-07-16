@@ -34,7 +34,7 @@ class Banners(implicit val env: Environment[Login, CachedCookieAuthenticator])
     * @return  OK / Failed
     */
   def upload(id: String) = SecuredAction(parse.multipartFormData) { implicit request =>
-    val conference = conferenceService.getOwn(id, request.identity.account)
+    val conference = conferenceService.get(id)
     val tempfile = request.body.file("file").map {
       banner => banner.ref
     }.getOrElse {
