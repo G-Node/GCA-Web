@@ -66,13 +66,14 @@ require(["main"], function () {
                                     if (banFound === false) {
                                         self.logos.push("");
                                     }
-                                } else if (conf.isPublished) {
+                                } else {
                                     for (i = 0; i < conf.banner.length; i++) {
-                                        if (conf.banner[i].bType === "thumbnail") {
+                                        if (conf.isPublished && conf.banner[i].bType === "thumbnail") {
                                             self.thumbnails.push(conf.banner[i]);
                                             banFound = true;
                                         }
                                     }
+                                    // Include published and unpublished conferences to not mess up the index
                                     if (banFound === false) {
                                         self.thumbnails.push("");
                                     }
