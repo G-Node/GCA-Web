@@ -153,6 +153,19 @@ class Conference extends Model with Owned with Tagged {
     return ""
   }
 
+  def getNoticeAsHTML () : String = {
+
+    if (this.infoTexts != null) {
+      for(info <- this.infoTexts) {
+        if (info != null && info.indexOf("notice") == 0 && info.split("notice: ").length > 0) {
+          return Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(info.split("notice: ").last))
+        }
+      }
+    }
+
+    return ""
+  }
+
   override def canWrite(account: Account): Boolean = {
     isOwner(account) || account.isAdmin
   }
