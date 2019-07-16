@@ -218,7 +218,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.makeConferenceObservable = function (conf) {
-            conf.makeObservable(["name", "short", "group", "cite", "description", "start", "end", "groups",
+            conf.makeObservable(["name", "short", "group", "cite", "start", "end", "groups",
                 "deadline", "imageUrls", "infoTexts", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
                 "topics", "iOSApp", "banner", "mAbsLeng", "mFigs"]);
 

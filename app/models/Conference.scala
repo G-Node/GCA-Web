@@ -51,9 +51,6 @@ class Conference extends Model with Owned with Tagged {
   var cite: String = _
   var link: String = _
 
-  @Column(length=512)
-  var description: String = _
-
   var isOpen: Boolean = _
   var isPublished: Boolean = _
   var isActive: Boolean = _
@@ -188,7 +185,6 @@ object Conference extends Model {
             group: Option[String],
             cite: Option[String],
             link: Option[String],
-            description: Option[String],
             isOpen: Option[Boolean],
             isPublished: Option[Boolean],
             isActive: Option[Boolean],
@@ -218,7 +214,6 @@ object Conference extends Model {
     conference.group       = unwrapRef(group)
     conference.cite        = unwrapRef(cite)
     conference.link        = unwrapRef(link)
-    conference.description = unwrapRef(description)
     conference.isOpen      = isOpen.getOrElse(false)
     conference.isPublished = isPublished.getOrElse(false)
     conference.isActive    = isActive.getOrElse(false)

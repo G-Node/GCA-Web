@@ -236,11 +236,11 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @constructor
      * @public
      */
-    function Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
+    function Conference(uuid, name, short, group, cite, link, isOpen, isPublished, isActive, hasPresentationPrefs,
                         groups, start, end, deadline, imageUrls, infoTexts, iOSApp, banner, geo, schedule, info, owners, abstracts, topics,
                         mAbsLeng, mFigs) {
         if (!(this instanceof Conference)) {
-            return new Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive,
+            return new Conference(uuid, name, short, group, cite, link, isOpen, isPublished, isActive,
                                   hasPresentationPrefs, groups, start, end, deadline, imageUrls, infoTexts, iOSApp,
                                   banner, geo, schedule, info, owners, abstracts, topics, mAbsLeng, mFigs);
         }
@@ -252,7 +252,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.cite = cite || null;
         self.group = group || null;
         self.link = link || null;
-        self.description = description || null;
         self.isOpen = isOpen || false;
         self.isPublished = isPublished || false;
         self.isActive = isActive || false;

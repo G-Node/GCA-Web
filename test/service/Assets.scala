@@ -232,7 +232,7 @@ class Assets() {
   var conferences : Array[Conference] = Array(
     Conference(None, ?("Bernstein Conference 2014"), ?("BC14"), ?("BCCN"),
       ?("The C1 Conf, Somewhere, Sometime"), ?("http://www.nncn.de/en/bernstein-conference/2014"),
-      ?(bcDesc), ?(true), ?(true), ?(true), ?(true),
+      ?(true), ?(true), ?(true), ?(true),
       ?(new DateTime(393415200000L)), ?(new DateTime(574423200000L)), ?(new DateTime(1321005600000L)),
       ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg")),
       ?(Set("description: " + bcDesc, "note: Remember to Register Until 21.7!")),
@@ -243,13 +243,13 @@ class Assets() {
       ?("""[{"ExtendedData": "","name": "Central Lecture Hall (ZHG)","description": "Main Conference and Workshops","point": {"lat": 51.542262,"long": 9.935886},"type": 0,"zoomto": true, "floorplans" : ["https://www.uni-muenchen.de/studium/beratung/beratung_service/beratung_lmu/beratungsstelle-barrierefrei/bilderbaukasten/Barrierefreiheit/geschwister-scholl-platz-1-eg.jpg"]},{"ExtendedData": "","name": "Alte Mensa","description": "Public Lecture and Conference Dinner","point": {"lat": 51.533442,"long": 9.937631},"type": 0,"zoomto": true},{"ExtendedData": "","name": "Alte Mensa","description": "Conference Dinner","point": {"lat": 51.533442,"long": 9.937631},"type": 5,"zoomto": true},{"ExtendedData": "","name": "Göttingen Hbf","description": "main station","point": {"lat": 51.536548,"long": 9.926891},"type": 4,"zoomto": true}]"""),
       ?("""{"schedule": "some schedule json"}"""), ?("# Some markdown text"),Some(5000)),
     Conference(None, ?("The second conference"), ?("C2"), ?("BCCN"),
-      ?("The C2 Conf, Somewhere, Sometime"), ?(""), None, ?(false), ?(true), ?(false), ?(true),
+      ?("The C2 Conf, Somewhere, Sometime"), ?(""), ?(false), ?(true), ?(false), ?(true),
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
       ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg", "thumbnail: https://portal.g-node.org/abstracts/bc14/BC14_icon.png")),
-      ?(Set("note: We will see you in 5 weeks."))
+      ?(Set("note: We will see you in 5 weeks.", "description: "))
     ),
     Conference(None, ?("The third conference"), ?("C3"), ?(""),
-      ?("The C3 Conf, Somewhere, Sometime"), ?(""), ?(""), ?(false), ?(true), ?(false), ?(false),
+      ?("The C3 Conf, Somewhere, Sometime"), ?(""), ?(false), ?(true), ?(false), ?(false),
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
       ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg", "thumbnail: https://portal.g-node.org/abstracts/bc14/BC14_icon.png")),
       ?(Set("note: We will see you in 5 weeks."))
