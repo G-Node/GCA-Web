@@ -235,7 +235,7 @@ class Assets() {
       ?(bcDesc), ?(true), ?(true), ?(true), ?(true),
       ?(new DateTime(393415200000L)), ?(new DateTime(574423200000L)), ?(new DateTime(1321005600000L)),
       ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg")),
-      ?(Set("note: Remember to Register Until 21.7!")),
+      ?(Set("description: " + bcDesc, "note: Remember to Register Until 21.7!")),
       ?("557712638"),
       Nil,
       Seq(AbstractGroup(None, ?(1), ?("Talk"), ?("T")),

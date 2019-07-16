@@ -237,12 +237,12 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
-                        groups, start, end, deadline, imageUrls, iOSApp, banner, geo, schedule, info, owners, abstracts, topics,
+                        groups, start, end, deadline, imageUrls, infoTexts, iOSApp, banner, geo, schedule, info, owners, abstracts, topics,
                         mAbsLeng, mFigs) {
         if (!(this instanceof Conference)) {
             return new Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive,
-                                  hasPresentationPrefs, groups, start, end, deadline, imageUrls, iOSApp, banner,
-                                  geo, schedule, info, owners, abstracts, topics, mAbsLeng, mFigs);
+                                  hasPresentationPrefs, groups, start, end, deadline, imageUrls, infoTexts, iOSApp,
+                                  banner, geo, schedule, info, owners, abstracts, topics, mAbsLeng, mFigs);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -262,6 +262,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.end = end || null;
         self.deadline = deadline || null;
         self.imageUrls = imageUrls || null;
+        self.infoTexts = infoTexts || null;
         self.iOSApp = iOSApp || null;
         self.banner = banner || null;
         self.geo = geo || null;

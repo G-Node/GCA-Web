@@ -33,6 +33,8 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.autosave = ko.observable({text: "Loading", css: "label-primary"});
 
+        self.description = ko.observable(null);
+
         self.logoURL = ko.observable(null);
         self.thumbnailURL = ko.observable(null);
         self.logo = ko.observable(null);
@@ -217,7 +219,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.makeConferenceObservable = function (conf) {
             conf.makeObservable(["name", "short", "group", "cite", "description", "start", "end", "groups",
-                "deadline", "imageUrls", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
+                "deadline", "imageUrls", "infoTexts", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
                 "topics", "iOSApp", "banner", "mAbsLeng", "mFigs"]);
 
             for (var prop in conf) {
@@ -259,6 +261,14 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
             self.oldShort = self.conference().short();
             self.oldmAbsLeng = self.conference().mAbsLeng();
+
+            if (self.conference().infoTexts()) {
+                for (var i = 0; i < self.conference().infoTexts().length; i++) {
+                    if (self.conference().infoTexts()[i].search("description") >= 0) {
+                        self.description(self.conference().infoTexts()[i].split(": ")[1]);
+                    }
+                }
+            }
 
             if (self.conference().imageUrls()) {
                 for (var i = 0; i < self.conference().imageUrls().length; i++) {
@@ -353,6 +363,22 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                         }
                     }
                     self.conference().imageUrls().push(value);
+                });
+            }
+
+            var infoTextsChange = Array();
+            if (self.description() !== null || self.description() !== "") {
+                infoTextsChange.push("description: " + self.description());
+            }
+            if (infoTextsChange.length > 0) {
+                infoTextsChange.forEach(function (value) {
+                    var iuType = value.split(":")[0];
+                    for (var i = 0; i < self.conference().infoTexts().length; i++) {
+                        if (self.conference().infoTexts()[i].search(iuType) >= 0) {
+                            self.conference().infoTexts().splice(i);
+                        }
+                    }
+                    self.conference().infoTexts().push(value);
                 });
             }
 

@@ -13,10 +13,14 @@
                 <h3>
                     <a href="@routes.Mobile.Conference(conference.short)">@conference.name</a>
                 </h3>
-                @if(conference.description != null) {
-                    <div class="jumbo-small">
-                        @conference.description
-                    </div>
+                @if(conference.infoTexts != null) {
+                    @for(info <- conference.infoTexts){
+                        @if(info.indexOf("description") == 0 && info.split("description: ").length > 0){
+                            <div class="jumbo-small">
+                                @info
+                            </div>
+                        }
+                    }
                 }
 
                 <p>@conference.formatDuration</p>
