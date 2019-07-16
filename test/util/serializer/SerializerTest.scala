@@ -15,7 +15,7 @@ class SerializerTest extends JUnitSuite {
 
   val sampleConference: Conference = Conference(Option("someuuid"), Option("bar"), Some("XX"), Some("G"), Some("X"),
                                                 None, None, Some(false), Some(true), Some(false), Some(true),
-                                                None, None, None)
+                                                None, None, None, None)
   val sampleAccount: Account = Account(Option("someuuid"), Option("example@gnode.org"))
   val sampleAuthor: Author = Author(Option("someuuid"), Option("email"), Option("first"),
     Option("middle"), Option("last"))
@@ -36,7 +36,7 @@ class SerializerTest extends JUnitSuite {
 
     val original = Conference(Option("someuuid"), Option("bar"), Some("XX"), Some("G"), Some("X"),
                              None, None, Some(false), Some(false), None, None, None, None, None,
-                             Option(Set("XX")))
+                             Option(Set("XX")), Option(Set("XX")))
     val json = jsFormat.writes(original)
 
     jsFormat.reads(json).fold(
