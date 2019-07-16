@@ -351,7 +351,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 return;
             }
 
-            var imageUrlsChange = Array();
+            var imageUrlsChange = [];
             if (self.logoURL() !== null || self.logoURL() !== "") {
                 imageUrlsChange.push("logo: " + self.logoURL());
             }
@@ -370,7 +370,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 });
             }
 
-            var infoTextsChange = Array();
+            var infoTextsChange = [];
             if (self.description() !== null || self.description() !== "") {
                 infoTextsChange.push("description: " + self.description());
             }
