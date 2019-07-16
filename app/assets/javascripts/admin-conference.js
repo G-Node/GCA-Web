@@ -263,8 +263,9 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             self.oldShort = self.conference().short();
             self.oldmAbsLeng = self.conference().mAbsLeng();
 
+            var i = 0;
             if (self.conference().infoTexts()) {
-                for (var i = 0; i < self.conference().infoTexts().length; i++) {
+                for (i = 0; i < self.conference().infoTexts().length; i++) {
                     if (self.conference().infoTexts()[i].search("description") >= 0) {
                         self.description(self.conference().infoTexts()[i].split(": ")[1]);
                     } else if (self.conference().infoTexts()[i].search("notice") >= 0) {
@@ -274,7 +275,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             }
 
             if (self.conference().imageUrls()) {
-                for (var i = 0; i < self.conference().imageUrls().length; i++) {
+                for (i = 0; i < self.conference().imageUrls().length; i++) {
                     if (self.conference().imageUrls()[i].search("logo") >= 0) {
                         self.logoURL(self.conference().imageUrls()[i].split(": ")[1]);
                     } else if (self.conference().imageUrls()[i].search("thumbnail") >= 0) {
@@ -284,7 +285,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             }
 
             if (self.conference().banner()) {
-                for (var i = 0; i < self.conference().banner().length; i++) {
+                for (i = 0; i < self.conference().banner().length; i++) {
                     if (self.conference().banner()[i].bType === "logo") {
                         self.logo(self.conference().banner()[i]);
                     } else if (self.conference().banner()[i].bType === "thumbnail") {
