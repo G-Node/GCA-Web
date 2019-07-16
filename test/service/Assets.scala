@@ -235,6 +235,7 @@ class Assets() {
       ?(bcDesc), ?(true), ?(true), ?(true), ?(true),
       ?(new DateTime(393415200000L)), ?(new DateTime(574423200000L)), ?(new DateTime(1321005600000L)),
       ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg")),
+      ?(Set("note: Remember to Register Until 21.7!")),
       ?("557712638"),
       Nil,
       Seq(AbstractGroup(None, ?(1), ?("Talk"), ?("T")),
@@ -244,11 +245,15 @@ class Assets() {
     Conference(None, ?("The second conference"), ?("C2"), ?("BCCN"),
       ?("The C2 Conf, Somewhere, Sometime"), ?(""), None, ?(false), ?(true), ?(false), ?(true),
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
-      ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg", "thumbnail: https://portal.g-node.org/abstracts/bc14/BC14_icon.png"))),
+      ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg", "thumbnail: https://portal.g-node.org/abstracts/bc14/BC14_icon.png")),
+      ?(Set("note: We will see you in 5 weeks."))
+    ),
     Conference(None, ?("The third conference"), ?("C3"), ?(""),
       ?("The C3 Conf, Somewhere, Sometime"), ?(""), ?(""), ?(false), ?(true), ?(false), ?(false),
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
-      ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg", "thumbnail: https://portal.g-node.org/abstracts/bc14/BC14_icon.png")))
+      ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg", "thumbnail: https://portal.g-node.org/abstracts/bc14/BC14_icon.png")),
+      ?(Set("note: We will see you in 5 weeks."))
+    )
     )
 
   def fillDB() : Unit = {

@@ -69,6 +69,7 @@ class Conference extends Model with Owned with Tagged {
   var deadline: DateTime = null
 
   var imageUrls: Set[String] = _
+  var infoTexts: Set[String] = _
 
   var iOSApp: String = _
   @Column(length = 10000)
@@ -196,6 +197,7 @@ object Conference extends Model {
             endDate: Option[DateTime],
             deadline: Option[DateTime] = null,
             imageUrls: Option[Set[String]] = null,
+            infoTexts: Option[Set[String]] = null,
             iOSApp: Option[String] = null,
             banner: Seq[Banner] = Nil,
             groups: Seq[AbstractGroup] = Nil,
@@ -226,6 +228,7 @@ object Conference extends Model {
     conference.deadline    = unwrapRef(deadline)
 
     conference.imageUrls        = unwrapRef(imageUrls)
+    conference.infoTexts        = unwrapRef(infoTexts)
 
     conference.iOSApp      = unwrapRef(iOSApp)
 

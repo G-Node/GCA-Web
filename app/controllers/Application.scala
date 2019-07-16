@@ -181,7 +181,8 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
                        |/conference/${conf.short}/floorplans
                        |/conference/${conf.short}/locations
                        |/conference/${conf.short}/abstracts
-                       |${conf.imageUrls}""".stripMargin
+                       |${conf.imageUrls}
+                       |${conf.infoTexts}""".stripMargin
     for (ban: Banner <- conf.banner.asScala) {
       dynamicViews +=
           s"""
