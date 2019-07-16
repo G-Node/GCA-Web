@@ -179,6 +179,57 @@ class ConferenceTest extends JUnitSuite {
     assert(testingConf.getDescriptionAsHTML() == "\n") // everything else should also be disallowed
   }
 
+  @Test
+  def testGetNoticeAsHTML() : Unit = {
+    /*
+     * Mostly a placeholder for potential future changes, which need to be tested differently.
+     */
+    val r : Random = new Random()
+    // test empty markdown returning empty html
+    var testingNotice : String = ""
+    var testingConf : Conference = null
+    testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+      Some(Set(testingNotice)))
+    assert(testingConf.getNoticeAsHTML() == Conference.convertMarkdownToHTML(testingNotice))
+    assert(testingConf.getNoticeAsHTML() == "")
+
+    testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+      Some(Set("notice: ")))
+    assert(testingConf.getNoticeAsHTML() == "")
+
+    // random tests
+    for (i <- 0 to 10000) {
+      testingNotice = ConferenceTest.generateRandomString(r.nextInt(200))
+      testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
+        None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+        Some(Set("notice: " + testingNotice)))
+      assert(testingConf.getNoticeAsHTML() == Conference.convertMarkdownToHTML(testingNotice))
+    }
+    // test null yielding an empty string
+    testingConf = Conference(Some("uuid"), Some("wrongconf"), Some("XX"), Some("G"), Some("X"),
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None, null)
+    assert(testingConf.getNoticeAsHTML() == "")
+    // test null yielding an empty string
+    testingConf = Conference(Some("uuid"), Some("wrongconf"), Some("XX"), Some("G"), Some("X"),
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None, Some(Set(null)))
+    assert(testingConf.getNoticeAsHTML() == "")
+    // test sanitising
+    testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+      Some(Set("notice: <h1 class=\"paragraph-small\">Some text</h1>")))
+    assert(testingConf.getNoticeAsHTML() == "<h1>Some text</h1>\n") // attributes are not allowed
+    testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+      Some(Set("notice: Some text")))
+    assert(testingConf.getNoticeAsHTML() == "<p class=\"paragraph-small\">Some text</p>\n") // except classes on paragraphs
+    testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+      Some(Set("notice: <script type=\"text/javascript\">alert(\"Cross-Site-Scripting\");</script>")))
+    assert(testingConf.getNoticeAsHTML() == "\n") // everything else should also be disallowed
+  }
+
 }
 
 object ConferenceTest {

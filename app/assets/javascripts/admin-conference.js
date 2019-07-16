@@ -34,6 +34,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.autosave = ko.observable({text: "Loading", css: "label-primary"});
 
         self.description = ko.observable(null);
+        self.notice = ko.observable(null);
 
         self.logoURL = ko.observable(null);
         self.thumbnailURL = ko.observable(null);
@@ -266,6 +267,8 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 for (var i = 0; i < self.conference().infoTexts().length; i++) {
                     if (self.conference().infoTexts()[i].search("description") >= 0) {
                         self.description(self.conference().infoTexts()[i].split(": ")[1]);
+                    } else if (self.conference().infoTexts()[i].search("notice") >= 0) {
+                        self.notice(self.conference().infoTexts()[i].split(": ")[1]);
                     }
                 }
             }
@@ -369,6 +372,9 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             var infoTextsChange = Array();
             if (self.description() !== null || self.description() !== "") {
                 infoTextsChange.push("description: " + self.description());
+            }
+            if (self.notice() !== null || self.notice() !== "") {
+                infoTextsChange.push("notice: " + self.notice());
             }
             if (infoTextsChange.length > 0) {
                 infoTextsChange.forEach(function (value) {
