@@ -28,7 +28,7 @@
                     @for(url <- conference.imageUrls){
                         @if(url.contains("logo") && url.split("logo: ").length > 0){
                             <img class="conference-logo img-responsive img-rounded"
-                            src="@url.split("logo: ").tail">
+                            src='@url.split("logo: ").tail'>
                         }
                     }
                 }
@@ -74,7 +74,7 @@
                             @for(url <- conference.imageUrls){
                                 @if(url.contains("thumbnail") && url.split("thumbnail: ").length > 0){
                                     <img class="media-object conference-thumbnail"
-                                    src="@url.split("thumbnail: ").tail">
+                                    src='@url.split("thumbnail: ").tail'>
                                 }
                             }
                         }
