@@ -245,7 +245,7 @@
         @if(conf.infoTexts != null) {
             @for(info <- conf.infoTexts) {
                 @if(info.indexOf("notice") == 0 && info.split("notice: ").length > 0) {
-                    <div class="jumbo-small">
+                    <div class="jumbotron">
                     @Html(conf.getNoticeAsHTML())
                     </div>
                 }
