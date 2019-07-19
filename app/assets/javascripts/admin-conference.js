@@ -33,11 +33,11 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.autosave = ko.observable({text: "Loading", css: "label-primary"});
 
-        self.description = ko.observable(null);
-        self.notice = ko.observable(null);
+        self.description = ko.observable("");
+        self.notice = ko.observable("");
 
-        self.logoURL = ko.observable(null);
-        self.thumbnailURL = ko.observable(null);
+        self.logoURL = ko.observable("");
+        self.thumbnailURL = ko.observable("");
         self.logo = ko.observable(null);
         self.thumbnail = ko.observable(null);
         // only required when a new banner is added
@@ -266,9 +266,11 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             var i = 0;
             if (self.conference().infoTexts()) {
                 for (i = 0; i < self.conference().infoTexts().length; i++) {
-                    if (self.conference().infoTexts()[i].search("description") >= 0) {
+                    if (self.conference().infoTexts()[i].search("description") >= 0
+                        && self.conference().infoTexts()[i].split(": ")[1] !== null) {
                         self.description(self.conference().infoTexts()[i].split(": ")[1]);
-                    } else if (self.conference().infoTexts()[i].search("notice") >= 0) {
+                    } else if (self.conference().infoTexts()[i].search("notice") >= 0
+                        && self.conference().infoTexts()[i].split(": ")[1] !== null) {
                         self.notice(self.conference().infoTexts()[i].split(": ")[1]);
                     }
                 }
@@ -276,10 +278,12 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
             if (self.conference().imageUrls()) {
                 for (i = 0; i < self.conference().imageUrls().length; i++) {
-                    if (self.conference().imageUrls()[i].search("logo") >= 0) {
-                        self.logoURL(self.conference().imageUrls()[i].split(": ")[1]);
-                    } else if (self.conference().imageUrls()[i].search("thumbnail") >= 0) {
+                    if (self.conference().imageUrls()[i].search("thumbnail") >= 0
+                        && self.conference().imageUrls()[i].split(": ")[1] !== null) {
                         self.thumbnailURL(self.conference().imageUrls()[i].split(": ")[1]);
+                    } else if (self.conference().imageUrls()[i].search("logo") >= 0
+                        && self.conference().imageUrls()[i].split(": ")[1] !== null) {
+                        self.logoURL(self.conference().imageUrls()[i].split(": ")[1]);
                     }
                 }
             }
@@ -351,46 +355,52 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 return;
             }
 
-            var imageUrlsChange = [];
-            if (self.logoURL() !== null || self.logoURL() !== "") {
-                imageUrlsChange.push("logo: " + self.logoURL());
-            }
-            if (self.thumbnailURL() !== null || self.thumbnailURL() !== "") {
-                imageUrlsChange.push("thumbnail: " + self.thumbnailURL());
-            }
-            if (imageUrlsChange.length > 0) {
-                imageUrlsChange.forEach(function (value) {
-                    var iuType = value.split(":")[0];
-                    for (var i = 0; i < self.conference().imageUrls().length; i++) {
-                        if (self.conference().imageUrls()[i].search(iuType) >= 0) {
-                            self.conference().imageUrls().splice(i);
-                        }
-                    }
-                    self.conference().imageUrls().push(value);
-                });
+            if (!self.conference().infoTexts()) {
+                self.conference().infoTexts(["description: ", "notice: "]);
             }
 
-            var infoTextsChange = [];
-            if (self.description() !== null || self.description() !== "") {
-                infoTextsChange.push("description: " + self.description());
+            if (!self.conference().imageUrls()) {
+                self.conference().imageUrls(["thumbnail: ", "logo: "]);
             }
-            if (self.notice() !== null || self.notice() !== "") {
-                infoTextsChange.push("notice: " + self.notice());
-            }
-            if (infoTextsChange.length > 0) {
-                infoTextsChange.forEach(function (value) {
-                    var iuType = value.split(":")[0];
-                    for (var i = 0; i < self.conference().infoTexts().length; i++) {
-                        if (self.conference().infoTexts()[i].search(iuType) >= 0) {
-                            self.conference().infoTexts().splice(i);
-                        }
+
+            if (self.logoURL() !== null) {
+                for (var i = 0; i < self.conference().imageUrls().length; i++) {
+                    if (self.conference().imageUrls()[i].search("logo") >= 0) {
+                        self.conference().imageUrls().splice(i, 1);
                     }
-                    self.conference().infoTexts().push(value);
-                });
+                }
+                self.conference().imageUrls().push("logo: " + self.logoURL());
+            }
+
+            if (self.thumbnailURL() !== null) {
+                for (i = 0; i < self.conference().imageUrls().length; i++) {
+                    if (self.conference().imageUrls()[i].search("thumbnail") >= 0) {
+                        self.conference().imageUrls().splice(i, 1);
+                    }
+                }
+                self.conference().imageUrls().push("thumbnail: " + self.thumbnailURL());
+            }
+
+            if (self.description() !== null) {
+                for (i = 0; i < self.conference().infoTexts().length; i++) {
+                    if (self.conference().infoTexts()[i].search("description") >= 0) {
+                        self.conference().infoTexts().splice(i, 1);
+                    }
+                }
+                self.conference().infoTexts().push("description: " + self.description());
+            }
+
+            if (self.notice() !== null) {
+                for (i = 0; i < self.conference().infoTexts().length; i++) {
+                    if (self.conference().infoTexts()[i].search("notice") >= 0) {
+                        self.conference().infoTexts().splice(i, 1);
+                    }
+                }
+                self.conference().infoTexts().push("notice: " + self.notice());
             }
 
             if (self.conference().groups().length > 0) {
-                for (var i = 0; i < self.conference().groups().length; i++) {
+                for (i = 0; i < self.conference().groups().length; i++) {
                     var curr = self.conference().groups()[i];
 
                     var checkPref = curr.prefix() !== null && curr.prefix() !== undefined && curr.prefix() !== "";
