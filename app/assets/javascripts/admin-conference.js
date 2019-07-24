@@ -365,44 +365,24 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 self.conference().imageUrls(["thumbnail: ", "logo: "]);
             }
 
-            if (self.logoURL() !== null) {
-                for (var i = 0; i < self.conference().imageUrls().length; i++) {
-                    if (self.conference().imageUrls()[i].search("logo") >= 0) {
-                        self.conference().imageUrls().splice(i, 1);
+            function addReplaceStr(setVar, strType, value) {
+                if (value !== null) {
+                    for (var i = 0; i < setVar.length; i++) {
+                        if (setVar[i].search(strType) >= 0) {
+                            setVar.splice(i, 1);
+                        }
                     }
+                    setVar.push(strType + ": " + value);
                 }
-                self.conference().imageUrls().push("logo: " + self.logoURL());
             }
 
-            if (self.thumbnailURL() !== null) {
-                for (i = 0; i < self.conference().imageUrls().length; i++) {
-                    if (self.conference().imageUrls()[i].search("thumbnail") >= 0) {
-                        self.conference().imageUrls().splice(i, 1);
-                    }
-                }
-                self.conference().imageUrls().push("thumbnail: " + self.thumbnailURL());
-            }
-
-            if (self.description() !== null) {
-                for (i = 0; i < self.conference().infoTexts().length; i++) {
-                    if (self.conference().infoTexts()[i].search("description") >= 0) {
-                        self.conference().infoTexts().splice(i, 1);
-                    }
-                }
-                self.conference().infoTexts().push("description: " + self.description());
-            }
-
-            if (self.notice() !== null) {
-                for (i = 0; i < self.conference().infoTexts().length; i++) {
-                    if (self.conference().infoTexts()[i].search("notice") >= 0) {
-                        self.conference().infoTexts().splice(i, 1);
-                    }
-                }
-                self.conference().infoTexts().push("notice: " + self.notice());
-            }
+            addReplaceStr(self.conference().imageUrls(), "logo", self.logoURL());
+            addReplaceStr(self.conference().imageUrls(), "thumbnail", self.thumbnailURL());
+            addReplaceStr(self.conference().infoTexts(), "description", self.description());
+            addReplaceStr(self.conference().infoTexts(), "notice", self.notice());
 
             if (self.conference().groups().length > 0) {
-                for (i = 0; i < self.conference().groups().length; i++) {
+                for (var i = 0; i < self.conference().groups().length; i++) {
                     var curr = self.conference().groups()[i];
 
                     var checkPref = curr.prefix() !== null && curr.prefix() !== undefined && curr.prefix() !== "";
