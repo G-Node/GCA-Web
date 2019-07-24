@@ -282,10 +282,10 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                     var iUrl = self.conference().imageUrls()[i];
                     if (iUrl.search("thumbnail") == 0
                         && iUrl.split("thumbnail: ")[1] !== null) {
-                        self.thumbnailURL(iText.slice(iText.indexOf(": ")+2));
+                        self.thumbnailURL(iUrl.slice(iUrl.indexOf(": ")+2));
                     } else if (iUrl.search("logo") == 0
                         && iUrl.split("logo: ")[1] !== null) {
-                        self.logoURL(iText.slice(iText.indexOf(": ")+2));
+                        self.logoURL(iUrl.slice(iUrl.indexOf(": ")+2));
                     }
                 }
             }
