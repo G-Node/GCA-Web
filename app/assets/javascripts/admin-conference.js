@@ -266,24 +266,26 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             var i = 0;
             if (self.conference().infoTexts()) {
                 for (i = 0; i < self.conference().infoTexts().length; i++) {
-                    if (self.conference().infoTexts()[i].search("description") >= 0
-                        && self.conference().infoTexts()[i].split(": ")[1] !== null) {
-                        self.description(self.conference().infoTexts()[i].split(": ")[1]);
-                    } else if (self.conference().infoTexts()[i].search("notice") >= 0
-                        && self.conference().infoTexts()[i].split(": ")[1] !== null) {
-                        self.notice(self.conference().infoTexts()[i].split(": ")[1]);
+                    var iText = self.conference().infoTexts()[i];
+                    if (iText.search("description") >= 0
+                        && iText.split(": ")[1] !== null) {
+                        self.description(iText.split(": ")[1]);
+                    } else if (iText.search("notice") >= 0
+                        && iText.split(": ")[1] !== null) {
+                        self.notice(iText.split(": ")[1]);
                     }
                 }
             }
 
             if (self.conference().imageUrls()) {
                 for (i = 0; i < self.conference().imageUrls().length; i++) {
-                    if (self.conference().imageUrls()[i].search("thumbnail") >= 0
-                        && self.conference().imageUrls()[i].split(": ")[1] !== null) {
-                        self.thumbnailURL(self.conference().imageUrls()[i].split(": ")[1]);
-                    } else if (self.conference().imageUrls()[i].search("logo") >= 0
-                        && self.conference().imageUrls()[i].split(": ")[1] !== null) {
-                        self.logoURL(self.conference().imageUrls()[i].split(": ")[1]);
+                    var iUrl = self.conference().imageUrls()[i];
+                    if (iUrl.search("thumbnail") >= 0
+                        && iUrl.split(": ")[1] !== null) {
+                        self.thumbnailURL(iUrl.split(": ")[1]);
+                    } else if (iUrl.search("logo") >= 0
+                        && iUrl.split(": ")[1] !== null) {
+                        self.logoURL(iUrl.split(": ")[1]);
                     }
                 }
             }
