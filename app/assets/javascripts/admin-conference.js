@@ -267,12 +267,12 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             if (self.conference().infoTexts()) {
                 for (i = 0; i < self.conference().infoTexts().length; i++) {
                     var iText = self.conference().infoTexts()[i];
-                    if (iText.search("description") >= 0
-                        && iText.split(": ")[1] !== null) {
-                        self.description(iText.split(": ")[1]);
-                    } else if (iText.search("notice") >= 0
-                        && iText.split(": ")[1] !== null) {
-                        self.notice(iText.split(": ")[1]);
+                    if (iText.search("description") == 0
+                        && iText.split("description: ")[1] !== null) {
+                        self.description(iText.slice(iText.indexOf(": ")+2));
+                    } else if (iText.search("notice") == 0
+                        && iText.split("notice: ")[1] !== null) {
+                        self.notice(iText.slice(iText.indexOf(": ")+2));
                     }
                 }
             }
@@ -280,12 +280,12 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             if (self.conference().imageUrls()) {
                 for (i = 0; i < self.conference().imageUrls().length; i++) {
                     var iUrl = self.conference().imageUrls()[i];
-                    if (iUrl.search("thumbnail") >= 0
-                        && iUrl.split(": ")[1] !== null) {
-                        self.thumbnailURL(iUrl.split(": ")[1]);
-                    } else if (iUrl.search("logo") >= 0
-                        && iUrl.split(": ")[1] !== null) {
-                        self.logoURL(iUrl.split(": ")[1]);
+                    if (iUrl.search("thumbnail") == 0
+                        && iUrl.split("thumbnail: ")[1] !== null) {
+                        self.thumbnailURL(iText.slice(iText.indexOf(": ")+2));
+                    } else if (iUrl.search("logo") == 0
+                        && iUrl.split("logo: ")[1] !== null) {
+                        self.logoURL(iText.slice(iText.indexOf(": ")+2));
                     }
                 }
             }
@@ -368,7 +368,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             function addReplaceStr(setVar, strType, value) {
                 if (value !== null) {
                     for (var i = 0; i < setVar.length; i++) {
-                        if (setVar[i].search(strType) >= 0) {
+                        if (setVar[i].search(strType) == 0) {
                             setVar.splice(i, 1);
                         }
                     }

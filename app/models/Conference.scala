@@ -145,7 +145,7 @@ class Conference extends Model with Owned with Tagged {
     if (this.infoTexts != null) {
       for(info <- this.infoTexts) {
         if (info != null && info.indexOf("description") == 0 && info.split("description: ").length > 0) {
-          return Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(info.split("description: ").last))
+          return Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(info.substring(13)))
         }
       }
     }
@@ -157,8 +157,8 @@ class Conference extends Model with Owned with Tagged {
 
     if (this.infoTexts != null) {
       for(info <- this.infoTexts) {
-        if (info != null && info.indexOf("notice") == 0 && info.split("notice: ").length > 0) {
-          return Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(info.split("notice: ").last))
+        if (info != null && info.indexOf("notice: ") == 0 && info.split("notice: ").length > 0) {
+          return Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(info.substring(8)))
         }
       }
     }
