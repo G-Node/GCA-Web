@@ -141,11 +141,11 @@ class Conference extends Model with Owned with Tagged {
     }
   }
 
-  def getDescriptionAsHTML () : String = {
+  def getConfTextAsHTML (getCtType: String) : String = {
     val cTexts = this.confTexts.asScala
     if (cTexts != null) {
       for(cText <- cTexts) {
-        if (cText.ctType != null  && cText.ctType.length > 0 && cText.ctType == "description" &&
+        if (cText.ctType != null  && cText.ctType.length > 0 && cText.ctType == getCtType &&
           cText.text != null && cText.text.length > 0) {
           return Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(cText.text))
         }

@@ -242,9 +242,9 @@
     <div class="container main-content">
 
     @conference.map { conf =>
-        @if(conf.getNoticeAsHTML() != null && conf.getNoticeAsHTML() != "") {
+        @if(conf.getConfTextAsHTML("notice") != null && conf.getConfTextAsHTML("notice") != "") {
             <div class="jumbotron">
-            @Html(conf.getNoticeAsHTML())
+            @Html(conf.getConfTextAsHTML("notice"))
             </div>
         }
     }

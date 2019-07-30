@@ -37,9 +37,9 @@
                 </a>
             </div>
         }
-        @if(conference.getDescriptionAsHTML().length() > 0) {
+        @if(conference.getConfTextAsHTML("description").length() > 0) {
             <div class="jumbo-small">
-                @Html(conference.getDescriptionAsHTML())
+                @Html(conference.getConfTextAsHTML("description"))
             </div>
         }
         <p>@conference.formatDuration</p>
