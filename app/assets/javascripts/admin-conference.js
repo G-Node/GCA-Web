@@ -220,8 +220,8 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.makeConferenceObservable = function (conf) {
             conf.makeObservable(["name", "short", "group", "cite", "start", "end", "groups",
-                "deadline", "imageUrls", "infoTexts", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
-                "topics", "iOSApp", "banner", "mAbsLeng", "mFigs"]);
+                "deadline", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
+                "topics", "iOSApp", "confTexts", "banner", "mAbsLeng", "mFigs"]);
 
             for (var prop in conf) {
                 if (conf.hasOwnProperty(prop)) {
@@ -263,29 +263,17 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             self.oldShort = self.conference().short();
             self.oldmAbsLeng = self.conference().mAbsLeng();
 
-            var i = 0;
-            if (self.conference().infoTexts()) {
-                for (i = 0; i < self.conference().infoTexts().length; i++) {
-                    var iText = self.conference().infoTexts()[i];
-                    if (iText.search("description") == 0
-                        && iText.split("description: ")[1] !== null) {
-                        self.description(iText.slice(iText.indexOf(": ")+2));
-                    } else if (iText.search("notice") == 0
-                        && iText.split("notice: ")[1] !== null) {
-                        self.notice(iText.slice(iText.indexOf(": ")+2));
-                    }
-                }
-            }
-
-            if (self.conference().imageUrls()) {
-                for (i = 0; i < self.conference().imageUrls().length; i++) {
-                    var iUrl = self.conference().imageUrls()[i];
-                    if (iUrl.search("thumbnail") == 0
-                        && iUrl.split("thumbnail: ")[1] !== null) {
-                        self.thumbnailURL(iUrl.slice(iUrl.indexOf(": ")+2));
-                    } else if (iUrl.search("logo") == 0
-                        && iUrl.split("logo: ")[1] !== null) {
-                        self.logoURL(iUrl.slice(iUrl.indexOf(": ")+2));
+            if (self.conference().confTexts()) {
+                for (var i=0; i<self.conference().confTexts().length; i++) {
+                    var cText = self.conference().confTexts()[i];
+                    if (cText.text !== null && cText.ctType === "description") {
+                        self.description(cText.text);
+                    } else if (cText.text !== null && cText.ctType === "notice") {
+                        self.notice(cText.text);
+                    } else if (cText.text !== null && cText.ctType === "logo") {
+                        self.logoURL(cText.text);
+                    } else if (cText.text !== null && cText.ctType === "thumbnail") {
+                        self.thumbnailURL(cText.text);
                     }
                 }
             }
@@ -357,29 +345,24 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 return;
             }
 
-            if (!self.conference().infoTexts()) {
-                self.conference().infoTexts(["description: ", "notice: "]);
-            }
-
-            if (!self.conference().imageUrls()) {
-                self.conference().imageUrls(["thumbnail: ", "logo: "]);
-            }
-
-            function addReplaceStr(setVar, strType, value) {
-                if (value !== null) {
-                    for (var i = 0; i < setVar.length; i++) {
-                        if (setVar[i].search(strType) == 0) {
-                            setVar.splice(i, 1);
+            function addReplaceConfText(strType, text) {
+                if (strType !== undefined && strType !== null && text !== undefined && text !== null) {
+                    for (var i = 0; i < self.conference().confTexts().length; i++) {
+                        if (self.conference().confTexts()[i] !== undefined &&
+                            self.conference().confTexts()[i] !== null &&
+                            self.conference().confTexts()[i].ctType === strType) {
+                            self.conference().confTexts().splice(i, 1);
                         }
                     }
-                    setVar.push(strType + ": " + value);
+                    var cText = models.ConfText(null, strType, text);
+                    self.conference().confTexts.push(JSON.parse(cText.toJSON()));
                 }
             }
 
-            addReplaceStr(self.conference().imageUrls(), "logo", self.logoURL());
-            addReplaceStr(self.conference().imageUrls(), "thumbnail", self.thumbnailURL());
-            addReplaceStr(self.conference().infoTexts(), "description", self.description());
-            addReplaceStr(self.conference().infoTexts(), "notice", self.notice());
+            addReplaceConfText("logo", self.logoURL());
+            addReplaceConfText("thumbnail", self.thumbnailURL());
+            addReplaceConfText("description", self.description());
+            addReplaceConfText("notice", self.notice());
 
             if (self.conference().groups().length > 0) {
                 for (var i = 0; i < self.conference().groups().length; i++) {

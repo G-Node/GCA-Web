@@ -176,14 +176,10 @@
     <div class="container main-content">
 
     @conference.map { conf =>
-        @if(conf.infoTexts != null) {
-            @for(info <- conf.infoTexts) {
-                @if(info.indexOf("notice") == 0 && info.split("notice: ").length > 0) {
-                    <div class="jumbo-small">
-                    @Html(conf.getNoticeAsHTML())
-                    </div>
-                }
-            }
+        @if(conf.getNoticeAsHTML() != null && conf.getNoticeAsHTML() != "") {
+            <div class="jumbotron">
+            @Html(conf.getNoticeAsHTML())
+            </div>
         }
     }
 

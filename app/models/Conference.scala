@@ -21,6 +21,7 @@ import models.util.DateTimeConverter
 import org.commonmark.node.{Image, Node, Paragraph}
 import org.commonmark.renderer.html.{AttributeProvider, AttributeProviderContext, AttributeProviderFactory}
 import org.owasp.html.{HtmlPolicyBuilder, PolicyFactory, Sanitizers}
+import collection.JavaConverters._
 
 /*
  * Import the functionality needed for parsing Commonmark/Markdown data.
@@ -65,8 +66,8 @@ class Conference extends Model with Owned with Tagged {
   @Convert(converter = classOf[DateTimeConverter])
   var deadline: DateTime = null
 
-  var imageUrls: Set[String] = _
-  var infoTexts: Set[String] = _
+  @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL), orphanRemoval = true)
+  var confTexts: JSet[ConfText] = new JTreeSet[ConfText]()
 
   var iOSApp: String = _
   @Column(length = 10000)
@@ -141,11 +142,12 @@ class Conference extends Model with Owned with Tagged {
   }
 
   def getDescriptionAsHTML () : String = {
-
-    if (this.infoTexts != null) {
-      for(info <- this.infoTexts) {
-        if (info != null && info.indexOf("description") == 0 && info.split("description: ").length > 0) {
-          return Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(info.substring(13)))
+    val cTexts = this.confTexts.asScala
+    if (cTexts != null) {
+      for(cText <- cTexts) {
+        if (cText.ctType != null  && cText.ctType.length > 0 && cText.ctType == "description" &&
+          cText.text != null && cText.text.length > 0) {
+          return Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(cText.text))
         }
       }
     }
@@ -154,11 +156,26 @@ class Conference extends Model with Owned with Tagged {
   }
 
   def getNoticeAsHTML () : String = {
+    val cTexts = this.confTexts.asScala
+    if (cTexts != null) {
+      for(cText <- cTexts) {
+        if (cText.ctType != null  && cText.ctType.length > 0 && cText.ctType == "notice" &&
+          cText.text != null && cText.text.length > 0) {
+          return Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(cText.text))
+        }
+      }
+    }
 
-    if (this.infoTexts != null) {
-      for(info <- this.infoTexts) {
-        if (info != null && info.indexOf("notice: ") == 0 && info.split("notice: ").length > 0) {
-          return Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(info.substring(8)))
+    return ""
+  }
+
+  def getConfText (getCtType: String) : String = {
+    val cTexts = this.confTexts.asScala
+    if (cTexts != null) {
+      for(cText <- cTexts) {
+        if (cText.ctType != null  && cText.ctType.length > 0 && cText.ctType == getCtType &&
+          cText.text != null && cText.text.length > 0) {
+          return cText.text
         }
       }
     }
@@ -205,9 +222,8 @@ object Conference extends Model {
             startDate: Option[DateTime],
             endDate: Option[DateTime],
             deadline: Option[DateTime] = null,
-            imageUrls: Option[Set[String]] = null,
-            infoTexts: Option[Set[String]] = null,
             iOSApp: Option[String] = null,
+            confTexts: Seq[ConfText] = Nil,
             banner: Seq[Banner] = Nil,
             groups: Seq[AbstractGroup] = Nil,
             owners: Seq[Account] = Nil,
@@ -235,11 +251,9 @@ object Conference extends Model {
     conference.endDate     = unwrapRef(endDate)
     conference.deadline    = unwrapRef(deadline)
 
-    conference.imageUrls        = unwrapRef(imageUrls)
-    conference.infoTexts        = unwrapRef(infoTexts)
-
     conference.iOSApp      = unwrapRef(iOSApp)
 
+    conference.confTexts   = toJSet(confTexts)
     conference.banner      = toJSet(banner)
     conference.groups      = toJSet(groups)
     conference.owners      = toJSet(owners)

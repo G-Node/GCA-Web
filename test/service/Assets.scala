@@ -192,6 +192,15 @@ class Assets() {
     Banner(None, ?("thumbnail"))
   )
 
+  var bcDesc = "The Bernstein Conference is the Bernstein Network's central forum that has developed over time into the biggest European Computational Neuroscience conference"
+
+  var confTexts : Array[ConfText] = Array (
+    ConfText(None, ?("notice"), ?("We will see you in 5 weeks.")),
+    ConfText(None, ?("description"), ?(bcDesc)),
+    ConfText(None, ?("logo"), ?("https://portal.g-node.org/abstracts/bc18/BC18_header.jpg")),
+    ConfText(None, ?("thumbnail"), ?("https://portal.g-node.org/abstracts/bc14/BC14_icon.png"))
+  )
+
   var alice : Account = createAccount("Alice", "Goodchild", "alice@foo.com")
 
   var alice_new : Account = createAccount("Alice", "Goodchild", "alice_new@foo.com")
@@ -227,16 +236,18 @@ class Assets() {
     Topic("topic three", None)
   ).addPosition()
 
-  var bcDesc = "The Bernstein Conference is the Bernstein Network's central forum that has developed over time into the biggest European Computational Neuroscience conference"
-
   var conferences : Array[Conference] = Array(
     Conference(None, ?("Bernstein Conference 2014"), ?("BC14"), ?("BCCN"),
       ?("The C1 Conf, Somewhere, Sometime"), ?("http://www.nncn.de/en/bernstein-conference/2014"),
       ?(true), ?(true), ?(true), ?(true),
       ?(new DateTime(393415200000L)), ?(new DateTime(574423200000L)), ?(new DateTime(1321005600000L)),
-      ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg")),
-      ?(Set("description: " + bcDesc, "note: Remember to Register Until 21.7!")),
       ?("557712638"),
+      Seq(
+        ConfText(None, ?("notice"), ?("We will see you in 5 weeks.")),
+        ConfText(None, ?("description"), ?(bcDesc)),
+        ConfText(None, ?("logo"), ?("https://portal.g-node.org/abstracts/bc18/BC18_header.jpg")),
+        ConfText(None, ?("thumbnail"), ?("https://portal.g-node.org/abstracts/bc14/BC14_icon.png"))
+      ),
       Nil,
       Seq(AbstractGroup(None, ?(1), ?("Talk"), ?("T")),
         AbstractGroup(None, ?(2), ?("Poster"), ?("P"))),Nil,Nil,Nil,
@@ -244,15 +255,14 @@ class Assets() {
       ?("""{"schedule": "some schedule json"}"""), ?("# Some markdown text"),Some(5000)),
     Conference(None, ?("The second conference"), ?("C2"), ?("BCCN"),
       ?("The C2 Conf, Somewhere, Sometime"), ?(""), ?(false), ?(true), ?(false), ?(true),
-      ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
-      ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg", "thumbnail: https://portal.g-node.org/abstracts/bc14/BC14_icon.png")),
-      ?(Set("note: We will see you in 5 weeks.", "description: "))
+      ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L))
     ),
     Conference(None, ?("The third conference"), ?("C3"), ?(""),
       ?("The C3 Conf, Somewhere, Sometime"), ?(""), ?(false), ?(true), ?(false), ?(false),
       ?(new DateTime(126283320000L)), ?(new DateTime(149870520000L)), ?(new DateTime(1321005600000L)),
-      ?(Set("logo: https://portal.g-node.org/abstracts/bc18/BC18_header.jpg", "thumbnail: https://portal.g-node.org/abstracts/bc14/BC14_icon.png")),
-      ?(Set("note: We will see you in 5 weeks."))
+      confTexts = Seq(
+        ConfText(None, ?("notice"), ?("We will see you in 5 weeks."))
+      )
     )
     )
 
@@ -270,6 +280,10 @@ class Assets() {
       conferences = conferences.map { conf =>
         conf.owners.add(alice)
         conf.owners.add(dave)
+
+        conf.confTexts.foreach{
+          confText => confText.conference = conf
+        }
 
         conf.groups.foreach{
           group => group.conference = conf
@@ -392,6 +406,7 @@ class Assets() {
       em.createQuery("DELETE FROM Figure").executeUpdate()
       em.createQuery("DELETE FROM Abstract").executeUpdate()
       em.createQuery("DELETE FROM Topic").executeUpdate()
+      em.createQuery("DELETE FROM ConfText").executeUpdate()
       em.createQuery("DELETE FROM AbstractGroup").executeUpdate()
       em.createQuery("DELETE FROM Banner").executeUpdate()
       em.createQuery("DELETE FROM Conference").executeUpdate()

@@ -22,17 +22,13 @@
             <h1>@conference.name</h1>
         </div>
         @if(conference.link != null){
-            @if(conference.imageUrls != null) {
-                @for(url <- conference.imageUrls){
-                    @if(url.contains("logo") && url.split("logo: ").length > 0){
-                        <div data-bind="ifnot: $root.logos()[0]">
-                            <a href="@conference.link">
-                                <img class="conference-logo img-responsive img-rounded"
-                                src='@url.split("logo: ").tail' alt="To Conference">
-                            </a>
-                        </div>
-                    }
-                }
+            @if(conference.getConfText("logo") != null && conference.getConfText("logo") != "") {
+                <div data-bind="ifnot: $root.logos()[0]">
+                    <a href="@conference.link">
+                        <img class="conference-logo img-responsive img-rounded"
+                        src='@conference.getConfText("logo")' alt="To Conference">
+                    </a>
+                </div>
             }
             <div data-bind="if: $root.logos()[0]">
                 <a href="@conference.link">

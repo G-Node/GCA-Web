@@ -237,11 +237,11 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @public
      */
     function Conference(uuid, name, short, group, cite, link, isOpen, isPublished, isActive, hasPresentationPrefs,
-                        groups, start, end, deadline, imageUrls, infoTexts, iOSApp, banner, geo, schedule, info, owners, abstracts, topics,
+                        groups, start, end, deadline, iOSApp, confTexts, banner, geo, schedule, info, owners, abstracts, topics,
                         mAbsLeng, mFigs) {
         if (!(this instanceof Conference)) {
             return new Conference(uuid, name, short, group, cite, link, isOpen, isPublished, isActive,
-                                  hasPresentationPrefs, groups, start, end, deadline, imageUrls, infoTexts, iOSApp,
+                                  hasPresentationPrefs, groups, start, end, deadline, iOSApp, confTexts,
                                   banner, geo, schedule, info, owners, abstracts, topics, mAbsLeng, mFigs);
         }
 
@@ -260,9 +260,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.start = start || null;
         self.end = end || null;
         self.deadline = deadline || null;
-        self.imageUrls = imageUrls || null;
-        self.infoTexts = infoTexts || null;
         self.iOSApp = iOSApp || null;
+        self.confTexts = confTexts || [];
         self.banner = banner || null;
         self.geo = geo || null;
         self.schedule = schedule || null;
@@ -728,6 +727,66 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
     ObservableBanner.fromArray = function(array) {
         return Model.fromArray(array, ObservableBanner.fromObject);
+    };
+
+    /**
+     * Model for confText
+     *
+     * @param {string} [uuid]
+     * @param {string} [ctType]
+     * @param {string} [text]
+     *
+     * @returns {ConfText}
+     * @constructor
+     * @public
+     */
+    function ConfText(uuid, ctType, text) {
+        if (!(this instanceof  ConfText)) {
+            return new ConfText(uuid, ctType, text);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.ctType = ctType || null;
+        self.text = text || null;
+    }
+
+    ConfText.fromObject = function(obj) {
+        return Model.fromObject(obj, ConfText);
+    };
+
+    ConfText.fromArray = function(array) {
+        return Model.fromArray(array, ConfText.fromObject);
+    };
+
+    /**
+     * Obervable model for confText
+     *
+     * @param {string} [uuid]
+     * @param {string} [ctType]
+     * @param {string} [text]
+     *
+     * @returns {ObservableConfText}
+     * @constructor
+     * @public
+     */
+    function ObservableConfText(uuid, ctType, text) {
+        if (!(this instanceof  ObservableConfText)) {
+            return new ObservableConfText(uuid, ctType, text);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.ctType = ko.observable(ctType || null);
+        self.text = ko.observable(text || null);
+    }
+
+    ObservableConfText.fromObject = function(obj) {
+        return Model.fromObject(obj, ObservableConfText);
+    };
+
+    ObservableConfText.fromArray = function(array) {
+        return Model.fromArray(array, ObservableConfText.fromObject);
     };
 
     /**
@@ -1832,6 +1891,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         ObservableAffiliation: ObservableAffiliation,
         Figure: Figure,
         ObservableFigure: ObservableFigure,
+        ConfText: ConfText,
+        ObservableConfText: ObservableConfText,
         Reference: Reference,
         ObservableReference: ObservableReference,
         Abstract: Abstract,

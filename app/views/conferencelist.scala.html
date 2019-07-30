@@ -24,13 +24,9 @@
             <div class="jumbotron">
 
                 <p data-bind="ifnot: $root.logos()[@i]">
-                @if(conference.imageUrls != null) {
-                    @for(url <- conference.imageUrls){
-                        @if(url.contains("logo") && url.split("logo: ").length > 0){
-                            <img class="conference-logo img-responsive img-rounded"
-                            src='@url.split("logo: ").tail'>
-                        }
-                    }
+                @if(conference.getConfText("logo") != null && conference.getConfText("logo") != "") {
+                    <img class="conference-logo img-responsive img-rounded"
+                            src='@conference.getConfText("logo")'>
                 }
                 </p>
                 <p data-bind="if: $root.logos()[@i]">
@@ -70,13 +66,9 @@
                     <div class="pull-left media-left">
                         <a href="@routes.Application.conference(conference.short)"
                         data-bind="ifnot: $root.thumbnails()[@i]">
-                        @if(conference.imageUrls != null) {
-                            @for(url <- conference.imageUrls){
-                                @if(url.contains("thumbnail") && url.split("thumbnail: ").length > 0){
-                                    <img class="media-object conference-thumbnail"
-                                    src='@url.split("thumbnail: ").tail'>
-                                }
-                            }
+                        @if(conference.getConfText("thumbnail") != null && conference.getConfText("thumbnail") != "") {
+                            <img class="conference-logo img-responsive img-rounded"
+                            src='@conference.getConfText("thumbnail")'>
                         }
                         </a>
                         <a href="@routes.Application.conference(conference.short)"
