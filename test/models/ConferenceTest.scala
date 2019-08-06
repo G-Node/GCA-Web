@@ -129,7 +129,7 @@ class ConferenceTest extends JUnitSuite {
   }
 
   @Test
-  def testGetDescriptionAsHTML() : Unit = {
+  def testGetConfTextAsHTML() : Unit = {
     /*
      * Mostly a placeholder for potential future changes, which need to be tested differently.
      */
