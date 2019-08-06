@@ -15,11 +15,15 @@ import models._
 import play.Play
 import play.api.libs.Files.TemporaryFile
 import plugins.DBUtil._
+import com.sksamuel.scrimage._
+import org.apache.commons.io.FileUtils
+import com.drew.imaging.ImageProcessingException
+import Math.sqrt
 
 /**
   * Service class for banners.
   */
-class BannerService(banPath: String) {
+class BannerService(banPath: String, banMobilePath: String) {
 
   /**
     * Get a banner by id.
@@ -89,6 +93,26 @@ class BannerService(banPath: String) {
 
       data.moveTo(file, replace = false)
 
+      val mobile_file = new File(banMobilePath, ban.uuid)
+      val mobile_parent = mobile_file.getParentFile
+
+      if (!mobile_parent.exists()) {
+        mobile_parent.mkdirs()
+      }
+
+      if (file.exists() && file != null && file.length > 0) {
+        FileUtils.copyFile(file, mobile_file)
+
+        try {
+          while (mobile_file.length().toFloat > 200000.0) {
+            val scaleFactor = sqrt(100000.0/mobile_file.length().toFloat)
+            Image.fromFile(mobile_file).scale(scaleFactor).output(mobile_file)
+          }
+        } catch {
+          case ipe: ImageProcessingException => println(ipe + " Could not resize mobile image.")
+        }
+      }
+
       ban
     }
 
@@ -127,6 +151,10 @@ class BannerService(banPath: String) {
       val file = new File(banPath, banChecked.uuid)
       if (file.exists())
         file.delete()
+
+      val mobile_file = new File(banMobilePath, banChecked.uuid)
+      if (mobile_file.exists())
+        mobile_file.delete()
 
       banChecked.conference.banner.remove(banChecked)
       banChecked.conference.touch()
@@ -196,11 +224,12 @@ object BannerService {
     * @return A new banner service.
     */
   def apply[A]() : BannerService = {
-    new BannerService(Play.application().configuration().getString("file.ban_path", "./banner"))
+    new BannerService(Play.application().configuration().getString("file.ban_path", "./banner"),
+      Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile"))
   }
 
-  def apply(banPath: String) = {
-    new BannerService(banPath)
+  def apply(banPath: String, banMobilePath: String) = {
+    new BannerService(banPath, banMobilePath)
   }
 
 }
