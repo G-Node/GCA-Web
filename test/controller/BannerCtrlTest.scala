@@ -2,6 +2,7 @@ package controller
 
 import java.io.File
 
+import org.apache.commons.io.FileUtils
 import org.junit._
 import play.api.Play
 import play.api.http.Writeable
@@ -65,7 +66,9 @@ class BannerCtrlTest extends BaseCtrlTest {
     val banner = formatter.writes(assets.banner(0)).as[JsObject] - "uuid" - "bType"
 
     val file = new File("tmp")
-    file.createNewFile()
+    val pDir = new java.io.File(".").getCanonicalPath
+    val data = new File(pDir + "/test/utils/BC_header.jpg")
+    FileUtils.copyFile(data, file)
     new java.io.FileOutputStream(file).write("foobar".getBytes)
 
     val requestBody = MultipartFormData(

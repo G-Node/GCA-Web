@@ -12,6 +12,7 @@ import java.io.File
 
 import javax.persistence._
 import models.Banner
+import org.apache.commons.io.FileUtils
 import org.junit._
 import org.scalatest.junit.JUnitSuite
 import play.api.Play
@@ -42,8 +43,11 @@ class BannerServiceTest extends JUnitSuite {
 
   @Test
   def testCreate(): Unit = {
+    val pDir = new java.io.File(".").getCanonicalPath
+    val data = new File(pDir + "/test/utils/BC_header.jpg")
+
     val fileLogo = new File("tmp")
-    fileLogo.createNewFile()
+    FileUtils.copyFile(data, fileLogo)
     val tmpLogo = new TemporaryFile(fileLogo)
     val logoOrig = Banner(None, Some("logo"))
     val logo = srv.create(logoOrig, tmpLogo, assets.conferences(0), assets.alice)
@@ -51,7 +55,7 @@ class BannerServiceTest extends JUnitSuite {
     assert(logo.bType == "logo")
 
     val fileThn = new File("tmp")
-    fileThn.createNewFile()
+    FileUtils.copyFile(data, fileThn)
     val tmpThn = new TemporaryFile(fileThn)
     val thnOrig = Banner(None, Some("thumbnail"))
     val thn = srv.create(thnOrig, tmpThn, assets.conferences(0), assets.alice)
