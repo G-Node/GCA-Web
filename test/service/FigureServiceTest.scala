@@ -31,7 +31,7 @@ class FigureServiceTest extends JUnitSuite {
     assets = new Assets()
     assets.killDB()
     assets.fillDB()
-    srv = FigureService("./figures")
+    srv = FigureService("./figures","./figures_mobile")
     abstrsrv = AbstractService(assets.figPath)
   }
 

@@ -7,11 +7,15 @@ import play.Play
 import play.api.libs.Files.TemporaryFile
 import models._
 import plugins.DBUtil._
+import com.sksamuel.scrimage._
+import org.apache.commons.io.FileUtils
+import com.drew.imaging.ImageProcessingException
+import Math.sqrt
 
 /**
  * Service class for figures.
  */
-class FigureService(figPath: String) {
+class FigureService(figPath: String, figMobilePath: String) {
 
   /**
    * Get a figure by id.
@@ -76,6 +80,26 @@ class FigureService(figPath: String) {
       }
 
       data.moveTo(file, replace = false)
+
+      val mobile_file = new File(figMobilePath, fig.uuid)
+      val mobile_parent = mobile_file.getParentFile
+
+      if (!mobile_parent.exists()) {
+        mobile_parent.mkdirs()
+      }
+
+      if (file.exists() && file != null && file.length > 0) {
+        FileUtils.copyFile(file, mobile_file)
+
+        try {
+          while (mobile_file.length().toFloat > 200000.0) {
+            val scaleFactor = sqrt(100000.0/mobile_file.length().toFloat)
+            Image.fromFile(mobile_file).scale(scaleFactor).output(mobile_file)
+          }
+        } catch {
+          case ipe: ImageProcessingException => println(ipe + " Could not resize mobile image.")
+        }
+      }
 
       fig
     }
@@ -149,6 +173,10 @@ class FigureService(figPath: String) {
       if (file.exists())
         file.delete()
 
+      val mobile_file = new File(figMobilePath, figChecked.uuid)
+      if (mobile_file.exists())
+        mobile_file.delete()
+
       figChecked.abstr.figures.remove(figChecked)
       figChecked.abstr.touch()
       figChecked.abstr = null
@@ -186,15 +214,18 @@ object FigureService {
   /**
    * Create a figure service using a figure path stored in the configuration under "file.fig_path".
    * As default the relative path "./figures" will be used.
+   * A mobile figure will be stored as well.
+   * As default the relative path "./figures_mobile" will be used.
    *
    * @return A new figure service.
    */
   def apply[A]() : FigureService = {
-    new FigureService(Play.application().configuration().getString("file.fig_path", "./figures"))
+    new FigureService(Play.application().configuration().getString("file.fig_path", "./figures"),
+      Play.application().configuration().getString("file.fig_mobile_path", "./figures_mobile"))
   }
 
-  def apply(figPath: String) = {
-    new FigureService(figPath)
+  def apply(figPath: String, figMobilePath: String) = {
+    new FigureService(figPath, figMobilePath)
   }
 
 }
