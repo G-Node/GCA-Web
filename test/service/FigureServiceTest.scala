@@ -10,14 +10,15 @@
 package service
 
 import java.io.File
-import javax.persistence._
 
+import javax.persistence._
 import org.junit._
 import org.scalatest.junit.JUnitSuite
 import play.api.Play
 import play.api.libs.Files.TemporaryFile
 import play.api.test.FakeApplication
 import models.Figure
+import org.apache.commons.io.FileUtils
 
 
 class FigureServiceTest extends JUnitSuite {
@@ -46,7 +47,9 @@ class FigureServiceTest extends JUnitSuite {
   @Test
   def testCreate(): Unit = {
     val file = new File("tmp")
-    file.createNewFile()
+    val pDir = new java.io.File(".").getCanonicalPath
+    val data = new File(pDir + "/test/utils/BC_header.jpg")
+    FileUtils.copyFile(data, file)
     val tmp = new TemporaryFile(file)
     val figOrig = Figure(None, Some("caption"))
     val fig = srv.create(figOrig, tmp, assets.abstracts(3), assets.alice)

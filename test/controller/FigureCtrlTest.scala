@@ -2,6 +2,8 @@ package controller
 
 import java.io.File
 
+import org.apache.commons.io.FileUtils
+import scala.io.Source
 import org.junit._
 import play.api.Play
 import play.api.http.Writeable
@@ -68,7 +70,9 @@ class FigureCtrlTest extends BaseCtrlTest {
     val figure = formatter.writes(assets.figures(0)).as[JsObject] - "uuid" - "URL"
 
     val file = new File("tmp")
-    file.createNewFile()
+    val pDir = new java.io.File(".").getCanonicalPath
+    val data = new File(pDir + "/test/utils/BC_header.jpg")
+    FileUtils.copyFile(data, file)
     new java.io.FileOutputStream(file).write("foobar".getBytes)
 
     val requestBody = MultipartFormData(
