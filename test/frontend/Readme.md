@@ -66,10 +66,14 @@ Now we can run the tests via the `pytest` or alternatively the `python -m pytest
 all tests in the directory will be executed.
 Specific tests can always be run by adding the file name to this command.
 Using the `pytest-xdist` module, parallel testing is possible, decreasing the overall run time of the tests.
-Try to keep the number of open browser windows around 4-6, otherwise the usage of memory space will increase times again.
+Try to keep the number of open browser windows around 4-6, 
+otherwise the usage of memory space will increase times again.
 
 ##Possible Problem Solutions
 
+- Make absolutely sure that you browser and corresponding browser driver versions are compatible. This is likely the 
+cause behind errors of type:
+``selenium.common.exceptions.SessionNotCreatedException: Message: Unable to create new service: ChromeDriverService``
 - If you obtain a connection error in the browser, be sure that no proxy server is set in your browser. 
 This might also cause the browser to load slowly.
 
