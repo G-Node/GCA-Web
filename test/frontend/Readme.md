@@ -29,6 +29,15 @@ under "Third Party Drivers, Bindings, and Plugins".
 
 Place them on your local machine and make sure they are available via the `PATH` environmental variable.
 
+Open a python shell and run the following code:
+
+    from selenium import webdriver
+    cdriver = webdriver.Chrome()
+    fdriver = webdriver.Firefox()
+
+If any problems arise at this point, check whether the driver that was downloaded supports the
+actually installed corresponding browser.
+
 From the same source download the Selenium standalone server, something 
 along the lines of `selenium-server-standalone-[version].jar`, 
 and have it available.
