@@ -8,8 +8,8 @@
 
 package models
 
-import javax.persistence.{Entity, ManyToOne}
-import models.Model.{unwrapRef}
+import javax.persistence.{Column, Entity, ManyToOne}
+import models.Model.unwrapRef
 
 /**
  * Model for conference texts
@@ -18,6 +18,7 @@ import models.Model.{unwrapRef}
 class ConfText extends Model {
 
   var ctType: String = _
+  @Column(length = 512)
   var text: String = _
 
   @ManyToOne
