@@ -52,6 +52,9 @@ class Conference extends Model with Owned with Tagged {
   var cite: String = _
   var link: String = _
 
+  @Deprecated
+  var description: String = _
+
   var isOpen: Boolean = _
   var isPublished: Boolean = _
   var isActive: Boolean = _
