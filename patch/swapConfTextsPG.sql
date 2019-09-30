@@ -12,8 +12,6 @@ CREATE TABLE IF NOT EXISTS conftext(
     conference_uuid varchar(255) NOT NULL
 );
 
-DELETE FROM conftext WHERE uuid='9ca04af4-01f3-430c-9a09-9836d6ee7d92';
-DELETE FROM conftext WHERE uuid='8ba04af4-01f3-430c-9a09-9836d6ee7d93';
 INSERT INTO conftext (cttype, "text", conference_uuid)
 SELECT 'description', description, uuid FROM conference
 WHERE description IS NOT NULL AND NOT EXISTS (
