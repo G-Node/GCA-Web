@@ -26,15 +26,3 @@ WHERE thumbnail IS NOT NULL AND NOT EXISTS (
     WHERE conftext.conference_uuid = conference.uuid
     AND conftext.cttype = 'thumbnail'
 ) ON CONFLICT DO NOTHING;
-
-SELECT * FROM Conference;
-SELECT * FROM conftext;
-
-/*
-ALTER TABLE conference
-DROP COLUMN IF EXISTS description;
-ALTER TABLE conference
-DROP COLUMN IF EXISTS logoUrl;
-ALTER TABLE conference
-DROP COLUMN IF EXISTS thumbnailUrl;
-*/
