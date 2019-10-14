@@ -13,9 +13,9 @@
                 <h3>
                     <a href="@routes.Mobile.Conference(conference.short)">@conference.name</a>
                 </h3>
-                @if(conference.description != null) {
+                @if(conference.getConfText("description") != null && conference.getConfText("description") != "") {
                     <div class="jumbo-small">
-                        @conference.description
+                        @conference.getConfText("description")
                     </div>
                 }
 

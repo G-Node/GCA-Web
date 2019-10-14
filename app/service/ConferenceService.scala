@@ -67,6 +67,7 @@ class ConferenceService(banPath: String) extends PermissionsBase {
            INNER JOIN FETCH c.owners o
            LEFT JOIN FETCH c.abstracts
            LEFT JOIN FETCH c.topics
+           LEFT JOIN FETCH c.confTexts
            LEFT JOIN FETCH c.banner
            WHERE o.uuid = :uuid
            ORDER BY c.startDate DESC"""
@@ -145,6 +146,7 @@ class ConferenceService(banPath: String) extends PermissionsBase {
            LEFT JOIN FETCH c.groups
            LEFT JOIN FETCH c.owners
            LEFT JOIN FETCH c.topics
+           LEFT JOIN FETCH c.confTexts
            LEFT JOIN FETCH c.banner
            WHERE c.uuid = :uuid or c.short = :short"""
 
@@ -177,6 +179,7 @@ class ConferenceService(banPath: String) extends PermissionsBase {
            LEFT JOIN FETCH c.groups
            LEFT JOIN FETCH c.owners o
            LEFT JOIN FETCH c.topics
+           LEFT JOIN FETCH c.confTexts
            LEFT JOIN FETCH c.banner
            WHERE c.uuid = :uuid and o.uuid = :acc"""
 
@@ -238,6 +241,11 @@ class ConferenceService(banPath: String) extends PermissionsBase {
 
       conference.owners.add(account)
 
+      conference.confTexts.foreach { cText =>
+        Logger.debug("Adding conference text:" + cText.toString)
+        cText.conference = conference
+      }
+
       conference.groups.foreach { group =>
         Logger.debug("Adding group:" + group.toString)
         group.conference = conference
@@ -292,6 +300,10 @@ class ConferenceService(banPath: String) extends PermissionsBase {
       conference.ctime = confChecked.ctime
       conference.banner = confChecked.banner
 
+      conference.confTexts.foreach { cText =>
+        cText.conference = conference
+      }
+
       conference.groups.foreach { group =>
         group.conference = conference
       }
@@ -307,6 +319,12 @@ class ConferenceService(banPath: String) extends PermissionsBase {
       }
 
       val merged = em.merge(conference)
+
+      confChecked.confTexts.foreach { cText =>
+        if (!merged.confTexts.contains(cText)) {
+          em.remove(cText)
+        }
+      }
 
       confChecked.groups.foreach { group =>
         if (!merged.groups.contains(group)) {
@@ -351,6 +369,7 @@ class ConferenceService(banPath: String) extends PermissionsBase {
       if (! (confChecked.owners.contains(accountChecked) || accountChecked.isAdmin))
         throw new IllegalAccessException("No permissions for conference with uuid = " + id)
 
+      confChecked.confTexts.foreach(em.remove(_))
       confChecked.groups.foreach(em.remove(_))
       confChecked.topics.foreach(em.remove(_))
 

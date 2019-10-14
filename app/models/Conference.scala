@@ -21,6 +21,7 @@ import models.util.DateTimeConverter
 import org.commonmark.node.{Image, Node, Paragraph}
 import org.commonmark.renderer.html.{AttributeProvider, AttributeProviderContext, AttributeProviderFactory}
 import org.owasp.html.{HtmlPolicyBuilder, PolicyFactory, Sanitizers}
+import collection.JavaConverters._
 
 /*
  * Import the functionality needed for parsing Commonmark/Markdown data.
@@ -51,7 +52,7 @@ class Conference extends Model with Owned with Tagged {
   var cite: String = _
   var link: String = _
 
-  @Column(length=512)
+  @Deprecated
   var description: String = _
 
   var isOpen: Boolean = _
@@ -68,8 +69,8 @@ class Conference extends Model with Owned with Tagged {
   @Convert(converter = classOf[DateTimeConverter])
   var deadline: DateTime = null
 
-  var logo: String = _
-  var thumbnail: String = _
+  @OneToMany(mappedBy = "conference", cascade = Array(CascadeType.ALL), orphanRemoval = true)
+  var confTexts: JSet[ConfText] = new JTreeSet[ConfText]()
 
   var iOSApp: String = _
   @Column(length = 10000)
@@ -143,17 +144,22 @@ class Conference extends Model with Owned with Tagged {
     }
   }
 
-  def getDescriptionAsHTML () : String = {
-    if (this.description != null && this.description.length() > 0) {
-      Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(this.description))
-    } else {
-      /*
-       * Return an empty string to avoid an unnecessary and potentially, security-wise, unsafe
-       * exception to be thrown if null is passed.
-       * Additionally do not bother the parser, if there is nothing to parse.
-       */
-      ""
+  def getConfTextAsHTML (getCtType: String) : String = {
+    return Conference.HTML_SANITIZER.sanitize(Conference.convertMarkdownToHTML(getConfText(getCtType)))
+  }
+
+  def getConfText (getCtType: String) : String = {
+    val cTexts = this.confTexts.asScala
+    if (cTexts != null) {
+      for(cText <- cTexts) {
+        if (cText.ctType != null  && cText.ctType.length > 0 && cText.ctType == getCtType &&
+          cText.text != null && cText.text.length > 0) {
+          return cText.text
+        }
+      }
     }
+
+    return ""
   }
 
   override def canWrite(account: Account): Boolean = {
@@ -188,7 +194,6 @@ object Conference extends Model {
             group: Option[String],
             cite: Option[String],
             link: Option[String],
-            description: Option[String],
             isOpen: Option[Boolean],
             isPublished: Option[Boolean],
             isActive: Option[Boolean],
@@ -196,9 +201,8 @@ object Conference extends Model {
             startDate: Option[DateTime],
             endDate: Option[DateTime],
             deadline: Option[DateTime] = null,
-            logo: Option[String] = null,
-            thumbnail: Option[String] = null,
             iOSApp: Option[String] = null,
+            confTexts: Seq[ConfText] = Nil,
             banner: Seq[Banner] = Nil,
             groups: Seq[AbstractGroup] = Nil,
             owners: Seq[Account] = Nil,
@@ -218,7 +222,6 @@ object Conference extends Model {
     conference.group       = unwrapRef(group)
     conference.cite        = unwrapRef(cite)
     conference.link        = unwrapRef(link)
-    conference.description = unwrapRef(description)
     conference.isOpen      = isOpen.getOrElse(false)
     conference.isPublished = isPublished.getOrElse(false)
     conference.isActive    = isActive.getOrElse(false)
@@ -227,11 +230,9 @@ object Conference extends Model {
     conference.endDate     = unwrapRef(endDate)
     conference.deadline    = unwrapRef(deadline)
 
-    conference.logo        = unwrapRef(logo)
-    conference.thumbnail   = unwrapRef(thumbnail)
-
     conference.iOSApp      = unwrapRef(iOSApp)
 
+    conference.confTexts   = toJSet(confTexts)
     conference.banner      = toJSet(banner)
     conference.groups      = toJSet(groups)
     conference.owners      = toJSet(owners)

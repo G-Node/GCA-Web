@@ -21,14 +21,15 @@
         <div class="page-header">
             <h1>@conference.name</h1>
         </div>
-        @if(conference.logo != null && conference.link != null) {
-            <div data-bind="ifnot: $root.logos()[0]">
-                <a href="@conference.link">
-                    <img class="conference-logo img-responsive img-rounded" src="@conference.logo" alt="Conference Logo">
-                </a>
-            </div>
-        }
-        @if(conference.link != null) {
+        @if(conference.link != null){
+            @if(conference.getConfText("logo") != null && conference.getConfText("logo") != "") {
+                <div data-bind="ifnot: $root.logos()[0]">
+                    <a href="@conference.link">
+                        <img class="conference-logo img-responsive img-rounded"
+                        src='@conference.getConfText("logo")' alt="To Conference">
+                    </a>
+                </div>
+            }
             <div data-bind="if: $root.logos()[0]">
                 <a href="@conference.link">
                     <img class="conference-logo img-responsive img-rounded" src=""
@@ -36,9 +37,9 @@
                 </a>
             </div>
         }
-        @if(conference.getDescriptionAsHTML().length() > 0) {
+        @if(conference.getConfTextAsHTML("description").length() > 0) {
             <div class="jumbo-small">
-                @Html(conference.getDescriptionAsHTML())
+                @Html(conference.getConfTextAsHTML("description"))
             </div>
         }
         <p>@conference.formatDuration</p>
