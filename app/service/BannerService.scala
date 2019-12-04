@@ -16,7 +16,6 @@ import play.Play
 import play.api.libs.Files.TemporaryFile
 import plugins.DBUtil._
 import com.sksamuel.scrimage._
-import org.apache.commons.io.FileUtils
 import com.drew.imaging.ImageProcessingException
 import Math.sqrt
 
@@ -91,22 +90,25 @@ class BannerService(banPath: String, banMobilePath: String) {
         parent.mkdirs()
       }
 
-      data.moveTo(file, replace = false)
-
-      val mobile_file = new File(banMobilePath, ban.uuid)
-      val mobile_parent = mobile_file.getParentFile
-
-      if (!mobile_parent.exists()) {
-        mobile_parent.mkdirs()
-      }
+      data.moveTo(file, replace = true)
 
       if (file.exists() && file != null && file.length > 0) {
-        FileUtils.copyFile(file, mobile_file)
+
+        val mobile_image_jpeg = Image.fromFile(file)
+
+        val mobile_file = new File(banMobilePath, ban.uuid)
+        val mobile_parent = mobile_file.getParentFile
+
+        if (!mobile_parent.exists()) {
+          mobile_parent.mkdirs()
+        }
+
+        mobile_image_jpeg.output(mobile_file)(nio.JpegWriter())
 
         try {
           while (mobile_file.length().toFloat > 200000.0) {
             val scaleFactor = sqrt(100000.0/mobile_file.length().toFloat)
-            Image.fromFile(mobile_file).scale(scaleFactor).output(mobile_file)
+            mobile_image_jpeg.scale(scaleFactor).output(mobile_file)(nio.JpegWriter())
           }
         } catch {
           case ipe: ImageProcessingException => println(ipe + " Could not resize mobile image.")
