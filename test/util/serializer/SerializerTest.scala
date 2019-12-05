@@ -14,8 +14,8 @@ import utils.DefaultRoutesResolver._
 class SerializerTest extends JUnitSuite {
 
   val sampleConference: Conference = Conference(Option("someuuid"), Option("bar"), Some("XX"), Some("G"), Some("X"),
-                                                None, None, Some(false), Some(true), Some(false), Some(true),
-                                                None, None, None)
+                                                None, Some(false), Some(true), Some(false), Some(true),
+                                                None, None, None, None)
   val sampleAccount: Account = Account(Option("someuuid"), Option("example@gnode.org"))
   val sampleAuthor: Author = Author(Option("someuuid"), Option("email"), Option("first"),
     Option("middle"), Option("last"))
@@ -25,6 +25,7 @@ class SerializerTest extends JUnitSuite {
     Option("http://www.someink.com"), Option("doi"))
   val sampleFigure: Figure = Figure(Option("someuuid"), Option("caption"))
   val sampleBanner: Banner = Banner(Option("someuuid"), Option("logo"))
+  val sampleConfTexts: ConfText = ConfText(Option("someuuid"), Option("notice"), Option("We will see you soon!"))
   val sampleAbstract = Abstract(Option("someuuid"), Option("title"), Option("topic"),
       Option("text"), Option("doi"), Option("conflictOfInterest"), Option("acknowledgements"), Option(true), Option("reason"),
         Some(0), Some(AbstractState.InPreparation), Option(sampleConference), Seq(sampleFigure), Nil, Nil, Seq(sampleAuthor),
@@ -35,7 +36,7 @@ class SerializerTest extends JUnitSuite {
     val jsFormat = new ConferenceFormat()
 
     val original = Conference(Option("someuuid"), Option("bar"), Some("XX"), Some("G"), Some("X"),
-                             None, None, Some(false), Some(false), None, None, None, None)
+                             None, Some(false), Some(false), None, None, None, None, None)
     val json = jsFormat.writes(original)
 
     jsFormat.reads(json).fold(
@@ -139,6 +140,19 @@ class SerializerTest extends JUnitSuite {
         assert(converted.uuid == originalThn.uuid)
         assert(converted.bType == originalThn.bType)}
       },
+      invalid = { errors => throw new MatchError(errors.toString()) }
+    )
+  }
+
+  @Test
+  def testConfText(): Unit = {
+    val jsFormat = new ConfTextFormat()
+
+    val original = ConfText(Option("someuuid"), Option("notice"), Option("We will see you soon!"))
+    val json = jsFormat.writes(original)
+
+    jsFormat.reads(json).fold(
+      valid = { converted => {assert(converted.uuid == original.uuid)}},
       invalid = { errors => throw new MatchError(errors.toString()) }
     )
   }

@@ -33,6 +33,11 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
         self.autosave = ko.observable({text: "Loading", css: "label-primary"});
 
+        self.description = ko.observable("");
+        self.notice = ko.observable("");
+
+        self.logoURL = ko.observable("");
+        self.thumbnailURL = ko.observable("");
         self.logo = ko.observable(null);
         self.thumbnail = ko.observable(null);
         // only required when a new banner is added
@@ -214,9 +219,9 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.makeConferenceObservable = function (conf) {
-            conf.makeObservable(["name", "short", "group", "cite", "description", "start", "end", "groups",
-                "deadline", "logo", "thumbnail", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
-                "topics", "iOSApp", "banner", "mAbsLeng", "mFigs"]);
+            conf.makeObservable(["name", "short", "group", "cite", "start", "end", "groups",
+                "deadline", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
+                "topics", "iOSApp", "confTexts", "banner", "mAbsLeng", "mFigs"]);
 
             for (var prop in conf) {
                 if (conf.hasOwnProperty(prop)) {
@@ -258,8 +263,23 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             self.oldShort = self.conference().short();
             self.oldmAbsLeng = self.conference().mAbsLeng();
 
+            if (self.conference().confTexts()) {
+                for (var i=0; i<self.conference().confTexts().length; i++) {
+                    var cText = self.conference().confTexts()[i];
+                    if (cText.text !== null && cText.ctType === "description") {
+                        self.description(cText.text);
+                    } else if (cText.text !== null && cText.ctType === "notice") {
+                        self.notice(cText.text);
+                    } else if (cText.text !== null && cText.ctType === "logo") {
+                        self.logoURL(cText.text);
+                    } else if (cText.text !== null && cText.ctType === "thumbnail") {
+                        self.thumbnailURL(cText.text);
+                    }
+                }
+            }
+
             if (self.conference().banner()) {
-                for (var i = 0; i < self.conference().banner().length; i++) {
+                for (i = 0; i < self.conference().banner().length; i++) {
                     if (self.conference().banner()[i].bType === "logo") {
                         self.logo(self.conference().banner()[i]);
                     } else if (self.conference().banner()[i].bType === "thumbnail") {
@@ -324,6 +344,25 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 self.setError("danger", "Conference short cannot be empty");
                 return;
             }
+
+            function addReplaceConfText(strType, text) {
+                if (strType !== undefined && strType !== null && text !== undefined && text !== null) {
+                    for (var i = 0; i < self.conference().confTexts().length; i++) {
+                        if (self.conference().confTexts()[i] !== undefined &&
+                            self.conference().confTexts()[i] !== null &&
+                            self.conference().confTexts()[i].ctType === strType) {
+                            self.conference().confTexts().splice(i, 1);
+                        }
+                    }
+                    var cText = models.ConfText(null, strType, text);
+                    self.conference().confTexts.push(JSON.parse(cText.toJSON()));
+                }
+            }
+
+            addReplaceConfText("logo", self.logoURL());
+            addReplaceConfText("thumbnail", self.thumbnailURL());
+            addReplaceConfText("description", self.description());
+            addReplaceConfText("notice", self.notice());
 
             if (self.conference().groups().length > 0) {
                 for (var i = 0; i < self.conference().groups().length; i++) {
