@@ -92,33 +92,75 @@ class BannerService(banPath: String, banMobilePath: String) {
 
       data.moveTo(file, replace = true)
 
-      if (file.exists() && file != null && file.length > 0) {
-
-        val mobile_image_jpeg = Image.fromFile(file)
-
-        val mobile_file = new File(banMobilePath, ban.uuid)
-        val mobile_parent = mobile_file.getParentFile
-
-        if (!mobile_parent.exists()) {
-          mobile_parent.mkdirs()
-        }
-
-        mobile_image_jpeg.output(mobile_file)(nio.JpegWriter())
-
-        try {
-          while (mobile_file.length().toFloat > 200000.0) {
-            val scaleFactor = sqrt(100000.0/mobile_file.length().toFloat)
-            mobile_image_jpeg.scale(scaleFactor).output(mobile_file)(nio.JpegWriter())
-          }
-        } catch {
-          case ipe: ImageProcessingException => println(ipe + " Could not resize mobile image.")
-        }
+      try {
+        val image_jpeg = Image.fromFile(file)
+        image_jpeg.output(file)(nio.JpegWriter())
+      } catch {
+        case ipe: ImageProcessingException => println(ipe + ". Could not convert image.")
       }
 
       ban
     }
 
     get(banCreated.uuid)
+  }
+
+  /**
+    * Upload mobile file for a banner.
+    * This action is restricted to all accounts owning the conference the
+    * banner belongs to.
+    *
+    * @param ban     The banner object.
+    * @param conference   The conference the banner belongs to.
+    * @param account The account uploading the banner.
+    *
+    * @return The created banner.
+    *
+    * @throws EntityNotFoundException If the account does not exist
+    * @throws EntityNotFoundException If the conference has no uuid
+    * @throws IllegalAccessException If the user is not a conference owner or admin.
+    */
+  def uploadMobile(ban: Banner, conference: Conference, account: Account) : Unit = {
+    transaction { (em, tx) =>
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val conferenceChecked = em.find(classOf[Conference], conference.uuid)
+      if (conferenceChecked == null)
+        throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
+
+      if (!(conferenceChecked.isOwner(account) || account.isAdmin))
+        throw new IllegalAccessException("No permissions for conference with uuid = " + conferenceChecked.uuid)
+
+      val file = new File(banPath, ban.uuid)
+
+      val mobile_file = new File(banMobilePath, ban.uuid)
+      val mobile_parent = mobile_file.getParentFile
+
+      if (!mobile_parent.exists()) {
+        mobile_parent.mkdirs()
+      }
+
+      try {
+        val image_jpeg = Image.fromFile(file)
+        image_jpeg.output(mobile_file)(nio.JpegWriter())
+      } catch {
+        case ipe: ImageProcessingException => println(ipe + ". Could not convert image.")
+      }
+
+      val mobile_image_jpeg = Image.fromFile(mobile_file)
+
+      try {
+        while (mobile_file.length().toFloat > 200000.0) {
+          val scaleFactor = sqrt(100000.0/mobile_file.length().toFloat)
+          mobile_image_jpeg.scale(scaleFactor).output(mobile_file)(nio.JpegWriter())
+        }
+      } catch {
+        case ipe: ImageProcessingException => println(ipe + " Could not resize mobile image.")
+      }
+    }
   }
 
   /**
