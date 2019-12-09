@@ -88,33 +88,65 @@ class FigureService(figPath: String, figMobilePath: String) {
         case ipe: ImageProcessingException => println(ipe + ". Could not convert image.")
       }
 
-      if (file.exists() && file != null && file.length > 0) {
-
-        val mobile_image_jpeg = Image.fromFile(file)
-
-        val mobile_file = new File(figMobilePath, fig.uuid)
-        val mobile_parent = mobile_file.getParentFile
-
-        if (!mobile_parent.exists()) {
-          mobile_parent.mkdirs()
-        }
-
-        mobile_image_jpeg.output(mobile_file)(nio.JpegWriter())
-
-        try {
-          while (mobile_file.length().toFloat > 200000.0) {
-            val scaleFactor = sqrt(100000.0/mobile_file.length().toFloat)
-            mobile_image_jpeg.scale(scaleFactor).output(mobile_file)(nio.JpegWriter())
-          }
-        } catch {
-          case ipe: ImageProcessingException => println(ipe + " Could not resize mobile image.")
-        }
-      }
-
       fig
     }
 
     get(figCreated.uuid)
+  }
+
+  /**
+    * Upload a new mobile image for already created figure.
+    * This action is restricted to all accounts owning the abstract the
+    * figure belongs to.
+    *
+    * @param fig     The figure object.
+    * @param abstr   The abstract the figure belongs to.
+    * @param account The account uploading the figure.
+    *
+    * @return The created figure.
+    *
+    * @throws EntityNotFoundException If the account does not exist
+    * @throws IllegalArgumentException If the abstract has no uuid
+    */
+  def uploadMobile(fig: Figure,  abstr: Abstract, account: Account) : Unit = {
+    transaction { (em, tx) =>
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val abstractChecked = em.find(classOf[Abstract], abstr.uuid)
+      if (abstractChecked == null)
+        throw new EntityNotFoundException("Unable to find abstract with uuid = " + abstr.uuid)
+
+
+      val file = new File(figPath, fig.uuid)
+
+      val mobile_file = new File(figMobilePath, fig.uuid)
+      val mobile_parent = mobile_file.getParentFile
+
+      if (!mobile_parent.exists()) {
+        mobile_parent.mkdirs()
+      }
+
+      try {
+        val image_jpeg = Image.fromFile(file)
+        image_jpeg.output(mobile_file)(nio.JpegWriter())
+      } catch {
+        case ipe: ImageProcessingException => println(ipe + ". Could not convert image.")
+      }
+
+      val mobile_image_jpeg = Image.fromFile(mobile_file)
+
+      try {
+        while (mobile_file.length().toFloat > 200000.0) {
+          val scaleFactor = sqrt(100000.0/mobile_file.length().toFloat)
+          mobile_image_jpeg.scale(scaleFactor).output(mobile_file)(nio.JpegWriter())
+        }
+      } catch {
+        case ipe: ImageProcessingException => println(ipe + " Could not resize mobile image.")
+      }
+    }
   }
 
   /**

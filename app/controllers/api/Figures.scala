@@ -50,6 +50,8 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
 
     val figure = figureService.create(jsfig, tempfile, abstr, request.identity.account)
 
+    figureService.uploadMobile(jsfig, abstr, request.identity.account)
+
     Created(figFormat.writes(figure))
   }
 
