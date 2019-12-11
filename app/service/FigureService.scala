@@ -103,8 +103,6 @@ class FigureService(figPath: String, figMobilePath: String) {
     * @param abstr   The abstract the figure belongs to.
     * @param account The account uploading the figure.
     *
-    * @return The created figure.
-    *
     * @throws EntityNotFoundException If the account does not exist
     * @throws IllegalArgumentException If the abstract has no uuid
     */
