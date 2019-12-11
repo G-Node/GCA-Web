@@ -15,6 +15,8 @@ ENV PATH /usr/local/activator-${ACTIVATOR_VERSION}-minimal:$PATH
 RUN mkdir -p /srv/gca
 RUN mkdir -p /srv/gca/figures
 RUN mkdir -p /srv/gca/figures_mobile
+RUN mkdir -p /srv/gca/banner
+RUN mkdir -p /srv/gca/banner_mobile
 
 ADD app /srv/gca/app
 ADD conf /srv/gca/conf
@@ -36,6 +38,8 @@ RUN activator test stage
 VOLUME ["/srv/gca/db"]
 VOLUME ["/srv/gca/figures"]
 VOLUME ["/srv/gca/figures_mobile"]
+VOLUME ["/srv/gca/banner"]
+VOLUME ["/srv/gca/banner_mobile"]
 
 # Add an external directory for production config files.
 RUN mkdir -p /srv/ext_conf
