@@ -81,13 +81,6 @@ class FigureService(figPath: String, figMobilePath: String) {
 
       data.moveTo(file, replace = true)
 
-      try {
-        val image_jpeg = Image.fromFile(file)
-        image_jpeg.output(file)(nio.JpegWriter())
-      } catch {
-        case ipe: ImageProcessingException => println(ipe + ". Could not convert image.")
-      }
-
       fig
     }
 
