@@ -114,8 +114,6 @@ class BannerService(banPath: String, banMobilePath: String) {
     * @param conference   The conference the banner belongs to.
     * @param account The account uploading the banner.
     *
-    * @return The created banner.
-    *
     * @throws EntityNotFoundException If the account does not exist
     * @throws EntityNotFoundException If the conference has no uuid
     * @throws IllegalAccessException If the user is not a conference owner or admin.
