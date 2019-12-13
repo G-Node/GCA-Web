@@ -18,6 +18,7 @@ import plugins.DBUtil._
 import com.sksamuel.scrimage._
 import com.drew.imaging.ImageProcessingException
 import Math.sqrt
+import scala.util.control.Breaks.{break, breakable}
 
 /**
   * Service class for banners.
@@ -134,23 +135,22 @@ class BannerService(banPath: String, banMobilePath: String) {
         mobile_parent.mkdirs()
       }
 
-      try {
-        val image_jpeg = Image.fromFile(file)
-        image_jpeg.output(mobile_file)(nio.JpegWriter())
-      } catch {
-        case ipe: ImageProcessingException => println(ipe + ". Could not convert image.")
-      }
+      var mobile_image = Image.fromFile(file)
+      var current_size = mobile_image.bytes.length.toFloat
+      var scaleFactor = 1.0
 
-      val mobile_image_jpeg = Image.fromFile(mobile_file)
-
-      try {
-        while (mobile_file.length().toFloat > 200000.0) {
-          val scaleFactor = sqrt(100000.0/mobile_file.length().toFloat)
-          mobile_image_jpeg.scale(scaleFactor).output(mobile_file)(nio.JpegWriter())
+      breakable {
+        for (i <- 1 to 10) {
+          if (current_size > 2500000.0) {
+            scaleFactor = sqrt(1250000.0 / current_size)
+            mobile_image = mobile_image.scale(scaleFactor)
+            current_size = mobile_image.bytes.length.toFloat
+          } else {
+            break
+          }
         }
-      } catch {
-        case ipe: ImageProcessingException => println(ipe + " Could not resize mobile image.")
       }
+      mobile_image.output(mobile_file)(nio.JpegWriter().withCompression(25))
     }
   }
 
