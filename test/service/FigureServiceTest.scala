@@ -61,16 +61,19 @@ class FigureServiceTest extends JUnitSuite {
 
   @Test
   def testUploadMobile(): Unit = {
-    val pDir = new java.io.File(".").getCanonicalPath
-    val data = new File(pDir + "/test/utils/BC_header_jpg.jpg")
+    val formats = List("jpg", "png")
+    for (format <- formats) {
+      val pDir = new java.io.File(".").getCanonicalPath
+      val data = new File(pDir + "/test/utils/BC_header_" + format + "." + format)
 
-    val fileFig = new File("tmp")
-    FileUtils.copyFile(data, fileFig)
-    val tmpFig = new TemporaryFile(fileFig)
-    val figOrig = Figure(None, Some("logo"))
-    srv.create(figOrig, tmpFig, assets.abstracts(3), assets.alice)
+      val fileFig = new File("tmp")
+      FileUtils.copyFile(data, fileFig)
+      val tmpFig = new TemporaryFile(fileFig)
+      val figOrig = Figure(None, Some("logo"))
+      srv.create(figOrig, tmpFig, assets.abstracts(3), assets.alice)
 
-    srv.uploadMobile(figOrig, assets.abstracts(3), assets.alice)
+      srv.uploadMobile(figOrig, assets.abstracts(3), assets.alice)
+    }
   }
 
   @Test
