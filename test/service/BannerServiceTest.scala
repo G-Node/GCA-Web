@@ -63,6 +63,19 @@ class BannerServiceTest extends JUnitSuite {
     assert(thn.bType == "thumbnail")
   }
 
+  @Test
+  def testUploadMobile(): Unit = {
+    val pDir = new java.io.File(".").getCanonicalPath
+    val data = new File(pDir + "/test/utils/BC_header.jpg")
+
+    val fileLogo = new File("tmp")
+    FileUtils.copyFile(data, fileLogo)
+    val tmpLogo = new TemporaryFile(fileLogo)
+    val logoOrig = Banner(None, Some("logo"))
+    srv.create(logoOrig, tmpLogo, assets.conferences(0), assets.alice)
+
+    srv.uploadMobile(logoOrig, assets.conferences(0), assets.alice)
+  }
 
   @Test
   def testDelete(): Unit = {
