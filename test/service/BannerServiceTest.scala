@@ -44,7 +44,7 @@ class BannerServiceTest extends JUnitSuite {
   @Test
   def testCreate(): Unit = {
     val pDir = new java.io.File(".").getCanonicalPath
-    val data = new File(pDir + "/test/utils/BC_header.jpg")
+    val data = new File(pDir + "/test/utils/BC_header_jpg.jpg")
 
     val fileLogo = new File("tmp")
     FileUtils.copyFile(data, fileLogo)
@@ -66,7 +66,7 @@ class BannerServiceTest extends JUnitSuite {
   @Test
   def testUploadMobile(): Unit = {
     val pDir = new java.io.File(".").getCanonicalPath
-    val data = new File(pDir + "/test/utils/BC_header.jpg")
+    val data = new File(pDir + "/test/utils/BC_header_jpg.jpg")
 
     val fileLogo = new File("tmp")
     FileUtils.copyFile(data, fileLogo)

@@ -76,7 +76,7 @@ class FigureCtrlTest extends BaseCtrlTest {
 
     val file = new File("tmp")
     val pDir = new java.io.File(".").getCanonicalPath
-    val data = new File(pDir + "/test/utils/BC_header.jpg")
+    val data = new File(pDir + "/test/utils/BC_header_jpg.jpg")
     FileUtils.copyFile(data, file)
 
     val requestBody = MultipartFormData(

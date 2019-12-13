@@ -48,7 +48,7 @@ class FigureServiceTest extends JUnitSuite {
   def testCreate(): Unit = {
     val file = new File("tmp")
     val pDir = new java.io.File(".").getCanonicalPath
-    val data = new File(pDir + "/test/utils/BC_header.jpg")
+    val data = new File(pDir + "/test/utils/BC_header_jpg.jpg")
     FileUtils.copyFile(data, file)
     val tmp = new TemporaryFile(file)
     val figOrig = Figure(None, Some("caption"))
@@ -62,7 +62,7 @@ class FigureServiceTest extends JUnitSuite {
   @Test
   def testUploadMobile(): Unit = {
     val pDir = new java.io.File(".").getCanonicalPath
-    val data = new File(pDir + "/test/utils/BC_header.jpg")
+    val data = new File(pDir + "/test/utils/BC_header_jpg.jpg")
 
     val fileFig = new File("tmp")
     FileUtils.copyFile(data, fileFig)
