@@ -68,31 +68,33 @@ class BannerCtrlTest extends BaseCtrlTest {
 
   @Test
   def testUpload(): Unit = {
-    val banner = formatter.writes(assets.banner(0)).as[JsObject] - "uuid" - "bType"
+    val formats = List("jpg", "png")
+    for (format <- formats) {
+      val banner = formatter.writes(assets.banner(0)).as[JsObject] - "uuid" - "bType"
+      val file = new File("tmp")
+      val pDir = new java.io.File(".").getCanonicalPath
+      val data = new File(pDir + "/test/utils/BC_header_" + format + "." + format)
+      FileUtils.copyFile(data, file)
 
-    val file = new File("tmp")
-    val pDir = new java.io.File(".").getCanonicalPath
-    val data = new File(pDir + "/test/utils/BC_header_jpg.jpg")
-    FileUtils.copyFile(data, file)
+      val requestBody = MultipartFormData(
+        Map("banner" -> Seq(banner.toString())),
+        Seq(MultipartFormData.FilePart(
+          "file", "foo.bar",
+          Some("image/jpeg"),
+          TemporaryFile(file))
+        ),
+        Seq(),
+        Seq()
+      )
 
-    val requestBody = MultipartFormData(
-      Map("banner" -> Seq(banner.toString())),
-      Seq(MultipartFormData.FilePart(
-        "file", "foo.bar",
-        Some("image/jpeg"),
-        TemporaryFile(file))
-      ),
-      Seq(),
-      Seq()
-    )
+      val uuid = assets.conferences(0).uuid
+      val request = FakeRequest(
+        POST, s"/api/conferences/$uuid/banner"
+      ).withMultipartFormDataBody(requestBody).withCookies(cookie)
 
-    val uuid = assets.conferences(0).uuid
-    val request = FakeRequest(
-      POST, s"/api/conferences/$uuid/banner"
-    ).withMultipartFormDataBody(requestBody).withCookies(cookie)
-
-    val result = route(BannerCtrlTest.app, request).get
-    assert(status(result) == CREATED)
+      val result = route(BannerCtrlTest.app, request).get
+      assert(status(result) == CREATED)
+    }
   }
 
   @Test
