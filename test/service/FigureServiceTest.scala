@@ -58,6 +58,21 @@ class FigureServiceTest extends JUnitSuite {
     assert(fig.caption == "caption")
   }
 
+
+  @Test
+  def testUploadMobile(): Unit = {
+    val pDir = new java.io.File(".").getCanonicalPath
+    val data = new File(pDir + "/test/utils/BC_header.jpg")
+
+    val fileFig = new File("tmp")
+    FileUtils.copyFile(data, fileFig)
+    val tmpFig = new TemporaryFile(fileFig)
+    val figOrig = Figure(None, Some("logo"))
+    srv.create(figOrig, tmpFig, assets.abstracts(3), assets.alice)
+
+    srv.uploadMobile(figOrig, assets.abstracts(3), assets.alice)
+  }
+
   @Test
   def testUpdate(): Unit = {
     val fig = assets.figures(0)
