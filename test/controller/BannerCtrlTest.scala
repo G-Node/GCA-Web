@@ -2,6 +2,8 @@ package controller
 
 import java.io.File
 
+import com.sksamuel.scrimage._
+import org.apache.commons.codec.binary.Base64
 import org.apache.commons.io.FileUtils
 import org.junit._
 import play.api.Play
@@ -46,7 +48,10 @@ class BannerCtrlTest extends BaseCtrlTest {
         val header = ("Content-Disposition: form-data; name=\"" + file.key +
           "\"; filename=\"" + file.filename + "\"\r\n" + "Content-Type: " +
           file.contentType.getOrElse("image/jpeg") + "\r\n\r\n").getBytes(charset)
-        val data = fromFile(file.ref.file).map(_.toByte).toArray
+
+        val f2 = new File(file.ref+"new")
+        FileUtils.copyFile(file.ref.file, f2)
+        val data = Image.fromFile(f2).bytes
         val footer = "\r\n".getBytes(charset)
 
         header ++ data ++ footer
@@ -69,7 +74,6 @@ class BannerCtrlTest extends BaseCtrlTest {
     val pDir = new java.io.File(".").getCanonicalPath
     val data = new File(pDir + "/test/utils/BC_header.jpg")
     FileUtils.copyFile(data, file)
-    new java.io.FileOutputStream(file).write("foobar".getBytes)
 
     val requestBody = MultipartFormData(
       Map("banner" -> Seq(banner.toString())),
