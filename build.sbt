@@ -16,6 +16,7 @@ libraryDependencies ++= Seq(
   "org.eclipse.persistence" % "org.eclipse.persistence.jpa" % "2.5.2",
   "com.typesafe.play" %% "play-mailer" % "2.4.0",
   "com.mohiva" %% "play-silhouette" % "1.0",
+  "com.sksamuel.scrimage" %% "scrimage-core" % "2.0.1",
   "org.postgresql" % "postgresql" % "9.3-1100-jdbc4",
   "com.atlassian.commonmark" % "commonmark" % "0.11.0",
   // web jars

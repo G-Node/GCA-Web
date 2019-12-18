@@ -1,17 +1,23 @@
 package service
 
 import java.io.{File, FileNotFoundException}
-import javax.persistence._
 
+import javax.persistence._
 import play.Play
 import play.api.libs.Files.TemporaryFile
 import models._
 import plugins.DBUtil._
+import com.sksamuel.scrimage._
+import org.apache.commons.io.FileUtils
+import com.drew.imaging.ImageProcessingException
+import Math.sqrt
+
+import scala.util.control.Breaks.{break, breakable}
 
 /**
  * Service class for figures.
  */
-class FigureService(figPath: String) {
+class FigureService(figPath: String, figMobilePath: String) {
 
   /**
    * Get a figure by id.
@@ -75,12 +81,64 @@ class FigureService(figPath: String) {
         parent.mkdirs()
       }
 
-      data.moveTo(file, replace = false)
+      data.moveTo(file, replace = true)
 
       fig
     }
 
     get(figCreated.uuid)
+  }
+
+  /**
+    * Upload a new mobile image for already created figure.
+    * This action is restricted to all accounts owning the abstract the
+    * figure belongs to.
+    *
+    * @param fig     The figure object.
+    * @param abstr   The abstract the figure belongs to.
+    * @param account The account uploading the figure.
+    *
+    * @throws EntityNotFoundException If the account does not exist
+    * @throws IllegalArgumentException If the abstract has no uuid
+    */
+  def uploadMobile(fig: Figure,  abstr: Abstract, account: Account) : Unit = {
+    transaction { (em, tx) =>
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val abstractChecked = em.find(classOf[Abstract], abstr.uuid)
+      if (abstractChecked == null)
+        throw new EntityNotFoundException("Unable to find abstract with uuid = " + abstr.uuid)
+
+
+      val file = new File(figPath, fig.uuid)
+
+      val mobile_file = new File(figMobilePath, fig.uuid)
+      val mobile_parent = mobile_file.getParentFile
+
+      if (!mobile_parent.exists()) {
+        mobile_parent.mkdirs()
+      }
+
+      var mobile_image = Image.fromFile(file)
+      var current_size = mobile_image.bytes.length.toFloat
+      var scaleFactor = 1.0
+
+      breakable {
+        for (i <- 1 to 10) {
+          if (current_size > 2500000.0) {
+            scaleFactor = sqrt(1250000.0 / current_size)
+            mobile_image = mobile_image.scale(scaleFactor)
+            current_size = mobile_image.bytes.length.toFloat
+          } else {
+            break
+          }
+        }
+      }
+      mobile_image.output(mobile_file)(nio.JpegWriter().withCompression(25))
+    }
   }
 
   /**
@@ -149,6 +207,10 @@ class FigureService(figPath: String) {
       if (file.exists())
         file.delete()
 
+      val mobile_file = new File(figMobilePath, figChecked.uuid)
+      if (mobile_file.exists())
+        mobile_file.delete()
+
       figChecked.abstr.figures.remove(figChecked)
       figChecked.abstr.touch()
       figChecked.abstr = null
@@ -186,15 +248,18 @@ object FigureService {
   /**
    * Create a figure service using a figure path stored in the configuration under "file.fig_path".
    * As default the relative path "./figures" will be used.
+   * A mobile figure will be stored as well.
+   * As default the relative path "./figures_mobile" will be used.
    *
    * @return A new figure service.
    */
   def apply[A]() : FigureService = {
-    new FigureService(Play.application().configuration().getString("file.fig_path", "./figures"))
+    new FigureService(Play.application().configuration().getString("file.fig_path", "./figures"),
+      Play.application().configuration().getString("file.fig_mobile_path", "./figures_mobile"))
   }
 
-  def apply(figPath: String) = {
-    new FigureService(figPath)
+  def apply(figPath: String, figMobilePath: String) = {
+    new FigureService(figPath, figMobilePath)
   }
 
 }

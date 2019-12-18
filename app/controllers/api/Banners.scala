@@ -45,6 +45,8 @@ class Banners(implicit val env: Environment[Login, CachedCookieAuthenticator])
 
     val banner = bannerService.create(jsban, tempfile, conference, request.identity.account)
 
+    bannerService.uploadMobile(jsban, conference, request.identity.account)
+
     Created(banFormat.writes(banner))
   }
 

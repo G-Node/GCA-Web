@@ -15,11 +15,15 @@ import models._
 import play.Play
 import play.api.libs.Files.TemporaryFile
 import plugins.DBUtil._
+import com.sksamuel.scrimage._
+import com.drew.imaging.ImageProcessingException
+import Math.sqrt
+import scala.util.control.Breaks.{break, breakable}
 
 /**
   * Service class for banners.
   */
-class BannerService(banPath: String) {
+class BannerService(banPath: String, banMobilePath: String) {
 
   /**
     * Get a banner by id.
@@ -87,12 +91,67 @@ class BannerService(banPath: String) {
         parent.mkdirs()
       }
 
-      data.moveTo(file, replace = false)
+      data.moveTo(file, replace = true)
 
       ban
     }
 
     get(banCreated.uuid)
+  }
+
+  /**
+    * Upload mobile file for a banner.
+    * This action is restricted to all accounts owning the conference the
+    * banner belongs to.
+    *
+    * @param ban     The banner object.
+    * @param conference   The conference the banner belongs to.
+    * @param account The account uploading the banner.
+    *
+    * @throws EntityNotFoundException If the account does not exist
+    * @throws EntityNotFoundException If the conference has no uuid
+    * @throws IllegalAccessException If the user is not a conference owner or admin.
+    */
+  def uploadMobile(ban: Banner, conference: Conference, account: Account) : Unit = {
+    transaction { (em, tx) =>
+
+      val accountChecked = em.find(classOf[Account], account.uuid)
+      if (accountChecked == null)
+        throw new EntityNotFoundException("Unable to find account with uuid = " + account.uuid)
+
+      val conferenceChecked = em.find(classOf[Conference], conference.uuid)
+      if (conferenceChecked == null)
+        throw new EntityNotFoundException("Unable to find conference with uuid = " + conference.uuid)
+
+      if (!(conferenceChecked.isOwner(account) || account.isAdmin))
+        throw new IllegalAccessException("No permissions for conference with uuid = " + conferenceChecked.uuid)
+
+      val file = new File(banPath, ban.uuid)
+
+      val mobile_file = new File(banMobilePath, ban.uuid)
+      val mobile_parent = mobile_file.getParentFile
+
+      if (!mobile_parent.exists()) {
+        mobile_parent.mkdirs()
+      }
+
+      var mobile_image = Image.fromFile(file)
+      var current_size = mobile_image.bytes.length.toFloat
+      var scaleFactor = 1.0
+
+      breakable {
+        for (i <- 1 to 10) {
+          if (current_size > 2500000.0) {
+            scaleFactor = sqrt(1250000.0 / current_size)
+            mobile_image = mobile_image.scale(scaleFactor)
+            current_size = mobile_image.bytes.length.toFloat
+          } else {
+            break
+          }
+        }
+      }
+      mobile_image.output(mobile_file)(nio.JpegWriter().withCompression(25))
+    }
   }
 
   /**
@@ -127,6 +186,10 @@ class BannerService(banPath: String) {
       val file = new File(banPath, banChecked.uuid)
       if (file.exists())
         file.delete()
+
+      val mobile_file = new File(banMobilePath, banChecked.uuid)
+      if (mobile_file.exists())
+        mobile_file.delete()
 
       banChecked.conference.banner.remove(banChecked)
       banChecked.conference.touch()
@@ -196,11 +259,12 @@ object BannerService {
     * @return A new banner service.
     */
   def apply[A]() : BannerService = {
-    new BannerService(Play.application().configuration().getString("file.ban_path", "./banner"))
+    new BannerService(Play.application().configuration().getString("file.ban_path", "./banner"),
+      Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile"))
   }
 
-  def apply(banPath: String) = {
-    new BannerService(banPath)
+  def apply(banPath: String, banMobilePath: String) = {
+    new BannerService(banPath, banMobilePath)
   }
 
 }

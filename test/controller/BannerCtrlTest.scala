@@ -2,6 +2,9 @@ package controller
 
 import java.io.File
 
+import com.sksamuel.scrimage._
+import org.apache.commons.codec.binary.Base64
+import org.apache.commons.io.FileUtils
 import org.junit._
 import play.api.Play
 import play.api.http.Writeable
@@ -45,7 +48,10 @@ class BannerCtrlTest extends BaseCtrlTest {
         val header = ("Content-Disposition: form-data; name=\"" + file.key +
           "\"; filename=\"" + file.filename + "\"\r\n" + "Content-Type: " +
           file.contentType.getOrElse("image/jpeg") + "\r\n\r\n").getBytes(charset)
-        val data = fromFile(file.ref.file).map(_.toByte).toArray
+
+        val f2 = new File(file.ref+"new")
+        FileUtils.copyFile(file.ref.file, f2)
+        val data = Image.fromFile(f2).bytes
         val footer = "\r\n".getBytes(charset)
 
         header ++ data ++ footer
@@ -62,30 +68,33 @@ class BannerCtrlTest extends BaseCtrlTest {
 
   @Test
   def testUpload(): Unit = {
-    val banner = formatter.writes(assets.banner(0)).as[JsObject] - "uuid" - "bType"
+    val formats = List("jpg", "png")
+    for (format <- formats) {
+      val banner = formatter.writes(assets.banner(0)).as[JsObject] - "uuid" - "bType"
+      val file = new File("tmp")
+      val pDir = new java.io.File(".").getCanonicalPath
+      val data = new File(pDir + "/test/utils/BC_header_" + format + "." + format)
+      FileUtils.copyFile(data, file)
 
-    val file = new File("tmp")
-    file.createNewFile()
-    new java.io.FileOutputStream(file).write("foobar".getBytes)
+      val requestBody = MultipartFormData(
+        Map("banner" -> Seq(banner.toString())),
+        Seq(MultipartFormData.FilePart(
+          "file", "foo.bar",
+          Some("image/jpeg"),
+          TemporaryFile(file))
+        ),
+        Seq(),
+        Seq()
+      )
 
-    val requestBody = MultipartFormData(
-      Map("banner" -> Seq(banner.toString())),
-      Seq(MultipartFormData.FilePart(
-        "file", "foo.bar",
-        Some("image/jpeg"),
-        TemporaryFile(file))
-      ),
-      Seq(),
-      Seq()
-    )
+      val uuid = assets.conferences(0).uuid
+      val request = FakeRequest(
+        POST, s"/api/conferences/$uuid/banner"
+      ).withMultipartFormDataBody(requestBody).withCookies(cookie)
 
-    val uuid = assets.conferences(0).uuid
-    val request = FakeRequest(
-      POST, s"/api/conferences/$uuid/banner"
-    ).withMultipartFormDataBody(requestBody).withCookies(cookie)
-
-    val result = route(BannerCtrlTest.app, request).get
-    assert(status(result) == CREATED)
+      val result = route(BannerCtrlTest.app, request).get
+      assert(status(result) == CREATED)
+    }
   }
 
   @Test
