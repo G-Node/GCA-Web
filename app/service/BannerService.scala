@@ -9,13 +9,15 @@
 package service
 
 import java.io.{File, FileNotFoundException}
+import java.nio.file.{Paths, NoSuchFileException}
 
 import javax.persistence._
 import models._
 import play.Play
 import play.api.libs.Files.TemporaryFile
 import plugins.DBUtil._
-import com.sksamuel.scrimage._
+import com.sksamuel.scrimage.Image
+import com.sksamuel.scrimage.nio.JpegWriter
 import com.drew.imaging.ImageProcessingException
 import Math.sqrt
 import scala.util.control.Breaks.{break, breakable}
@@ -126,16 +128,35 @@ class BannerService(banPath: String, banMobilePath: String) {
       if (!(conferenceChecked.isOwner(account) || account.isAdmin))
         throw new IllegalAccessException("No permissions for conference with uuid = " + conferenceChecked.uuid)
 
-      val file = new File(banPath, ban.uuid)
+      // In a docker environment '/target/universal/stage' is used when resolving '.'
+      // in a relative path. 'java.io.File' seems to properly resolve the relative paths
+      // even in a docker environment, but the third party library scrimage cannot work
+      // with these file descriptors and requires file descriptors created with absolute paths.
+      //   As a workaround the file not found exception is caught and the docker container
+      // root path is used to create file descriptior with absolut paths appropriate for
+      // the docker environment.
+      var figure_file = new File(banPath, ban.uuid)
+      var mobile_file = new File(banMobilePath, ban.uuid)
 
-      val mobile_file = new File(banMobilePath, ban.uuid)
+      try {
+        var mobile_image = Image.fromFile(figure_file)
+      } catch {
+        case nofile: NoSuchFileException => {
+          val figure_path = Paths.get("/srv", "gca", banPath, ban.uuid).normalize.toString
+          val mobile_path = Paths.get("/srv", "gca", banMobilePath, ban.uuid).normalize.toString
+
+          figure_file = new File(figure_path)
+          mobile_file = new File(mobile_path)
+        }
+      }
+
+      var mobile_image = Image.fromFile(figure_file)
+
       val mobile_parent = mobile_file.getParentFile
-
       if (!mobile_parent.exists()) {
         mobile_parent.mkdirs()
       }
 
-      var mobile_image = Image.fromFile(file)
       var current_size = mobile_image.bytes.length.toFloat
       var scaleFactor = 1.0
 
@@ -150,7 +171,7 @@ class BannerService(banPath: String, banMobilePath: String) {
           }
         }
       }
-      mobile_image.output(mobile_file)(nio.JpegWriter().withCompression(25))
+      mobile_image.output(mobile_file)(JpegWriter().withCompression(25))
     }
   }
 
