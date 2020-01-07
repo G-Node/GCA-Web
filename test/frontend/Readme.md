@@ -86,7 +86,7 @@ python load_cookies.py
 Now we can run the tests via the `pytest` or alternatively the `python -m pytest` command. Without any arguments,
 all tests in the directory will be executed.
 Specific tests can always be run by adding the file name to this command.
-Using the `pytest-xdist` module, parallel testing is possible, decreasing the overall run time of the tests.
+Using the `pytest-xdist` module, parallel testing is possible, decreasing the overall run time of the tests. Please note that `pytest-xdist` is an extension plugin, not part of the `pytest` distribution and needs to be installed separately.
 Try to keep the number of open browser windows around 4-6, 
 otherwise the usage of memory space will increase times again.
 
