@@ -21,7 +21,7 @@ after setting up a virtual environment (not necessarily in this order):
 `pip install selenium pytest`
 
 Next, you need to get the drivers for the browsers your interested in, at the moment, 
-Google Chrome and Firefox are used. The drivers can eb downloaded from this page:
+Google Chrome and Firefox are used. The drivers can be downloaded from this page:
 
 https://www.seleniumhq.org/download/
 
@@ -136,5 +136,4 @@ https://selenium-python.readthedocs.io/
 A short tutorial for setting up selenium grid and creating a test class using unittest.TestCase instead of fixtures 
 can be found here:  
 https://gist.github.com/dzitkowskik/0fc641cf59af0dc3de62
-
 
