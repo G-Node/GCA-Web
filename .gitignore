@@ -17,6 +17,8 @@ dist
 banner
 figures
 figures_mobile
+banner
+banner_mobile
 
 # provided via cdn but keeping a local copy
 # makes auto completion available
@@ -30,3 +32,7 @@ conf/*.disabled
 # production files
 application-log*
 logger.xml
+
+# python related information
+test/frontend/.pytest_cache/
+test/frontend/__pycache__/
