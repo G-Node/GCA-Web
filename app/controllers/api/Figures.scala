@@ -11,6 +11,8 @@ import models._
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.core.{Silhouette, Environment}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.collection.JavaConversions._
 
 /**
@@ -50,7 +52,11 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
 
     val figure = figureService.create(jsfig, tempfile, abstr, request.identity.account)
 
-    figureService.uploadMobile(jsfig, abstr, request.identity.account)
+    // uploadMobile is not very perfomant so we move the task to the background
+    // since mobile figures are also nice to have but not essential.
+    val future = Future {
+      figureService.uploadMobile(jsfig, abstr, request.identity.account)
+    }
 
     Created(figFormat.writes(figure))
   }
