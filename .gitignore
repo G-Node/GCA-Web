@@ -17,8 +17,8 @@ dist
 banner
 figures
 figures_mobile
-banner
-banner_mobile
+banners
+banners_mobile
 
 # provided via cdn but keeping a local copy
 # makes auto completion available

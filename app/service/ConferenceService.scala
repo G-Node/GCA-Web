@@ -437,7 +437,7 @@ class ConferenceService(banPath: String) extends PermissionsBase {
 object ConferenceService {
 
   def apply[A]() = {
-    new ConferenceService(Play.application().configuration().getString("file.ban_path", "./banner"))
+    new ConferenceService(Play.application().configuration().getString("file.ban_path", "./banners"))
   }
 
   def apply(banPath: String) = {

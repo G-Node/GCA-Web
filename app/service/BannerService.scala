@@ -259,7 +259,7 @@ class BannerService(banPath: String, banMobilePath: String) {
 
     if (!file.exists || !file.canRead)
     // If a low resolution file cannot be found, get back to the original file
-      file = new File(Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile"), ban.uuid)
+      file = new File(Play.application().configuration().getString("file.ban_mobile_path", "./banners_mobile"), ban.uuid)
     if (!file.exists || !file.canRead)
       throw new FileNotFoundException("Unable to open the file for reading: " + file.toString)
 
@@ -275,13 +275,13 @@ object BannerService {
 
   /**
     * Create a banner service using a banner path stored in the configuration under "file.ban_path".
-    * As default the relative path "./banner" will be used.
+    * As default the relative path "./banners" will be used.
     *
     * @return A new banner service.
     */
   def apply[A]() : BannerService = {
-    new BannerService(Play.application().configuration().getString("file.ban_path", "./banner"),
-      Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile"))
+    new BannerService(Play.application().configuration().getString("file.ban_path", "./banners"),
+      Play.application().configuration().getString("file.ban_mobile_path", "./banners_mobile"))
   }
 
   def apply(banPath: String, banMobilePath: String) = {

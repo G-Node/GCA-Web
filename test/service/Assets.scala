@@ -37,8 +37,8 @@ class Assets() {
 
   val figPath = Play.application().configuration().getString("file.fig_path", "./figures")
   val figMobilePath = Play.application().configuration().getString("file.fig_mobile_path", "./figures_mobile")
-  val banPath = Play.application().configuration().getString("file.ban_path", "./banner")
-  val banMobilePath = Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile")
+  val banPath = Play.application().configuration().getString("file.ban_path", "./banners")
+  val banMobilePath = Play.application().configuration().getString("file.ban_mobile_path", "./banners_mobile")
 
   def makeSortId(group: Int, seqid: Int) : Option[Int] = {
     val sortId : Int = group << 16 | seqid

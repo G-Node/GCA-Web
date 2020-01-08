@@ -30,7 +30,7 @@ class BannerServiceTest extends JUnitSuite {
     assets = new Assets()
     assets.killDB()
     assets.fillDB()
-    srv = BannerService("./banner","./banner_mobile")
+    srv = BannerService("./banners","./banners_mobile")
   }
 
   @Test
