@@ -1,6 +1,7 @@
 /*
-SQL script to copy description, logo URL and thumbnail URL to new conftext table.
-The columns above will be deprecated.
+SQL script to copy the content of 'description', 'logo' URL and 'thumbnail' URL
+from the 'conference' table to the new 'conftext' table. The columns above will be deprecated.
+This script is required when migrating from GCA-Web v1.2 to v1.3.
 */
 
 INSERT INTO conftext (uuid, cttype, "text", conference_uuid)
