@@ -102,6 +102,8 @@ class FigureServiceTest extends JUnitSuite {
     }
   }
 
+  // todo: test checking that an image that is has a normal image
+  //       but no mobile image is still returned.
   @Test
   def testOpenMobileFile(): Unit = {
     assets.figures.foreach { fig =>
