@@ -9,6 +9,8 @@ import service.{BannerService, ConferenceService}
 import utils.DefaultRoutesResolver._
 import utils.serializer.BannerFormat
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.collection.JavaConversions._
 
 /**
@@ -45,7 +47,11 @@ class Banners(implicit val env: Environment[Login, CachedCookieAuthenticator])
 
     val banner = bannerService.create(jsban, tempfile, conference, request.identity.account)
 
-    bannerService.uploadMobile(jsban, conference, request.identity.account)
+    // uploadMobile is not very perfomant so we move the task to the background
+    // since mobile banners are also nice to have but not essential.
+    val future = Future {
+      bannerService.uploadMobile(jsban, conference, request.identity.account)
+    }
 
     Created(banFormat.writes(banner))
   }
