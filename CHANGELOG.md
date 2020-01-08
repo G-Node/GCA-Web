@@ -5,17 +5,17 @@ until the next release.
 
 # Release v1.3
 
-This release contains required database changes. After redeployment the database needs to be updated manually using script `patch/swapConfTextsPF.sql`.
+This release contains required database changes. After redeployment the database needs to be updated manually using script `patch/patch_v1_2_to_v1_3.sql` and the database service restarted for the changes to take effect.
 
 ## Features
 - Stars will be shown in the conference abstract list, indicating favourite abstracts of a user. For details see issue #419.
 - The favour/disfavour abstract methods in abstract-list.js now only use javascript.
 - Conference banners can now be uploaded via the conference admin pages instead of providing an external link to a banner. The corresponding banners are used when displaying a conference. For details see issue #385.
-- Conference banners are also provided for the mobile version of the page.
+- Mobile versions of Figures and conference banners are now automatically created when a figure or banner is uploaded.
 - Both site and conference admins are now able to upload banners via the conference administration.
 - The selenium framework is introduced to integrate frontend tests.
 - The way DOI is represented in the abstract submission for has been updated. For details see issue #478.
-- A conference dependent notice can now be added via the conference administration page. The text will be displayed for the respective conference only. This change requires a database change. After deployment of this version, the database needs to be updated manually using script `patch/swapConfTextsPF.sql`. For details see issue #470.
+- A conference dependent notice can now be added via the conference administration page. The text will be displayed for the respective conference only. This change requires a database change. After deployment of this version, the database needs to be updated manually using script `patch/patch_v1_2_to_v1_3.sql`. For details see issue #470.
 
 ## Fixes
 - The string length of notes when changing abstract states will be limited to 255 to avoid database problems. For details see issue #448.
