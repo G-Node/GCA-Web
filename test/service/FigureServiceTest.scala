@@ -102,6 +102,14 @@ class FigureServiceTest extends JUnitSuite {
     }
   }
 
+  @Test
+  def testOpenMobileFile(): Unit = {
+    assets.figures.foreach { fig =>
+      val file = srv.openMobileFile(assets.figures(1))
+      assert(file.exists())
+    }
+  }
+
 }
 
 
