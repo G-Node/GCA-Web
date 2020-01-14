@@ -2,9 +2,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
 from conftest import move_to_element_by_class_name
-
 
 
 @pytest.mark.usefixtures("setup_editor")
