@@ -6,6 +6,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 import Cookies
 
 
+# Firefox-workaround, as move_to_element not working if element not in current screen
+def scroll(driver, object):
+    if 'firefox' in driver.capabilities['browserName']:
+        scroll_by_coord = 'window.scrollTo(%s,%s);' % (
+            object.location['x'],
+            object.location['y']
+        )
+        driver.execute_script(scroll_by_coord)
+
+
 def maximize_login(request):
     if request.param == "chrome":
         driver = webdriver.Remote(
