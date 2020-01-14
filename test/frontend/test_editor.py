@@ -244,3 +244,17 @@ class TestEditor:
                                      '//button[contains(@class, "btn-remove")]').click()
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
+
+    def test_topic(self):
+        driver = self.driver
+        self.click_edit_button('topic')
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="topic-editor"]//div[contains(@class, "radio")]'))
+        )
+
+        driver.find_element_by_xpath('//*[@id="topic-editor"]//div[contains(@class, "radio")][2]//input').click()
+
+        driver.find_element_by_xpath('//*[@id="topic-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert "topic two" in driver.find_element_by_xpath('//*[@class="topic"]/p').text
