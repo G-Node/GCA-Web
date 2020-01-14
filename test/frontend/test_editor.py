@@ -210,3 +210,23 @@ class TestEditor:
         driver.find_element(By.XPATH, '//*[@id="acknowledgements-editor"]//button[@id="modal-button-ok"]').click()
 
         assert "Thanks." in driver.find_element_by_xpath('//*[@class="acknowledgements"]/p').text
+
+    def test_add_references(self):
+        driver = self.driver
+        self.click_edit_button('references')
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'))
+        )
+
+        driver.find_element_by_xpath('//*[@id="references-editor"]//button[contains(@class, "btn-add")]').click()
+        driver.find_element_by_xpath('//*[@id="references-editor"]'
+                                     '//input[contains(@class, "citation")]').send_keys("John, title.")
+        driver.find_element_by_xpath('//*[@id="references-editor"]'
+                                     '//input[contains(@class, "link")]').send_keys("www.link.com")
+        driver.find_element_by_xpath('//*[@id="references-editor"]'
+                                     '//input[contains(@class, "doi")]').send_keys("12345")
+
+        driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert driver.find_element_by_xpath('//*[@class="references"]/ol/li')
