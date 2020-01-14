@@ -3,10 +3,22 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
+from conftest import move_to_element_by_class_name
+
 
 
 @pytest.mark.usefixtures("setup_editor")
 class TestEditor:
+
+    def click_edit_button(self, name):
+        driver = self.driver
+        if 'firefox' in driver.capabilities['browserName'] and name != 'title':
+            move_to_element_by_class_name(driver, 'title')
+        move_to_element_by_class_name(driver, name)
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ID, 'button-edit-' + name))
+        )
+        driver.find_element_by_id('button-edit-' + name).click()
 
     def test_simple_creation(self):
         driver = self.driver
