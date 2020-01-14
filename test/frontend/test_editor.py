@@ -60,3 +60,42 @@ class TestEditor:
         assert EC.text_to_be_present_in_element(
             (By.XPATH, '/html/body/div[2]/div[2]/div[3]/div/p'), 'Unable to submit'
         )
+
+    def test_add_author(self):
+        driver = self.driver
+        self.click_edit_button('authors')
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="authors-editor"]//button[contains(@class, "btn-add")]'))
+        )
+
+        driver.find_element_by_xpath('//*[@id="authors-editor"]//button[contains(@class, "btn-add")]').click()
+
+        driver.find_element_by_xpath('//*[@id="authors-editor"]'
+                                     '//input[contains(@class, "first-name")]').send_keys("Alice")
+        driver.find_element_by_xpath('//*[@id="authors-editor"]'
+                                     '//input[contains(@class, "middle-name")]').send_keys("Bianca")
+        driver.find_element_by_xpath('//*[@id="authors-editor"]'
+                                     '//input[contains(@class, "last-name")]').send_keys("Foo")
+        driver.find_element_by_xpath('//*[@id="authors-editor"]'
+                                     '//input[contains(@class, "author-mail")]').send_keys("alice@example.com")
+
+        driver.find_element_by_xpath('//*[@id="authors-editor"]//button[contains(@class, "btn-add")]').click()
+        driver.find_element_by_xpath('//*[@id="authors-editor"]'
+                                     '//tr[2]//input[contains(@class, "first-name")]').send_keys("Bob")
+        driver.find_element_by_xpath('//*[@id="authors-editor"]'
+                                     '//tr[2]//input[contains(@class, "last-name")]').send_keys("Bar")
+        driver.find_element_by_xpath('//*[@id="authors-editor"]'
+                                     '//tr[2]//input[contains(@class, "author-mail")]').send_keys("bob@example.com")
+
+        driver.find_element_by_xpath('//*[@id="authors-editor"]//button[contains(@class, "btn-add")]').click()
+        driver.find_element_by_xpath('//*[@id="authors-editor"]'
+                                     '//tr[3]//input[contains(@class, "first-name")]').send_keys("Charlie")
+        driver.find_element_by_xpath('//*[@id="authors-editor"]'
+                                     '//tr[3]//input[contains(@class, "last-name")]').send_keys("Comma")
+
+        driver.find_element_by_xpath('//*[@id="authors-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert "Alice" in driver.find_element_by_xpath('//*[@class="authors"]//li[1]/span').text
+        assert "Bob" in driver.find_element_by_xpath('//*[@class="authors"]//li[2]/span').text
+        assert "Charlie" in driver.find_element_by_xpath('//*[@class="authors"]//li[3]/span').text
