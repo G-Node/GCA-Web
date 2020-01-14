@@ -30,7 +30,7 @@ class BannerServiceTest extends JUnitSuite {
     assets = new Assets()
     assets.killDB()
     assets.fillDB()
-    srv = BannerService("./banner","./banner_mobile")
+    srv = BannerService("./banners","./banners_mobile")
   }
 
   @Test
@@ -94,6 +94,16 @@ class BannerServiceTest extends JUnitSuite {
   def testOpenFile(): Unit = {
     assets.banner.foreach { ban =>
       val file = srv.openFile(ban)
+      assert(file.exists())
+    }
+  }
+
+  // todo: test checking that an image that is has a normal image
+  //       but no mobile image is still returned.
+  @Test
+  def testOpenMobileFile(): Unit = {
+    assets.banner.foreach { ban =>
+      val file = srv.openMobileFile(ban)
       assert(file.exists())
     }
   }

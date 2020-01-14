@@ -37,8 +37,8 @@ class Assets() {
 
   val figPath = Play.application().configuration().getString("file.fig_path", "./figures")
   val figMobilePath = Play.application().configuration().getString("file.fig_mobile_path", "./figures_mobile")
-  val banPath = Play.application().configuration().getString("file.ban_path", "./banner")
-  val banMobilePath = Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile")
+  val banPath = Play.application().configuration().getString("file.ban_path", "./banners")
+  val banMobilePath = Play.application().configuration().getString("file.ban_mobile_path", "./banners_mobile")
 
   def makeSortId(group: Int, seqid: Int) : Option[Int] = {
     val sortId : Int = group << 16 | seqid
@@ -391,9 +391,23 @@ class Assets() {
       }
     }
 
-    val dirB = new File(banPath)
-    if (dirB.exists() && dirB.isDirectory) {
-      dirB.listFiles().foreach {file =>
+    val dirFigMobile = new File(figMobilePath)
+    if (dirFigMobile.exists() && dirFigMobile.isDirectory) {
+      dirFigMobile.listFiles().foreach {file =>
+        file.delete()
+      }
+    }
+
+    val dirBan = new File(banPath)
+    if (dirBan.exists() && dirBan.isDirectory) {
+      dirBan.listFiles().foreach {file =>
+        file.delete()
+      }
+    }
+
+    val dirBanMobile = new File(banMobilePath)
+    if (dirBanMobile.exists() && dirBanMobile.isDirectory) {
+      dirBanMobile.listFiles().foreach {file =>
         file.delete()
       }
     }

@@ -9,13 +9,15 @@
 package service
 
 import java.io.{File, FileNotFoundException}
+import java.nio.file.{Paths, NoSuchFileException}
 
 import javax.persistence._
 import models._
 import play.Play
 import play.api.libs.Files.TemporaryFile
 import plugins.DBUtil._
-import com.sksamuel.scrimage._
+import com.sksamuel.scrimage.Image
+import com.sksamuel.scrimage.nio.JpegWriter
 import com.drew.imaging.ImageProcessingException
 import Math.sqrt
 import scala.util.control.Breaks.{break, breakable}
@@ -126,16 +128,35 @@ class BannerService(banPath: String, banMobilePath: String) {
       if (!(conferenceChecked.isOwner(account) || account.isAdmin))
         throw new IllegalAccessException("No permissions for conference with uuid = " + conferenceChecked.uuid)
 
-      val file = new File(banPath, ban.uuid)
+      // In a docker environment '/target/universal/stage' is used when resolving '.'
+      // in a relative path. 'java.io.File' seems to properly resolve the relative paths
+      // even in a docker environment, but the third party library scrimage cannot work
+      // with these file descriptors and requires file descriptors created with absolute paths.
+      //   As a workaround the file not found exception is caught and the docker container
+      // root path is used to create file descriptior with absolut paths appropriate for
+      // the docker environment.
+      var figure_file = new File(banPath, ban.uuid)
+      var mobile_file = new File(banMobilePath, ban.uuid)
 
-      val mobile_file = new File(banMobilePath, ban.uuid)
+      try {
+        var mobile_image = Image.fromFile(figure_file)
+      } catch {
+        case nofile: NoSuchFileException => {
+          val figure_path = Paths.get("/srv", "gca", banPath, ban.uuid).normalize.toString
+          val mobile_path = Paths.get("/srv", "gca", banMobilePath, ban.uuid).normalize.toString
+
+          figure_file = new File(figure_path)
+          mobile_file = new File(mobile_path)
+        }
+      }
+
+      var mobile_image = Image.fromFile(figure_file)
+
       val mobile_parent = mobile_file.getParentFile
-
       if (!mobile_parent.exists()) {
         mobile_parent.mkdirs()
       }
 
-      var mobile_image = Image.fromFile(file)
       var current_size = mobile_image.bytes.length.toFloat
       var scaleFactor = 1.0
 
@@ -150,7 +171,7 @@ class BannerService(banPath: String, banMobilePath: String) {
           }
         }
       }
-      mobile_image.output(mobile_file)(nio.JpegWriter().withCompression(25))
+      mobile_image.output(mobile_file)(JpegWriter().withCompression(25))
     }
   }
 
@@ -234,11 +255,11 @@ class BannerService(banPath: String, banMobilePath: String) {
     if (ban.uuid == null)
       throw new IllegalArgumentException("Unable to open file for banner without uuid")
 
-    var file = new File(banPath, ban.uuid)
+    var file = new File(banMobilePath, ban.uuid)
 
     if (!file.exists || !file.canRead)
     // If a low resolution file cannot be found, get back to the original file
-      file = new File(Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile"), ban.uuid)
+      file = new File(Play.application().configuration().getString("file.ban_path", "./banners"), ban.uuid)
     if (!file.exists || !file.canRead)
       throw new FileNotFoundException("Unable to open the file for reading: " + file.toString)
 
@@ -254,13 +275,13 @@ object BannerService {
 
   /**
     * Create a banner service using a banner path stored in the configuration under "file.ban_path".
-    * As default the relative path "./banner" will be used.
+    * As default the relative path "./banners" will be used.
     *
     * @return A new banner service.
     */
   def apply[A]() : BannerService = {
-    new BannerService(Play.application().configuration().getString("file.ban_path", "./banner"),
-      Play.application().configuration().getString("file.ban_mobile_path", "./banner_mobile"))
+    new BannerService(Play.application().configuration().getString("file.ban_path", "./banners"),
+      Play.application().configuration().getString("file.ban_mobile_path", "./banners_mobile"))
   }
 
   def apply(banPath: String, banMobilePath: String) = {

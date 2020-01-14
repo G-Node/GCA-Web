@@ -3,7 +3,7 @@ package controllers.api
 import play.api._
 import play.api.libs.json.{JsArray, _}
 import play.api.mvc._
-import service.{AbstractService, FigureService, FigureMobileService}
+import service.{AbstractService, FigureService}
 import utils.DefaultRoutesResolver._
 import utils.serializer.FigureFormat
 import models._
@@ -11,6 +11,8 @@ import models._
 import com.mohiva.play.silhouette.contrib.services.CachedCookieAuthenticator
 import com.mohiva.play.silhouette.core.{Silhouette, Environment}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.collection.JavaConversions._
 
 /**
@@ -23,7 +25,6 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
   implicit val figFormat = new FigureFormat()
   val abstractService = AbstractService()
   val figureService = FigureService()
-  val figureMobileService = FigureMobileService()
 
   /**
    * Upload file with a figure to the specified abstract (id).
@@ -50,7 +51,11 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
 
     val figure = figureService.create(jsfig, tempfile, abstr, request.identity.account)
 
-    figureService.uploadMobile(jsfig, abstr, request.identity.account)
+    // uploadMobile is not very perfomant so we move the task to the background
+    // since mobile figures are also nice to have but not essential.
+    val future = Future {
+      figureService.uploadMobile(jsfig, abstr, request.identity.account)
+    }
 
     Created(figFormat.writes(figure))
   }
@@ -125,8 +130,8 @@ extends Silhouette[Login, CachedCookieAuthenticator] {
     * @return  OK / Failed
     */
   def downloadmobile(id: String) = UserAwareAction { implicit request =>
-    Ok.sendFile(figureMobileService.openFile(
-      figureMobileService.get(id)
+    Ok.sendFile(figureService.openMobileFile(
+      figureService.get(id)
     ))
   }
 }

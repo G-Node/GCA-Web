@@ -1,13 +1,15 @@
 package service
 
 import java.io.{File, FileNotFoundException}
+import java.nio.file.{Paths, NoSuchFileException}
 
 import javax.persistence._
 import play.Play
 import play.api.libs.Files.TemporaryFile
 import models._
 import plugins.DBUtil._
-import com.sksamuel.scrimage._
+import com.sksamuel.scrimage.Image
+import com.sksamuel.scrimage.nio.JpegWriter
 import org.apache.commons.io.FileUtils
 import com.drew.imaging.ImageProcessingException
 import Math.sqrt
@@ -113,16 +115,35 @@ class FigureService(figPath: String, figMobilePath: String) {
         throw new EntityNotFoundException("Unable to find abstract with uuid = " + abstr.uuid)
 
 
-      val file = new File(figPath, fig.uuid)
+      // In a docker environment '/target/universal/stage' is used when resolving '.'
+      // in a relative path. 'java.io.File' seems to properly resolve the relative paths
+      // even in a docker environment, but the third party library scrimage cannot work
+      // with these file descriptors and requires file descriptors created with absolute paths.
+      //   As a workaround the file not found exception is caught and the docker container
+      // root path is used to create file descriptior with absolut paths appropriate for
+      // the docker environment.
+      var figure_file = new File(figPath, fig.uuid)
+      var mobile_file = new File(figMobilePath, fig.uuid)
 
-      val mobile_file = new File(figMobilePath, fig.uuid)
+      try {
+        var mobile_image = Image.fromFile(figure_file)
+      } catch {
+        case nofile: NoSuchFileException => {
+          val figure_path = Paths.get("/srv", "gca", figPath, fig.uuid).normalize.toString
+          val mobile_path = Paths.get("/srv", "gca", figMobilePath, fig.uuid).normalize.toString
+
+          figure_file = new File(figure_path)
+          mobile_file = new File(mobile_path)
+        }
+      }
+
+      var mobile_image = Image.fromFile(figure_file)
+
       val mobile_parent = mobile_file.getParentFile
-
       if (!mobile_parent.exists()) {
         mobile_parent.mkdirs()
       }
 
-      var mobile_image = Image.fromFile(file)
       var current_size = mobile_image.bytes.length.toFloat
       var scaleFactor = 1.0
 
@@ -137,7 +158,7 @@ class FigureService(figPath: String, figMobilePath: String) {
           }
         }
       }
-      mobile_image.output(mobile_file)(nio.JpegWriter().withCompression(25))
+      mobile_image.output(mobile_file)(JpegWriter().withCompression(25))
     }
   }
 
@@ -231,6 +252,31 @@ class FigureService(figPath: String, figMobilePath: String) {
       throw new IllegalArgumentException("Unable to open file for figure without uuid")
 
     val file = new File(figPath, fig.uuid)
+
+    if (!file.exists || !file.canRead)
+      throw new FileNotFoundException("Unable to open the file for reading: " + file.toString)
+
+    file
+  }
+
+  /**
+   * Open the mobile image file that belongs to the figure;
+   * if the mobile figure cannot be found, fallback to the
+   * original figure.
+   *
+   * @param fig The figure to open.
+   *
+   * @return A file handler to the respective image file.
+   */
+  def openMobileFile(fig: Figure) : File = {
+    if (fig.uuid == null)
+      throw new IllegalArgumentException("Unable to open file for figure without uuid")
+
+    var file = new File(figMobilePath, fig.uuid)
+
+    // If a lowres file cannot be found, get back to the original file
+    if (!file.exists || !file.canRead)
+      file = new File(figPath, fig.uuid)
 
     if (!file.exists || !file.canRead)
       throw new FileNotFoundException("Unable to open the file for reading: " + file.toString)
