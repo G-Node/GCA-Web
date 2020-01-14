@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 import Cookies
 
 
@@ -14,6 +15,13 @@ def scroll(driver, object):
             object.location['y']
         )
         driver.execute_script(scroll_by_coord)
+
+
+def move_to_element_by_class_name(driver, name):
+    element = driver.find_element_by_class_name(name)
+    scroll(driver, element)
+    hover = ActionChains(driver).move_to_element(element)
+    hover.perform()
 
 
 def maximize_login(request):
