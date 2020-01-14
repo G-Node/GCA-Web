@@ -44,7 +44,7 @@ def setup_editor(request):
     Cookies.load_cookies(driver)
     driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/BC14/submission")
     WebDriverWait(driver, 30).until(
-        EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div[2]/div[1]/span/button'))
+        EC.presence_of_element_located((By.CLASS_NAME, 'btn-success'))
     )
     yield
     driver.quit()
