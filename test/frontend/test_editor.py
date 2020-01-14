@@ -99,3 +99,19 @@ class TestEditor:
         assert "Alice" in driver.find_element_by_xpath('//*[@class="authors"]//li[1]/span').text
         assert "Bob" in driver.find_element_by_xpath('//*[@class="authors"]//li[2]/span').text
         assert "Charlie" in driver.find_element_by_xpath('//*[@class="authors"]//li[3]/span').text
+
+    def test_remove_author(self):
+        driver = self.driver
+        self.click_edit_button('authors')
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="authors-editor"]//button[contains(@class, "btn-add")]'))
+        )
+
+        driver.find_element_by_xpath('//*[@id="authors-editor"]//tr[2]//button[contains(@class, "btn-remove")]').click()
+
+        driver.find_element_by_xpath('//*[@id="authors-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert "Alice" in driver.find_element_by_xpath('//*[@class="authors"]//li[1]/span').text
+        assert "Bob" not in driver.find_element_by_xpath('//*[@class="authors"]//li[2]/span').text
+        assert "Charlie" in driver.find_element_by_xpath('//*[@class="authors"]//li[2]/span').text
