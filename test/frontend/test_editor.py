@@ -115,3 +115,55 @@ class TestEditor:
         assert "Alice" in driver.find_element_by_xpath('//*[@class="authors"]//li[1]/span').text
         assert "Bob" not in driver.find_element_by_xpath('//*[@class="authors"]//li[2]/span').text
         assert "Charlie" in driver.find_element_by_xpath('//*[@class="authors"]//li[2]/span').text
+
+    def test_add_affiliations(self):
+        driver = self.driver
+        self.click_edit_button('affiliations')
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="affiliations-editor"]'
+                                                  '//button[contains(@class, "btn-add")]'))
+        )
+
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[contains(@class, "btn-add")]').click()
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]'
+                                     '//input[contains(@class, "affil-department")]').send_keys("Bio")
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]'
+                                     '//input[contains(@class, "affil-institution")]').send_keys("University")
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]'
+                                     '//input[contains(@class, "affil-address")]').send_keys("Sesame Street 135a")
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]'
+                                     '//input[contains(@class, "affil-country")]').send_keys("Invenden")
+
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//select/option[1]').click()
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]'
+                                     '//button[@id="button-assign-affiliation-to-author"]').click()
+
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert "Bio" in driver.find_element_by_xpath('//*[@class="affiliations"]//li[1]/span').text
+
+        self.click_edit_button('affiliations')
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="affiliations-editor"]'
+                                                  '//button[contains(@class, "btn-add")]'))
+        )
+
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[contains(@class, "btn-add")]').click()
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//tr[4]'
+                                     '//input[contains(@class, "affil-department")]').send_keys("Computational")
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//tr[4]'
+                                     '//input[contains(@class, "affil-institution")]').send_keys("University")
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//tr[4]'
+                                     '//input[contains(@class, "affil-address")]').send_keys("Long Street 1-3")
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//tr[4]'
+                                     '//input[contains(@class, "affil-country")]').send_keys("Fantidan")
+
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//tr[6]//select/option[1]').click()
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//tr[6]'
+                                     '//button[@id="button-assign-affiliation-to-author"]').click()
+
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert "Computational" in driver.find_element_by_xpath('//*[@class="affiliations"]//li[2]/span').text
