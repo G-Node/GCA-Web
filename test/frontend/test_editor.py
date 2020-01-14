@@ -2,6 +2,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 from conftest import move_to_element_by_class_name
 
 
@@ -98,7 +99,7 @@ class TestEditor:
         assert "Alice" in driver.find_element_by_xpath('//*[@class="authors"]//li[1]/span').text
         assert "Bob" in driver.find_element_by_xpath('//*[@class="authors"]//li[2]/span').text
         assert "Charlie" in driver.find_element_by_xpath('//*[@class="authors"]//li[3]/span').text
-    '''
+
     def test_remove_author(self):
         driver = self.driver
         self.click_edit_button('authors')
@@ -114,7 +115,7 @@ class TestEditor:
         assert "Alice" in driver.find_element_by_xpath('//*[@class="authors"]//li[1]/span').text
         assert "Bob" not in driver.find_element_by_xpath('//*[@class="authors"]//li[2]/span').text
         assert "Charlie" in driver.find_element_by_xpath('//*[@class="authors"]//li[2]/span').text
-    '''
+
     def test_add_affiliations(self):
         driver = self.driver
         self.click_edit_button('affiliations')
@@ -181,21 +182,6 @@ class TestEditor:
 
         assert "Bio" not in driver.find_element_by_xpath('//*[@class="affiliations"]//li[1]/span').text
 
-    '''
-        hover = ActionChains(driver).move_to_element(form_affiliations)
-        hover.perform()
-        driver.find_element_by_id('button-edit-affiliations').click()
-        WebDriverWait(driver, 10).until(
-           EC.element_to_be_clickable((By.XPATH, '//*[@id="affiliations-editor"]'
-                                                 '//button[contains(@class, "button-remove-affiliation-from-author")]'))
-        )
-        driver.find_element_by_xpath('//*[@id="affiliations-editor"]'
-                                    '//button[contains(@class, "button-remove-affiliation-from-author")]').click()
-        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[@id="modal-button-ok"]').click()
-        
-        assert "Computational" in driver.find_element_by_xpath('//*[@class="affiliations"]//li[1]/span').text
-        
-
     def test_text(self):
         driver = self.driver
         self.click_edit_button('abstract-text')
@@ -258,23 +244,6 @@ class TestEditor:
                                      '//button[contains(@class, "btn-remove")]').click()
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
-    
-    def test_add_figure(self):
-        driver = self.driver
-        self.click_edit_button('figure')
-
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.XPATH, '//*[@id="figures-editor"]'))
-        )
-
-        #TODO: add only description without figure + vice versa + delete a second one
-
-        driver.find_element_by_xpath('//*[@id="figures-editor"]'
-                                     '//input[@id="figure-caption"]').send_keys("Interesting figure.")
-        driver.find_element_by_xpath('//*[@id="figures-editor"]'
-                                     '//input[@id="figure-file"]').send_keys("../utils/BC_header_jpg.jpg")
-
-        driver.find_element_by_xpath('//*[@id="figures-editor"]//button[@id="modal-button-ok"]').click()
 
     def test_topic(self):
         driver = self.driver
@@ -317,4 +286,3 @@ class TestEditor:
         assert EC.text_to_be_present_in_element(
             (By.XPATH, '//*[@class_name="label-primary"]'), 'InPreparation'
         )
-    '''
