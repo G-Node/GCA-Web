@@ -22,37 +22,41 @@ class TestEditor:
 
     def test_simple_creation(self):
         driver = self.driver
+
         #fail saving when empty abstract
-        driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[2]/div[1]/span/button').click()
+        driver.find_element_by_id('button-action').click()
         assert EC.visibility_of((By.XPATH, '/html/body/div[2]/div[2]/div[3]/div/h4'))
 
-    def test_title_save(self):
+    def test_title(self):
         driver = self.driver
-        form_title = driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[4]/div[1]/div[3]/h2')
-        hover = ActionChains(driver).move_to_element(form_title)
-        hover.perform()
-        driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[4]/div[1]/div[1]/button').click()
+        self.click_edit_button('title')
 
         #wait for dialog to open
+        #xpath neccessary, as several copies in source code
         WebDriverWait(driver, 30).until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="title-editor"]'))
         )
-        title = driver.find_element_by_xpath('//*[@id="title-editor"]/div/div/div[2]/input')
+
+        #get title and set keys
+        title = driver.find_element_by_xpath('//*[@id="title-editor"]//input[@id="title"]')
         title.send_keys('New Test Abstract')
-        driver.find_element(By.XPATH, '//*[@id="title-editor"]/div/div/div[3]/button[2]').click()
+
+        #close modal
+        driver.find_element(By.XPATH, '//*[@id="title-editor"]//button[@id="modal-button-ok"]').click()
 
         #save
         WebDriverWait(driver, 30).until(
-            EC.element_to_be_clickable((By.XPATH, '/html/body/div[2]/div[2]/div[2]/div[1]/span/button'))
+            EC.element_to_be_clickable((By.ID, 'button-action'))
         )
-        driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[2]/div[1]/span/button').click()
+        driver.find_element_by_id('button-action').click()
+
         #make sure, issues are shown
         WebDriverWait(driver, 30).until(
-            EC.text_to_be_present_in_element((By.XPATH, '//*[@id="lblvalid"]'), 'issues')
+            EC.text_to_be_present_in_element((By.ID, 'lblvalid'), 'issues')
         )
 
         #make sure, submit fails
-        driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[2]/div[1]/span/button').click()
+        driver.find_element_by_id('button-action').click()
         assert EC.text_to_be_present_in_element(
             (By.XPATH, '/html/body/div[2]/div[2]/div[3]/div/p'), 'Unable to submit'
         )
