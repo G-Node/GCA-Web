@@ -167,3 +167,18 @@ class TestEditor:
         driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[@id="modal-button-ok"]').click()
 
         assert "Computational" in driver.find_element_by_xpath('//*[@class="affiliations"]//li[2]/span').text
+
+    def test_remove_affiliations(self):
+        driver = self.driver
+        self.click_edit_button('affiliations')
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="affiliations-editor"]'
+                                                  '//button[contains(@class, "btn-remove")]'))
+        )
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]'
+                                     '//tr[1]//button[contains(@class, "btn-remove")]').click()
+        driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert "Bio" not in driver.find_element_by_xpath('//*[@class="affiliations"]//li[1]/span').text
+
