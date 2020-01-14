@@ -195,3 +195,18 @@ class TestEditor:
         driver.find_element(By.XPATH, '//*[@id="abstract-text-editor"]//button[@id="modal-button-ok"]').click()
 
         assert "Test abstract test." in driver.find_element_by_xpath('//*[@class="abstract-text"]/p').text
+
+    def test_acknowledgements(self):
+        driver = self.driver
+        self.click_edit_button('acknowledgements')
+
+        WebDriverWait(driver, 30).until(
+            EC.visibility_of_element_located((By.XPATH, '//*[@id="acknowledgements-editor"]'))
+        )
+
+        acknowledgements = driver.find_element_by_xpath('//*[@id="acknowledgements-editor"]'
+                                                        '//textarea[@id="acknowledgements"]')
+        acknowledgements.send_keys('Thanks.')
+        driver.find_element(By.XPATH, '//*[@id="acknowledgements-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert "Thanks." in driver.find_element_by_xpath('//*[@class="acknowledgements"]/p').text
