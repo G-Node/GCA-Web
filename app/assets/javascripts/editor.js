@@ -594,6 +594,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
                     positions.splice(removePos, 1);
                 }
 
+                for (var i = 0, len = positions.length; i < len; i++) {
+                    if (positions[i] > index) {
+                        positions[i] = positions[i] - 1;
+                    }
+                }
+
                 author.affiliations(positions);
             });
 
