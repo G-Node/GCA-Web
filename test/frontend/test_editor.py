@@ -182,3 +182,16 @@ class TestEditor:
 
         assert "Bio" not in driver.find_element_by_xpath('//*[@class="affiliations"]//li[1]/span').text
 
+    def test_text(self):
+        driver = self.driver
+        self.click_edit_button('abstract-text')
+
+        WebDriverWait(driver, 30).until(
+            EC.visibility_of_element_located((By.XPATH, '//*[@id="abstract-text-editor"]'))
+        )
+
+        text = driver.find_element_by_xpath('//*[@id="abstract-text-editor"]//textarea[@id="text"]')
+        text.send_keys('Test abstract test.')
+        driver.find_element(By.XPATH, '//*[@id="abstract-text-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert "Test abstract test." in driver.find_element_by_xpath('//*[@class="abstract-text"]/p').text
