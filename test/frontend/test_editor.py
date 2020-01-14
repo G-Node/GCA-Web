@@ -272,3 +272,10 @@ class TestEditor:
         driver.find_element_by_xpath('//*[@id="is-talk-editor"]//button[@id="modal-button-ok"]').click()
 
         assert "Poster" in driver.find_element_by_xpath('//*[@class="poster-or-talk"]//span').text
+
+    def test_submit(self):
+        driver = self.driver
+        driver.find_element_by_id('button-action').click()
+        assert EC.text_to_be_present_in_element(
+            (By.XPATH, '//*[@class_name="label-primary"]'), 'Submitted'
+        )
