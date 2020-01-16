@@ -242,7 +242,7 @@ class TestEditor:
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
 
-        assert driver.find_element_by_xpath('//*[@class="references"]/ol/li')
+        assert driver.find_element_by_xpath('//*[@class="references"]//a')
 
     def test_remove_references(self):
         driver = self.driver
