@@ -258,6 +258,8 @@ class TestEditor:
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
 
+        assert len(driver.find_elements_by_xpath('//*[@class="references"]//a')) == 0
+
     def test_topic(self):
         driver = self.driver
         self.click_edit_button('topic')
