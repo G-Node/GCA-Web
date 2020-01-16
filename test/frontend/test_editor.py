@@ -113,6 +113,7 @@ class TestEditor:
         assert "Alice" in driver.find_element_by_xpath('//*[@class="authors"]//li[1]/span').text
         assert "Bob" not in driver.find_element_by_xpath('//*[@class="authors"]//li[2]/span').text
         assert "Charlie" in driver.find_element_by_xpath('//*[@class="authors"]//li[2]/span').text
+        assert len(driver.find_elements_by_xpath('//*[@class="authors"]//li[3]/span')) == 0
 
     def test_add_affiliations(self):
         driver = self.driver
