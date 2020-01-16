@@ -184,6 +184,7 @@ class TestEditor:
         driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[@id="modal-button-ok"]').click()
 
         assert "Bio" not in driver.find_element_by_xpath('//*[@class="affiliations"]//li[1]/span').text
+        assert len(driver.find_elements_by_xpath('//*[@class="affiliations"]//li[2]/span')) == 0
 
         self.click_edit_button('affiliations')
         WebDriverWait(driver, 10).until(
