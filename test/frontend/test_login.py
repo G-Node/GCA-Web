@@ -33,7 +33,6 @@ class TestLogin:
 
     def test_logout(self):
         driver = self.driver
-        Cookies.load_cookies(driver)
         driver.get("http://" + Cookies.get_host_ip() + ":9000/conferences")
         WebDriverWait(driver, 30).until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="usermenu"]'))
