@@ -240,7 +240,7 @@ class TestEditor:
         driver.find_element_by_xpath('//*[@id="references-editor"]'
                                      '//input[contains(@class, "link")]').send_keys("www.link.com")
         driver.find_element_by_xpath('//*[@id="references-editor"]'
-                                     '//input[contains(@class, "doi")]').send_keys("12345")
+                                     '//input[contains(@class, "doi")]').send_keys("doi:0000000/000000000000")
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
 
