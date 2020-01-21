@@ -3,7 +3,25 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 import Cookies
+
+
+# Firefox-workaround, as move_to_element not working if element not in current screen
+def scroll(driver, object):
+    if 'firefox' in driver.capabilities['browserName']:
+        scroll_by_coord = 'window.scrollTo(%s,%s);' % (
+            object.location['x'],
+            object.location['y']
+        )
+        driver.execute_script(scroll_by_coord)
+
+
+def move_to_element_by_class_name(driver, name):
+    element = driver.find_element_by_class_name(name)
+    scroll(driver, element)
+    hover = ActionChains(driver).move_to_element(element)
+    hover.perform()
 
 
 def maximize_login(request):
@@ -44,7 +62,7 @@ def setup_editor(request):
     Cookies.load_cookies(driver)
     driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/BC14/submission")
     WebDriverWait(driver, 30).until(
-        EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div[2]/div[1]/span/button'))
+        EC.presence_of_element_located((By.CLASS_NAME, 'btn-success'))
     )
     yield
     driver.quit()
