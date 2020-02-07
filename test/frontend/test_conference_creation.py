@@ -270,3 +270,18 @@ class TestConferenceCreation:
         )
         move_to_element_by_id(driver, 'mAbsLen')
         assert "300" == driver.find_element_by_id('mAbsLen').get_attribute('value')
+
+    def test_maximum_figures(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'mFigs'))
+        )
+        element_send_keys_by_id(driver, 'mFigs', '3')
+
+        element_click_by_class_name(driver, 'btn-success')
+
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'mFigs'))
+        )
+        move_to_element_by_id(driver, 'mFigs')
+        assert "3" == driver.find_element_by_id('mFigs').get_attribute('value')
