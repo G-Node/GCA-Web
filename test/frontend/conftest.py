@@ -17,8 +17,22 @@ def scroll(driver, object):
         driver.execute_script(scroll_by_coord)
 
 
+def move_to_element_by_id(driver, name):
+    element = driver.find_element_by_id(name)
+    scroll(driver, element)
+    hover = ActionChains(driver).move_to_element(element)
+    hover.perform()
+
+
 def move_to_element_by_class_name(driver, name):
     element = driver.find_element_by_class_name(name)
+    scroll(driver, element)
+    hover = ActionChains(driver).move_to_element(element)
+    hover.perform()
+
+
+def move_to_element_by_xpath(driver, xpath):
+    element = driver.find_element_by_xpath(xpath)
     scroll(driver, element)
     hover = ActionChains(driver).move_to_element(element)
     hover.perform()
