@@ -191,3 +191,10 @@ class TestConferenceCreation:
             EC.presence_of_element_located((By.ID, 'logo'))
         )
         element_send_keys_by_id(driver, 'logo', 'https://portal.g-node.org/abstracts/bc18/BC18_header.jpg')
+
+    def test_iosapp(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'iosapp'))
+        )
+        element_send_keys_by_id(driver, 'iosapp', '999999999')
