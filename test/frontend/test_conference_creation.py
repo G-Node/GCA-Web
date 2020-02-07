@@ -75,3 +75,10 @@ class TestConferenceCreation:
         element_click_by_id(driver, 'submission')
 
         element_click_by_class_name(driver, 'btn-success')
+
+    def test_group(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'group'))
+        )
+        element_send_keys_by_id(driver, 'group', 'Test Group 1')
