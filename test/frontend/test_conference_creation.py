@@ -202,3 +202,10 @@ class TestConferenceCreation:
     def test_link(self):
         driver = self.driver
         element_send_keys_by_id(driver, 'link', 'http://www.nncn.de/en/bernstein-conference/2014')
+
+    def test_description(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'desc'))
+        )
+        element_send_keys_by_id(driver, 'desc', 'Important conference.')
