@@ -223,3 +223,18 @@ class TestConferenceCreation:
             EC.presence_of_element_located((By.ID, 'presentation'))
         )
         element_click_by_id(driver, 'presentation')
+
+    def test_add_topic(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'addTopic'))
+        )
+        element_send_keys_by_id(driver, 'addTopic', 'Topic 1')
+        driver.find_element_by_id('btn-add-topic').click()
+
+        assert len(driver.find_elements_by_xpath('//ul/li/span[contains(text(),"Topic 1")]')) == 1
+
+        element_send_keys_by_id(driver, 'addTopic', 'Topic 2')
+        driver.find_element_by_id('btn-add-topic').click()
+
+        assert len(driver.find_elements_by_xpath('//ul/li/span[contains(text(),"Topic 2")]')) == 1
