@@ -235,6 +235,15 @@ class TestConferenceCreation:
         assert old_date in element_get_attribute_by_id(driver, 'end', 'value')
 
         element_click_by_id(driver, 'mFigs')
+        tc_num = element_get_attribute_by_id(driver, 'short', 'value')
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/")
+
+        move_to_element_by_xpath(driver, '//div[@class="jumbotron"]/h3/a[contains(@href,"' + tc_num + '")]/../..')
+        conf_div = driver.find_element_by_xpath('//div[@class="jumbotron"]/h3/a[contains(@href,"' + tc_num + '")]/../..')
+        assert len(conf_div.find_elements_by_xpath('./p[contains(text(),"16")]')) == 1
+
+        conf_div.find_element_by_xpath('.//a[contains(text(),"Conference Settings")]').click()
 
     def test_deadline(self):
         driver = self.driver
