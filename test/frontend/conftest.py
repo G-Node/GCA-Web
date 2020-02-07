@@ -71,6 +71,21 @@ def element_send_keys_by_xpath(driver, xpath, keys):
     driver.find_element_by_xpath(xpath).send_keys(keys)
 
 
+def element_get_attribute_by_id(driver, name, attr):
+    move_to_element_by_id(driver, name)
+    return driver.find_element_by_id(name).get_attribute(attr)
+
+
+def element_get_attribute_by_class_name(driver, name, attr):
+    move_to_element_by_class_name(driver, name)
+    return driver.find_element_by_class_name(name).get_attribute(attr)
+
+
+def element_get_attribute_by_xpath(driver, xpath, attr):
+    move_to_element_by_xpath(driver, xpath)
+    return driver.find_element_by_xpath(xpath).get_attribute(attr)
+
+
 def maximize_login(request):
     if request.param == "chrome":
         driver = webdriver.Remote(
