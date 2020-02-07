@@ -128,3 +128,16 @@ def setup_editor(request):
     )
     yield
     driver.quit()
+
+
+@pytest.fixture(params=["chrome", "firefox"], scope="session")
+def setup_conference_creation(request):
+
+    driver = maximize_login(request)
+    Cookies.load_cookies(driver)
+    driver.get("http://" + Cookies.get_host_ip() + ":9000/dashboard/conference")
+    WebDriverWait(driver, 30).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'btn-success'))
+    )
+    yield
+    driver.quit()
