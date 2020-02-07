@@ -42,6 +42,19 @@ class TestConferenceCreation:
         )
         assert len(driver.find_elements_by_xpath('//div[contains(@class,"alert-danger")]/strong')) == 0
 
+        #move to front page and check, whether conference is shown and marked as "Unpublished"
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/")
+
+        assert len(driver.find_elements_by_xpath('//div[@class="media-body"]/h4[@id="' + tc_num + '"]')) == 1
+
+        move_to_element_by_xpath(driver, '//div[@class="media-body"]/h4[@id="' + tc_num + '"]')
+        conf_div = driver.find_element_by_xpath('//div[@class="media-body"]/h4[@id="' + tc_num + '"]/..')
+        assert len(conf_div.find_elements_by_xpath('./h4[contains(text(),"Unpublished")]')) == 1
+        assert len(conf_div.find_elements_by_xpath('./h4[contains(text(),"Test Conference")]')) == 1
+
+        conf_div.find_element_by_xpath('.//a[contains(text(),"Conference Settings")]').click()
+
+
     def test_published(self):
         driver = self.driver
         WebDriverWait(driver, 30).until(
