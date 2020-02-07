@@ -87,6 +87,15 @@ class TestConferenceCreation:
         tc_num = element_get_attribute_by_id(driver, 'short', 'value')
         element_click_by_class_name(driver, 'btn-success')
 
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/")
+
+        conf_div = driver.find_element_by_xpath('//div[@class="media-body"]/a[contains(@href,"' + tc_num + '")]/..')
+
+        assert len(conf_div.find_elements_by_xpath('..//div[contains(@class,"media-left")]//a/img[@src='
+                                                   '"https://portal.g-node.org/abstracts/bc14/BC14_icon.png"]')) == 1
+
+        conf_div.find_element_by_xpath('.//a[contains(text(),"Conference Settings")]').click()
+
     def test_active(self):
         driver = self.driver
         WebDriverWait(driver, 30).until(
