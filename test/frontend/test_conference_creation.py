@@ -48,3 +48,14 @@ class TestConferenceCreation:
             EC.presence_of_element_located((By.ID, 'published'))
         )
         element_click_by_id(driver, 'published')
+
+    # thumbnail only shown if conference not active
+    def test_thumbnail_url(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'thumbnail'))
+        )
+        element_send_keys_by_id(driver, 'thumbnail', 'https://portal.g-node.org/abstracts/bc14/BC14_icon.png')
+
+        tc_num = element_get_attribute_by_id(driver, 'short', 'value')
+        element_click_by_class_name(driver, 'btn-success')
