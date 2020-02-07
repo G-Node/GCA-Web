@@ -359,6 +359,16 @@ class TestConferenceCreation:
         )
         element_click_by_id(driver, 'presentation')
 
+        tc_num = element_get_attribute_by_id(driver, 'short', 'value')
+        element_click_by_class_name(driver, 'btn-success')
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num + "/submission")
+
+        assert len(driver.find_elements_by_class_name('poster-or-talk')) == 1
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num)
+        element_click_by_xpath(driver, '//div[@class="jumbotron"]//a[contains(text(),"Conference Settings")]')
+
     def test_add_topic(self):
         driver = self.driver
         WebDriverWait(driver, 30).until(
