@@ -499,3 +499,26 @@ class TestConferenceCreation:
         )
         move_to_element_by_id(driver, 'mFigs')
         assert "3" == driver.find_element_by_id('mFigs').get_attribute('value')
+
+        tc_num = element_get_attribute_by_id(driver, 'short', 'value')
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num + "/submission")
+
+        move_to_element_by_class_name(driver, 'figure')
+        assert len(driver.find_elements_by_class_name('figure')) == 1
+
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ID, 'button-edit-figure'))
+        )
+        driver.find_element_by_id('button-edit-figure').click()
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="figures-editor"]'))
+        )
+
+        assert len(driver.find_elements_by_xpath('//*[@id="figures-editor"]//div[@class="modal-body"]'
+                                                 '//div[contains(@data-bind, "figures().length>=3")]')) == 1
+
+        driver.find_element_by_xpath('//*[@id="figures-editor"]//button[@id="modal-button-ok"]').click()
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num)
+        element_click_by_xpath(driver, '//div[@class="jumbotron"]//a[contains(text(),"Conference Settings")]')
