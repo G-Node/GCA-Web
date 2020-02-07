@@ -82,3 +82,9 @@ class TestConferenceCreation:
             EC.presence_of_element_located((By.ID, 'group'))
         )
         element_send_keys_by_id(driver, 'group', 'Test Group 1')
+
+    def test_cite(self):
+        driver = self.driver
+        element_send_keys_by_id(driver, 'cite', 'The Test Conf, Somewhere, Sometime')
+
+        element_click_by_class_name(driver, 'btn-success')
