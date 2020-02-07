@@ -120,9 +120,7 @@
                         </div>
                         <div class="media-body">
                             <h4 class="alert-danger">Unpublished</h4>
-                            <a href="@routes.Application.abstractsPublic(conference.short)">
-                                <h4 class="media-heading">@conference.name</h4>
-                            </a>
+                            <h4 id="@conference.short" class="media-heading">@conference.name</h4>
                             <p>@conference.formatDuration</p>
                             <div class="form-group">
                                 <a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">
