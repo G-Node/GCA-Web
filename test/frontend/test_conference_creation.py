@@ -198,3 +198,7 @@ class TestConferenceCreation:
             EC.presence_of_element_located((By.ID, 'iosapp'))
         )
         element_send_keys_by_id(driver, 'iosapp', '999999999')
+
+    def test_link(self):
+        driver = self.driver
+        element_send_keys_by_id(driver, 'link', 'http://www.nncn.de/en/bernstein-conference/2014')
