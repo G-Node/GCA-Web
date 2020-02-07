@@ -250,3 +250,23 @@ class TestConferenceCreation:
 
         assert len(driver.find_elements_by_xpath('//ul/li/span[contains(text(),"Topic 1")]')) == 0
         assert len(driver.find_elements_by_xpath('//ul/li/span[contains(text(),"Topic 2")]')) == 1
+
+    def test_maximum_abstract_length(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'mAbsLen'))
+        )
+        # initial mAbsLen = 2000
+        element_send_keys_by_id(driver, 'mAbsLen', '300')
+
+        assert "Changing to shorter abstract length causes cut-offs" in \
+               driver.find_element_by_xpath('//div[contains(@class,"form-group")]'
+                                            '/div[contains(@class,"alert-danger")]').text
+
+        element_click_by_class_name(driver, 'btn-success')
+
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'mAbsLen'))
+        )
+        move_to_element_by_id(driver, 'mAbsLen')
+        assert "300" == driver.find_element_by_id('mAbsLen').get_attribute('value')
