@@ -154,3 +154,33 @@ class TestConferenceCreation:
         assert old_date in element_get_attribute_by_id(driver, 'end', 'value')
 
         element_click_by_id(driver, 'mFigs')
+
+    def test_deadline(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'deadline'))
+        )
+        element_click_by_id(driver, 'deadline')
+        driver.find_element_by_id('deadline').click()
+
+        move_to_element_by_id(driver, 'ui-datepicker-div')
+        driver.find_element_by_xpath('//a[contains(@class,"ui-datepicker-next")]').click()
+        driver.find_element_by_xpath('//div[@id="ui-datepicker-div"]//a[contains(text(), "10")]').click()
+        driver.find_element_by_xpath('//button[contains(@class, "datepicker-close")]').click()
+
+        element_click_by_class_name(driver, 'btn-success')
+
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'deadline'))
+        )
+        assert "10" in element_get_attribute_by_xpath(driver, '//*[@id="deadline"]', 'value')
+
+        old_date = element_get_attribute_by_id(driver, 'deadline', 'value')
+        element_send_keys_by_id(driver, 'deadline', '99/99/9999')
+        element_click_by_id(driver, "mFigs")
+
+        assert old_date in element_get_attribute_by_id(driver, 'deadline', 'value')
+        driver.find_element_by_id('deadline').send_keys('hello')
+        element_click_by_id(driver, "mFigs")
+        assert old_date in element_get_attribute_by_id(driver, 'deadline', 'value')
+        element_click_by_id(driver, "mFigs")
