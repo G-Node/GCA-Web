@@ -103,6 +103,21 @@ class TestConferenceCreation:
         )
         element_click_by_id(driver, 'active')
 
+        tc_num = element_get_attribute_by_id(driver, 'short', 'value')
+        element_click_by_class_name(driver, 'btn-success')
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/")
+
+        assert len(driver.find_elements_by_xpath('//div[@class="jumbotron"]/h3'
+                                                 '/a[contains(@href,"' + tc_num + '")]')) == 1
+
+        move_to_element_by_xpath(driver, '//div[@class="jumbotron"]/h3/a[contains(@href,"' + tc_num + '")]')
+        conf_div = driver.find_element_by_xpath('//div[@class="jumbotron"]/h3/a[contains(@href,"' + tc_num + '")]/../..')
+        assert len(conf_div.find_elements_by_xpath('.//a[contains(text(),"Manage")]')) == 1
+        assert len(conf_div.find_elements_by_xpath('.//a[contains(text(),"Conference Settings")]')) == 1
+
+        conf_div.find_element_by_xpath('.//a[contains(text(),"Conference Settings")]').click()
+
     def test_submission(self):
         driver = self.driver
         WebDriverWait(driver, 30).until(
