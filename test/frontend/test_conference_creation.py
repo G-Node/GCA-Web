@@ -88,3 +88,36 @@ class TestConferenceCreation:
         element_send_keys_by_id(driver, 'cite', 'The Test Conf, Somewhere, Sometime')
 
         element_click_by_class_name(driver, 'btn-success')
+
+    def test_start_date(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'start'))
+        )
+        element_click_by_id(driver, 'start')
+
+        move_to_element_by_id(driver, 'ui-datepicker-div')
+        driver.find_element_by_xpath('//a[contains(@class,"ui-datepicker-next")]').click()
+        driver.find_element_by_xpath('//div[@id="ui-datepicker-div"]//a[contains(text(), "14")]').click()
+        driver.find_element_by_xpath('//button[contains(@class, "datepicker-close")]').click()
+
+        element_click_by_class_name(driver, 'btn-success')
+
+        # other elements might not be reachable immediately after click of "Save" button
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'start'))
+        )
+        assert "14" in element_get_attribute_by_xpath(driver, '//*[@id="start"]', 'value')
+
+        old_date = element_get_attribute_by_id(driver, 'start', 'value')
+        element_send_keys_by_id(driver, 'start', '99/99/9999')
+
+        element_click_by_id(driver, 'mFigs')
+
+        move_to_element_by_id(driver, 'start')
+        assert old_date in element_get_attribute_by_id(driver, 'start', 'value')
+
+        driver.find_element_by_id('start').send_keys('hello')
+        assert old_date in element_get_attribute_by_id(driver, 'start', 'value')
+
+        element_click_by_id(driver, 'mFigs')
