@@ -420,6 +420,30 @@ class TestConferenceCreation:
         assert len(driver.find_elements_by_xpath('//ul/li/span[contains(text(),"Topic 1")]')) == 0
         assert len(driver.find_elements_by_xpath('//ul/li/span[contains(text(),"Topic 2")]')) == 1
 
+        tc_num = element_get_attribute_by_id(driver, 'short', 'value')
+        element_click_by_class_name(driver, 'btn-success')
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num + "/submission")
+
+        move_to_element_by_class_name(driver, 'topic')
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ID, 'button-edit-topic'))
+        )
+        driver.find_element_by_id('button-edit-topic').click()
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="topic-editor"]//div[contains(@class, "radio")]'))
+        )
+
+        assert len(driver.find_elements_by_xpath('//*[@id="topic-editor"]//div[contains(@class, "radio")]//input')) == 1
+        assert "Topic 2" in driver.find_element_by_xpath('//*[@id="topic-editor"]'
+                                                         '//div[contains(@class, "radio")]//span').text
+
+        driver.find_element_by_xpath('//*[@id="topic-editor"]//button[@id="modal-button-ok"]').click()
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num)
+        element_click_by_xpath(driver, '//div[@class="jumbotron"]//a[contains(text(),"Conference Settings")]')
+
     def test_maximum_abstract_length(self):
         driver = self.driver
         WebDriverWait(driver, 30).until(
