@@ -324,6 +324,18 @@ class TestConferenceCreation:
         )
         element_send_keys_by_id(driver, 'desc', 'Important conference.')
 
+        tc_num = element_get_attribute_by_id(driver, 'short', 'value')
+        element_click_by_class_name(driver, 'btn-success')
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num)
+
+        move_to_element_by_xpath(driver, '//div[@class="jumbotron"]'
+                                         '/div[@class="jumbo-small"]/p[@class="paragraph-small"]')
+        assert "Important conference." in driver.find_element_by_xpath(
+            '//div[@class="jumbotron"]/div[@class="jumbo-small"]/p[@class="paragraph-small"]').text
+
+        element_click_by_xpath(driver, '//div[@class="jumbotron"]//a[contains(text(),"Conference Settings")]')
+
     def test_notice(self):
         driver = self.driver
         WebDriverWait(driver, 30).until(
