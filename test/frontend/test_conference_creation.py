@@ -343,6 +343,15 @@ class TestConferenceCreation:
         )
         element_send_keys_by_id(driver, 'notice', 'Check abstracts before submission!')
 
+        tc_num = element_get_attribute_by_id(driver, 'short', 'value')
+        element_click_by_class_name(driver, 'btn-success')
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num)
+        assert len(driver.find_elements_by_xpath('//div[@class="jumbotron"]'
+                                                 '//p[contains(text(),"Check abstracts before submission!")]')) == 1
+
+        element_click_by_xpath(driver, '//div[@class="jumbotron"]//a[contains(text(),"Conference Settings")]')
+
     def test_presentation_preferences(self):
         driver = self.driver
         WebDriverWait(driver, 30).until(
