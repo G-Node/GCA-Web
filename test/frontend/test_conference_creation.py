@@ -238,3 +238,15 @@ class TestConferenceCreation:
         driver.find_element_by_id('btn-add-topic').click()
 
         assert len(driver.find_elements_by_xpath('//ul/li/span[contains(text(),"Topic 2")]')) == 1
+
+    def test_remove_topic(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'addTopic'))
+        )
+
+        move_to_element_by_xpath(driver, '//ul/li/span[contains(text(),"Topic 1")]/../a')
+        driver.find_element_by_xpath('//ul/li/span[contains(text(),"Topic 1")]/../a').click()
+
+        assert len(driver.find_elements_by_xpath('//ul/li/span[contains(text(),"Topic 1")]')) == 0
+        assert len(driver.find_elements_by_xpath('//ul/li/span[contains(text(),"Topic 2")]')) == 1
