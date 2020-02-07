@@ -130,6 +130,23 @@ Compare with the already used set up functions in the conftest.py file.
 An issue with selenium is that using `localhost` in URLs can cause problems with, e.g. loading cookies.
 As a workaround, always use the `Cookies.get_host_ip()`.
 
+With most browser drivers, elements searched for by functions of the type ```driver.get_element_by_*()```, will be 
+found automatically, even if they're outside of the section currently viewed on the screen. In Firefox resp. with 
+Gecko driver, an error will be returned in such cases. It is important for Firefox to always navigate/scroll to the
+element before examination by using ```move_to_element_by_*()```. For often used actions like ```click()```, 
+```send_keys()``` or ```get_attribute()``` functions including this are predefined in the conftest.py
+file.
+
+Generally tests run stable. In some incidences a test might fail due to local issues, repeating the test might work 
+then. To avoid such problems, it is useful to include
+```python
+WebDriverWait(driver, 30).until(
+    # insert expected condition, e.g.
+    EC.presence_of_element_located((By.XPATH, ''))
+)
+```
+after processes that are expected to need some time to execute, e.g. when saving a form or loading a page or modal.
+
 For all things python and selenium, it's good to have a look at this page:  
 https://selenium-python.readthedocs.io/
 
