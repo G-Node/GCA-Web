@@ -53,6 +53,24 @@ def element_click_by_xpath(driver, xpath):
     driver.find_element_by_xpath(xpath).click()
 
 
+def element_send_keys_by_id(driver, name, keys):
+    move_to_element_by_id(driver, name)
+    driver.find_element_by_id(name).clear()
+    driver.find_element_by_id(name).send_keys(keys)
+
+
+def element_send_keys_by_class_name(driver, name, keys):
+    move_to_element_by_class_name(driver, name)
+    driver.find_element_by_class_name(name).clear()
+    driver.find_element_by_class_name(name).send_keys(keys)
+
+
+def element_send_keys_by_xpath(driver, xpath, keys):
+    move_to_element_by_xpath(driver, xpath)
+    driver.find_element_by_xpath(xpath).clear()
+    driver.find_element_by_xpath(xpath).send_keys(keys)
+
+
 def maximize_login(request):
     if request.param == "chrome":
         driver = webdriver.Remote(
