@@ -184,3 +184,10 @@ class TestConferenceCreation:
         element_click_by_id(driver, "mFigs")
         assert old_date in element_get_attribute_by_id(driver, 'deadline', 'value')
         element_click_by_id(driver, "mFigs")
+
+    def test_logo_url(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'logo'))
+        )
+        element_send_keys_by_id(driver, 'logo', 'https://portal.g-node.org/abstracts/bc18/BC18_header.jpg')
