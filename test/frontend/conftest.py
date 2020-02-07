@@ -38,6 +38,21 @@ def move_to_element_by_xpath(driver, xpath):
     hover.perform()
 
 
+def element_click_by_id(driver, name):
+    move_to_element_by_id(driver, name)
+    driver.find_element_by_id(name).click()
+
+
+def element_click_by_class_name(driver, name):
+    move_to_element_by_class_name(driver, name)
+    driver.find_element_by_class_name(name).click()
+
+
+def element_click_by_xpath(driver, xpath):
+    move_to_element_by_xpath(driver, xpath)
+    driver.find_element_by_xpath(xpath).click()
+
+
 def maximize_login(request):
     if request.param == "chrome":
         driver = webdriver.Remote(
