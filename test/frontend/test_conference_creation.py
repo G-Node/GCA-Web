@@ -59,3 +59,10 @@ class TestConferenceCreation:
 
         tc_num = element_get_attribute_by_id(driver, 'short', 'value')
         element_click_by_class_name(driver, 'btn-success')
+
+    def test_active(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'active'))
+        )
+        element_click_by_id(driver, 'active')
