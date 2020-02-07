@@ -216,3 +216,10 @@ class TestConferenceCreation:
             EC.presence_of_element_located((By.ID, 'notice'))
         )
         element_send_keys_by_id(driver, 'notice', 'Check abstracts before submission!')
+
+    def test_presentation_preferences(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'presentation'))
+        )
+        element_click_by_id(driver, 'presentation')
