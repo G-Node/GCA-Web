@@ -41,3 +41,10 @@ class TestConferenceCreation:
             EC.invisibility_of_element_located((By.XPATH, '//div[contains(@class,"alert-danger")]/strong'))
         )
         assert len(driver.find_elements_by_xpath('//div[contains(@class,"alert-danger")]/strong')) == 0
+
+    def test_published(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'published'))
+        )
+        element_click_by_id(driver, 'published')
