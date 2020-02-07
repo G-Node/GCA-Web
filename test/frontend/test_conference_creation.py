@@ -62,6 +62,20 @@ class TestConferenceCreation:
         )
         element_click_by_id(driver, 'published')
 
+        tc_num = element_get_attribute_by_id(driver, 'short', 'value')
+        element_click_by_class_name(driver, 'btn-success')
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/")
+
+        assert len(driver.find_elements_by_xpath('//div[@class="media-body"]/a[contains(@href,"' + tc_num + '")]')) == 1
+
+        conf_div = driver.find_element_by_xpath('//div[@class="media-body"]/a[contains(@href,"' + tc_num + '")]/..')
+        assert len(conf_div.find_elements_by_xpath('./h4')) == 0
+        assert len(conf_div.find_elements_by_xpath('.//a[contains(text(),"Manage")]')) == 1
+        assert len(conf_div.find_elements_by_xpath('.//a[contains(text(),"Conference Settings")]')) == 1
+
+        conf_div.find_element_by_xpath('.//a[contains(text(),"Conference Settings")]').click()
+
     # thumbnail only shown if conference not active
     def test_thumbnail_url(self):
         driver = self.driver
