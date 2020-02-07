@@ -66,3 +66,12 @@ class TestConferenceCreation:
             EC.presence_of_element_located((By.ID, 'active'))
         )
         element_click_by_id(driver, 'active')
+
+    def test_submission(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'submission'))
+        )
+        element_click_by_id(driver, 'submission')
+
+        element_click_by_class_name(driver, 'btn-success')
