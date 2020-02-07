@@ -464,6 +464,27 @@ class TestConferenceCreation:
         move_to_element_by_id(driver, 'mAbsLen')
         assert "300" == driver.find_element_by_id('mAbsLen').get_attribute('value')
 
+        tc_num = element_get_attribute_by_id(driver, 'short', 'value')
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num + "/submission")
+
+        move_to_element_by_class_name(driver, 'abstract-text')
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ID, 'button-edit-abstract-text'))
+        )
+        driver.find_element_by_id('button-edit-abstract-text').click()
+
+        WebDriverWait(driver, 30).until(
+            EC.visibility_of_element_located((By.XPATH, '//*[@id="abstract-text-editor"]'))
+        )
+
+        assert driver.find_element_by_xpath('//*[@id="abstract-text-editor"]'
+                                            '//textarea[@id="text"]').get_attribute("maxlength") == '300'
+        driver.find_element(By.XPATH, '//*[@id="abstract-text-editor"]//button[@id="modal-button-ok"]').click()
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num)
+        element_click_by_xpath(driver, '//div[@class="jumbotron"]//a[contains(text(),"Conference Settings")]')
+
     def test_maximum_figures(self):
         driver = self.driver
         WebDriverWait(driver, 30).until(
