@@ -120,12 +120,33 @@ class TestConferenceCreation:
 
     def test_submission(self):
         driver = self.driver
+
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'short'))
+        )
+        tc_num = element_get_attribute_by_id(driver, 'short', 'value')
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num)
+        assert len(driver.find_elements_by_xpath('//ul[contains(@class,"nav")]'
+                                                 '//li/a[contains(text(),"Submission")]')) == 0
+        assert len(driver.find_elements_by_xpath('//div[@class="jumbotron"]//a[contains(text(),"Submit")]')) == 0
+
+        element_click_by_xpath(driver, '//div[@class="jumbotron"]//a[contains(text(),"Conference Settings")]')
+
         WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.ID, 'submission'))
         )
         element_click_by_id(driver, 'submission')
 
         element_click_by_class_name(driver, 'btn-success')
+
+        driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num)
+
+        assert len(driver.find_elements_by_xpath('//ul[contains(@class,"nav")]'
+                                                 '//li/a[contains(text(),"Submission")]')) == 1
+        assert len(driver.find_elements_by_xpath('//div[@class="jumbotron"]//a[contains(text(),"Submit")]')) == 1
+
+        element_click_by_xpath(driver, '//div[@class="jumbotron"]//a[contains(text(),"Conference Settings")]')
 
     def test_group(self):
         driver = self.driver
