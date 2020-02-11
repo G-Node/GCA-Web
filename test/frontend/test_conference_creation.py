@@ -49,7 +49,7 @@ class TestConferenceCreation:
 
         move_to_element_by_xpath(driver, '//div[@class="media-body"]/h4[@id="' + tc_num + '"]')
         conf_div = driver.find_element_by_xpath('//div[@class="media-body"]/h4[@id="' + tc_num + '"]/..')
-        assert len(conf_div.find_elements_by_xpath('./h4[contains(text(),"Unpublished")]')) == 1
+        assert 'unpublished' in conf_div.find_element_by_xpath('..').get_attribute('class')
         assert len(conf_div.find_elements_by_xpath('./h4[contains(text(),"Test Conference")]')) == 1
 
         conf_div.find_element_by_xpath('.//a[contains(text(),"Conference Settings")]').click()
@@ -70,7 +70,7 @@ class TestConferenceCreation:
         assert len(driver.find_elements_by_xpath('//div[@class="media-body"]/a[contains(@href,"' + tc_num + '")]')) == 1
 
         conf_div = driver.find_element_by_xpath('//div[@class="media-body"]/a[contains(@href,"' + tc_num + '")]/..')
-        assert len(conf_div.find_elements_by_xpath('./h4')) == 0
+        assert 'unpublished' not in conf_div.find_element_by_xpath('..').get_attribute('class')
         assert len(conf_div.find_elements_by_xpath('.//a[contains(text(),"Manage")]')) == 1
         assert len(conf_div.find_elements_by_xpath('.//a[contains(text(),"Conference Settings")]')) == 1
 

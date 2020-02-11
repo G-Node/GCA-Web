@@ -99,9 +99,12 @@
         }
 
         @if(account.isDefined) {
+            <hr>
+                <h3>Unpublished conferences</h3>
+            <br/>
             @for((conference,i) <- list_other.zipWithIndex) {
                 @if(!conference.isPublished && (conference.isOwner(account.get) || account.get.isAdmin)) {
-                    <div class="media">
+                    <div class="media unpublished">
                         <div class="pull-left media-left">
                             <a href="@routes.Application.conference(conference.short)"
                             data-bind="ifnot: $root.thumbnails()[@i]">
@@ -119,7 +122,6 @@
 
                         </div>
                         <div class="media-body">
-                            <h4 class="alert-danger">Unpublished</h4>
                             <h4 id="@conference.short" class="media-heading">@conference.name</h4>
                             <p>@conference.formatDuration</p>
                             <div class="form-group">
