@@ -4,7 +4,10 @@ from uuid import uuid1
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from conftest import *
+from conftest import element_send_keys_by_id, element_send_keys_by_class_name, element_send_keys_by_xpath, \
+    element_click_by_id, element_click_by_class_name, element_click_by_xpath, \
+    element_get_attribute_by_id, element_get_attribute_by_class_name, element_get_attribute_by_xpath, \
+    move_to_element_by_id, move_to_element_by_class_name, move_to_element_by_xpath
 
 
 @pytest.mark.usefixtures("setup_conference_creation")
