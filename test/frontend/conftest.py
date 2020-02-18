@@ -121,7 +121,7 @@ def setup_login(request):
 def setup_editor(request):
 
     driver = maximize_login(request)
-    Cookies.load_cookies(driver)
+    Cookies.admin_login(driver)
     driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/BC14/submission")
     WebDriverWait(driver, 30).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'btn-success'))
@@ -134,7 +134,7 @@ def setup_editor(request):
 def setup_conference_creation(request):
 
     driver = maximize_login(request)
-    Cookies.load_cookies(driver)
+    Cookies.admin_login(driver=driver)
     driver.get("http://" + Cookies.get_host_ip() + ":9000/dashboard/conference")
     WebDriverWait(driver, 30).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'btn-success'))

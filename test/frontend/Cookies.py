@@ -42,6 +42,15 @@ def set_cookies(driver, user, password):
     save_cookies(driver, cookies_location)
 
 
+def admin_login(driver, user="alice@foo.com", password="testtest"):
+
+    driver.get("http://" + get_host_ip() + ":9000/login")
+    driver.maximize_window()
+    driver.find_element_by_id("identifier").send_keys(user)
+    driver.find_element_by_id("password").send_keys(password)
+    driver.find_element_by_id("submit").click()
+
+
 def get_host_ip():
     try:
         host_name = socket.gethostname()
