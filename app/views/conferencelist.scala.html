@@ -97,5 +97,42 @@
             </div>
             }
         }
+
+        @if(account.isDefined) {
+            <hr>
+                <h3>Unpublished conferences</h3>
+            <br/>
+            @for((conference,i) <- list_other.zipWithIndex) {
+                @if(!conference.isPublished && (conference.isOwner(account.get) || account.get.isAdmin)) {
+                    <div class="media unpublished">
+                        <div class="pull-left media-left">
+                            <a href="@routes.Application.conference(conference.short)"
+                            data-bind="ifnot: $root.thumbnails()[@i]">
+                            @if(conference.getConfText("thumbnail") != null
+                                    && conference.getConfText("thumbnail") != "") {
+                                <img class="conference-logo img-responsive img-rounded"
+                                src='@conference.getConfText("thumbnail")'>
+                                }
+                            </a>
+                            <a href="@routes.Application.conference(conference.short)"
+                            data-bind="if: $root.thumbnails()[@i]">
+                                <img class="media-object conference-thumbnail" src=""
+                                data-bind="attr: {src: $root.thumbnails()[@i].URL}">
+                            </a>
+
+                        </div>
+                        <div class="media-body">
+                            <h4 id="@conference.short" class="media-heading">@conference.name</h4>
+                            <p>@conference.formatDuration</p>
+                            <div class="form-group">
+                                <a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">
+                                    Conference Settings
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
     }
 }

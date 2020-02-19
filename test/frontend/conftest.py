@@ -17,11 +17,73 @@ def scroll(driver, object):
         driver.execute_script(scroll_by_coord)
 
 
+def move_to_element_by_id(driver, name):
+    element = driver.find_element_by_id(name)
+    scroll(driver, element)
+    hover = ActionChains(driver).move_to_element(element)
+    hover.perform()
+
+
 def move_to_element_by_class_name(driver, name):
     element = driver.find_element_by_class_name(name)
     scroll(driver, element)
     hover = ActionChains(driver).move_to_element(element)
     hover.perform()
+
+
+def move_to_element_by_xpath(driver, xpath):
+    element = driver.find_element_by_xpath(xpath)
+    scroll(driver, element)
+    hover = ActionChains(driver).move_to_element(element)
+    hover.perform()
+
+
+def element_click_by_id(driver, name):
+    move_to_element_by_id(driver, name)
+    driver.find_element_by_id(name).click()
+
+
+def element_click_by_class_name(driver, name):
+    move_to_element_by_class_name(driver, name)
+    driver.find_element_by_class_name(name).click()
+
+
+def element_click_by_xpath(driver, xpath):
+    move_to_element_by_xpath(driver, xpath)
+    driver.find_element_by_xpath(xpath).click()
+
+
+def element_send_keys_by_id(driver, name, keys):
+    move_to_element_by_id(driver, name)
+    driver.find_element_by_id(name).clear()
+    driver.find_element_by_id(name).send_keys(keys)
+
+
+def element_send_keys_by_class_name(driver, name, keys):
+    move_to_element_by_class_name(driver, name)
+    driver.find_element_by_class_name(name).clear()
+    driver.find_element_by_class_name(name).send_keys(keys)
+
+
+def element_send_keys_by_xpath(driver, xpath, keys):
+    move_to_element_by_xpath(driver, xpath)
+    driver.find_element_by_xpath(xpath).clear()
+    driver.find_element_by_xpath(xpath).send_keys(keys)
+
+
+def element_get_attribute_by_id(driver, name, attr):
+    move_to_element_by_id(driver, name)
+    return driver.find_element_by_id(name).get_attribute(attr)
+
+
+def element_get_attribute_by_class_name(driver, name, attr):
+    move_to_element_by_class_name(driver, name)
+    return driver.find_element_by_class_name(name).get_attribute(attr)
+
+
+def element_get_attribute_by_xpath(driver, xpath, attr):
+    move_to_element_by_xpath(driver, xpath)
+    return driver.find_element_by_xpath(xpath).get_attribute(attr)
 
 
 def maximize_login(request):
@@ -59,8 +121,21 @@ def setup_login(request):
 def setup_editor(request):
 
     driver = maximize_login(request)
-    Cookies.load_cookies(driver)
+    Cookies.admin_login(driver)
     driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/BC14/submission")
+    WebDriverWait(driver, 30).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'btn-success'))
+    )
+    yield
+    driver.quit()
+
+
+@pytest.fixture(params=["chrome", "firefox"], scope="session")
+def setup_conference_creation(request):
+
+    driver = maximize_login(request)
+    Cookies.admin_login(driver=driver)
+    driver.get("http://" + Cookies.get_host_ip() + ":9000/dashboard/conference")
     WebDriverWait(driver, 30).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'btn-success'))
     )
