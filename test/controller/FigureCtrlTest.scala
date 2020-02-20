@@ -71,7 +71,10 @@ class FigureCtrlTest extends BaseCtrlTest {
       }, Some(s"multipart/form-data; boundary=$boundary"))
   }
 
-  @Test
+  // The Future in Figure upload is not properly resolved during the tests
+  // and leads to a timeout exception on docker build tests where the test
+  // assumably requires 33s while the timout exception is raised after 20s.
+  @Test(timeout=40000)
   def testUpload(): Unit = {
     val formats = List("jpg", "png")
     for (format <- formats) {
