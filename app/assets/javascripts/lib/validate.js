@@ -143,7 +143,6 @@ define(["lib/tools"], function (tools) {
         };
 
         self.hasErrors = function() {
-            console.log(self.errors);
             return self.errors.length > 0;
         };
 
