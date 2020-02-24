@@ -62,8 +62,8 @@ class BannerService(banPath: String, banMobilePath: String) {
     *
     * @return The created banner.
     *
-    * @throws EntityNotFoundException If the account does not exist
-    * @throws EntityNotFoundException If the conference has no uuid
+    * @throws EntityNotFoundException If the account does not exist or
+    *                                 if the conference has no uuid.
     * @throws IllegalAccessException If the user is not a conference owner or admin.
     */
   def create(ban: Banner, data: TemporaryFile, conference: Conference, account: Account) : Banner = {
@@ -110,8 +110,8 @@ class BannerService(banPath: String, banMobilePath: String) {
     * @param conference   The conference the banner belongs to.
     * @param account The account uploading the banner.
     *
-    * @throws EntityNotFoundException If the account does not exist
-    * @throws EntityNotFoundException If the conference has no uuid
+    * @throws EntityNotFoundException If the account does not exist or
+    *                                 if the conference has no uuid.
     * @throws IllegalAccessException If the user is not a conference owner or admin.
     */
   def uploadMobile(ban: Banner, conference: Conference, account: Account) : Unit = {
@@ -185,8 +185,8 @@ class BannerService(banPath: String, banMobilePath: String) {
     *
     * @return True if the banner was deleted, false otherwise.
     *
-    * @throws EntityNotFoundException If the account does not exist.
-    * @throws EntityNotFoundException If the banner does not exist.
+    * @throws EntityNotFoundException If the account does not exist or
+    *                                 if the banner does not exist.
     */
   def delete(id: String, account: Account) : Unit = {
     transaction { (em, tx) =>
