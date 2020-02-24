@@ -59,6 +59,20 @@ class TestEditor:
             (By.XPATH, '/html/body/div[2]/div[2]/div[3]/div/p'), 'Unable to submit'
         )
 
+    def test_presentation_type(self):
+        driver = self.driver
+        self.click_edit_button('poster-or-talk')
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="is-talk-editor"]'))
+        )
+
+        driver.find_element_by_xpath('//*[@id="is-talk-editor"]//div[contains(@class, "radio")][2]//input').click()
+
+        driver.find_element_by_xpath('//*[@id="is-talk-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert "Poster" in driver.find_element_by_xpath('//*[@class="poster-or-talk"]//span').text
+
     def test_add_author(self):
         driver = self.driver
         self.click_edit_button('authors')
@@ -339,20 +353,6 @@ class TestEditor:
         driver.find_element_by_xpath('//*[@id="topic-editor"]//button[@id="modal-button-ok"]').click()
 
         assert "topic two" in driver.find_element_by_xpath('//*[@class="topic"]/p').text
-
-    def test_presentation_type(self):
-        driver = self.driver
-        self.click_edit_button('poster-or-talk')
-
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="is-talk-editor"]'))
-        )
-
-        driver.find_element_by_xpath('//*[@id="is-talk-editor"]//div[contains(@class, "radio")][2]//input').click()
-
-        driver.find_element_by_xpath('//*[@id="is-talk-editor"]//button[@id="modal-button-ok"]').click()
-
-        assert "Poster" in driver.find_element_by_xpath('//*[@class="poster-or-talk"]//span').text
 
     def test_submit(self):
         driver = self.driver
