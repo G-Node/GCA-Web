@@ -525,3 +525,69 @@ class TestConferenceCreation:
 
         driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num)
         element_click_by_xpath(driver, '//div[@class="jumbotron"]//a[contains(text(),"Conference Settings")]')
+
+    def test_groups(self):
+        driver = self.driver
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, '//li/a[contains(@href,"groups")]'))
+        )
+
+        move_to_element_by_xpath(driver, '//li/a[contains(@href,"groups")]')
+        driver.find_element_by_xpath('//li/a[contains(@href,"groups")]').click()
+
+        move_to_element_by_xpath(driver, '//tr[@id="newGroup"]//td/button')
+        driver.find_element_by_xpath('//tr[@id="newGroup"]//td/button').click()
+
+        assert "Prefix, short and long entries have to be provided!" in \
+               driver.find_element_by_xpath('//div[contains(@class,"alert-danger")]/strong').text
+
+        move_to_element_by_id(driver, 'ngPrefix')
+        driver.find_element_by_id('ngPrefix').send_keys("u")
+
+        move_to_element_by_id(driver, 'ngShort')
+        driver.find_element_by_id('ngShort').send_keys("3")
+
+        move_to_element_by_id(driver, 'ngName')
+        driver.find_element_by_id('ngName').send_keys("3")
+
+        move_to_element_by_xpath(driver, '//tr[@id="newGroup"]//td/button')
+        driver.find_element_by_xpath('//tr[@id="newGroup"]//td/button').click()
+
+        assert "Prefix can only contain numbers!" in \
+               driver.find_element_by_xpath('//div[contains(@class,"alert-danger")]/strong').text
+
+        element_send_keys_by_id(driver, 'ngPrefix', '1.2')
+
+        move_to_element_by_xpath(driver, '//tr[@id="newGroup"]//td/button')
+        driver.find_element_by_xpath('//tr[@id="newGroup"]//td/button').click()
+
+        assert "Prefix can only contain numbers!" in \
+               driver.find_element_by_xpath('//div[contains(@class,"alert-danger")]/strong').text
+
+        element_send_keys_by_id(driver, 'ngPrefix', '1')
+
+        move_to_element_by_xpath(driver, '//tr[@id="newGroup"]//td/button')
+        driver.find_element_by_xpath('//tr[@id="newGroup"]//td/button').click()
+
+        assert "Name cannot contain only numbers!" in \
+               driver.find_element_by_xpath('//div[contains(@class,"alert-danger")]/strong').text
+
+        element_send_keys_by_id(driver, 'ngName', 'Group 1')
+
+        move_to_element_by_xpath(driver, '//tr[@id="newGroup"]//td/button')
+        driver.find_element_by_xpath('//tr[@id="newGroup"]//td/button').click()
+
+        assert "Short cannot contain only numbers!" in \
+               driver.find_element_by_xpath('//div[contains(@class,"alert-danger")]/strong').text
+
+        element_send_keys_by_id(driver, 'ngShort', 'G1')
+
+        move_to_element_by_xpath(driver, '//tr[@id="newGroup"]//td/button')
+        driver.find_element_by_xpath('//tr[@id="newGroup"]//td/button').click()
+
+        assert len(driver.find_elements_by_xpath('//div[contains(@class,"alert-danger")]/strong')) == 0
+
+        move_to_element_by_xpath(driver, '//*[@id="groups"]/div/button[contains(@class,"btn-success")]')
+        driver.find_element_by_xpath('//*[@id="groups"]/div/button[contains(@class,"btn-success")]').click()
+
+        assert len(driver.find_elements_by_xpath('//div[contains(@class,"alert-danger")]/strong')) == 0
