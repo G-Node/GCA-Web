@@ -39,7 +39,7 @@ define(["lib/tools"], function (tools) {
             reference,
             must("text", notNumeric, "Reference text cannot be numeric"),
             must("link", notNumeric, "Reference link cannot be numeric"),
-            must("doi", notNumeric, "Reference doi cannot be numeric"),
+            must("doi", notNumeric, "Reference doi cannot be numeric")
         );
     }
 
@@ -233,7 +233,7 @@ define(["lib/tools"], function (tools) {
      * @returns {boolean}
      */
     function notNumeric(val) {
-        return val ? toString(val).match(/\D/) : false;
+        return (val == null || !isFinite(val));
     }
 
     /**
