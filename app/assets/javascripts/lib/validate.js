@@ -37,7 +37,7 @@ define(["lib/tools"], function (tools) {
     function validateReference(reference) {
         return validate(
             reference,
-            must("text", notNumeric, "Reference text cannot be numeric"),
+            must("text", notNumeric, "Reference citation cannot be numeric"),
             must("link", notNumeric, "Reference link cannot be numeric"),
             must("doi", notNumeric, "Reference doi cannot be numeric")
         );
