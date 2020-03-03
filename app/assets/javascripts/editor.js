@@ -462,6 +462,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             var result = validate.abstract(abstract);
             if (result.hasErrors()) {
+                self.abstract(abstract);
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
                 return;
             }
