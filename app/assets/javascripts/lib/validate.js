@@ -233,7 +233,7 @@ define(["lib/tools"], function (tools) {
      * @returns {boolean}
      */
     function notNumeric(val) {
-        return (val == null || !isFinite(val));
+        return (val == null || val === "" || !isFinite(val));
     }
 
     /**
