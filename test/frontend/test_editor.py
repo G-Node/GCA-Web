@@ -59,6 +59,20 @@ class TestEditor:
             (By.XPATH, '/html/body/div[2]/div[2]/div[3]/div/p'), 'Unable to submit'
         )
 
+    def test_presentation_type(self):
+        driver = self.driver
+        self.click_edit_button('poster-or-talk')
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="is-talk-editor"]'))
+        )
+
+        driver.find_element_by_xpath('//*[@id="is-talk-editor"]//div[contains(@class, "radio")][2]//input').click()
+
+        driver.find_element_by_xpath('//*[@id="is-talk-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert "Poster" in driver.find_element_by_xpath('//*[@class="poster-or-talk"]//span').text
+
     def test_add_author(self):
         driver = self.driver
         self.click_edit_button('authors')
@@ -236,6 +250,66 @@ class TestEditor:
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[contains(@class, "btn-add")]').click()
         driver.find_element_by_xpath('//*[@id="references-editor"]'
+                                     '//input[contains(@class, "citation")]').send_keys("5657")
+
+        driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
+
+        #assert driver.find_element_by_xpath('//*[@class="references"]//a')
+        assert driver.find_element_by_xpath('//div[contains(@class, "callout")]/p')
+
+        assert EC.text_to_be_present_in_element(
+            (By.XPATH, '//div[contains(@class, "callout")]/p'), 'Reference text'
+        )
+
+        self.click_edit_button('references')
+
+
+        driver.find_element_by_xpath('//*[@id="references-editor"]//button[contains(@class, "btn-add")]').click()
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'))
+        )
+
+        driver.find_element_by_xpath('//*[@id="references-editor"]'
+                                     '//input[contains(@class, "citation")]').send_keys("John, title.")
+
+        driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert driver.find_element_by_xpath('//div[contains(@class, "callout")]/p')
+
+        assert EC.text_to_be_present_in_element(
+            (By.XPATH, '//div[contains(@class, "callout")]/p'), 'Reference link'
+        )
+
+        self.click_edit_button('references')
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'))
+        )
+
+        driver.find_element_by_xpath('//*[@id="references-editor"]//button[contains(@class, "btn-add")]').click()
+
+        driver.find_element_by_xpath('//*[@id="references-editor"]'
+                                     '//input[contains(@class, "link")]').send_keys("www.link.com")
+
+        driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
+
+        assert driver.find_element_by_xpath('//div[contains(@class, "callout")]/p')
+
+        assert EC.text_to_be_present_in_element(
+            (By.XPATH, '//div[contains(@class, "callout")]/p'), 'Reference doi'
+        )
+
+        self.click_edit_button('references')
+
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'))
+        )
+
+        driver.find_element_by_xpath('//*[@id="references-editor"]//button[contains(@class, "btn-add")]').click()
+
+
+        driver.find_element_by_xpath('//*[@id="references-editor"]'
                                      '//input[contains(@class, "citation")]').send_keys("John, title.")
         driver.find_element_by_xpath('//*[@id="references-editor"]'
                                      '//input[contains(@class, "link")]').send_keys("www.link.com")
@@ -244,7 +318,11 @@ class TestEditor:
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
 
-        assert driver.find_element_by_xpath('//*[@class="references"]//a')
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@class="references"]//a'))
+        )
+
+        assert len(driver.find_elements_by_xpath('//div[contains(@class, "callout")]/p')) == 0
 
     def test_remove_references(self):
         driver = self.driver
@@ -275,20 +353,6 @@ class TestEditor:
         driver.find_element_by_xpath('//*[@id="topic-editor"]//button[@id="modal-button-ok"]').click()
 
         assert "topic two" in driver.find_element_by_xpath('//*[@class="topic"]/p').text
-
-    def test_presentation_type(self):
-        driver = self.driver
-        self.click_edit_button('poster-or-talk')
-
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="is-talk-editor"]'))
-        )
-
-        driver.find_element_by_xpath('//*[@id="is-talk-editor"]//div[contains(@class, "radio")][2]//input').click()
-
-        driver.find_element_by_xpath('//*[@id="is-talk-editor"]//button[@id="modal-button-ok"]').click()
-
-        assert "Poster" in driver.find_element_by_xpath('//*[@class="poster-or-talk"]//span').text
 
     def test_submit(self):
         driver = self.driver

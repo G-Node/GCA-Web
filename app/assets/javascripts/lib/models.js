@@ -1239,19 +1239,19 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
             function appendReference(model) {
                 // Post processing, remove all leading and trailing whitespaces.
-                if (model.text() !== null && model.text() !== undefined) {
+                if (model.text() != null && model.text() !== undefined && !isFinite(model.text())) {
                     model.text(model.text().trim());
                 }
-                if (model.link() !== null && model.link() !== undefined) {
+                if (model.link() != null && model.link() !== undefined && !isFinite(model.link())) {
                     model.link(model.link().trim());
                 }
-                if (model.doi() !== null && model.doi() !== undefined) {
+                if (model.doi() != null && model.doi() !== undefined && !isFinite(model.doi())) {
                     model.doi(model.doi().trim());
                 }
 
                 // Post process doi. Remove any leading doi link parts that hinder rendering later on.
                 var doiValue = model.doi();
-                if (doiValue !== null && doiValue !== undefined) {
+                if (doiValue !== null && doiValue !== undefined && !isFinite(doiValue)) {
                     // First remove leading http or https
                     doiValue = doiValue.replace(/^https:\/\//, "").replace(/http:\/\//, "");
 

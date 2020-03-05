@@ -54,6 +54,7 @@ class FigureCtrlTest extends BaseCtrlTest {
             file.contentType.getOrElse("image/jpeg") + "\r\n\r\n").getBytes(charset)
 
           val f2 = new File(file.ref+"new")
+          f2.deleteOnExit()
           FileUtils.copyFile(file.ref.file, f2)
           val data = Image.fromFile(f2).bytes
           val footer = "\r\n".getBytes(charset)
