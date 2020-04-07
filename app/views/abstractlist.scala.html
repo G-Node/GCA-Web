@@ -53,9 +53,14 @@
         </ul>
     </div>
 
+    <div class="jumbo-small" data-bind="visible: !$root.selectedAbstract()">
+        <input id="search" type="text" placeholder="Search abstracts..." data-bind="value:filter, valueUpdate: 'keyup'" >
+    </div>
+
     <!-- The abstract list -->
     <div id="abstract-list" class="list-group" data-bind="foreach: abstracts">
-        <div class="list-group-item" id="abstract-list-item" data-bind="click: $root.selectAbstract">
+        <div class="list-group-item" id="abstract-list-item"
+        data-bind="click: $root.selectAbstract, visible: $parent.isInFiltered($data)">
             <div class="abstract">
                 <div class="sortId" data-bind="html: $parent.makeAbstractID($data)"></div>
                 <div class="box">
