@@ -313,6 +313,30 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
             }
         };
 
+        self.filteredAbsArr = ko.computed(function () {
+            let filteredAbs = [];
+            if (self.filter() && self.abstracts()) {
+                filteredAbs = self.abstracts().filter(function (abstract) {
+                    const checkFields = [abstract.title, abstract.text];
+                    abstract.authors.forEach(function (author) {
+                        checkFields.push(author.firstName);
+                        checkFields.push(author.lastName);
+                    });
+
+                    return (checkFields.filter(cFd =>
+                        cFd.toLowerCase().includes(self.filter().toLowerCase())).length > 0);
+                });
+            }
+            return filteredAbs;
+        });
+
+        self.isInFiltered = function (abstract) {
+            if (self.filter()) {
+                return self.filteredAbsArr().includes(abstract, 0);
+            }
+            return true;
+        };
+
         // Data IO
         self.ioFailHandler = function(jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
