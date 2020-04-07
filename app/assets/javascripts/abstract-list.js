@@ -23,6 +23,7 @@ require(["lib/models", "lib/tools", "knockout", "sammy", "lib/offline"], functio
         self.selectedAbstract = ko.observable(null);
         self.isFavouriteAbstract = ko.observable(false);
         self.groups = ko.observableArray(null);
+        self.filter = ko.observable(null);
         self.error = ko.observable(false);
         self.messageSuccess = ko.observable(false);
         self.favs = ko.observableArray(null);
