@@ -5,6 +5,14 @@ FROM java:8
 ENV  ACTIVATOR_VERSION 1.3.7
 ENV  DEBIAN_FRONTEND noninteractive
 
+# Use existing sbt cache from existing container to avoid downloads
+# This should be removed once the service has been upgraded to latest
+# sbt and play version.
+FROM gnode/gca:dependencies
+
+RUN rm /tmp/typesafe-activator-${ACTIVATOR_VERSION}-minimal.zip
+RUN rm -r /usr/local/activator-${ACTIVATOR_VERSION}-minimal
+
 WORKDIR /tmp
 RUN wget https://downloads.typesafe.com/typesafe-activator/${ACTIVATOR_VERSION}/typesafe-activator-${ACTIVATOR_VERSION}-minimal.zip
 RUN unzip -q typesafe-activator-${ACTIVATOR_VERSION}-minimal.zip -d /usr/local
