@@ -1,17 +1,8 @@
-# Dockerfile for GCA-Web
+# Dockerfile preparing the dependencies for the full GCA-Web build
 FROM java:8
 
-# same as travis
 ENV  ACTIVATOR_VERSION 1.3.7
 ENV  DEBIAN_FRONTEND noninteractive
-
-# Use existing sbt cache from existing container to avoid downloads
-# This should be removed once the service has been upgraded to latest
-# sbt and play version.
-FROM gnode/gca:dependencies
-
-RUN rm /tmp/typesafe-activator-${ACTIVATOR_VERSION}-minimal.zip
-RUN rm -r /usr/local/activator-${ACTIVATOR_VERSION}-minimal
 
 WORKDIR /tmp
 RUN wget https://downloads.typesafe.com/typesafe-activator/${ACTIVATOR_VERSION}/typesafe-activator-${ACTIVATOR_VERSION}-minimal.zip
@@ -42,18 +33,3 @@ RUN echo "db.default.url=\"jdbc:h2:/srv/gca/db/gca-web\"" >> /srv/gca/conf/appli
 WORKDIR /srv/gca
 # Required to get dependencies before running the startup script.
 RUN activator test stage
-
-VOLUME ["/srv/gca/db"]
-VOLUME ["/srv/gca/figures"]
-VOLUME ["/srv/gca/figures_mobile"]
-VOLUME ["/srv/gca/banners"]
-VOLUME ["/srv/gca/banners_mobile"]
-
-# Add an external directory for production config files.
-RUN mkdir -p /srv/ext_conf
-VOLUME ["/srv/ext_conf"]
-
-EXPOSE 9000
-ADD docker_startup.sh /srv/gca
-RUN chmod +x ./docker_startup.sh
-ENTRYPOINT ["./docker_startup.sh"]
