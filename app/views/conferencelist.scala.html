@@ -67,7 +67,7 @@
                         <a href="@routes.Application.conference(conference.short)"
                         data-bind="ifnot: $root.thumbnails()[@i]">
                         @if(conference.getConfText("thumbnail") != null && conference.getConfText("thumbnail") != "") {
-                            <img class="conference-logo img-responsive img-rounded"
+                            <img class="media-object conference-thumbnail"
                             src='@conference.getConfText("thumbnail")'>
                         }
                         </a>
