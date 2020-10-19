@@ -2,6 +2,9 @@
 SQL script to copy the content of 'description', 'logo' URL and 'thumbnail' URL
 from the 'conference' table to the new 'conftext' table. The columns above will be deprecated.
 This script is required when migrating from GCA-Web v1.2 to v1.3.
+
+Make sure uuid_generate_v1 is available by enabling the extension uuid-ossp as
+the postgres superuser in database play: 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
 */
 
 INSERT INTO conftext (uuid, cttype, "text", conference_uuid)
