@@ -1,0 +1,161 @@
+[
+  {
+    "title": "Satellite Workshops",
+    "subtitle": "Description",
+    "tracks": [
+      {
+        "title": "Session title",
+        "subtitle": null,
+        "chair": ["Chair name"],
+        "events": [
+          {
+            "title": "Session Day I",
+            "subtitle": null,
+            "start": "14:00",
+            "end": "18:30",
+            "date": "2018-09-25",
+            "location": "Some Address",
+            "type": "workshop",
+            "authors": ["Author A", "Author B"]
+          },
+          {
+            "title": "Session Day II",
+            "subtitle": null,
+            "start": "08:30",
+            "end": "12:30",
+            "date": "2018-09-26",
+            "location": "Other Address",
+            "type": "workshop",
+            "authors": ["Author A", "Author B"]
+          }
+        ]
+      },
+      {
+        "title": "Other Session title",
+        "subtitle": null,
+        "chair": ["Chair A","Chair B"],
+        "events": [
+          {
+            "title": "Session Day I",
+            "subtitle": null,
+            "start": "14:00",
+            "end": "18:30",
+            "date": "2018-09-25",
+            "location": "Address 1",
+            "type": "workshop",
+            "authors": ["Author A"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Postdoc Meeting",
+    "subtitle": null,
+    "start": "19:00",
+    "end": null,
+    "location": "Some address",
+    "date": "2018-09-25",
+    "authors": [],
+    "type": "social",
+    "abstract": null
+  },
+  {
+    "title" : "Conference Opening",
+    "subtitle" : null,
+    "chair" : [],
+    "events" : [
+      {
+        "title": "Welcome by Name A",
+        "subtitle": "President of the Technische Universität",
+        "start": "14:00",
+        "end": "14:05",
+        "location": null,
+        "date": "2018-09-26",
+        "authors": ["Author A"],
+        "type": "talk",
+        "abstract": null
+      },
+      {
+        "title": "Opening Lecture",
+        "subtitle": "Pushing the limits",
+        "start": "14:15",
+        "end": "15:00",
+        "location": null,
+        "date": "2018-09-26",
+        "authors": ["Author A"],
+        "type": "talk",
+        "abstract": null
+      }
+    ]
+  },
+  {
+    "title" : "Braitenberg Award",
+    "subtitle" : null,
+    "chair" : [],
+    "events" : [
+      {
+        "title": "Valentino Braitenberg Award Ceremony",
+        "subtitle": null,
+        "start": "15:00",
+        "end": "15:20",
+        "location": null,
+        "date": "2018-09-26",
+        "authors": [],
+        "type": "symposium",
+        "abstract": null
+      }
+    ]
+  },
+  {
+    "title": "Poster Session I",
+    "subtitle": null,
+    "start": "16:00",
+    "end": "19:30",
+    "location": null,
+    "date": "2018-09-26",
+    "authors": [],
+    "type": "poster",
+    "abstract": null
+  },
+  {
+    "title": "Coffee Break",
+    "subtitle": null,
+    "start": "10:30",
+    "end": "11:00",
+    "location": null,
+    "date": "2018-09-27",
+    "authors": [],
+    "type": "break",
+    "abstract": null
+  },
+  {
+    "title" : "Session II",
+    "subtitle" : null,
+    "chair" : [],
+    "events" : [
+      {
+        "title": "Some title",
+        "subtitle": null,
+        "start": "11:00",
+        "end": "11:45",
+        "location": null,
+        "date": "2018-09-27",
+        "authors": ["Author A"],
+        "type": "talk",
+        "abstract": null
+      },
+      {
+        "title": "Other title",
+        "subtitle": null,
+        "start": "11:45",
+        "end": "12:30",
+        "location": null,
+        "date": "2018-09-27",
+        "authors": ["Author B"],
+        "type": "talk",
+        "abstract": null
+      }
+    ]
+  }
+]
