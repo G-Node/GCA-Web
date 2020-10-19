@@ -43,12 +43,16 @@ require(["lib/models", "lib/tools", "lib/leaflet/leaflet", "lib/msg", "lib/astat
                     if (self.mapType === "locations") {
                         $("#map-div").height(0.75 * $("#map-div").width());
                         var confmap = L.map("map-div");
-                        L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-                            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+
+                        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                            attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
+                            tileSize: 512,
                             maxZoom: 20,
-                            id: "mapbox.streets",
+                            zoomOffset: -1,
+                            id: 'mapbox/streets-v11',
                             accessToken: "pk.eyJ1IjoiZ25vZGUiLCJhIjoiY2prOGFnbzY2MWlmNzN3bzRhY205N2oxZCJ9.-j7b1aziK9nUNjgHQh0ojw"
                         }).addTo(confmap);
+
                         var texts = "";
 
                         for (var i = 0; i < geojson.length; i++) {
