@@ -5,7 +5,11 @@ until the next release.
 
 # Release v1.3
 
+## Database changes
 This release contains required database changes. After redeployment the database needs to be updated manually using script `patch/patch_v1_2_to_v1_3.sql` and the database service restarted for the changes to take effect.
+
+## Build issues
+The current project setup is still using an outdated build tool (`activator`) and is several versions behind the current state of the play framework. The default sbt CDNs for the underlying build dependencies have been updated and no longer provide the required dependencies. Therefore additional CDNs have been added to the project build to keep it in a buildable state. The docker build has been changed to a layered build to decrease build times. See issue #497 and PRs #498 and #509 for details.
 
 ## Features
 - Stars will be shown in the conference abstract list, indicating favourite abstracts of a user. For details see issue #419.
@@ -14,8 +18,10 @@ This release contains required database changes. After redeployment the database
 - Mobile versions of Figures and conference banners are now automatically created when a figure or banner is uploaded.
 - Both site and conference admins are now able to upload banners via the conference administration.
 - The selenium framework is introduced to integrate frontend tests.
-- The way DOI is represented in the abstract submission for has been updated. For details see issue #478.
+- The way a DOI is represented in the abstract submission form has been updated. For details see issue #478.
 - A conference dependent notice can now be added via the conference administration page. The text will be displayed for the respective conference only. This change requires a database change. After deployment of this version, the database needs to be updated manually using script `patch/patch_v1_2_to_v1_3.sql`. For details see issue #470.
+- A search field has been added to the abstract list of a conference. For details see PR #505.
+- Print view specific stylesheets were added for useful print rendering of abstract pages. See issue #508 for details.
 
 ## Fixes
 - The string length of notes when changing abstract states will be limited to 255 to avoid database problems. For details see issue #448.
@@ -25,6 +31,9 @@ This release contains required database changes. After redeployment the database
 - Added feedback on a failed email change attempt. For details see issue #467.
 - Added sign-up notification after new user registration. For details see issue #473.
 - The login status is now always properly displayed. For details see issue #468.
+- Added error messages on abstract reference validation, if the input is numeric. For details see issue #499.
+- The outdated mapbox.js plugin was updated to the latest version. See issue #510 for details.
+- An issue was resolved where the sortid of an abstract was removed when an abstract was re-submitted. See issue #507 for details.
 
 
 # Release v1.2
