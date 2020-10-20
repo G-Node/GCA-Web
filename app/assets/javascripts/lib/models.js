@@ -1093,6 +1093,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
         var self = tools.inherit(this, Model, uuid);
 
+        self.sortId = sortId || 0;
         self.title = ko.observable(title || null);
         self.topic = ko.observable(topic || null);
         self.text = ko.observable(text || null);
