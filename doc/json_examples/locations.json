@@ -1,0 +1,38 @@
+[
+  {
+    "ExtendedData":"",
+    "name":"Event A",
+    "description":"Theologicum, Liebermeisterstrasse 12, 72076 Tuebingen",
+    "point":
+    {
+      "lat":48.525742885891795,
+      "long":9.055126905441284
+    },
+    "type":0,
+    "zoomto":true
+  },
+  {
+    "ExtendedData":"",
+    "name":"Event B",
+    "description":"Neckarmueller, Gartenstrasse , 72076 Tuebingen",
+    "point":
+    {
+      "lat":48.51933329151785,
+      "long":9.058645963668823
+    },
+    "type":5,
+    "zoomto":true
+  },
+  {
+    "ExtendedData":"",
+    "name":"Event C",
+    "description":"Rittersaal, Burgsteige 11, 72076 Tuebingen",
+    "point":
+    {
+      "lat":48.51937237686814,
+      "long":9.050610065460205
+    },
+    "type":0,
+    "zoomto":true
+  }
+]

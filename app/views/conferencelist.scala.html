@@ -67,7 +67,7 @@
                         <a href="@routes.Application.conference(conference.short)"
                         data-bind="ifnot: $root.thumbnails()[@i]">
                         @if(conference.getConfText("thumbnail") != null && conference.getConfText("thumbnail") != "") {
-                            <img class="conference-logo img-responsive img-rounded"
+                            <img class="media-object conference-thumbnail"
                             src='@conference.getConfText("thumbnail")'>
                         }
                         </a>
@@ -99,10 +99,13 @@
         }
 
         @if(account.isDefined) {
-            <hr>
-                <h3>Unpublished conferences</h3>
-            <br/>
             @for((conference,i) <- list_other.zipWithIndex) {
+                @if(i == 0 && (conference.isOwner(account.get) || account.get.isAdmin)) {
+                    <hr>
+                    <h3>Unpublished conferences</h3>
+                    <br/>
+                }
+
                 @if(!conference.isPublished && (conference.isOwner(account.get) || account.get.isAdmin)) {
                     <div class="media unpublished">
                         <div class="pull-left media-left">
