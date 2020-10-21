@@ -8,15 +8,19 @@ from conftest import move_to_element_by_class_name
 @pytest.mark.usefixtures("setup_editor")
 class TestEditor:
 
+    def wait_until(self, delay, condition):
+        WebDriverWait(self.driver, delay).until(condition)
+
     def click_edit_button(self, name):
         driver = self.driver
         if 'firefox' in driver.capabilities['browserName'] and name != 'title':
             move_to_element_by_class_name(driver, 'title')
+
         move_to_element_by_class_name(driver, name)
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.ID, 'button-edit-' + name))
-        )
-        driver.find_element_by_id('button-edit-' + name).click()
+
+        element_id = 'button-edit-' + name
+        self.wait_until(10, EC.visibility_of_element_located((By.ID, element_id)))
+        driver.find_element_by_id(element_id).click()
 
     def test_simple_creation(self):
         driver = self.driver
@@ -31,9 +35,8 @@ class TestEditor:
 
         #wait for dialog to open
         #xpath neccessary, as several copies in source code
-        WebDriverWait(driver, 30).until(
-            EC.visibility_of_element_located((By.XPATH, '//*[@id="title-editor"]'))
-        )
+        wait_on_path = '//*[@id="title-editor"]'
+        self.wait_until(30, EC.visibility_of_element_located((By.XPATH, wait_on_path)))
 
         #get title and set keys
         title = driver.find_element_by_xpath('//*[@id="title-editor"]//input[@id="title"]')
@@ -43,15 +46,11 @@ class TestEditor:
         driver.find_element(By.XPATH, '//*[@id="title-editor"]//button[@id="modal-button-ok"]').click()
 
         #save
-        WebDriverWait(driver, 30).until(
-            EC.element_to_be_clickable((By.ID, 'button-action'))
-        )
+        self.wait_until(30, EC.element_to_be_clickable((By.ID, 'button-action')))
         driver.find_element_by_id('button-action').click()
 
         #make sure, issues are shown
-        WebDriverWait(driver, 30).until(
-            EC.text_to_be_present_in_element((By.ID, 'lblvalid'), 'issues')
-        )
+        self.wait_until(30, EC.text_to_be_present_in_element((By.ID, 'lblvalid'), 'issues'))
 
         #make sure, submit fails
         driver.find_element_by_id('button-action').click()
@@ -63,9 +62,8 @@ class TestEditor:
         driver = self.driver
         self.click_edit_button('poster-or-talk')
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="is-talk-editor"]'))
-        )
+        wait_on_path = '//*[@id="is-talk-editor"]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
 
         driver.find_element_by_xpath('//*[@id="is-talk-editor"]//div[contains(@class, "radio")][2]//input').click()
 
@@ -77,9 +75,8 @@ class TestEditor:
         driver = self.driver
         self.click_edit_button('authors')
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="authors-editor"]//button[contains(@class, "btn-add")]'))
-        )
+        wait_on_path = '//*[@id="authors-editor"]//button[contains(@class, "btn-add")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
 
         driver.find_element_by_xpath('//*[@id="authors-editor"]//button[contains(@class, "btn-add")]').click()
 
@@ -116,9 +113,8 @@ class TestEditor:
         driver = self.driver
         self.click_edit_button('authors')
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="authors-editor"]//button[contains(@class, "btn-add")]'))
-        )
+        wait_on_path = '//*[@id="authors-editor"]//button[contains(@class, "btn-add")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
 
         driver.find_element_by_xpath('//*[@id="authors-editor"]//tr[2]//button[contains(@class, "btn-remove")]').click()
 
@@ -133,10 +129,8 @@ class TestEditor:
         driver = self.driver
         self.click_edit_button('affiliations')
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="affiliations-editor"]'
-                                                  '//button[contains(@class, "btn-add")]'))
-        )
+        wait_on_path = '//*[@id="affiliations-editor"]//button[contains(@class, "btn-add")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
 
         driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[contains(@class, "btn-add")]').click()
         driver.find_element_by_xpath('//*[@id="affiliations-editor"]'
@@ -158,10 +152,8 @@ class TestEditor:
 
         self.click_edit_button('affiliations')
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="affiliations-editor"]'
-                                                  '//button[contains(@class, "btn-add")]'))
-        )
+        wait_on_path = '//*[@id="affiliations-editor"]//button[contains(@class, "btn-add")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
 
         driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[contains(@class, "btn-add")]').click()
         driver.find_element_by_xpath('//*[@id="affiliations-editor"]//tr[4]'
@@ -189,10 +181,8 @@ class TestEditor:
         driver = self.driver
         self.click_edit_button('affiliations')
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="affiliations-editor"]'
-                                                  '//button[contains(@class, "btn-remove")]'))
-        )
+        wait_on_path = '//*[@id="affiliations-editor"]//button[contains(@class, "btn-remove")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
         driver.find_element_by_xpath('//*[@id="affiliations-editor"]'
                                      '//tr[1]//button[contains(@class, "btn-remove")]').click()
         driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[@id="modal-button-ok"]').click()
@@ -201,10 +191,9 @@ class TestEditor:
         assert len(driver.find_elements_by_xpath('//*[@class="affiliations"]//li[2]/span')) == 0
 
         self.click_edit_button('affiliations')
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="affiliations-editor"]'
-                                                  '//button[contains(@class, "button-remove-affiliation-from-author")]'))
-        )
+
+        wait_on_path = '//*[@id="affiliations-editor"]//button[contains(@class, "button-remove-affiliation-from-author")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
         driver.find_element_by_xpath('//*[@id="affiliations-editor"]'
                                      '//button[contains(@class, "button-remove-affiliation-from-author")]').click()
         driver.find_element_by_xpath('//*[@id="affiliations-editor"]//button[@id="modal-button-ok"]').click()
@@ -215,9 +204,8 @@ class TestEditor:
         driver = self.driver
         self.click_edit_button('abstract-text')
 
-        WebDriverWait(driver, 30).until(
-            EC.visibility_of_element_located((By.XPATH, '//*[@id="abstract-text-editor"]'))
-        )
+        wait_on_path = '//*[@id="abstract-text-editor"]'
+        self.wait_until(30, EC.visibility_of_element_located((By.XPATH, wait_on_path)))
 
         text = driver.find_element_by_xpath('//*[@id="abstract-text-editor"]//textarea[@id="text"]')
         text.send_keys('Test abstract test.')
@@ -229,9 +217,8 @@ class TestEditor:
         driver = self.driver
         self.click_edit_button('acknowledgements')
 
-        WebDriverWait(driver, 30).until(
-            EC.visibility_of_element_located((By.XPATH, '//*[@id="acknowledgements-editor"]'))
-        )
+        wait_on_path = '//*[@id="acknowledgements-editor"]'
+        self.wait_until(30, EC.visibility_of_element_located((By.XPATH, wait_on_path)))
 
         acknowledgements = driver.find_element_by_xpath('//*[@id="acknowledgements-editor"]'
                                                         '//textarea[@id="acknowledgements"]')
@@ -244,9 +231,8 @@ class TestEditor:
         driver = self.driver
         self.click_edit_button('references')
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'))
-        )
+        wait_on_path = '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[contains(@class, "btn-add")]').click()
         driver.find_element_by_xpath('//*[@id="references-editor"]'
@@ -263,12 +249,10 @@ class TestEditor:
 
         self.click_edit_button('references')
 
-
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[contains(@class, "btn-add")]').click()
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'))
-        )
+        wait_on_path = '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
 
         driver.find_element_by_xpath('//*[@id="references-editor"]'
                                      '//input[contains(@class, "citation")]').send_keys("John, title.")
@@ -285,9 +269,8 @@ class TestEditor:
 
         self.click_edit_button('references')
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'))
-        )
+        wait_on_path = '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[contains(@class, "btn-add")]').click()
 
@@ -306,12 +289,10 @@ class TestEditor:
 
         self.click_edit_button('references')
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'))
-        )
+        wait_on_path = '//*[@id="references-editor"]//button[contains(@class, "btn-add")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[contains(@class, "btn-add")]').click()
-
 
         driver.find_element_by_xpath('//*[@id="references-editor"]'
                                      '//input[contains(@class, "citation")]').send_keys("John, title.")
@@ -322,20 +303,16 @@ class TestEditor:
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@class="references"]//a'))
-        )
-
+        wait_on_path = '//*[@class="references"]//a'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
         assert len(driver.find_elements_by_xpath('//div[contains(@class, "callout")]/p')) == 0
 
     def test_remove_references(self):
         driver = self.driver
         self.click_edit_button('references')
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="references-editor"]'
-                                                  '//button[contains(@class, "btn-remove")]'))
-        )
+        wait_on_path = '//*[@id="references-editor"]//button[contains(@class, "btn-remove")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//tr[1]'
                                      '//button[contains(@class, "btn-remove")]').click()
@@ -348,9 +325,8 @@ class TestEditor:
         driver = self.driver
         self.click_edit_button('topic')
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="topic-editor"]//div[contains(@class, "radio")]'))
-        )
+        wait_on_path = '//*[@id="topic-editor"]//div[contains(@class, "radio")]'
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, wait_on_path)))
 
         driver.find_element_by_xpath('//*[@id="topic-editor"]//div[contains(@class, "radio")][2]//input').click()
 
