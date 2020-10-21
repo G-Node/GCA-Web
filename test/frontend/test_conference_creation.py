@@ -13,6 +13,9 @@ from conftest import element_send_keys_by_id, element_send_keys_by_class_name, e
 @pytest.mark.usefixtures("setup_conference_creation")
 class TestConferenceCreation:
 
+    def wait_until(self, delay, condition):
+        WebDriverWait(self.driver, delay).until(condition)
+
     def test_name(self):
         driver = self.driver
         element_send_keys_by_id(driver, 'name', "Test Conference")
@@ -30,20 +33,17 @@ class TestConferenceCreation:
 
         element_click_by_class_name(driver, 'btn-success')
 
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, '//div[contains(@class,"alert-danger")]/strong'))
-        )
+        xpath_alert = '//div[contains(@class,"alert-danger")]/strong'
+        self.wait_until(30, EC.presence_of_element_located((By.XPATH, xpath_alert)))
         assert "Conference short is already in use." in \
-               driver.find_element_by_xpath('//div[contains(@class,"alert-danger")]/strong').text
+               driver.find_element_by_xpath(xpath_alert).text
 
         element_send_keys_by_id(driver, 'short', tc_num)
 
         element_click_by_class_name(driver, 'btn-success')
 
-        WebDriverWait(driver, 30).until(
-            EC.invisibility_of_element_located((By.XPATH, '//div[contains(@class,"alert-danger")]/strong'))
-        )
-        assert len(driver.find_elements_by_xpath('//div[contains(@class,"alert-danger")]/strong')) == 0
+        self.wait_until(30, EC.invisibility_of_element_located((By.XPATH, xpath_alert)))
+        assert len(driver.find_elements_by_xpath(xpath_alert)) == 0
 
         #move to front page and check, whether conference is shown and marked as "Unpublished"
         driver.get("http://" + Cookies.get_host_ip() + ":9000/")
@@ -60,9 +60,8 @@ class TestConferenceCreation:
 
     def test_published(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'published'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'published')))
         element_click_by_id(driver, 'published')
 
         tc_num = element_get_attribute_by_id(driver, 'short', 'value')
@@ -82,9 +81,8 @@ class TestConferenceCreation:
     # thumbnail only shown if conference not active
     def test_thumbnail_url(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'thumbnail'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'thumbnail')))
         element_send_keys_by_id(driver, 'thumbnail', 'https://portal.g-node.org/abstracts/bc14/BC14_icon.png')
 
         tc_num = element_get_attribute_by_id(driver, 'short', 'value')
@@ -101,9 +99,7 @@ class TestConferenceCreation:
 
     def test_active(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'active'))
-        )
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'active')))
         element_click_by_id(driver, 'active')
 
         tc_num = element_get_attribute_by_id(driver, 'short', 'value')
@@ -124,9 +120,7 @@ class TestConferenceCreation:
     def test_submission(self):
         driver = self.driver
 
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'short'))
-        )
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'short')))
         tc_num = element_get_attribute_by_id(driver, 'short', 'value')
 
         driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num)
@@ -136,9 +130,7 @@ class TestConferenceCreation:
 
         element_click_by_xpath(driver, '//div[@class="jumbotron"]//a[contains(text(),"Conference Settings")]')
 
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'submission'))
-        )
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'submission')))
         element_click_by_id(driver, 'submission')
 
         element_click_by_class_name(driver, 'btn-success')
@@ -153,9 +145,8 @@ class TestConferenceCreation:
 
     def test_group(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'group'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'group')))
         element_send_keys_by_id(driver, 'group', 'Test Group 1')
 
     def test_cite(self):
@@ -166,9 +157,8 @@ class TestConferenceCreation:
 
     def test_start_date(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'start'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'start')))
         element_click_by_id(driver, 'start')
 
         move_to_element_by_id(driver, 'ui-datepicker-div')
@@ -179,9 +169,7 @@ class TestConferenceCreation:
         element_click_by_class_name(driver, 'btn-success')
 
         # other elements might not be reachable immediately after click of "Save" button
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'start'))
-        )
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'start')))
         assert "14" in element_get_attribute_by_xpath(driver, '//*[@id="start"]', 'value')
 
         old_date = element_get_attribute_by_id(driver, 'start', 'value')
@@ -208,9 +196,8 @@ class TestConferenceCreation:
 
     def test_end_date(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'end'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'end')))
         element_click_by_id(driver, 'end')
 
         move_to_element_by_id(driver, 'ui-datepicker-div')
@@ -221,9 +208,7 @@ class TestConferenceCreation:
         element_click_by_class_name(driver, 'btn-success')
 
         # other elements might not be reachable immediately after click of "Save" button
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'end'))
-        )
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'end')))
         assert "16" in element_get_attribute_by_xpath(driver, '//*[@id="end"]', 'value')
 
         old_date = element_get_attribute_by_id(driver, 'end', 'value')
@@ -250,9 +235,8 @@ class TestConferenceCreation:
 
     def test_deadline(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'deadline'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'deadline')))
         element_click_by_id(driver, 'deadline')
         driver.find_element_by_id('deadline').click()
 
@@ -263,9 +247,7 @@ class TestConferenceCreation:
 
         element_click_by_class_name(driver, 'btn-success')
 
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'deadline'))
-        )
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'deadline')))
         assert "10" in element_get_attribute_by_xpath(driver, '//*[@id="deadline"]', 'value')
 
         old_date = element_get_attribute_by_id(driver, 'deadline', 'value')
@@ -280,9 +262,8 @@ class TestConferenceCreation:
 
     def test_logo_url(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'logo'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'logo')))
         element_send_keys_by_id(driver, 'logo', 'https://portal.g-node.org/abstracts/bc18/BC18_header.jpg')
 
         tc_num = element_get_attribute_by_id(driver, 'short', 'value')
@@ -300,9 +281,8 @@ class TestConferenceCreation:
 
     def test_iosapp(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'iosapp'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'iosapp')))
         element_send_keys_by_id(driver, 'iosapp', '999999999')
 
     def test_link(self):
@@ -322,9 +302,8 @@ class TestConferenceCreation:
 
     def test_description(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'desc'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'desc')))
         element_send_keys_by_id(driver, 'desc', 'Important conference.')
 
         tc_num = element_get_attribute_by_id(driver, 'short', 'value')
@@ -341,9 +320,8 @@ class TestConferenceCreation:
 
     def test_notice(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'notice'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'notice')))
         element_send_keys_by_id(driver, 'notice', 'Check abstracts before submission!')
 
         tc_num = element_get_attribute_by_id(driver, 'short', 'value')
@@ -357,9 +335,8 @@ class TestConferenceCreation:
 
     def test_presentation_preferences(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'presentation'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'presentation')))
         element_click_by_id(driver, 'presentation')
 
         tc_num = element_get_attribute_by_id(driver, 'short', 'value')
@@ -374,9 +351,8 @@ class TestConferenceCreation:
 
     def test_add_topic(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'addTopic'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'addTopic')))
         element_send_keys_by_id(driver, 'addTopic', 'Topic 1')
         driver.find_element_by_id('btn-add-topic').click()
 
@@ -394,14 +370,11 @@ class TestConferenceCreation:
         driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num + "/submission")
 
         move_to_element_by_class_name(driver, 'topic')
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.ID, 'button-edit-topic'))
-        )
+
+        self.wait_until(10, EC.visibility_of_element_located((By.ID, 'button-edit-topic')))
         driver.find_element_by_id('button-edit-topic').click()
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="topic-editor"]//div[contains(@class, "radio")]'))
-        )
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, '//*[@id="topic-editor"]//div[contains(@class, "radio")]')))
 
         assert len(driver.find_elements_by_xpath('//*[@id="topic-editor"]//div[contains(@class, "radio")]//input')) == 2
 
@@ -413,10 +386,8 @@ class TestConferenceCreation:
 
     def test_remove_topic(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'addTopic'))
-        )
 
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'addTopic')))
         move_to_element_by_xpath(driver, '//ul/li/span[contains(text(),"Topic 1")]/../a')
         driver.find_element_by_xpath('//ul/li/span[contains(text(),"Topic 1")]/../a').click()
 
@@ -429,14 +400,10 @@ class TestConferenceCreation:
         driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num + "/submission")
 
         move_to_element_by_class_name(driver, 'topic')
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.ID, 'button-edit-topic'))
-        )
+        self.wait_until(10, EC.visibility_of_element_located((By.ID, 'button-edit-topic')))
         driver.find_element_by_id('button-edit-topic').click()
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="topic-editor"]//div[contains(@class, "radio")]'))
-        )
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, '//*[@id="topic-editor"]//div[contains(@class, "radio")]')))
 
         assert len(driver.find_elements_by_xpath('//*[@id="topic-editor"]//div[contains(@class, "radio")]//input')) == 1
         assert "Topic 2" in driver.find_element_by_xpath('//*[@id="topic-editor"]'
@@ -449,9 +416,8 @@ class TestConferenceCreation:
 
     def test_maximum_abstract_length(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'mAbsLen'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'mAbsLen')))
         # initial mAbsLen = 2000
         element_send_keys_by_id(driver, 'mAbsLen', '300')
 
@@ -461,9 +427,7 @@ class TestConferenceCreation:
 
         element_click_by_class_name(driver, 'btn-success')
 
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'mAbsLen'))
-        )
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'mAbsLen')))
         move_to_element_by_id(driver, 'mAbsLen')
         assert "300" == driver.find_element_by_id('mAbsLen').get_attribute('value')
 
@@ -472,14 +436,11 @@ class TestConferenceCreation:
         driver.get("http://" + Cookies.get_host_ip() + ":9000/conference/" + tc_num + "/submission")
 
         move_to_element_by_class_name(driver, 'abstract-text')
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.ID, 'button-edit-abstract-text'))
-        )
+
+        self.wait_until(10, EC.visibility_of_element_located((By.ID, 'button-edit-abstract-text')))
         driver.find_element_by_id('button-edit-abstract-text').click()
 
-        WebDriverWait(driver, 30).until(
-            EC.visibility_of_element_located((By.XPATH, '//*[@id="abstract-text-editor"]'))
-        )
+        self.wait_until(30, EC.visibility_of_element_located((By.XPATH, '//*[@id="abstract-text-editor"]')))
 
         assert driver.find_element_by_xpath('//*[@id="abstract-text-editor"]'
                                             '//textarea[@id="text"]').get_attribute("maxlength") == '300'
@@ -490,16 +451,14 @@ class TestConferenceCreation:
 
     def test_maximum_figures(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'mFigs'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'mFigs')))
         element_send_keys_by_id(driver, 'mFigs', '3')
 
         element_click_by_class_name(driver, 'btn-success')
 
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'mFigs'))
-        )
+        self.wait_until(30, EC.presence_of_element_located((By.ID, 'mFigs')))
+
         move_to_element_by_id(driver, 'mFigs')
         assert "3" == driver.find_element_by_id('mFigs').get_attribute('value')
 
@@ -509,14 +468,10 @@ class TestConferenceCreation:
         move_to_element_by_class_name(driver, 'figure')
         assert len(driver.find_elements_by_class_name('figure')) == 1
 
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.ID, 'button-edit-figure'))
-        )
+        self.wait_until(10, EC.visibility_of_element_located((By.ID, 'button-edit-figure')))
         driver.find_element_by_id('button-edit-figure').click()
 
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="figures-editor"]'))
-        )
+        self.wait_until(10, EC.element_to_be_clickable((By.XPATH, '//*[@id="figures-editor"]')))
 
         assert len(driver.find_elements_by_xpath('//*[@id="figures-editor"]//div[@class="modal-body"]'
                                                  '//div[contains(@data-bind, "figures().length>=3")]')) == 1
@@ -528,9 +483,8 @@ class TestConferenceCreation:
 
     def test_groups(self):
         driver = self.driver
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, '//li/a[contains(@href,"groups")]'))
-        )
+
+        self.wait_until(30, EC.presence_of_element_located((By.XPATH, '//li/a[contains(@href,"groups")]')))
 
         move_to_element_by_xpath(driver, '//li/a[contains(@href,"groups")]')
         driver.find_element_by_xpath('//li/a[contains(@href,"groups")]').click()
