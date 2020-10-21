@@ -272,6 +272,8 @@ class TestEditor:
 
         driver.find_element_by_xpath('//*[@id="references-editor"]'
                                      '//input[contains(@class, "citation")]').send_keys("John, title.")
+        driver.find_element_by_xpath('//*[@id="references-editor"]'
+                                     '//input[contains(@class, "link")]').send_keys("123")
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
 
@@ -291,6 +293,8 @@ class TestEditor:
 
         driver.find_element_by_xpath('//*[@id="references-editor"]'
                                      '//input[contains(@class, "link")]').send_keys("www.link.com")
+        driver.find_element_by_xpath('//*[@id="references-editor"]'
+                                     '//input[contains(@class, "doi")]').send_keys("123")
 
         driver.find_element_by_xpath('//*[@id="references-editor"]//button[@id="modal-button-ok"]').click()
 
