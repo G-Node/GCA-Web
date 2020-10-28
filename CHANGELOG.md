@@ -34,6 +34,7 @@ The current project setup is still using an outdated build tool (`activator`) an
 - Added error messages on abstract reference validation, if the input is numeric. For details see issue #499.
 - The outdated mapbox.js plugin was updated to the latest version. See issue #510 for details.
 - An issue was resolved where the sortid of an abstract was removed when an abstract was re-submitted. See issue #507 for details.
+- The outdated mathjax.js plugin was updated to version 2.7.7. See issue #506 for details.
 
 
 # Release v1.2
