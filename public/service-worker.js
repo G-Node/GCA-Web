@@ -1,4 +1,4 @@
-self._cacheVersion = "v20";
+self._cacheVersion = "v21";
 
 self.resourcesToCache = [
     // Views
@@ -69,12 +69,12 @@ self.resourcesToCache = [
     "https://cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-debug.js",
     "https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.1/jquery-ui-timepicker-addon.min.css",
     "https://fonts.googleapis.com/css?family=EB+Garamond|Open+Sans",
-    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js?delayStartupUntil=configured",
-    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/extensions/MathMenu.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/extensions/tex2jax.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/jax/output/HTML-CSS/config.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/jax/input/TeX/config.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/extensions/MathZoom.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?delayStartupUntil=configured",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/extensions/MathMenu.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/extensions/tex2jax.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/jax/output/HTML-CSS/config.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/jax/input/TeX/config.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/extensions/MathZoom.js",
 
     // Styles
     "/assets/stylesheets/_g-node-bootstrap.less",
