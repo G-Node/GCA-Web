@@ -174,6 +174,15 @@
 
     <!-- main content -->
     <div class="container main-content">
+
+    @conference.map { conf =>
+        @if(conf.getConfTextAsHTML("notice") != null && conf.getConfTextAsHTML("notice") != "") {
+            <div class="jumbotron">
+            @Html(conf.getConfTextAsHTML("notice"))
+            </div>
+        }
+    }
+
     @content
     </div>
 
@@ -188,11 +197,15 @@
                         <li><a href="@routes.Application.datenschutz">Datenschutz</a></li>
                     </ul>
                 </div>
-                <div class="pull-right"><p>The G-Node Conference Site &mdash; © <a href="http://www.g-node.org">G-Node</a> 2019 </p></div>
+                <div class="pull-right">
+                    <p>The G-Node Conference Site &mdash; ©
+                        <a href="http://www.g-node.org">G-Node</a> 2013-
+                        <script>document.write(new Date().getFullYear());</script>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-
 
 </body>
 </html>

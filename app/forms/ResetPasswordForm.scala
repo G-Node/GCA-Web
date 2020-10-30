@@ -11,6 +11,6 @@ object ResetPasswordForm {
     "passwordold" -> nonEmptyText,
     "password1" -> nonEmptyText(minLength = 6),
     "password2" -> nonEmptyText
-  ) verifying(Messages("passwords.not.equal"), passwords => passwords._2 == passwords._3 ))
+  ))
 
 }

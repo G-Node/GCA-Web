@@ -3,7 +3,41 @@
 Used to document all changes from previous releases and collect changes 
 until the next release.
 
-# Latest changes in master
+# Release v1.3
+
+## Database changes
+This release contains required database changes. After redeployment the database needs to be updated manually using script `patch/patch_v1_2_to_v1_3.sql` and the database service restarted for the changes to take effect.
+
+## Build issues
+The current project setup is still using an outdated build tool (`activator`) and is several versions behind the current state of the play framework. The default sbt CDNs for the underlying build dependencies have been updated and no longer provide the required dependencies. Therefore additional CDNs have been added to the project build to keep it in a buildable state. The docker build has been changed to a layered build to decrease build times. See issue #497 and PRs #498 and #509 for details.
+
+## Features
+- Stars will be shown in the conference abstract list, indicating favourite abstracts of a user. For details see issue #419.
+- The favour/disfavour abstract methods in abstract-list.js now only use javascript.
+- Conference banners can now be uploaded via the conference admin pages instead of providing an external link to a banner. The corresponding banners are used when displaying a conference. For details see issue #385.
+- Mobile versions of Figures and conference banners are now automatically created when a figure or banner is uploaded.
+- Both site and conference admins are now able to upload banners via the conference administration.
+- The selenium framework is introduced to integrate frontend tests.
+- The way a DOI is represented in the abstract submission form has been updated. For details see issue #478.
+- A conference dependent notice can now be added via the conference administration page. The text will be displayed for the respective conference only. This change requires a database change. After deployment of this version, the database needs to be updated manually using script `patch/patch_v1_2_to_v1_3.sql`. For details see issue #470.
+- A search field has been added to the abstract list of a conference. For details see PR #505.
+- Print view specific stylesheets were added for useful print rendering of abstract pages. See issue #508 for details.
+
+## Fixes
+- The string length of notes when changing abstract states will be limited to 255 to avoid database problems. For details see issue #448.
+- Added feedback when a user signs up with an already registered email address. For details see issue #464.
+- Added failed login notice. For details see issue #465.
+- Added feedback on a failed password change attempt. For details see issue #466.
+- Added feedback on a failed email change attempt. For details see issue #467.
+- Added sign-up notification after new user registration. For details see issue #473.
+- The login status is now always properly displayed. For details see issue #468.
+- Added error messages on abstract reference validation, if the input is numeric. For details see issue #499.
+- The outdated mapbox.js plugin was updated to the latest version. See issue #510 for details.
+- An issue was resolved where the sortid of an abstract was removed when an abstract was re-submitted. See issue #507 for details.
+- The outdated mathjax.js plugin was updated to version 2.7.7. See issue #506 for details.
+
+
+# Release v1.2
 
 ## Features
 - Added docker support to the project. GCA-Web can now also be run using docker containers.
@@ -30,7 +64,7 @@ until the next release.
 - The password reset page now properly resolves error template messages. See #434 for details.
 
 
-# Release 1.1
+# Release v1.1
 Major changes since the last release:
 
 - Support for conference description

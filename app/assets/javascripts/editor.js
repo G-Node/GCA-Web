@@ -462,6 +462,7 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
             var result = validate.abstract(abstract);
             if (result.hasErrors()) {
+                self.abstract(abstract);
                 self.setError("Error", "Unable to save abstract: " + result.errors[0]);
                 return;
             }
@@ -592,6 +593,12 @@ function (ko, models, tools, msg, validate, owned, astate) {
 
                 if (removePos >= 0) {
                     positions.splice(removePos, 1);
+                }
+
+                for (var i = 0, len = positions.length; i < len; i++) {
+                    if (positions[i] > index) {
+                        positions[i] = positions[i] - 1;
+                    }
                 }
 
                 author.affiliations(positions);

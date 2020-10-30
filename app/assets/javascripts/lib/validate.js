@@ -28,6 +28,22 @@ define(["lib/tools"], function (tools) {
     }
 
     /**
+     * Validates a reference.
+     *
+     * @param reference      The reference or array of references to test.
+     *
+     * @returns {Result} The validation result.
+     */
+    function validateReference(reference) {
+        return validate(
+            reference,
+            must("text", notNumeric, "Reference citation cannot be numeric"),
+            must("link", notNumeric, "Reference link cannot be numeric"),
+            must("doi", notNumeric, "Reference doi cannot be numeric")
+        );
+    }
+
+    /**
      * Validates a whole abstract.
      *
      * @param abstract      The abstract or array of abstracts to test.
@@ -45,6 +61,8 @@ define(["lib/tools"], function (tools) {
             should("topic", notNothing, "No topic selected for the abstract")
         ).concat(
             validateAuthor(abstract.authors)
+        ).concat(
+            validateReference(abstract.references)
         );
     }
 
@@ -185,7 +203,6 @@ define(["lib/tools"], function (tools) {
     //
     // Checks
     //
-
     /**
      * Checks if a value is defined.
      *
@@ -206,6 +223,17 @@ define(["lib/tools"], function (tools) {
      */
     function notEmpty(val) {
         return val ? val.length > 0 : false;
+    }
+
+    /**
+     * Checks if a value is purely numeric.
+     *
+     * @param val   The value to check.
+     *
+     * @returns {boolean}
+     */
+    function notNumeric(val) {
+        return (val == null || val === "" || !isFinite(val));
     }
 
     /**
@@ -246,6 +274,7 @@ define(["lib/tools"], function (tools) {
     // Create and return the module
     return {
         author: validateAuthor,
+        reference: validateReference,
         abstract: validateAbstract
     };
 });

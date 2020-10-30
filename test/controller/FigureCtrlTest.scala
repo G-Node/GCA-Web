@@ -2,6 +2,10 @@ package controller
 
 import java.io.File
 
+import com.sksamuel.scrimage.Image
+import org.apache.commons.io.FileUtils
+
+import scala.io.Source
 import org.junit._
 import play.api.Play
 import play.api.http.Writeable
@@ -48,7 +52,11 @@ class FigureCtrlTest extends BaseCtrlTest {
           val header = ("Content-Disposition: form-data; name=\"" + file.key +
             "\"; filename=\"" + file.filename + "\"\r\n" + "Content-Type: " +
             file.contentType.getOrElse("image/jpeg") + "\r\n\r\n").getBytes(charset)
-          val data = fromFile(file.ref.file).map(_.toByte).toArray
+
+          val f2 = new File(file.ref+"new")
+          f2.deleteOnExit()
+          FileUtils.copyFile(file.ref.file, f2)
+          val data = Image.fromFile(f2).bytes
           val footer = "\r\n".getBytes(charset)
 
           header ++ data ++ footer
@@ -63,32 +71,39 @@ class FigureCtrlTest extends BaseCtrlTest {
       }, Some(s"multipart/form-data; boundary=$boundary"))
   }
 
-  @Test
+  // The Future in Figure upload is not properly resolved during the tests
+  // and leads to a timeout exception on docker build tests where the test
+  // assumably requires 33s while the timout exception is raised after 20s.
+  @Test(timeout=40000)
   def testUpload(): Unit = {
-    val figure = formatter.writes(assets.figures(0)).as[JsObject] - "uuid" - "URL"
+    val formats = List("jpg", "png")
+    for (format <- formats) {
+      val figure = formatter.writes(assets.figures(0)).as[JsObject] - "uuid" - "URL"
 
-    val file = new File("tmp")
-    file.createNewFile()
-    new java.io.FileOutputStream(file).write("foobar".getBytes)
+      val file = new File("tmp")
+      val pDir = new java.io.File(".").getCanonicalPath
+      val data = new File(pDir + "/test/utils/BC_header_" + format + "." + format)
+      FileUtils.copyFile(data, file)
 
-    val requestBody = MultipartFormData(
-      Map("figure" -> Seq(figure.toString())),
-      Seq(MultipartFormData.FilePart(
-        "file", "foo.bar",
-        Some("image/jpeg"),
-        TemporaryFile(file))
-      ),
-      Seq(),
-      Seq()
-    )
+      val requestBody = MultipartFormData(
+        Map("figure" -> Seq(figure.toString())),
+        Seq(MultipartFormData.FilePart(
+          "file", "foo.bar",
+          Some("image/jpeg"),
+          TemporaryFile(file))
+        ),
+        Seq(),
+        Seq()
+      )
 
-    val uuid = assets.abstracts(0).uuid
-    val request = FakeRequest(
-      POST, s"/api/abstracts/$uuid/figures"
-    ).withMultipartFormDataBody(requestBody).withCookies(cookie)
+      val uuid = assets.abstracts(0).uuid
+      val request = FakeRequest(
+        POST, s"/api/abstracts/$uuid/figures"
+      ).withMultipartFormDataBody(requestBody).withCookies(cookie)
 
-    val result = route(FigureCtrlTest.app, request).get
-    assert(status(result) == CREATED)
+      val result = route(FigureCtrlTest.app, request).get
+      assert(status(result) == CREATED)
+    }
   }
 
   @Test
@@ -114,6 +129,15 @@ class FigureCtrlTest extends BaseCtrlTest {
     assert(status(result) == OK)
     val file = contentAsBytes(result)
     // TODO here make some file assert
+  }
+
+  @Test
+  def testDownloadMobile(): Unit = {
+    val uuid = assets.figures(0).uuid
+    val request = FakeRequest(GET, s"/api/figures/$uuid/imagemobile")
+    val result = route(FigureCtrlTest.app, request).get
+
+    assert(status(result) == OK)
   }
 
   @Test

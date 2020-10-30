@@ -236,13 +236,13 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
      * @constructor
      * @public
      */
-    function Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive, hasPresentationPrefs,
-                        groups, start, end, deadline, logo, thumbnail, iOSApp, geo, schedule, info, owners, abstracts, topics,
+    function Conference(uuid, name, short, group, cite, link, isOpen, isPublished, isActive, hasPresentationPrefs,
+                        groups, start, end, deadline, iOSApp, confTexts, banner, geo, schedule, info, owners, abstracts, topics,
                         mAbsLeng, mFigs) {
         if (!(this instanceof Conference)) {
-            return new Conference(uuid, name, short, group, cite, link, description, isOpen, isPublished, isActive,
-                                  hasPresentationPrefs, groups, start, end, deadline, logo, thumbnail, iOSApp,
-                                  geo, schedule, info, owners, abstracts, topics, mAbsLeng, mFigs);
+            return new Conference(uuid, name, short, group, cite, link, isOpen, isPublished, isActive,
+                                  hasPresentationPrefs, groups, start, end, deadline, iOSApp, confTexts,
+                                  banner, geo, schedule, info, owners, abstracts, topics, mAbsLeng, mFigs);
         }
 
         var self = tools.inherit(this, Model, uuid);
@@ -252,7 +252,6 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.cite = cite || null;
         self.group = group || null;
         self.link = link || null;
-        self.description = description || null;
         self.isOpen = isOpen || false;
         self.isPublished = isPublished || false;
         self.isActive = isActive || false;
@@ -261,9 +260,9 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         self.start = start || null;
         self.end = end || null;
         self.deadline = deadline || null;
-        self.logo = logo || null;
-        self.thumbnail = thumbnail || null;
         self.iOSApp = iOSApp || null;
+        self.confTexts = confTexts || [];
+        self.banner = banner || null;
         self.geo = geo || null;
         self.schedule = schedule || null;
         self.info = info || null;
@@ -633,7 +632,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         var self = tools.inherit(this, Model, uuid);
 
         self.caption = caption || null;
-        self.URL = caption || null;
+        self.URL = URL || null;
     }
 
     Figure.fromObject = function(obj) {
@@ -672,6 +671,122 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
     ObservableFigure.fromArray = function(array) {
         return Model.fromArray(array, ObservableFigure.fromObject);
+    };
+
+    /**
+     * Model for banner.
+     *
+     * @param {string} [uuid]
+     * @param {string} [URL]       URL to the image URL.
+     *
+     * @returns {Banner}
+     * @constructor
+     * @public
+     */
+    function Banner(uuid, URL) {
+        if (!(this instanceof Banner)) {
+            return new Banner(uuid, URL);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.URL = URL || null;
+    }
+
+    Banner.fromObject = function(obj) {
+        return Model.fromObject(obj, Banner);
+    };
+
+    Banner.fromArray = function(array) {
+        return Model.fromArray(array, Banner.fromObject);
+    };
+
+    /**
+     * Observable model for banner.
+     *
+     * @param {string} [uuid]
+     * @param {string} [URL]       URL to the image URL.
+     *
+     * @returns {ObservableBanner}
+     * @constructor
+     * @public
+     */
+    function ObservableBanner(uuid, URL) {
+        if (!(this instanceof ObservableBanner)) {
+            return new ObservableBanner(uuid, URL);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.URL = ko.observable(URL || null);
+    }
+
+    ObservableBanner.fromObject = function(obj) {
+        return Model.fromObject(obj, ObservableBanner);
+    };
+
+    ObservableBanner.fromArray = function(array) {
+        return Model.fromArray(array, ObservableBanner.fromObject);
+    };
+
+    /**
+     * Model for confText
+     *
+     * @param {string} [uuid]
+     * @param {string} [ctType]
+     * @param {string} [text]
+     *
+     * @returns {ConfText}
+     * @constructor
+     * @public
+     */
+    function ConfText(uuid, ctType, text) {
+        if (!(this instanceof  ConfText)) {
+            return new ConfText(uuid, ctType, text);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.ctType = ctType || null;
+        self.text = text || null;
+    }
+
+    ConfText.fromObject = function(obj) {
+        return Model.fromObject(obj, ConfText);
+    };
+
+    ConfText.fromArray = function(array) {
+        return Model.fromArray(array, ConfText.fromObject);
+    };
+
+    /**
+     * Obervable model for confText
+     *
+     * @param {string} [uuid]
+     * @param {string} [ctType]
+     * @param {string} [text]
+     *
+     * @returns {ObservableConfText}
+     * @constructor
+     * @public
+     */
+    function ObservableConfText(uuid, ctType, text) {
+        if (!(this instanceof  ObservableConfText)) {
+            return new ObservableConfText(uuid, ctType, text);
+        }
+
+        var self = tools.inherit(this, Model, uuid);
+
+        self.ctType = ko.observable(ctType || null);
+        self.text = ko.observable(text || null);
+    }
+
+    ObservableConfText.fromObject = function(obj) {
+        return Model.fromObject(obj, ObservableConfText);
+    };
+
+    ObservableConfText.fromArray = function(array) {
+        return Model.fromArray(array, ObservableConfText.fromObject);
     };
 
     /**
@@ -978,6 +1093,7 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
         var self = tools.inherit(this, Model, uuid);
 
+        self.sortId = sortId || 0;
         self.title = ko.observable(title || null);
         self.topic = ko.observable(topic || null);
         self.text = ko.observable(text || null);
@@ -1124,19 +1240,19 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
 
             function appendReference(model) {
                 // Post processing, remove all leading and trailing whitespaces.
-                if (model.text() !== null && model.text() !== undefined) {
+                if (model.text() != null && model.text() !== undefined && !isFinite(model.text())) {
                     model.text(model.text().trim());
                 }
-                if (model.link() !== null && model.link() !== undefined) {
+                if (model.link() != null && model.link() !== undefined && !isFinite(model.link())) {
                     model.link(model.link().trim());
                 }
-                if (model.doi() !== null && model.doi() !== undefined) {
+                if (model.doi() != null && model.doi() !== undefined && !isFinite(model.doi())) {
                     model.doi(model.doi().trim());
                 }
 
                 // Post process doi. Remove any leading doi link parts that hinder rendering later on.
                 var doiValue = model.doi();
-                if (doiValue !== null && doiValue !== undefined) {
+                if (doiValue !== null && doiValue !== undefined && !isFinite(doiValue)) {
                     // First remove leading http or https
                     doiValue = doiValue.replace(/^https:\/\//, "").replace(/http:\/\//, "");
 
@@ -1776,6 +1892,8 @@ define(["lib/tools", "lib/accessors",  "moment", "knockout"], function(tools, ac
         ObservableAffiliation: ObservableAffiliation,
         Figure: Figure,
         ObservableFigure: ObservableFigure,
+        ConfText: ConfText,
+        ObservableConfText: ObservableConfText,
         Reference: Reference,
         ObservableReference: ObservableReference,
         Abstract: Abstract,

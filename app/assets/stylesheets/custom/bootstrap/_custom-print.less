@@ -1,0 +1,63 @@
+// Do not display elements with the class noprint in the print view
+.noprint {
+  display: none;
+}
+
+// Do not display specific elements in the print view
+.navbar, .footer, .hidden-data, .nav, .jumbo-small, .callout, .pager, .alert {
+  display: none;
+}
+
+// Display the conference name but do not display the local link in the print view
+.page-header {
+  h1 {
+    a[href]:after {
+      display: none;
+    }
+  }
+}
+
+.affiliations, .abstract-text, .acknowledgements, .references {
+  margin: 0.5em;
+  padding: 0.5em;
+}
+
+// Required to properly display abstract authors in the print view
+.authors {
+  padding: 0;
+  margin: 0;
+  margin-top: 0.2em;
+  list-style: none;
+  display: inline-block;
+  font-size: 14px;
+
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: inline-block;
+    font-size: large;
+  }
+
+  li {
+    display: inline-block;
+
+    span:after {
+      content: " ";
+    }
+  }
+
+  li:after {
+    content: ", ";
+  }
+
+  li:last-child:after {
+    content: "" !important;
+  }
+}
+
+// Required to properly display abstract copyright text in the print view
+.foot-info ul {
+  list-style-type: none;
+  padding-left: 0px;
+}

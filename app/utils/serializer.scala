@@ -76,12 +76,55 @@ package object serializer {
     }
   }
 
+  /**
+    * Conference Text serializer.
+    */
+  class ConfTextFormat extends Format[ConfText] {
+
+    override def reads(json: JsValue): JsResult[ConfText] = (
+      (__ \ "uuid").readNullable[String] and
+        (__ \ "ctType").readNullable[String] and
+        (__ \ "text").readNullable[String]
+      )(ConfText(_, _, _)).reads(json)
+
+    override def writes(c: ConfText): JsValue = {
+      Json.obj(
+        "uuid" -> c.uuid,
+        "ctType" -> c.ctType,
+        "text" -> c.text
+      )
+    }
+  }
+
   class TopicFormat extends Format[Topic] {
 
     override def writes(o: Topic): JsValue = JsString(o.topic)
 
     override def reads(json: JsValue): JsResult[Topic] = JsSuccess(Topic(json.as[String], None))
 
+  }
+
+  /**
+    * Banner serializer.
+    */
+  class BannerFormat(implicit routesResolver: RoutesResolver) extends Format[Banner] {
+
+    override def reads(json: JsValue): JsResult[Banner] = (
+      (__ \ "uuid").readNullable[String] and
+        (__ \ "bType").readNullable[String]
+      )(Banner(_, _)).reads(json)
+
+    override def writes(ban: Banner): JsValue = {
+      if (ban == null) {
+        JsNull
+      } else {
+        Json.obj(
+          "uuid" -> ban.uuid,
+          "bType" -> ban.bType,
+          "URL" -> routesResolver.bannerFileUrl(ban.uuid)
+        )
+      }
+    }
   }
 
   /**url
@@ -93,6 +136,8 @@ package object serializer {
 
     implicit val agf = new AbstractGroupFormat()
     implicit val tf = new TopicFormat()
+    implicit val confTextF = new ConfTextFormat()
+    implicit val bannerF = new BannerFormat()
 
     override def reads(json: JsValue): JsResult[Conference] = (
       (__ \ "uuid").readNullable[String] and
@@ -101,7 +146,6 @@ package object serializer {
       (__ \ "group").readNullable[String] and
       (__ \ "cite").readNullable[String] and
       (__ \ "link").readNullable[String] and
-      (__ \ "description").readNullable[String] and
       (__ \ "isOpen").readNullable[Boolean] and
       (__ \ "isPublished").readNullable[Boolean] and
       (__ \ "isActive").readNullable[Boolean] and
@@ -109,14 +153,13 @@ package object serializer {
       (__ \ "start").readNullable[DateTime] and
       (__ \ "end").readNullable[DateTime] and
       (__ \ "deadline").readNullable[DateTime] and
-      (__ \ "logo").readNullable[String] and
-      (__ \ "thumbnail").readNullable[String] and
       (__ \ "iOSApp").readNullable[String] and
+      (__ \ "confTexts").read[List[ConfText]] and
       (__ \ "groups").read[List[AbstractGroup]] and
       (__ \ "topics").read[List[Topic]].addPosition and
         (__ \ "mAbsLeng").readNullable[Int] and
         (__ \ "mFigs").readNullable[Int]
-    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, Nil, _,
+    )(Conference(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, Nil, _, Nil, Nil, _,
       null,null,null,_,_)).reads(json)
 
     override def writes(c: Conference): JsValue = {
@@ -128,7 +171,6 @@ package object serializer {
         "group" -> c.group,
         "cite" -> c.cite,
         "link" -> c.link,
-        "description" -> c.description,
         "isOpen" -> c.isOpen,
         "isPublished" -> c.isPublished,
         "isActive" -> c.isActive,
@@ -137,11 +179,11 @@ package object serializer {
         "start" -> c.startDate,
         "end" -> c.endDate,
         "deadline" -> c.deadline,
-        "logo" -> c.logo,
-        "thumbnail" -> c.thumbnail,
         "iOSApp" -> c.iOSApp,
         "abstracts" -> routesResolver.abstractsUrl(c.uuid),
         "allAbstracts" -> routesResolver.allAbstractsUrl(c.uuid),
+        "confTexts" -> asScalaSet(c.confTexts).toSeq.sorted[Model],
+        "banner" -> asScalaSet(c.banner).toSeq.sorted[Model],
         "topics" -> c.topics.toSeq.sorted[Model],
         "geo" -> routesResolver.geoUrl(c.uuid),
         "schedule" -> routesResolver.scheduleUrl(c.uuid),
@@ -251,15 +293,15 @@ package object serializer {
   }
 
   /**
-   * Figure serializer.
-   */
+    * Figure serializer.
+    */
   class FigureFormat(implicit routesResolver: RoutesResolver) extends Format[Figure] {
 
     override def reads(json: JsValue): JsResult[Figure] = (
       (__ \ "uuid").readNullable[String] and
-      (__ \ "caption").readNullable[String] and
-      (__ \ "position").readNullable[Int]
-    )(Figure(_, _, _)).reads(json)
+        (__ \ "caption").readNullable[String] and
+        (__ \ "position").readNullable[Int]
+      )(Figure(_, _, _)).reads(json)
 
     override def writes(a: Figure): JsValue = {
       if (a == null) {

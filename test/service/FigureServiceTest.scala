@@ -10,14 +10,15 @@
 package service
 
 import java.io.File
-import javax.persistence._
 
+import javax.persistence._
 import org.junit._
 import org.scalatest.junit.JUnitSuite
 import play.api.Play
 import play.api.libs.Files.TemporaryFile
 import play.api.test.FakeApplication
 import models.Figure
+import org.apache.commons.io.FileUtils
 
 
 class FigureServiceTest extends JUnitSuite {
@@ -31,7 +32,7 @@ class FigureServiceTest extends JUnitSuite {
     assets = new Assets()
     assets.killDB()
     assets.fillDB()
-    srv = FigureService("./figures")
+    srv = FigureService("./figures","./figures_mobile")
     abstrsrv = AbstractService(assets.figPath)
   }
 
@@ -46,13 +47,33 @@ class FigureServiceTest extends JUnitSuite {
   @Test
   def testCreate(): Unit = {
     val file = new File("tmp")
-    file.createNewFile()
+    val pDir = new java.io.File(".").getCanonicalPath
+    val data = new File(pDir + "/test/utils/BC_header_jpg.jpg")
+    FileUtils.copyFile(data, file)
     val tmp = new TemporaryFile(file)
     val figOrig = Figure(None, Some("caption"))
     val fig = srv.create(figOrig, tmp, assets.abstracts(3), assets.alice)
 
     assert(fig.uuid != null)
     assert(fig.caption == "caption")
+  }
+
+
+  @Test
+  def testUploadMobile(): Unit = {
+    val formats = List("jpg", "png")
+    for (format <- formats) {
+      val pDir = new java.io.File(".").getCanonicalPath
+      val data = new File(pDir + "/test/utils/BC_header_" + format + "." + format)
+
+      val fileFig = new File("tmp")
+      FileUtils.copyFile(data, fileFig)
+      val tmpFig = new TemporaryFile(fileFig)
+      val figOrig = Figure(None, Some("logo"))
+      srv.create(figOrig, tmpFig, assets.abstracts(3), assets.alice)
+
+      srv.uploadMobile(figOrig, assets.abstracts(3), assets.alice)
+    }
   }
 
   @Test
@@ -77,6 +98,16 @@ class FigureServiceTest extends JUnitSuite {
   def testOpenFile(): Unit = {
     assets.figures.foreach { fig =>
       val file = srv.openFile(assets.figures(1))
+      assert(file.exists())
+    }
+  }
+
+  // todo: test checking that an image that is has a normal image
+  //       but no mobile image is still returned.
+  @Test
+  def testOpenMobileFile(): Unit = {
+    assets.figures.foreach { fig =>
+      val file = srv.openMobileFile(assets.figures(1))
       assert(file.exists())
     }
   }

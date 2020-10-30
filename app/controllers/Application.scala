@@ -17,7 +17,7 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
   val conferenceService = ConferenceService()
   
   def index = UserAwareAction { implicit request =>
-    Redirect(routes.Application.conferences())
+    Redirect(routes.Application.conferences()).flashing(request.flash)
   }
 
   def showUserInfo = UserAwareAction { implicit request =>
@@ -94,6 +94,7 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
     val list_other = conferences.filter(conf => !conf.isActive)
 
     Ok(views.html.conferencelist(request.identity.map{ _.account }, list_active, list_other))
+      .flashing(request.flash)
   }
 
   def conference(confId: String) = UserAwareAction { implicit request =>
@@ -179,9 +180,12 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
                        |/conference/${conf.short}/submission
                        |/conference/${conf.short}/floorplans
                        |/conference/${conf.short}/locations
-                       |/conference/${conf.short}/abstracts
-                       |${conf.logo}
-                       |${conf.thumbnail}""".stripMargin
+                       |/conference/${conf.short}/abstracts""".stripMargin
+    for (ban: Banner <- conf.banner.asScala) {
+      dynamicViews +=
+          s"""
+             |/api/banner/${ban.uuid}/imagemobile""".stripMargin
+    }
     for (abs: Abstract <- conf.abstracts.asScala) {
       dynamicViews +=
         s"""
@@ -264,8 +268,8 @@ class Application(implicit val env: Environment[Login, CachedCookieAuthenticator
          |https://cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-debug.js
          |https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.1/jquery-ui-timepicker-addon.min.css
          |https://fonts.googleapis.com/css?family=EB+Garamond|Open+Sans
-         |https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js?delayStartupUntil=configured
-         |https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/extensions/MathMenu.js
+         |https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?delayStartupUntil=configured
+         |https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/extensions/MathMenu.js
          |
          |# Styles
          |/assets/stylesheets/_g-node-bootstrap.less

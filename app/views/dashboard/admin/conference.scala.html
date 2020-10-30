@@ -139,21 +139,82 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="logo" class="col-sm-2 control-label">Logo</label>
+                    <label for="logo-file" class="col-sm-2 control-label">Logo File</label>
                     <div class="col-sm-10">
-                        <input type="url" class="form-control" id="logo"
-                                placeholder="Banner Logo url" data-bind="value: logo, valueUpdate: 'afterkeydown'"
-                                maxlength='@Model.getLimit[Conference]("logo")'>
+                        <div data-bind="ifnot: $root.logo()">
+                            <div>Images of format "jpg", "gif", "png" are supported; the size limit is 5MB.</div>
+                            <input type="file" name="logo-file" id="logo-file"
+                            data-bind="event: { change: $root.getNewBanner }, enable: $root.isConferenceSaved"
+                            maxlength="250" class="form-control">
+                            <div data-bind="ifnot: $root.isConferenceSaved">
+                                Note: The image will be uploaded when the conference is saved.
+                            </div>
+                        </div>
+
+                        <div data-bind="if: $root.logo()">
+                            <button type="button" name="remove-logo" class="btn btn-default btn-sm pull-right"
+                            data-bind="click: $root.removeBanner">
+                                Remove
+                            </button>
+                            <div class="banner-box">
+                                <img class="conference-logo img-responsive img-rounded" src=""
+                                data-bind="attr: {src: $root.logo().URL}">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="thumbnail" class="col-sm-2 control-label">Thumbnail</label>
+                    <label for="logo" class="col-sm-2 control-label">Logo Link</label>
+                    <div class="col-sm-10">
+                        <input type="url" class="form-control" id="logo"
+                                placeholder="Banner Logo url"
+                                data-bind="value: $root.logoURL, valueUpdate: 'afterkeydown',
+                                event: {'keydown': $root.changeHandler}"
+                                maxlength='@Model.getLimit[ConfText]("text")'>
+                        <div>
+                            Note: If a logo image is uploaded, the logo link will not be used.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="thumbnail-file" class="col-sm-2 control-label">Thumbnail File</label>
+                    <div class="col-sm-10">
+                        <div data-bind="ifnot: $root.thumbnail()">
+                            <div>Images of format "jpg", "gif", "png" are supported; the size limit is 5MB.</div>
+                            <input type="file" name="thumbnail-file" id="thumbnail-file"
+                            data-bind="event: { change: $root.getNewBanner }, enable: $root.isConferenceSaved"
+                            maxlength="250" class="form-control">
+                            <div data-bind="ifnot: $root.isConferenceSaved">
+                                Note: The image will be uploaded when the conference is saved.
+                            </div>
+                        </div>
+
+                        <div data-bind="if: $root.thumbnail()">
+                            <button type="button" name="remove-thumbnail" class="btn btn-default btn-sm pull-right"
+                            data-bind="click: $root.removeBanner">
+                                Remove
+                            </button>
+                            <div class="banner-box">
+                                <img class="conference-logo img-responsive img-rounded" src=""
+                                data-bind="attr: {src: $root.thumbnail().URL}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="thumbnail" class="col-sm-2 control-label">Thumbnail Link</label>
                     <div class="col-sm-10">
                         <input type="url" class="form-control" id="thumbnail"
                                 placeholder="Thumbnail image url"
-                                data-bind="value: thumbnail, valueUpdate: 'afterkeydown'"
-                                maxlength='@Model.getLimit[Conference]("thumbnail")'>
+                                data-bind="value: $root.thumbnailURL, valueUpdate: 'afterkeydown',
+                                event: {'keydown': $root.changeHandler}"
+                                maxlength='@Model.getLimit[ConfText]("text")'>
+                        <div>
+                            Note: If a thumbnail image is uploaded, the thumbnail link will not be used.
+                        </div>
                     </div>
                 </div>
 
@@ -180,9 +241,21 @@
                     <label for="desc" class="col-sm-2 control-label">Description</label>
                     <div class="col-sm-10">
                         <textarea class="form-control" id="desc" rows="4"
-                                placeholder='Conference description (max. @Model.getLimit[Conference]("description") characters). Use Markdown.'
-                                data-bind="value: description, valueUpdate: 'afterkeydown'"
-                                maxlength='@Model.getLimit[Conference]("description")'></textarea>
+                                placeholder='Conference description (max. @Model.getLimit[ConfText]("text") characters). Use Markdown.'
+                                data-bind="value: $root.description, valueUpdate: 'afterkeydown',
+                                event: {'keydown': $root.changeHandler}"
+                        maxlength='@Model.getLimit[ConfText]("text")'></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="notice" class="col-sm-2 control-label">Notice</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" id="notice" rows="4"
+                        placeholder='Conference notice (max. @Model.getLimit[ConfText]("text") characters). Use Markdown.'
+                        data-bind="value: $root.notice, valueUpdate: 'afterkeydown',
+                                event: {'keydown': $root.changeHandler}"
+                        maxlength='@Model.getLimit[ConfText]("text")'></textarea>
                     </div>
                 </div>
 
@@ -198,7 +271,9 @@
                     <div class="col-sm-2 text-right"><b>Topics</b></div>
                     <ul class="col-sm-10 list-inline" data-bind="sortable: topics">
                         <li><span class="label label-default" data-bind="text: $data"></span>
-                            <a data-bind="click: $root.removeTopic"><span class="glyphicon glyphicon-remove"></span></a>
+                            <a class="btn-remove-topic" data-bind="click: $root.removeTopic">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -209,7 +284,7 @@
                                 maxlength='@Model.getLimit[Topic]("topic")'>
                     </div>
                     <div class="col-sm-1">
-                        <a class="btn btn-default" data-bind="click: $root.addTopic">
+                        <a id="btn-add-topic" class="btn btn-default" data-bind="click: $root.addTopic">
                             <span class="glyphicon glyphicon-plus"></span> Add Topic</a>
                     </div>
                 </div>

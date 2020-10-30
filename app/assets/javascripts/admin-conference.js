@@ -31,6 +31,23 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         self.oldshort = "";
         self.oldmAbsLeng = 0;
 
+        self.autosave = ko.observable({text: "Loading", css: "label-primary"});
+
+        self.description = ko.observable("");
+        self.notice = ko.observable("");
+
+        self.logoURL = ko.observable("");
+        self.thumbnailURL = ko.observable("");
+        self.logo = ko.observable(null);
+        self.thumbnail = ko.observable(null);
+        // only required when a new banner is added
+        self.newLogo = {
+            file: null
+        };
+        self.newThumbnail = {
+            file: null
+        };
+
         ko.bindingHandlers.datetimepicker = {
             init: function(element, valueAccessor, allBindingsAccessor) {
                 function onSelectHandler(text, obj) {
@@ -99,7 +116,6 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.ioFailHandler = function(jqxhr, textStatus, error) {
-            var err = textStatus + ", " + error;
             var errobj = $.parseJSON(jqxhr.responseText);
 
             var details = "";
@@ -203,9 +219,9 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
         };
 
         self.makeConferenceObservable = function (conf) {
-            conf.makeObservable(["name", "short", "group", "cite", "description", "start", "end", "groups",
-                "deadline", "logo", "thumbnail", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
-                "topics", "iOSApp", "mAbsLeng", "mFigs"]);
+            conf.makeObservable(["name", "short", "group", "cite", "start", "end", "groups",
+                "deadline", "link", "isOpen", "isPublished", "isActive", "hasPresentationPrefs",
+                "topics", "iOSApp", "confTexts", "banner", "mAbsLeng", "mFigs"]);
 
             for (var prop in conf) {
                 if (conf.hasOwnProperty(prop)) {
@@ -246,6 +262,31 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
             self.oldShort = self.conference().short();
             self.oldmAbsLeng = self.conference().mAbsLeng();
+
+            if (self.conference().confTexts()) {
+                for (var i=0; i<self.conference().confTexts().length; i++) {
+                    var cText = self.conference().confTexts()[i];
+                    if (cText.text !== null && cText.ctType === "description") {
+                        self.description(cText.text);
+                    } else if (cText.text !== null && cText.ctType === "notice") {
+                        self.notice(cText.text);
+                    } else if (cText.text !== null && cText.ctType === "logo") {
+                        self.logoURL(cText.text);
+                    } else if (cText.text !== null && cText.ctType === "thumbnail") {
+                        self.thumbnailURL(cText.text);
+                    }
+                }
+            }
+
+            if (self.conference().banner()) {
+                for (i = 0; i < self.conference().banner().length; i++) {
+                    if (self.conference().banner()[i].bType === "logo") {
+                        self.logo(self.conference().banner()[i]);
+                    } else if (self.conference().banner()[i].bType === "thumbnail") {
+                        self.thumbnail(self.conference().banner()[i]);
+                    }
+                }
+            }
         };
 
         self.requestConfSpecificField = function(url, type, setObservable) {
@@ -275,7 +316,7 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
 
             function onOtherConferenceData(confObj) {
                 var confs = models.Conference.fromArray(confObj);
-                var confShorts = Array();
+                var confShorts = [];
                 if (confs !== null) {
                     confs.forEach(function (current) {
                         confShorts.push(current.short);
@@ -303,6 +344,25 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 self.setError("danger", "Conference short cannot be empty");
                 return;
             }
+
+            function addReplaceConfText(strType, text) {
+                if (strType !== undefined && strType !== null && text !== undefined && text !== null) {
+                    for (var i = 0; i < self.conference().confTexts().length; i++) {
+                        if (self.conference().confTexts()[i] !== undefined &&
+                            self.conference().confTexts()[i] !== null &&
+                            self.conference().confTexts()[i].ctType === strType) {
+                            self.conference().confTexts().splice(i, 1);
+                        }
+                    }
+                    var cText = models.ConfText(null, strType, text);
+                    self.conference().confTexts.push(JSON.parse(cText.toJSON()));
+                }
+            }
+
+            addReplaceConfText("logo", self.logoURL());
+            addReplaceConfText("thumbnail", self.thumbnailURL());
+            addReplaceConfText("description", self.description());
+            addReplaceConfText("notice", self.notice());
 
             if (self.conference().groups().length > 0) {
                 for (var i = 0; i < self.conference().groups().length; i++) {
@@ -342,6 +402,13 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
                 type: method,
                 contentType: "application/json",
                 success: function (result) {
+                    if (self.newLogo.file) {
+                        self.uploadBanner("logo");
+                    } else if (self.newThumbnail.file) {
+                        self.uploadBanner("thumbnail");
+                    } else {
+                        self.autosave({text: "Ok", css: "label-success"});
+                    }
                     self.onConferenceData(result);
                     self.setError("info", "Changes saved");
                 },
@@ -407,6 +474,122 @@ require(["lib/models", "lib/tools", "lib/owned", "knockout", "ko.sortable", "dat
             var errorMsg = "Error uploading info data.";
 
             self.uploadSpecificField(url, fieldName, fieldValue, contentType, successMsg, errorMsg);
+        };
+
+        self.getNewBanner = function(data, event) {
+            var bType = event.target.name.replace("-file", "");
+
+            if (bType === "logo") {
+                self.newLogo.file = event.currentTarget.files[0];
+            } else if (bType === "thumbnail") {
+                self.newThumbnail.file = event.currentTarget.files[0];
+            }
+            self.uploadBanner(bType);
+        };
+
+        self.uploadBanner = function (bType) {
+            var json = {bType: bType},
+                file = null,
+                data = new FormData();
+
+            if (bType === "logo") {
+                file = self.newLogo.file;
+            } else if (bType === "thumbnail") {
+                file = self.newThumbnail.file;
+            }
+
+            if (file) {
+                var fileName = file.name,
+                    fileSize = file.size,
+                    splitted = fileName.split("."),
+                    ending = splitted[splitted.length - 1].toLowerCase();
+
+                if (["jpeg", "jpg", "gif", "giff", "png"].indexOf(ending) < 0) {
+                    self.setError("danger", "Figure file format for banner not supported (only jpeg, gif or png is allowed).");
+                    return;
+                }
+
+                if (fileSize > 5242880) {
+                    self.setError("danger", "Figure banner file is too large (limit is 5MB).");
+                    return;
+                }
+
+                data.append("file", file);
+                data.append("banner", JSON.stringify(json));
+
+                $.ajax({
+                    url: "/api/conferences/" + self.conference().uuid + "/banner",
+                    type: "POST",
+                    dataType: "json",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: success,
+                    error: fail,
+                    cache: false
+                });
+            }
+
+            function success(obj, stat, xhr) {
+                if (bType === "logo") {
+                    self.newLogo.file = null;
+                } else if (bType === "thumbnail") {
+                    self.newThumbnail.file = null;
+                }
+                self.setError("info", "Image saved.");
+
+                self.loadConference(self.conference().uuid);
+                self.autosave({text: "Ok", css: "label-success"});
+            }
+
+            function fail() {
+                self.setError("danger", "Unable to save the banner figure.");
+            }
+        };
+
+        self.removeBanner = function (data, event) {
+            var bType = event.target.name.replace("remove-", "");
+            var uuid = null;
+            if (self.conference().banner() && self.conference().banner().length > 0) {
+                self.autosave({text: "Saving", css: "label-warning"});
+                for (var i = 0; i < self.conference().banner().length; i++) {
+                    if (self.conference().banner()[i].bType === bType) {
+                        uuid = self.conference().banner()[i].uuid;
+                        break;
+                    }
+                }
+            }
+
+            if (uuid !== null) {
+                $.ajax({
+                    url: "/api/banner/" + uuid,
+                    type: "DELETE",
+                    success: successDel,
+                    error: fail,
+                    cache: false
+                });
+            } else {
+                self.setError("warning", "Unable to delete image: conference has no " + bType + " file.", true);
+            }
+
+            function successDel() {
+                if (bType === "logo") {
+                    self.newLogo.file = null;
+                    self.logo(null);
+                } else if (bType === "thumbnail") {
+                    self.newThumbnail.file = null;
+                    self.thumbnail(null);
+                }
+                self.setError("info", "Image successfully removed.");
+
+                self.loadConference(self.conference().uuid);
+                self.autosave({text: "Ok", css: "label-success"});
+            }
+
+            function fail() {
+                self.setError("Error", "Unable to delete the image.");
+                self.autosave({text: "Error!", css: "label-danger"});
+            }
         };
     }
 

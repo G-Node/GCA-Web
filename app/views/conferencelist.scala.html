@@ -13,23 +13,32 @@
         }
     </script>
 
+    <script data-main='@routes.Assets.at("javascripts/conference-list.js")'
+    src='@routes.Assets.at("javascripts/require.js")'></script>
+
     @flash(request)
 
     @if(list_active.nonEmpty) {
 
-        @for(conference <- list_active) {
+        @for((conference,i) <- list_active.zipWithIndex) {
             <div class="jumbotron">
-                @if(conference.logo != null) {
-                    <p>
-                        <img class="conference-logo img-responsive img-rounded" src="@conference.logo">
-                    </p>
+
+                <p data-bind="ifnot: $root.logos()[@i]">
+                @if(conference.getConfText("logo") != null && conference.getConfText("logo") != "") {
+                    <img class="conference-logo img-responsive img-rounded"
+                            src='@conference.getConfText("logo")'>
                 }
+                </p>
+                <p data-bind="if: $root.logos()[@i]">
+                    <img class="conference-logo img-responsive img-rounded" src=""
+                    data-bind="attr: {src: $root.logos()[@i].URL}">
+                </p>
                 <h3>
                     <a href="@routes.Application.conference(conference.short)">@conference.name</a>
                 </h3>
-                @if(conference.getDescriptionAsHTML().length() > 0) {
+                @if(conference.getConfTextAsHTML("description").length() > 0) {
                     <div class="jumbo-small">
-                        @Html(conference.getDescriptionAsHTML())
+                        @Html(conference.getConfTextAsHTML("description"))
                     </div>
                 }
 
@@ -51,13 +60,23 @@
 
     @if(list_other.nonEmpty) {
         <hr>
-        @for(conference <- list_other) {
+        @for((conference,i) <- list_other.zipWithIndex) {
             @if(conference.isPublished){
                 <div class="media">
                     <div class="pull-left media-left">
-                        <a href="@routes.Application.conference(conference.short)">
-                            <img class="media-object conference-thumbnail" src="@conference.thumbnail">
+                        <a href="@routes.Application.conference(conference.short)"
+                        data-bind="ifnot: $root.thumbnails()[@i]">
+                        @if(conference.getConfText("thumbnail") != null && conference.getConfText("thumbnail") != "") {
+                            <img class="media-object conference-thumbnail"
+                            src='@conference.getConfText("thumbnail")'>
+                        }
                         </a>
+                        <a href="@routes.Application.conference(conference.short)"
+                        data-bind="if: $root.thumbnails()[@i]">
+                            <img class="media-object conference-thumbnail" src=""
+                            data-bind="attr: {src: $root.thumbnails()[@i].URL}">
+                        </a>
+
                     </div>
                     <div class="media-body">
                         <a href="@routes.Application.abstractsPublic(conference.short)">
@@ -76,6 +95,46 @@
                     }
                 </div>
             </div>
+            }
+        }
+
+        @if(account.isDefined) {
+            @for((conference,i) <- list_other.zipWithIndex) {
+                @if(i == 0 && (conference.isOwner(account.get) || account.get.isAdmin)) {
+                    <hr>
+                    <h3>Unpublished conferences</h3>
+                    <br/>
+                }
+
+                @if(!conference.isPublished && (conference.isOwner(account.get) || account.get.isAdmin)) {
+                    <div class="media unpublished">
+                        <div class="pull-left media-left">
+                            <a href="@routes.Application.conference(conference.short)"
+                            data-bind="ifnot: $root.thumbnails()[@i]">
+                            @if(conference.getConfText("thumbnail") != null
+                                    && conference.getConfText("thumbnail") != "") {
+                                <img class="conference-logo img-responsive img-rounded"
+                                src='@conference.getConfText("thumbnail")'>
+                                }
+                            </a>
+                            <a href="@routes.Application.conference(conference.short)"
+                            data-bind="if: $root.thumbnails()[@i]">
+                                <img class="media-object conference-thumbnail" src=""
+                                data-bind="attr: {src: $root.thumbnails()[@i].URL}">
+                            </a>
+
+                        </div>
+                        <div class="media-body">
+                            <h4 id="@conference.short" class="media-heading">@conference.name</h4>
+                            <p>@conference.formatDuration</p>
+                            <div class="form-group">
+                                <a href="@routes.Application.adminConference(conference.uuid)" class="btn btn-danger">
+                                    Conference Settings
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
             }
         }
     }

@@ -16,14 +16,14 @@
         <div class="pull-right state-btn-group">
             <span data-bind="if: action">
                 <!-- ko with: action -->
-                <button type="button" class="btn" data-bind="click: action, text: label, css: level">
+                <button id="button-action" type="button" class="btn" data-bind="click: action, text: label, css: level">
                     Action
                 </button>
                 <!-- /ko -->
             </span>
         </div>
 
-        <h3>Abstract submission  <small>@conference.name</small></h3>
+        <h3>Abstract submission <small>@conference.name</small></h3>
         <ul class="list-inline">
             <li data-bind="if: showEditButton">
                 <div data-bind="with: validity">Validation:
@@ -54,7 +54,7 @@
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                <button type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal"
+                <button id="button-edit-title" type="button" class="btn btn-default btn-sm" data-target="#title-editor" data-toggle="modal"
                         data-bind="click: doStartEdit.bind($root, '#title-editor')">
                     Edit
                 </button>
@@ -62,14 +62,14 @@
 
             <div class="modal" id="title-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
 
-            <div  class="title">
+            <div class="title">
                 <h2 data-bind="text: abstract().title"></h2>
             </div>
         </div>
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                <button type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal"
+                <button id="button-edit-authors" type="button" class="btn btn-default btn-sm" data-target="#authors-editor" data-toggle="modal"
                         data-bind="click: doStartEdit.bind($root, '#authors-editor')">
                     Edit
                 </button>
@@ -86,7 +86,7 @@
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                <button type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
+                <button id="button-edit-affiliations" type="button" class="btn btn-default btn-sm" data-target="#affiliations-editor"
                         data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#affiliations-editor')">
                     Edit
                 </button>
@@ -103,8 +103,9 @@
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                <button type="button" class="btn btn-default btn-sm" data-target="#abstract-text-editor"
-                        data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#abstract-text-editor')">
+                <button id="button-edit-abstract-text" type="button" class="btn btn-default btn-sm"
+                        data-target="#abstract-text-editor" data-toggle="modal"
+                        data-bind="click: doStartEdit.bind($root, '#abstract-text-editor')">
                     Edit
                 </button>
             </div>
@@ -118,8 +119,9 @@
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                <button type="button" class="btn btn-default btn-sm" data-target="#acknowledgements-editor"
-                        data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#acknowledgements-editor')">
+                <button id="button-edit-acknowledgements" type="button" class="btn btn-default btn-sm"
+                        data-target="#acknowledgements-editor" data-toggle="modal"
+                        data-bind="click: doStartEdit.bind($root, '#acknowledgements-editor')">
                     Edit
                 </button>
             </div>
@@ -134,8 +136,9 @@
 
         <div class="editor-box" data-bind="css: {editable: showEditButton}">
             <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                <button type="button" class="btn btn-default btn-sm" data-target="#references-editor"
-                        data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#references-editor')">
+                <button id="button-edit-references" type="button" class="btn btn-default btn-sm"
+                        data-target="#references-editor" data-toggle="modal"
+                        data-bind="click: doStartEdit.bind($root, '#references-editor')">
                     Edit
                 </button>
             </div>
@@ -153,14 +156,15 @@
         @if(conference.abstractMaxFigures>0){
             <div class="editor-box" data-bind="css: {editable: showEditButton}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                    <button type="button" class="btn btn-default btn-sm" data-target="#figure-editor"
-                            data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#figure-editor')">
+                    <button id="button-edit-figure" type="button" class="btn btn-default btn-sm"
+                            data-target="#figures-editor" data-toggle="modal"
+                            data-bind="click: doStartEdit.bind($root, '#figures-editor')">
                         Edit
                     </button>
                 </div>
-    
-                <div class="modal" id="figure-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
-        
+
+                <div class="modal" id="figures-editor" tabindex="-1" data-bind="template: { name: 'modalDialog'}"></div>
+
                 <div class="figure">
                     <h4>Figures</h4>
                     <div>
@@ -174,7 +178,7 @@
                         </div>
                     <!-- /ko -->
                     </div>
-                </div>    
+                </div>
             </div>
         }
 
@@ -185,8 +189,9 @@
         @if(! conference.topics.isEmpty) {
             <div class="editor-box" data-bind="css: {editable: showEditButton}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                    <button type="button" class="btn btn-default btn-sm" data-target="#topic-editor"
-                            data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#topic-editor')">
+                    <button id="button-edit-topic" type="button" class="btn btn-default btn-sm"
+                            data-target="#topic-editor" data-toggle="modal"
+                            data-bind="click: doStartEdit.bind($root, '#topic-editor')">
                         Edit
                     </button>
                 </div>
@@ -204,8 +209,9 @@
         @if(conference.hasPresentationPrefs) {
             <div class="editor-box" data-bind="css: {editable: showEditButton}">
                 <div class="btn-group pull-right btn-group-hover" data-bind="if: showEditButton">
-                    <button type="button" class="btn btn-default btn-sm" data-target="#is-talk-editor"
-                            data-toggle="modal" data-bind="click: doStartEdit.bind($root, '#is-talk-editor')">
+                    <button id="button-edit-poster-or-talk" type="button" class="btn btn-default btn-sm"
+                            data-target="#is-talk-editor" data-toggle="modal"
+                            data-bind="click: doStartEdit.bind($root, '#is-talk-editor')">
                         Edit
                     </button>
                 </div>
@@ -216,7 +222,7 @@
                     <h4>Presentation Type</h4>
                     <div data-bind="if:abstract().abstrTypes().length>0">
                         <div>
-                        <!-- Using only the first presentation style is a workaround, more types might come 
+                        <!-- Using only the first presentation style is a workaround, more types might come
                          later (or not). Everything is ready for more however.-->
                             <span data-bind="text: abstract().abstrTypes()[0].name"></span>
                         </div>
@@ -258,7 +264,8 @@
                         <p>Abstract withdrawal is permanent! There is no way to recover the
                            abstract once it is withdrawn.
                           <br>
-                            <button type="button" class="btn btn-danger"  data-bind="click: doWithdrawAbstract">
+                            <button id="button-withdraw" type="button" class="btn btn-danger"
+                                    data-bind="click: doWithdrawAbstract">
                                 Withdraw
                             </button>
                         </p>
@@ -327,7 +334,7 @@
 
     <!-- authors templates -->
     <script id="header-authors-editor" type="text/html">
-        <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: doEditAddAuthor">
+        <button type="button" class="btn-add btn btn-default btn-sm pull-right" data-bind="click: doEditAddAuthor">
             Add
             <span class="glyphicon glyphicon-user"></span>
         </button>
@@ -342,28 +349,28 @@
                         <span class="drag-handle-icon glyphicon glyphicon-align-justify"></span>
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="First Name"
+                        <input type="text" class="first-name form-control input-sm" placeholder="First Name"
                                 maxlength='@Model.getLimit[Author]("firstName")'
                                 data-bind="value: person.firstName" />
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="Middle Name"
+                        <input type="text" class="middle-name form-control input-sm" placeholder="Middle Name"
                                 maxlength='@Model.getLimit[Author]("middleName")'
                                 data-bind="value: person.middleName" />
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="Last Name"
+                        <input type="text" class="last-name form-control input-sm" placeholder="Last Name"
                                 maxlength='@Model.getLimit[Author]("lastName")'
                                 data-bind="value: person.lastName" />
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="Mail"
+                        <input type="text" class="author-mail form-control input-sm" placeholder="Mail"
                                 maxlength='@Model.getLimit[Author]("mail")'
                                 data-bind="value: person.mail" />
                     </td>
                     <td>
                         <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-default btn-sm"
+                            <button type="button" class="btn-remove btn btn-default btn-sm"
                                     data-bind="click: $root.doEditRemoveAuthor.bind($root, $index, person)">
                                 Remove
                                 <span class="glyphicon glyphicon-user"></span>
@@ -382,7 +389,7 @@
 
     <!-- affiliations templates -->
     <script id="header-affiliations-editor" type="text/html">
-        <button type="button" class="btn btn-default btn-sm pull-right" data-bind="click: doEditAddAffiliation">
+        <button type="button" class="btn-add btn btn-default btn-sm pull-right" data-bind="click: doEditAddAffiliation">
             Add
             <span class="glyphicon glyphicon-envelope"></span>
         </button>
@@ -394,28 +401,28 @@
             <tbody data-bind="foreach: {data: editedAbstract().affiliations, as: 'affiliation'}">
                 <tr class="affiliation-form">
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="Department"
+                        <input type="text" class="affil-department form-control input-sm" placeholder="Department"
                                 maxlength='@Model.getLimit[Affiliation]("department")'
                                 data-bind="value: affiliation.department" />
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="Institution"
+                        <input type="text" class="affil-institution form-control input-sm" placeholder="Institution"
                                 maxlength='@Model.getLimit[Affiliation]("section")'
                                 data-bind="value: affiliation.section" />
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="Address"
+                        <input type="text" class="affil-address form-control input-sm" placeholder="Address"
                                 maxlength='@Model.getLimit[Affiliation]("address")'
                                 data-bind="value: affiliation.address" />
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="Country"
+                        <input type="text" class="affil-country form-control input-sm" placeholder="Country"
                                 maxlength='@Model.getLimit[Affiliation]("country")'
                                 data-bind="value: affiliation.country" />
                     </td>
                     <td>
                         <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-default btn-sm"
+                            <button type="button" class="btn btn-default btn-sm btn-remove"
                             data-bind="click: $root.doEditRemoveAffiliation.bind($root, $index, affiliation)">
                                 Remove
                                 <span class="glyphicon glyphicon-envelope"></span>
@@ -437,7 +444,7 @@
                     <td colspan="4" data-bind="text: author.formatName()"></td>
                     <td>
                         <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-default btn-sm"
+                            <button type="button" class="button-remove-affiliation-from-author btn btn-default btn-sm"
                                     data-bind="click: $root.doEditRemoveAffiliationFromAuthor.bind($root, $parentContext.$index, author)">
                                 Remove
                                 <span class="glyphicon glyphicon-user"></span>
@@ -458,7 +465,7 @@
                     </td>
                     <td>
                         <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-default btn-sm"
+                            <button type="button" id="button-assign-affiliation-to-author" class="btn btn-default btn-sm"
                                     data-bind="click: $root.doEditAddAuthorToAffiliation.bind($root, $index, affiliation)">
                                 Assign
                                 <span class="glyphicon glyphicon-user"></span>
@@ -510,7 +517,7 @@
 
     <!-- references templates -->
     <script id="header-references-editor" type="text/html">
-        <button type="button" class="btn btn-default btn-sm pull-right"
+        <button type="button" class="btn btn-default btn-sm btn-add pull-right"
             data-bind="click: doEditAddReference">
             Add
         </button>
@@ -525,23 +532,23 @@
                         <span class="drag-handle-icon glyphicon glyphicon-align-justify"></span>
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="Citation"
+                        <input type="text" class="ref-citation form-control input-sm" placeholder="Citation"
                                 maxlength='@Model.getLimit[Reference]("text")'
                                 data-bind="value: reference.text" />
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="link"
+                        <input type="text" class="ref-link form-control input-sm" placeholder="link"
                                 maxlength='@Model.getLimit[Reference]("link")'
                                 data-bind="value: reference.link" />
                     </td>
                     <td>
-                        <input type="text" class="form-control input-sm" placeholder="DOI e.g. 10.xxxxxx/journal.date.xx"
+                        <input type="text" class="ref-doi form-control input-sm" placeholder="DOI"
                                 maxlength='@Model.getLimit[Reference]("doi")'
                                 data-bind="value: reference.doi" />
                     </td>
                     <td>
                         <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-default btn-sm"
+                            <button type="button" class="btn btn-default btn-sm btn-remove"
                             data-bind="click: $root.doEditRemoveReference.bind($root, $index, reference)">
                                 Remove
                             </button>
@@ -555,31 +562,25 @@
                 <span class="gray-icon glyphicon glyphicon-align-justify icon-no-gap"></span> to reorder references
             </small>
         </div>
-        <br/>
-        <div>
-            <small>
-                Note: any DOI links differing from the 10.xxxxxx/journal.date.xx format will be post processed.
-            </small>
-        </div>
     </script>
 
     <!-- figure templates -->
-    <script id="header-figure-editor" type="text/html">
+    <script id="header-figures-editor" type="text/html">
         <h3>Add a Figure</h3>
     </script>
-    <script id="body-figure-editor" type="text/html">
+    <script id="body-figures-editor" type="text/html">
         <div data-bind="visible: !(abstract().figures().length>=@conference.abstractMaxFigures)">
             <div>Figures of format "jpg", "gif", "png" are supported; the size limit is 5MB.</div>
             <br>
             <div class="form-group">
-                <input type="text" name="figure-caption" id="figure-caption" class="form-control input-sm"
+                <input id="figure-caption" type="text" name="figure-caption" id="figure-caption" class="form-control input-sm"
                     placeholder='Figure Caption (max. @Model.getLimit[Figure]("caption") characters)'
                     maxlength='@Model.getLimit[Figure]("caption")'
                     data-bind="value: newFigureCaption">
             </div>
             <div class="form-group">
-                <input type="file" name="figure-file" id="figure-file" data-bind="event: { change: getNewFigure }"
-                    maxlength="250" class="form-control input-sm">
+                <input id="figure-file" type="file" name="figure-file" id="figure-file"
+                    data-bind="event: { change: getNewFigure }" maxlength="250" class="form-control input-sm">
             </div>
             <div data-bind="ifnot: isAbstractSaved">
                 Note: the figure will be uploaded when the abstract is saved for the first time.
@@ -588,7 +589,7 @@
 
         <div data-bind="if: hasAbstractFigures">
         <!-- ko foreach: abstract().figures() -->
-        <button type="button" class="btn btn-default btn-sm pull-right"
+        <button id="button-remove-figure" type="button" class="btn btn-default btn-sm btn-remove pull-right"
                 data-bind="click: $root.doRemoveFigure">
                 Remove
         </button>
@@ -653,10 +654,10 @@
 
     <!-- general footer used with all modals so far -->
     <script id="generalModalFooter" type="text/html">
-        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+        <button id="modal-button-cancel" type="button" class="btn btn-sm btn-default" data-dismiss="modal">
             Cancel
         </button>
-        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
+        <button id="modal-button-ok" type="button" class="btn btn-sm btn-default" data-dismiss="modal"
                 data-bind="click: doEndEdit">
             Ok
         </button>

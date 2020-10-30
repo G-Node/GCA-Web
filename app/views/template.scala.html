@@ -31,6 +31,10 @@
     <link rel="stylesheet" href='@routes.Assets.at("lib/jquery-ui/jquery-ui.min.css")' />
     <script type="text/javascript" src='@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")'></script>
 
+    <!-- Print view specific stylesheet -->
+    <link rel="stylesheet" type="text/css" media="print"
+          href='@routes.Assets.at("stylesheets/g-node-bootstrap-print.play.css")' />
+
     <!-- project fonts -->
     <link href='//fonts.googleapis.com/css?family=EB+Garamond|Open+Sans' rel='stylesheet' type='text/css'>
 
@@ -240,6 +244,14 @@
 
     <!-- main content -->
     <div class="container main-content">
+
+    @conference.map { conf =>
+        @if(conf.getConfTextAsHTML("notice") != null && conf.getConfTextAsHTML("notice") != "") {
+            <div class="jumbotron">
+            @Html(conf.getConfTextAsHTML("notice"))
+            </div>
+        }
+    }
     @content
     </div>
 
@@ -254,7 +266,12 @@
                         <li><a href="@routes.Application.datenschutz">Datenschutz</a></li>
                     </ul>
                 </div>
-                <div class="pull-right"><p>The G-Node Conference Site &mdash; © <a href="http://www.g-node.org">G-Node</a> 2019 </p></div>
+                <div class="pull-right">
+                    <p>The G-Node Conference Site &mdash; ©
+                        <a href="http://www.g-node.org">G-Node</a> 2013-
+                        <script>document.write(new Date().getFullYear());</script>
+                    </p>
+                </div>
             </div>
         </div>
     </div>

@@ -99,37 +99,37 @@ class ConferenceTest extends JUnitSuite {
     var testingInfo : String = ""
     var testingConf : Conference = null
     testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
-      None, None, Some(false), Some(true), Some(false), Some(true), None, None, None, info = Some(testingInfo))
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None, info = Some(testingInfo))
     assert(testingConf.getInfoAsHTML() == Conference.convertMarkdownToHTML(testingInfo))
     assert(testingConf.getInfoAsHTML() == "")
     // random tests
     for (i <- 0 to 10000) {
       testingInfo = ConferenceTest.generateRandomString(r.nextInt(200))
       testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
-        None, None, Some(false), Some(true), Some(false), Some(true), None, None, None, info = Some(testingInfo))
+        None, Some(false), Some(true), Some(false), Some(true), None, None, None, None, info = Some(testingInfo))
       assert(testingConf.getInfoAsHTML() == Conference.convertMarkdownToHTML(testingInfo))
     }
     // test null yielding an empty string
     testingConf = Conference(Some("uuid"), Some("wrongconf"), Some("XX"), Some("G"), Some("X"),
-      None, None, Some(false), Some(true), Some(false), Some(true), None, None, None, info = null)
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None, info = null)
     assert(testingConf.getInfoAsHTML() == "")
     // test sanitising
     testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
-      None, None, Some(false), Some(true), Some(false), Some(true), None, None, None,
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
       info = Some("<h1 class=\"paragraph-small\">Some text</h1>"))
     assert(testingConf.getInfoAsHTML() == "<h1>Some text</h1>\n") // attributes are not allowed
     testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
-      None, None, Some(false), Some(true), Some(false), Some(true), None, None, None,
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
       info = Some("Some text"))
     assert(testingConf.getInfoAsHTML() == "<p class=\"paragraph-small\">Some text</p>\n") // except classes on paragraphs
     testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
-      None, None, Some(false), Some(true), Some(false), Some(true), None, None, None,
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
       info = Some("<script type=\"text/javascript\">alert(\"Cross-Site-Scripting\");</script>"))
     assert(testingConf.getInfoAsHTML() == "\n") // everything else should also be disallowed
   }
 
   @Test
-  def testGetDescriptionAsHTML() : Unit = {
+  def testGetConfTextAsHTML() : Unit = {
     /*
      * Mostly a placeholder for potential future changes, which need to be tested differently.
      */
@@ -138,32 +138,61 @@ class ConferenceTest extends JUnitSuite {
     var testingDescription : String = ""
     var testingConf : Conference = null
     testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
-      None, Some(testingDescription), Some(false), Some(true), Some(false), Some(true), None, None, None)
-    assert(testingConf.getDescriptionAsHTML() == Conference.convertMarkdownToHTML(testingDescription))
-    assert(testingConf.getDescriptionAsHTML() == "")
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+      confTexts = Seq(
+        ConfText(None, Some("description"), Some(testingDescription))
+      ))
+    assert(testingConf.getConfTextAsHTML("description") == Conference.convertMarkdownToHTML(testingDescription))
+    assert(testingConf.getConfTextAsHTML("description") == "")
+
+    testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+      confTexts = Seq(
+        ConfText(None, Some(""), Some(testingDescription))
+      ))
+    assert(testingConf.getConfTextAsHTML("description") == "")
+
     // random tests
     for (i <- 0 to 10000) {
       testingDescription = ConferenceTest.generateRandomString(r.nextInt(200))
       testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
-        None, Some(testingDescription), Some(false), Some(true), Some(false), Some(true), None, None, None)
-      assert(testingConf.getDescriptionAsHTML() == Conference.convertMarkdownToHTML(testingDescription))
+        None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+        confTexts = Seq(
+          ConfText(None, Some("description"), Some(testingDescription))
+        ))
+      assert(testingConf.getConfTextAsHTML("description") == Conference.convertMarkdownToHTML(testingDescription))
     }
     // test null yielding an empty string
     testingConf = Conference(Some("uuid"), Some("wrongconf"), Some("XX"), Some("G"), Some("X"),
-      None, null, Some(false), Some(true), Some(false), Some(true), None, None, None)
-    assert(testingConf.getDescriptionAsHTML() == "")
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None)
+    assert(testingConf.getConfTextAsHTML("description") == "")
+    // test null yielding an empty string
+    testingConf = Conference(Some("uuid"), Some("wrongconf"), Some("XX"), Some("G"), Some("X"),
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+      confTexts = Seq(
+        ConfText(None, Some("description"), Some(null))
+      ))
+    assert(testingConf.getConfTextAsHTML("description") == "")
     // test sanitising
     testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
-      None, Some("<h1 class=\"paragraph-small\">Some text</h1>"), Some(false), Some(true), Some(false), Some(true), None, None, None)
-    assert(testingConf.getDescriptionAsHTML() == "<h1>Some text</h1>\n") // attributes are not allowed
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+      confTexts = Seq(
+        ConfText(None, Some("description"), Some("<h1 class=\\\"paragraph-small\\\">Some text</h1>"))
+      ))
+    assert(testingConf.getConfTextAsHTML("description") == "<h1>Some text</h1>\n") // attributes are not allowed
     testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
-      None, Some("Some text"), Some(false), Some(true), Some(false), Some(true), None, None, None)
-    assert(testingConf.getDescriptionAsHTML() == "<p class=\"paragraph-small\">Some text</p>\n") // except classes on paragraphs
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+      confTexts = Seq(
+        ConfText(None, Some("description"), Some("Some Text"))
+      ))
+    assert(testingConf.getConfTextAsHTML("description") == "<p class=\"paragraph-small\">Some Text</p>\n") // except classes on paragraphs
     testingConf = Conference(Some("uuid"), Some("someconf"), Some("XX"), Some("G"), Some("X"),
-      None, Some("<script type=\"text/javascript\">alert(\"Cross-Site-Scripting\");</script>"), Some(false), Some(true), Some(false), Some(true), None, None, None)
-    assert(testingConf.getDescriptionAsHTML() == "\n") // everything else should also be disallowed
+      None, Some(false), Some(true), Some(false), Some(true), None, None, None, None,
+      confTexts = Seq(
+        ConfText(None, Some("description"), Some("<script type=\"text/javascript\">alert(\"Cross-Site-Scripting\");</script>"))
+      ))
+    assert(testingConf.getConfTextAsHTML("description") == "\n") // everything else should also be disallowed
   }
-
 }
 
 object ConferenceTest {
